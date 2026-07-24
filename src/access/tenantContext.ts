@@ -50,10 +50,27 @@ export const getExplicitTenantID = (req: PayloadRequest): TenantID | null =>
 
 export const getAuthenticatedTenantID = (req: PayloadRequest): TenantID | null => {
   const tenantIDs = getUserTenantIDs(req.user)
-  if (tenantIDs.length === 1) return tenantIDs[0]
 
-  const explicitTenantID = getExplicitTenantID(req)
-  if (explicitTenantID && tenantIDs.includes(explicitTenantID)) return explicitTenantID
+  let candidateTenantID: TenantID | null = null
+  if (tenantIDs.length === 1) {
+    candidateTenantID = tenantIDs[0]
+  } else {
+    const explicitTenantID = getExplicitTenantID(req)
+    if (explicitTenantID && tenantIDs.includes(explicitTenantID)) {
+      candidateTenantID = explicitTenantID
+    }
+  }
+
+  if (candidateTenantID) {
+    // If the tenant is populated in req.user.tenants, check isActive
+    const selectedTenant = (req.user?.tenants || []).find((t: any) =>
+      toTenantID(typeof t === 'object' && t !== null ? t.id : t) === candidateTenantID
+    )
+    if (selectedTenant && typeof selectedTenant === 'object' && 'isActive' in selectedTenant) {
+      if (selectedTenant.isActive === false) return null
+    }
+    return candidateTenantID
+  }
 
   return null
 }

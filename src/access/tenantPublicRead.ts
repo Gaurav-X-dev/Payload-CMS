@@ -17,9 +17,32 @@ export const tenantPublicRead = ({ publishedOnly = false }: Options = {}): Acces
     if (req.user) {
       const tenantIDs = getUserTenantIDs(req.user)
       if (!tenantIDs.length) return false
+
+      let activeTenantIDs = tenantIDs
+      // req.user.tenants is populated during auth
+      if (req.user.tenants && req.user.tenants.length > 0 && typeof req.user.tenants[0] === 'object') {
+        activeTenantIDs = req.user.tenants
+          .filter((t: any) => t && t.isActive === true)
+          .map((t: any) => t.id)
+      } else if (tenantIDs.length > 0) {
+        // Fallback: fetch active ones
+        const activeTenants = await req.payload.find({
+          collection: 'tenants',
+          where: {
+            id: { in: tenantIDs },
+            isActive: { equals: true },
+          },
+          depth: 0,
+          pagination: false,
+        })
+        activeTenantIDs = activeTenants.docs.map(t => t.id)
+      }
+
+      if (!activeTenantIDs.length) return false
+
       const authenticatedWhere: Where = {
         tenantId: {
-          in: tenantIDs,
+          in: activeTenantIDs,
         },
       }
       return authenticatedWhere

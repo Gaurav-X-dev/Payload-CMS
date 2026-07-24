@@ -160,7 +160,7 @@ export const sameTenantRelationship = (
   if (!ids.length) return value
   const validationPath = path || runtimePath?.join('.') || relationTo
 
-  const tenantID = parentTenantIdentity === 'documentID'
+    const tenantID = parentTenantIdentity === 'documentID'
     ? normalizeTenantID(data?.id) ?? normalizeTenantID(originalDoc?.id)
     : normalizeTenantID(data?.tenantId) ??
       normalizeTenantID(originalDoc?.tenantId) ??
