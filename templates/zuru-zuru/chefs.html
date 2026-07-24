@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meet Our Chefs - Zuru Zuru Izakaya</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <style>
+    /* Specific styles for chefs page */
+    .hero-chefs {
+      height: 60vh;
+      background: linear-gradient(rgba(17, 17, 17, 0.7), rgba(17, 17, 17, 0.7)), url('images/interior.png') center/cover;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: #F7F3ED;
+    }
+    .hero-chefs h1 {
+      font-size: 4rem;
+      color: #D9C5A0;
+      margin-bottom: 1rem;
+    }
+    .breadcrumb {
+      font-size: 0.9rem;
+      color: #C9A227;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    .breadcrumb a {
+      color: #F7F3ED;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    .breadcrumb a:hover {
+      color: #C9A227;
+    }
+    
+    .exec-chef {
+      padding: 100px 5%;
+      background-color: #F7F3ED;
+    }
+    .exec-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .exec-img-wrapper {
+      position: relative;
+    }
+    .exec-img {
+      border-radius: 8px;
+      width: 100%;
+      height: 700px;
+      object-fit: cover;
+      box-shadow: -20px 20px 0 #8B1A1A;
+    }
+    .exec-content h2 {
+      font-size: 3rem;
+      color: #111111;
+      margin-bottom: 0.5rem;
+    }
+    .exec-content h3 {
+      font-size: 1.5rem;
+      color: #8B1A1A;
+      margin-bottom: 2rem;
+      font-style: italic;
+    }
+    .exec-content p {
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: #444;
+      margin-bottom: 1.5rem;
+    }
+    .awards-list {
+      list-style: none;
+      padding: 0;
+      margin-top: 2rem;
+    }
+    .awards-list li {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+      color: #333;
+    }
+    .awards-list i {
+      color: #C9A227;
+      font-size: 1.5rem;
+    }
+    
+    .chef-profiles {
+      padding: 100px 5%;
+      background-color: #111111;
+    }
+    .section-header {
+      margin-bottom: 3rem;
+      text-align: center;
+    }
+    .section-subtitle {
+      color: #C9A227;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+    .profiles-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 3rem;
+      max-width: 1200px;
+      margin: 4rem auto 0;
+    }
+    .profile-card {
+      background: #1a1a1a;
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: row;
+      transition: transform 0.3s ease;
+    }
+    .profile-card:hover {
+      transform: translateY(-10px);
+    }
+    .profile-card img {
+      width: 250px;
+      height: 100%;
+      object-fit: cover;
+    }
+    .profile-info {
+      padding: 2.5rem;
+      color: #F7F3ED;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .profile-info h3 {
+      color: #D9C5A0;
+      font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+    }
+    .profile-info h4 {
+      color: #C9A227;
+      margin-bottom: 1.5rem;
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .profile-info p {
+      color: #ccc;
+      line-height: 1.6;
+      font-size: 1rem;
+    }
+    
+    .kitchen-philosophy {
+      padding: 120px 5%;
+      background: linear-gradient(rgba(139, 26, 26, 0.9), rgba(139, 26, 26, 0.9)), url('images/hero_sushi.png') center/cover;
+      background-attachment: fixed;
+      text-align: center;
+      color: #F7F3ED;
+    }
+    .kitchen-philosophy i {
+      font-size: 4rem;
+      color: #D9C5A0;
+      margin-bottom: 1.5rem;
+      opacity: 0.5;
+    }
+    .kitchen-philosophy blockquote {
+      font-size: 2.5rem;
+      font-style: italic;
+      max-width: 900px;
+      margin: 0 auto 2rem;
+      line-height: 1.4;
+      font-family: Georgia, serif;
+    }
+    .kitchen-philosophy cite {
+      font-size: 1.2rem;
+      color: #C9A227;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-weight: 600;
+    }
+    
+    .kitchen-team {
+      padding: 100px 5%;
+      background-color: #F7F3ED;
+    }
+    .kitchen-team-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 3rem;
+      max-width: 1200px;
+      margin: 4rem auto 0;
+    }
+    .k-team-card {
+      text-align: center;
+    }
+    .k-team-img-wrapper {
+      overflow: hidden;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+    }
+    .k-team-img {
+      width: 100%;
+      height: 350px;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+    .k-team-card:hover .k-team-img {
+      transform: scale(1.05);
+    }
+    .k-team-card h3 {
+      font-size: 1.5rem;
+      color: #111111;
+      margin-bottom: 0.5rem;
+    }
+    .k-team-card p {
+      color: #8B1A1A;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .cta-section {
+      padding: 120px 5%;
+      background-color: #111111;
+      text-align: center;
+      color: #F7F3ED;
+    }
+    .cta-section h2 {
+      font-size: 3rem;
+      color: #D9C5A0;
+      margin-bottom: 1.5rem;
+    }
+    .cta-section p {
+      font-size: 1.2rem;
+      color: #ccc;
+      margin-bottom: 2.5rem;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    @media (max-width: 992px) {
+      .exec-grid { grid-template-columns: 1fr; }
+      .exec-img { height: 500px; box-shadow: 0 20px 0 #8B1A1A; }
+      .profiles-grid { grid-template-columns: 1fr; }
+      .kitchen-team-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .profile-card { flex-direction: column; }
+      .profile-card img { width: 100%; height: 350px; }
+      .kitchen-team-grid { grid-template-columns: 1fr; }
+      .kitchen-philosophy blockquote { font-size: 1.8rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Preloader -->
+  <div class="preloader">
+    <img src="zuruzuru_logo.png" alt="Loading" class="preloader-logo">
+    <div class="preloader-bar"></div>
+  </div>
+
+  <!-- Scroll Progress -->
+  <div class="scroll-progress"></div>
+
+  <!-- Header -->
+  <header class="header header-inner">
+    <div class="nav-container">
+      <a href="index.html" class="logo">
+        <img src="zuruzuru_logo.png" alt="Zuru Zuru Izakaya">
+        <span class="brand-name">Zuru Zuru</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li>
+          <a href="menu.html">Menu <i class="ph-bold ph-caret-down" style="font-size:0.7rem;"></i></a>
+          <ul class="nav-dropdown">
+            <li><a href="menu.html?location=delhi">Delhi Menu</a></li>
+            <li><a href="menu.html?location=gurugram">Gurugram Menu</a></li>
+          </ul>
+        </li>
+        <li><a href="about.html">Our Story</a></li>
+        <li><a href="chefs.html" class="active">Chefs</a></li>
+        <li><a href="gallery.html">Gallery</a></li>
+        <li><a href="reservation.html">Reservations</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+      <div class="nav-right">
+        <a href="reservation.html" class="btn btn-primary btn-sm"><span>Reserve</span></a>
+        <div class="hamburger">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu">
+    <a href="index.html">Home</a>
+    <a href="menu.html">Menu</a>
+    <a href="about.html">Our Story</a>
+    <a href="chefs.html" class="active">Chefs</a>
+    <a href="gallery.html">Gallery</a>
+    <a href="reservation.html">Reservations</a>
+    <a href="private-dining.html">Private Dining</a>
+    <a href="events.html">Events</a>
+    <a href="blog.html">Blog</a>
+    <a href="contact.html">Contact</a>
+  </div>
+
+  <!-- PAGE HERO -->
+  <section class="hero-chefs reveal">
+    <div>
+      <h1>Meet Our Chefs</h1>
+      <div class="breadcrumb">
+        <a href="index.html">Home</a> &nbsp;/&nbsp; Chefs
+      </div>
+    </div>
+  </section>
+
+  <!-- EXECUTIVE CHEF -->
+  <section class="exec-chef">
+    <div class="exec-grid">
+      <div class="exec-img-wrapper reveal-left">
+        <img src="images/chef.png" alt="Chef Kenji Tanaka" class="exec-img">
+      </div>
+      <div class="exec-content reveal-right">
+        <span class="section-subtitle">The Visionary</span>
+        <h2>Kenji Tanaka</h2>
+        <h3>Executive Chef & Founder</h3>
+        <p>Born and raised in Osaka, the kitchen of Japan, Chef Kenji Tanaka's culinary journey began at the age of 16 in his family's humble udon shop. His insatiable curiosity led him to Tokyo, where he spent over a decade honing his skills under the watchful eyes of formidable Michelin-starred sushi masters and yakitori veterans.</p>
+        <p>For Chef Tanaka, cooking is an intimate language. He believes that true izakaya dining is not just about the food, but the energetic atmosphere, the clinking of glasses, and the shared joy of discovery. His philosophy marries rigorous traditional Japanese techniques with a playful, modern approach to flavor profiles.</p>
+        <p>At Zuru Zuru, he has curated a menu that acts as a love letter to the vibrant, chaotic, and utterly delicious alleyway eateries of his youth, bringing an uncompromising standard of excellence to every plate.</p>
+        
+        <ul class="awards-list">
+          <li><i class="ph ph-medal"></i> James Beard Foundation Award Nominee, 2023</li>
+          <li><i class="ph ph-trophy"></i> Best Japanese Chef in Asia - Culinary Excellence Awards</li>
+          <li><i class="ph ph-star"></i> Featured in "Masters of Fire: The Global Robatayaki"</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHEF PROFILES -->
+  <section class="chef-profiles">
+    <div class="section-header reveal">
+      <span class="section-subtitle">Masters of the Craft</span>
+      <h2 style="font-size: 2.5rem; color: #D9C5A0; margin-bottom: 1rem;">The Culinary Masters</h2>
+      <p style="color: #ccc; max-width: 600px; margin: 0 auto;">Each master brings decades of specialized experience to ensure perfection across our diverse menu.</p>
+    </div>
+    
+    <div class="profiles-grid">
+      <div class="profile-card reveal delay-1">
+        <img src="images/hero_sushi.png" alt="Chef Akira Mori">
+        <div class="profile-info">
+          <h3>Akira Mori</h3>
+          <h4>Chef de Cuisine</h4>
+          <p>With an exceptional palate and a background in French-Japanese fusion, Chef Akira orchestrates the bustling kitchen with precision. He is the mastermind behind our intricate seasonal specials and ensures every dish leaving the pass meets Chef Tanaka's exacting standards.</p>
+        </div>
+      </div>
+      <div class="profile-card reveal delay-2">
+        <img src="images/gyoza_tempura.png" alt="Chef Haruka Suzuki">
+        <div class="profile-info">
+          <h3>Haruka Suzuki</h3>
+          <h4>Sushi Master</h4>
+          <p>Trained in Ginza for 12 years, Chef Haruka possesses an encyclopedic knowledge of seafood. Her delicate knife work and deep understanding of fish aging techniques elevate our sashimi and nigiri offerings to an art form.</p>
+        </div>
+      </div>
+      <div class="profile-card reveal delay-1">
+        <img src="images/hero_ramen.png" alt="Chef Daiki Ito">
+        <div class="profile-info">
+          <h3>Daiki Ito</h3>
+          <h4>Ramen Master</h4>
+          <p>Chef Daiki is the guardian of our broths. Rising before dawn every day, he meticulously tends to the towering stockpots, ensuring the 24-hour pork bone and chicken broths achieve the perfect balance of richness and depth.</p>
+        </div>
+      </div>
+      <div class="profile-card reveal delay-2">
+        <img src="images/hero_sushi.png" alt="Chef Yumi Yamada">
+        <div class="profile-info">
+          <h3>Yumi Yamada</h3>
+          <h4>Pastry Chef</h4>
+          <p>Bringing a sweet conclusion to the izakaya experience, Chef Yumi expertly blends traditional Japanese ingredients like matcha, yuzu, and black sesame with classic European pastry techniques to create unforgettable, elegant desserts.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- KITCHEN PHILOSOPHY -->
+  <section class="kitchen-philosophy reveal">
+    <i class="ph ph-quotes"></i>
+    <blockquote>"Great food is not born from complex recipes, but from a profound respect for the ingredients and the unrelenting discipline to execute simple techniques flawlessly, every single day."</blockquote>
+    <cite>— Chef Kenji Tanaka</cite>
+  </section>
+
+  <!-- KITCHEN TEAM -->
+  <section class="kitchen-team">
+    <div class="section-header text-center reveal">
+      <span class="section-subtitle">The Engine Room</span>
+      <h2 style="font-size: 2.5rem; color: #111111; margin-bottom: 1rem;">Our Kitchen Brigade</h2>
+      <p style="color: #666; max-width: 600px; margin: 0 auto;">The dedicated individuals whose hard work and passion bring the Zuru Zuru vision to life.</p>
+    </div>
+    
+    <div class="kitchen-team-grid">
+      <div class="k-team-card reveal delay-1">
+        <div class="k-team-img-wrapper">
+          <img src="images/gyoza_tempura.png" alt="Taro Kobayashi" class="k-team-img">
+        </div>
+        <h3>Taro Kobayashi</h3>
+        <p>Robata Grill Master</p>
+      </div>
+      <div class="k-team-card reveal delay-2">
+        <div class="k-team-img-wrapper">
+          <img src="images/gyoza_tempura.png" alt="Shinji Ota" class="k-team-img">
+        </div>
+        <h3>Shinji Ota</h3>
+        <p>Tempura Specialist</p>
+      </div>
+      <div class="k-team-card reveal delay-3">
+        <div class="k-team-img-wrapper">
+          <img src="images/chef.png" alt="Kazuo Nakamura" class="k-team-img">
+        </div>
+        <h3>Kazuo Nakamura</h3>
+        <p>Prep Supervisor</p>
+      </div>
+      <div class="k-team-card reveal delay-1">
+        <div class="k-team-img-wrapper">
+          <img src="images/hero_ramen.png" alt="Rina Takahashi" class="k-team-img">
+        </div>
+        <h3>Rina Takahashi</h3>
+        <p>Garde Manger</p>
+      </div>
+      <div class="k-team-card reveal delay-2">
+        <div class="k-team-img-wrapper">
+          <img src="images/chef.png" alt="Kaito Yoshida" class="k-team-img">
+        </div>
+        <h3>Kaito Yoshida</h3>
+        <p>Noodle Maker</p>
+      </div>
+      <div class="k-team-card reveal delay-3">
+        <div class="k-team-img-wrapper">
+          <img src="images/hero_sushi.png" alt="Hiroshi Kato" class="k-team-img">
+        </div>
+        <h3>Hiroshi Kato</h3>
+        <p>Expediter</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section reveal">
+    <h2>Taste the Dedication</h2>
+    <p>Experience the culmination of years of mastery, passion, and tradition crafted by our exceptional culinary team.</p>
+    <a href="reservation.html" class="btn btn-primary"><span>Dine with Our Chefs</span></a>
+  </section>
+
+  <!-- Footer -->
+    <!-- --- NEWSLETTER --- -->
+  <section class="nl-section section-alt">
+    <div class="container reveal">
+      <div class="section-subtitle" style="justify-content:center;">Stay Connected</div>
+      <h2 class="heading-section text-center">Join Our Inner Circle</h2>
+      <p class="section-desc text-center" style="margin:0 auto 2rem;">Receive exclusive recipes, event invitations, and special offers directly in your inbox. No spam, just Japanese inspiration.</p>
+      <div class="nl-form">
+        <input type="email" placeholder="Enter your email address" aria-label="Email address">
+        <button type="button">Subscribe</button>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-about">
+          <div class="footer-brand-container">
+            <img src="zuruzuru_logo.png" alt="Zuru Zuru" class="footer-logo">
+            <span class="brand-name">Zuru Zuru</span>
+          </div>
+          <p>A premium Japanese Izakaya experience bringing the authentic flavours of Tokyo to New Delhi. Every dish tells a story of tradition, passion, and culinary excellence.</p>
+          <div class="footer-social">
+            <a href="https://www.instagram.com/zuruzuru.in/?hl=en" aria-label="Instagram" target="_blank"><i class="ph ph-instagram-logo"></i></a>
+            <a href="#" aria-label="Facebook"><i class="ph ph-facebook-logo"></i></a>
+            <a href="#" aria-label="Twitter"><i class="ph ph-twitter-logo"></i></a>
+            <a href="#" aria-label="YouTube"><i class="ph ph-youtube-logo"></i></a>
+          </div>
+        </div>
+        <div class="footer-links">
+          <h4>Explore</h4>
+          <a href="menu.html">Our Menu</a>
+          <a href="about.html">Our Story</a>
+          <a href="chefs.html">Our Chefs</a>
+          <a href="gallery.html">Gallery</a>
+          <a href="blog.html">Blog</a>
+        </div>
+        <div class="footer-links">
+          <h4>Services</h4>
+          <a href="reservation.html">Reservations</a>
+          <a href="private-dining.html">Private Dining</a>
+          <a href="events.html">Events</a>
+          <a href="catering.html">Catering</a>
+          <a href="careers.html">Careers</a>
+        </div>
+        <div class="footer-links">
+          <h4>Information</h4>
+          <a href="locations.html">Locations</a>
+          <a href="franchise.html">Franchise</a>
+          <a href="faq.html">FAQ</a>
+          <a href="privacy-policy.html">Privacy Policy</a>
+          <a href="terms.html">Terms</a>
+        </div>
+        <div>
+          <h4>Contact</h4>
+          <ul class="footer-contact">
+            <li><i class="ph ph-map-pin"></i> Zuru Zuru, Delhi, India 110049</li>
+            <li><i class="ph ph-phone"></i> +91 11 4052 7373</li>
+            <li><i class="ph ph-envelope"></i> hello@zuruzuru.in</li>
+          </ul>
+          <h4 style="margin-top:2rem">Hours</h4>
+          <ul class="footer-hours">
+              <li style="flex-direction:column; align-items:flex-start; margin-bottom:10px;">
+                <span style="color:var(--clr-primary); font-weight:600; margin-bottom:5px;">1:00 PM - 4:00 PM & 7:00 PM - 10:30 PM</span>
+                <span style="font-size:0.85rem; color:#888;">Lunch & Dinner (Full Menu)</span>
+              </li>
+              <li style="flex-direction:column; align-items:flex-start;">
+                <span style="color:var(--clr-primary); font-weight:600; margin-bottom:5px;">4:00 PM - 7:00 PM</span>
+                <span style="font-size:0.85rem; color:#888;">Tempura, Gyoza & Cold Ramen</span>
+              </li>
+            </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Zuru Zuru Izakaya. All Rights Reserved.</p>
+        <div class="footer-bottom-links">
+          <a href="privacy-policy.html">Privacy Policy</a>
+          <a href="terms.html">Terms of Service</a>
+          <a href="faq.html">FAQ</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Back to Top -->
+  <button class="back-to-top" aria-label="Back to top">
+    <i class="ph ph-caret-up"></i>
+  </button>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+

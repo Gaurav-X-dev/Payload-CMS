@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Locations | Zuru Zuru Izakaya</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <style>
+    :root {
+      --primary: #8B1A1A;
+      --secondary: #D9C5A0;
+      --background: #F7F3ED;
+      --dark: #111111;
+      --accent: #C9A227;
+    }
+    .page-hero { padding: 180px 5% 100px; text-align: center; background: url('images/gyoza_tempura.png') center/cover no-repeat; color: var(--background); position: relative; }
+    .page-hero::before { content: ''; position: absolute; inset: 0; background: rgba(17, 17, 17, 0.85); z-index: 1; }
+    .page-hero .container { position: relative; z-index: 2; }
+    .page-hero h1 { font-size: 4rem; margin-bottom: 1rem; color: var(--secondary); font-family: serif; }
+    .page-hero p { font-size: 1.2rem; max-width: 600px; margin: 0 auto; color: #ddd; }
+    
+    .locations-section { padding: 6rem 5%; background: var(--background); }
+    .locations-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 3rem; max-width: 1400px; margin: 0 auto; }
+    .location-card { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 15px 40px rgba(0,0,0,0.08); display: flex; flex-direction: column; }
+    .location-img-wrap { height: 350px; overflow: hidden; position: relative; }
+    .location-img { height: 100%; width: 100%; object-fit: cover; transition: transform 0.5s ease; }
+    .location-card:hover .location-img { transform: scale(1.05); }
+    .location-info { padding: 3rem; display: flex; flex-direction: column; flex: 1; }
+    .location-info h2 { font-size: 2.2rem; margin-bottom: 0.5rem; color: var(--dark); font-family: serif; }
+    .location-status { display: inline-block; padding: 0.3rem 0.8rem; background: #E8F5E9; color: #2E7D32; border-radius: 20px; font-size: 0.85rem; font-weight: bold; margin-bottom: 1.5rem; align-self: flex-start; }
+    .location-status.coming-soon { background: #FFF3E0; color: #E65100; }
+    .location-details { list-style: none; padding: 0; margin: 0 0 2.5rem 0; }
+    .location-details li { display: flex; gap: 1.2rem; margin-bottom: 1.2rem; color: #555; line-height: 1.5; align-items: flex-start; }
+    .location-details i { font-size: 1.5rem; color: var(--primary); margin-top: 0.1rem; }
+    .location-actions { display: flex; gap: 1rem; margin-top: auto; }
+    .btn-outline { padding: 0.8rem 1.5rem; border: 2px solid var(--dark); color: var(--dark); text-decoration: none; border-radius: 4px; font-weight: bold; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 0.5rem; flex: 1; justify-content: center; }
+    .btn-outline:hover { background: var(--dark); color: #fff; }
+    .btn-primary-solid { padding: 0.8rem 1.5rem; background: var(--primary); border: 2px solid var(--primary); color: #fff; text-decoration: none; border-radius: 4px; font-weight: bold; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 0.5rem; flex: 1; justify-content: center; }
+    .btn-primary-solid:hover { background: #701010; border-color: #701010; }
+    
+    .map-section { height: 600px; background: #1a1a1a; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    .map-placeholder { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.6; }
+    .map-content { position: relative; z-index: 2; text-align: center; color: #fff; background: rgba(0,0,0,0.7); padding: 3rem; border-radius: 12px; backdrop-filter: blur(5px); }
+    .map-content i { font-size: 4rem; color: var(--secondary); margin-bottom: 1rem; }
+    .map-content h3 { font-size: 2rem; font-family: serif; margin-bottom: 0.5rem; }
+    
+    .facilities-section { padding: 6rem 5%; background: #fff; text-align: center; }
+    .section-title { margin-bottom: 4rem; }
+    .section-title h2 { font-size: 2.5rem; color: var(--dark); font-family: serif; margin-bottom: 0.5rem; }
+    .section-title p { color: #666; font-size: 1.1rem; }
+    
+    .facilities-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 2.5rem; max-width: 1000px; margin: 0 auto; }
+    .facility-item { padding: 2.5rem 1.5rem; background: var(--background); border-radius: 12px; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+    .facility-item:hover { transform: translateY(-10px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+    .facility-item i { font-size: 3.5rem; color: var(--primary); margin-bottom: 1.5rem; }
+    .facility-item h4 { color: var(--dark); font-size: 1.1rem; font-weight: bold; }
+    
+    @media (max-width: 992px) {
+      .locations-grid { grid-template-columns: 1fr; }
+      .location-img-wrap { height: 250px; }
+      .location-actions { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Preloader -->
+  <div class="preloader">
+    <img src="zuruzuru_logo.png" alt="Loading" class="preloader-logo">
+    <div class="preloader-bar"></div>
+  </div>
+
+  <!-- Header -->
+  <header class="header header-inner">
+    <div class="nav-container">
+      <a href="index.html" class="logo">
+        <img src="zuruzuru_logo.png" alt="Zuru Zuru Izakaya">
+        <span class="brand-name">Zuru Zuru</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li>
+          <a href="menu.html">Menu <i class="ph-bold ph-caret-down" style="font-size:0.7rem;"></i></a>
+          <ul class="nav-dropdown">
+            <li><a href="menu.html?location=delhi">Delhi Menu</a></li>
+            <li><a href="menu.html?location=gurugram">Gurugram Menu</a></li>
+          </ul>
+        </li>
+        <li><a href="about.html">Our Story</a></li>
+        <li><a href="chefs.html">Chefs</a></li>
+        <li><a href="gallery.html">Gallery</a></li>
+        <li><a href="reservation.html">Reservations</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+      <div class="nav-right">
+        <a href="reservation.html" class="btn btn-primary btn-sm"><span>Reserve</span></a>
+        <div class="hamburger">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="mobile-menu">
+    <a href="index.html">Home</a>
+    <a href="menu.html">Menu</a>
+    <a href="about.html">Our Story</a>
+    <a href="chefs.html">Chefs</a>
+    <a href="gallery.html">Gallery</a>
+    <a href="reservation.html">Reservations</a>
+    <a href="private-dining.html">Private Dining</a>
+    <a href="events.html">Events</a>
+    <a href="blog.html">Blog</a>
+    <a href="contact.html">Contact</a>
+  </div>
+
+  <!-- Page Hero -->
+  <section class="page-hero reveal">
+    <div class="container">
+      <h1>Our Locations</h1>
+      <p>Find a Zuru Zuru Izakaya near you and experience the authentic taste of Japan.</p>
+    </div>
+  </section>
+
+  <!-- Locations Grid -->
+  <section class="locations-section reveal">
+    <div class="locations-grid">
+      <!-- Location 1 -->
+      <div class="location-card reveal delay-1">
+        <div class="location-img-wrap">
+          <img src="images/chef.png" alt="Shahpur Jat" class="location-img">
+        </div>
+        <div class="location-info">
+          <h2>Shahpur Jat, New Delhi</h2>
+          <span class="location-status">Flagship Store</span>
+          <ul class="location-details">
+            <li><i class="ph ph-map-pin"></i> Zuru Zuru, Delhi, India 110049</li>
+            <li><i class="ph ph-phone"></i> <span>+91 11 4052 7373</span></li>
+            <li><i class="ph ph-clock"></i> <span>Mon - Thu: 12:00 PM - 10:30 PM<br>Fri - Sun: 12:00 PM - 11:30 PM</span></li>
+          </ul>
+          <div class="location-actions">
+            <a href="reservation.html" class="btn-primary-solid"><i class="ph ph-calendar-plus"></i> Reserve</a>
+            <a href="#" class="btn-outline"><i class="ph ph-map-trifold"></i> Get Directions</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Location 2 -->
+      <div class="location-card reveal delay-2">
+        <div class="location-img-wrap">
+          <img src="images/interior.png" alt="Connaught Place" class="location-img">
+        </div>
+        <div class="location-info">
+          <h2>Connaught Place, New Delhi</h2>
+          <span class="location-status">Open Now</span>
+          <ul class="location-details">
+            <li><i class="ph ph-map-pin"></i> Zuru Zuru, Delhi, India 110049</li>
+            <li><i class="ph ph-phone"></i> <span>+91 11 4052 7474</span></li>
+            <li><i class="ph ph-clock"></i> <span>Mon - Sun: 11:00 AM - 11:30 PM</span></li>
+          </ul>
+          <div class="location-actions">
+            <a href="reservation.html" class="btn-primary-solid"><i class="ph ph-calendar-plus"></i> Reserve</a>
+            <a href="#" class="btn-outline"><i class="ph ph-map-trifold"></i> Get Directions</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Location 3 -->
+      <div class="location-card reveal delay-3">
+        <div class="location-img-wrap">
+          <img src="images/interior.png" alt="Cyber Hub" class="location-img">
+        </div>
+        <div class="location-info">
+          <h2>Cyber Hub, Gurugram</h2>
+          <span class="location-status">Open Now</span>
+          <ul class="location-details">
+            <li><i class="ph ph-map-pin"></i> Zuru Zuru, Delhi, India 110049</li>
+            <li><i class="ph ph-phone"></i> <span>+91 124 4052 7575</span></li>
+            <li><i class="ph ph-clock"></i> <span>Mon - Sun: 12:00 PM - 12:00 AM</span></li>
+          </ul>
+          <div class="location-actions">
+            <a href="reservation.html" class="btn-primary-solid"><i class="ph ph-calendar-plus"></i> Reserve</a>
+            <a href="#" class="btn-outline"><i class="ph ph-map-trifold"></i> Get Directions</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Location 4 -->
+      <div class="location-card reveal delay-4">
+        <div class="location-img-wrap">
+          <img src="images/hero_ramen.png" alt="Bengaluru" class="location-img">
+        </div>
+        <div class="location-info">
+          <h2>Indiranagar, Bengaluru</h2>
+          <span class="location-status coming-soon">Coming Soon - Dec 2026</span>
+          <ul class="location-details">
+            <li><i class="ph ph-map-pin"></i> Zuru Zuru, Delhi, India 110049</li>
+            <li><i class="ph ph-phone"></i> <span>Not yet active</span></li>
+            <li><i class="ph ph-clock"></i> <span>Opening Soon</span></li>
+          </ul>
+          <div class="location-actions">
+            <a href="#" class="btn-outline" style="opacity: 0.5; pointer-events: none;"><i class="ph ph-calendar-plus"></i> Reserve</a>
+            <a href="#" class="btn-outline"><i class="ph ph-bell-ringing"></i> Get Notified</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Facilities -->
+  <section class="facilities-section reveal">
+    <div class="section-title">
+      <h2>Guest Amenities</h2>
+      <p>Everything you need for a comfortable dining experience</p>
+    </div>
+    <div class="facilities-grid">
+      <div class="facility-item reveal delay-1">
+        <i class="ph ph-wifi-high"></i>
+        <h4>Free Wi-Fi</h4>
+      </div>
+      <div class="facility-item reveal delay-2">
+        <i class="ph ph-car"></i>
+        <h4>Valet Parking</h4>
+      </div>
+      <div class="facility-item reveal delay-3">
+        <i class="ph ph-wheelchair"></i>
+        <h4>Accessible</h4>
+      </div>
+      <div class="facility-item reveal delay-4">
+        <i class="ph ph-martini"></i>
+        <h4>Full Bar</h4>
+      </div>
+      <div class="facility-item reveal delay-1">
+        <i class="ph ph-users-three"></i>
+        <h4>Private Dining</h4>
+      </div>
+      <div class="facility-item reveal delay-2">
+        <i class="ph ph-plant"></i>
+        <h4>Vegan Options</h4>
+      </div>
+    </div>
+  </section>
+
+  <!-- Map Section -->
+  <section class="map-section reveal">
+    <img src="images/hero_ramen.png" alt="Map View" class="map-placeholder">
+    <div class="map-content">
+      <i class="ph ph-map-pin-line"></i>
+      <h3>Explore Our Map</h3>
+      <p>Interactive maps and virtual tours available on our app.</p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+    <!-- --- NEWSLETTER --- -->
+  <section class="nl-section section-alt">
+    <div class="container reveal">
+      <div class="section-subtitle" style="justify-content:center;">Stay Connected</div>
+      <h2 class="heading-section text-center">Join Our Inner Circle</h2>
+      <p class="section-desc text-center" style="margin:0 auto 2rem;">Receive exclusive recipes, event invitations, and special offers directly in your inbox. No spam, just Japanese inspiration.</p>
+      <div class="nl-form">
+        <input type="email" placeholder="Enter your email address" aria-label="Email address">
+        <button type="button">Subscribe</button>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-about">
+          <div class="footer-brand-container">
+            <img src="zuruzuru_logo.png" alt="Zuru Zuru" class="footer-logo">
+            <span class="brand-name">Zuru Zuru</span>
+          </div>
+          <p>A premium Japanese Izakaya experience bringing the authentic flavours of Tokyo to New Delhi. Every dish tells a story of tradition, passion, and culinary excellence.</p>
+          <div class="footer-social">
+            <a href="https://www.instagram.com/zuruzuru.in/?hl=en" aria-label="Instagram" target="_blank"><i class="ph ph-instagram-logo"></i></a>
+            <a href="#" aria-label="Facebook"><i class="ph ph-facebook-logo"></i></a>
+            <a href="#" aria-label="Twitter"><i class="ph ph-twitter-logo"></i></a>
+            <a href="#" aria-label="YouTube"><i class="ph ph-youtube-logo"></i></a>
+          </div>
+        </div>
+        <div class="footer-links">
+          <h4>Explore</h4>
+          <a href="menu.html">Our Menu</a>
+          <a href="about.html">Our Story</a>
+          <a href="chefs.html">Our Chefs</a>
+          <a href="gallery.html">Gallery</a>
+          <a href="blog.html">Blog</a>
+        </div>
+        <div class="footer-links">
+          <h4>Services</h4>
+          <a href="reservation.html">Reservations</a>
+          <a href="private-dining.html">Private Dining</a>
+          <a href="events.html">Events</a>
+          <a href="catering.html">Catering</a>
+          <a href="careers.html">Careers</a>
+        </div>
+        <div class="footer-links">
+          <h4>Information</h4>
+          <a href="locations.html">Locations</a>
+          <a href="franchise.html">Franchise</a>
+          <a href="faq.html">FAQ</a>
+          <a href="privacy-policy.html">Privacy Policy</a>
+          <a href="terms.html">Terms</a>
+        </div>
+        <div>
+          <h4>Contact</h4>
+          <ul class="footer-contact">
+            <li><i class="ph ph-map-pin"></i> Zuru Zuru, Delhi, India 110049</li>
+            <li><i class="ph ph-phone"></i> +91 11 4052 7373</li>
+            <li><i class="ph ph-envelope"></i> hello@zuruzuru.in</li>
+          </ul>
+          <h4 style="margin-top:2rem;">Hours</h4>
+          <ul class="footer-hours">
+              <li style="flex-direction:column; align-items:flex-start; margin-bottom:10px;">
+                <span style="color:var(--clr-primary); font-weight:600; margin-bottom:5px;">1:00 PM - 4:00 PM & 7:00 PM - 10:30 PM</span>
+                <span style="font-size:0.85rem; color:#888;">Lunch & Dinner (Full Menu)</span>
+              </li>
+              <li style="flex-direction:column; align-items:flex-start;">
+                <span style="color:var(--clr-primary); font-weight:600; margin-bottom:5px;">4:00 PM - 7:00 PM</span>
+                <span style="font-size:0.85rem; color:#888;">Tempura, Gyoza & Cold Ramen</span>
+              </li>
+            </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 Zuru Zuru Izakaya. All Rights Reserved.</p>
+        <div class="footer-bottom-links">
+          <a href="privacy-policy.html">Privacy Policy</a>
+          <a href="terms.html">Terms of Service</a>
+          <a href="faq.html">FAQ</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+
+  <!-- Back to Top -->
+  <button class="back-to-top" aria-label="Back to top">
+    <i class="ph ph-caret-up"></i>
+  </button>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+

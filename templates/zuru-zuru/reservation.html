@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reservations | Zuru Zuru — A Ramen Diner</title>
+  
+  <!-- Phosphor Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- CSS Links -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/responsive.css">
+
+  <style>
+    /* Custom Styles for Reservation Page */
+    .reservation-wrap {
+      position: relative;
+      min-height: 100vh;
+      background: url('images/interior.png') center/cover no-repeat fixed;
+      display: flex;
+      align-items: center;
+    }
+
+    .reservation-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(17, 17, 17, 0.75);
+    }
+
+    .reservation-content {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      padding: 120px 5% 60px;
+    }
+
+    .reservation-card-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      background: #111111;
+      border-radius: 2px;
+      border: 1px solid rgba(201, 162, 39, 0.2);
+      overflow: hidden;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .reservation-form-side {
+      padding: 4rem;
+      background: #111111;
+    }
+
+    .reservation-form-side h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 3rem;
+      color: #C9A227;
+      margin-bottom: 0.5rem;
+    }
+
+    .reservation-form-side .subtitle {
+      color: #aaa;
+      margin-bottom: 3rem;
+      font-size: 1.1rem;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .form-group label {
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+      color: #F7F3ED;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .form-group input, 
+    .form-group select, 
+    .form-group textarea {
+      padding: 0.8rem 0;
+      border: none;
+      border-bottom: 1px solid #333;
+      background: transparent;
+      outline: none;
+      font-family: var(--ff-body);
+      font-size: 1.1rem;
+      color: #F7F3ED;
+      transition: border-color var(--dur-fast) ease;
+    }
+
+    .form-group select option {
+      background: #111;
+      color: #F7F3ED;
+    }
+
+    .form-group input:focus, 
+    .form-group select:focus, 
+    .form-group textarea:focus {
+      border-bottom-color: #C9A227;
+    }
+
+    .form-submit {
+      margin-top: 1rem;
+    }
+
+    .reservation-info-side {
+      background: linear-gradient(rgba(17, 17, 17, 0.85), rgba(17, 17, 17, 0.95)), url('images/hero_sushi.png') center/cover;
+      padding: 4rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      border-left: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .reservation-info-side h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.2rem;
+      margin-bottom: 2.5rem;
+      color: #C9A227;
+      display: inline-block;
+      padding-bottom: 0.5rem;
+    }
+
+    .info-block {
+      display: flex;
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .info-block i {
+      font-size: 2rem;
+      color: #C9A227;
+      margin-top: 0.2rem;
+    }
+
+    .info-block h4 {
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+      color: #F7F3ED;
+      font-weight: 500;
+    }
+
+    .info-block p {
+      color: #aaa;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+    
+    /* Success Message styling */
+      #reservationSuccess {
+        text-align: center;
+        padding: 4rem 2rem;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+      }
+      #reservationSuccess i {
+        font-size: 5rem;
+        color: #C9A227;
+        margin-bottom: 1.5rem;
+      }
+      #reservationSuccess h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.2rem;
+      color: #C9A227; margin-bottom: 1rem; }
+    #reservationSuccess p {
+      color: #aaa; font-size: 1.1rem; margin-bottom: 2rem; }
+
+    .error-text {
+      color: #d32f2f;
+      font-size: 0.8rem;
+      margin-top: 0.3rem;
+      display: none;
+    }
+
+    @media (max-width: 900px) {
+      .reservation-card-grid {
+        grid-template-columns: 1fr;
+      }
+      .reservation-form-side {
+        padding: 2.5rem 1.5rem;
+      }
+      .reservation-info-side {
+        padding: 2.5rem 1.5rem;
+        border-left: none;
+        border-top: 1px solid #eee;
+      }
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Preloader -->
+  <div class="preloader">
+    <img src="zuruzuru_logo.png" alt="Loading" class="preloader-logo">
+    <div class="preloader-bar"></div>
+  </div>
+
+  <!-- Scroll Progress -->
+  <div class="scroll-progress"></div>
+
+  <!-- Header -->
+  <header class="header header-inner">
+    <div class="nav-container">
+      <a href="index.html" class="logo">
+        <img src="zuruzuru_logo.png" alt="Zuru Zuru Izakaya">
+        <span class="brand-name">Zuru Zuru</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li>
+          <a href="menu.html">Menu <i class="ph-bold ph-caret-down" style="font-size:0.7rem;"></i></a>
+          <ul class="nav-dropdown">
+            <li><a href="menu.html?location=delhi">Delhi Menu</a></li>
+            <li><a href="menu.html?location=gurugram">Gurugram Menu</a></li>
+          </ul>
+        </li>
+        <li><a href="about.html">Our Story</a></li>
+        <li><a href="chefs.html">Chefs</a></li>
+        <li><a href="gallery.html">Gallery</a></li>
+        <li><a href="reservation.html" class="active">Reservations</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+      <div class="nav-right">
+        <a href="reservation.html" class="btn btn-primary btn-sm"><span>Reserve</span></a>
+        <div class="hamburger">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu">
+    <a href="index.html">Home</a>
+    <a href="menu.html">Menu</a>
+    <a href="about.html">Our Story</a>
+    <a href="chefs.html">Chefs</a>
+    <a href="gallery.html">Gallery</a>
+    <a href="reservation.html" class="active">Reservations</a>
+    <a href="private-dining.html">Private Dining</a>
+    <a href="events.html">Events</a>
+    <a href="blog.html">Blog</a>
+    <a href="contact.html">Contact</a>
+  </div>
+
+  <main>
+    <section class="reservation-wrap">
+      <div class="reservation-overlay"></div>
+      
+      <div class="reservation-content reveal">
+        <div class="reservation-card-grid">
+          
+          <!-- Left side: Form -->
+          <div class="reservation-form-side">
+            
+            <div id="formContainer">
+              <h2>Book a Table</h2>
+              <p class="subtitle">Join us for an unforgettable dining experience.</p>
+              
+              <form id="reservationForm" novalidate>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label for="resName">Full Name</label>
+                    <input type="text" id="resName" name="resName" placeholder="e.g. John Doe" required>
+                    <span class="error-text">Please enter your full name.</span>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="resPhone">Phone Number</label>
+                    <input type="tel" id="resPhone" name="resPhone" placeholder="e.g. +91 9876543210" required>
+                    <span class="error-text">Please enter a valid phone number.</span>
+                  </div>
+                  
+                  <div class="form-group full-width">
+                    <label for="resEmail">Email Address</label>
+                    <input type="email" id="resEmail" name="resEmail" placeholder="e.g. john@example.com" required>
+                    <span class="error-text">Please enter a valid email address.</span>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="resGuests">Number of Guests</label>
+                    <select id="resGuests" name="resGuests" required>
+                      <option value="" disabled selected>Select...</option>
+                      <option value="1">1 Person</option>
+                      <option value="2">2 People</option>
+                      <option value="3">3 People</option>
+                      <option value="4">4 People</option>
+                      <option value="5">5 People</option>
+                      <option value="6">6 People</option>
+                      <option value="7">7 People</option>
+                      <option value="8+">8+ People (Contact Us)</option>
+                    </select>
+                    <span class="error-text">Please select number of guests.</span>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="resOccasion">Occasion (Optional)</label>
+                    <select id="resOccasion" name="resOccasion">
+                      <option value="none">Standard Dining</option>
+                      <option value="birthday">Birthday</option>
+                      <option value="anniversary">Anniversary</option>
+                      <option value="business">Business Meal</option>
+                      <option value="date">Date Night</option>
+                    </select>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="resDate">Date</label>
+                    <input type="date" id="resDate" name="resDate" required>
+                    <span class="error-text">Please select a valid date.</span>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="resTime">Time</label>
+                    <select id="resTime" name="resTime" required>
+                      <option value="" disabled selected>Select...</option>
+                      <optgroup label="Lunch">
+                        <option value="12:00">12:00 PM</option>
+                        <option value="12:30">12:30 PM</option>
+                        <option value="13:00">1:00 PM</option>
+                        <option value="13:30">1:30 PM</option>
+                        <option value="14:00">2:00 PM</option>
+                      </optgroup>
+                      <optgroup label="Dinner">
+                        <option value="18:30">6:30 PM</option>
+                        <option value="19:00">7:00 PM</option>
+                        <option value="19:30">7:30 PM</option>
+                        <option value="20:00">8:00 PM</option>
+                        <option value="20:30">8:30 PM</option>
+                        <option value="21:00">9:00 PM</option>
+                        <option value="21:30">9:30 PM</option>
+                      </optgroup>
+                    </select>
+                    <span class="error-text">Please select a time.</span>
+                  </div>
+                  
+                  <div class="form-group full-width">
+                    <label for="resRequests">Special Requests (Optional)</label>
+                    <textarea id="resRequests" name="resRequests" rows="3" placeholder="Dietary restrictions, high chair needed, etc."></textarea>
+                  </div>
+                  
+                  <div class="form-submit">
+                    <button type="submit" class="btn btn-primary"><span>Confirm Reservation</span></button>
+                  </div>
+                </div>
+              </form>
+            </div>
+
+            <!-- Success Message Container -->
+            <div id="reservationSuccess">
+              <i class="ph-fill ph-check-circle"></i>
+              <h3>Reservation Request Sent!</h3>
+              <p>Thank you for choosing Zuru Zuru. We have received your request and will send a confirmation email shortly.</p>
+              <button class="btn btn-outline" onclick="resetForm()">Make Another Reservation</button>
+            </div>
+            
+          </div>
+          
+          <!-- Right side: Info -->
+          <div class="reservation-info-side">
+            <h3>Details</h3>
+            
+            <div class="info-block">
+              <i class="ph ph-phone"></i>
+              <div>
+                <h4>Phone Reservations</h4>
+                <p>Prefer to speak with us? Call us at <br><strong>+91 11 4052 7373</strong> between 10:00 AM and 10:00 PM daily.</p>
+              </div>
+            </div>
+            
+            <div class="info-block">
+              <i class="ph ph-users"></i>
+              <div>
+                <h4>Large Parties & Events</h4>
+                <p>For groups of 8 or more, or private dining inquiries, please contact our events team directly to discuss customized set menus.</p>
+              </div>
+            </div>
+            
+            <div class="info-block">
+              <i class="ph ph-clock"></i>
+              <div>
+                <h4>Cancellation Policy</h4>
+                <p>We kindly ask for at least 24 hours notice for any cancellations or adjustments to your reservation to help us accommodate other guests.</p>
+              </div>
+            </div>
+            
+            <div class="info-block" style="margin-bottom:0;">
+              <i class="ph ph-map-pin"></i>
+              <div>
+                <h4>Location</h4>
+                <p>Zuru Zuru, Delhi, India 110049</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <section class="nl-section section-alt">
+    <div class="container reveal">
+      <div class="section-subtitle" style="justify-content:center;">Stay Connected</div>
+      <h2 class="heading-section text-center">Join Our Inner Circle</h2>
+      <p class="section-desc text-center" style="margin:0 auto 2rem;">Receive exclusive recipes, event invitations, and special offers directly in your inbox. No spam, just Japanese inspiration.</p>
+      <div class="nl-form">
+        <input type="email" placeholder="Enter your email address" aria-label="Email address">
+        <button type="button">Subscribe</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+ <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-about">
+          <div class="footer-brand-container">
+            <img src="zuruzuru_logo.png" alt="Zuru Zuru" class="footer-logo">
+            <span class="brand-name">Zuru Zuru</span>
+          </div>
+          <p>A premium Japanese Izakaya experience bringing the authentic flavours of Tokyo to New Delhi. Every dish tells a story of tradition, passion, and culinary excellence.</p>
+          <div class="footer-social">
+            <a href="https://www.instagram.com/zuruzuru.in/?hl=en" aria-label="Instagram" target="_blank"><i class="ph ph-instagram-logo"></i></a>
+            <a href="#" aria-label="Facebook"><i class="ph ph-facebook-logo"></i></a>
+            <a href="#" aria-label="Twitter"><i class="ph ph-twitter-logo"></i></a>
+            <a href="#" aria-label="YouTube"><i class="ph ph-youtube-logo"></i></a>
+          </div>
+        </div>
+        <div class="footer-links">
+          <h4>Explore</h4>
+          <a href="menu.html">Our Menu</a>
+          <a href="about.html">Our Story</a>
+          <a href="chefs.html">Our Chefs</a>
+          <a href="gallery.html">Gallery</a>
+          <a href="blog.html">Blog</a>
+        </div>
+        <div class="footer-links">
+          <h4>Services</h4>
+          <a href="reservation.html">Reservations</a>
+          <a href="private-dining.html">Private Dining</a>
+          <a href="events.html">Events</a>
+          <a href="catering.html">Catering</a>
+          <a href="careers.html">Careers</a>
+        </div>
+        <div class="footer-links">
+          <h4>Information</h4>
+          <a href="locations.html">Locations</a>
+          <a href="franchise.html">Franchise</a>
+          <a href="faq.html">FAQ</a>
+          <a href="privacy-policy.html">Privacy Policy</a>
+          <a href="terms.html">Terms</a>
+        </div>
+        <div>
+          <h4>Contact</h4>
+          <ul class="footer-contact">
+            <li><i class="ph ph-map-pin"></i> Zuru Zuru, Delhi, India 110049</li>
+            <li><i class="ph ph-phone"></i> +91 11 4052 7373</li>
+            <li><i class="ph ph-envelope"></i> hello@zuruzuru.in</li>
+          </ul>
+          <h4 style="margin-top:2rem;">Hours</h4>
+          <ul class="footer-hours">
+              <li style="flex-direction:column; align-items:flex-start; margin-bottom:10px;">
+                <span style="color:var(--clr-primary); font-weight:600; margin-bottom:5px;">1:00 PM - 4:00 PM & 7:00 PM - 10:30 PM</span>
+                <span style="font-size:0.85rem; color:#888;">Lunch & Dinner (Full Menu)</span>
+              </li>
+              <li style="flex-direction:column; align-items:flex-start;">
+                <span style="color:var(--clr-primary); font-weight:600; margin-bottom:5px;">4:00 PM - 7:00 PM</span>
+                <span style="font-size:0.85rem; color:#888;">Tempura, Gyoza & Cold Ramen</span>
+              </li>
+            </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 Zuru Zuru Izakaya. All Rights Reserved.</p>
+        <div class="footer-bottom-links">
+          <a href="privacy-policy.html">Privacy Policy</a>
+          <a href="terms.html">Terms of Service</a>
+          <a href="faq.html">FAQ</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Back to Top -->
+  <button class="back-to-top" aria-label="Back to top">
+    <i class="ph ph-caret-up"></i>
+  </button>
+
+  <!-- JS Links -->
+  <script src="js/main.js"></script>
+  
+  <!-- Form Validation JS -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('reservationForm');
+      const formContainer = document.getElementById('formContainer');
+      const successMessage = document.getElementById('reservationSuccess');
+      
+      // Set minimum date to today
+      const dateInput = document.getElementById('resDate');
+      const today = new Date().toISOString().split('T')[0];
+      dateInput.setAttribute('min', today);
+
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        let isValid = true;
+        
+        // Reset previous error messages
+        const errorTexts = form.querySelectorAll('.error-text');
+        errorTexts.forEach(span => span.style.display = 'none');
+        
+        const inputs = form.querySelectorAll('input[required], select[required]');
+        inputs.forEach(input => {
+          input.style.borderColor = '#ddd';
+          if (!input.value.trim()) {
+            isValid = false;
+            input.style.borderColor = '#d32f2f';
+            const errorText = input.nextElementSibling;
+            if(errorText && errorText.classList.contains('error-text')) {
+              errorText.style.display = 'block';
+            }
+          }
+        });
+        
+        // Basic Email validation
+        const emailInput = document.getElementById('resEmail');
+        if (emailInput.value && !emailInput.value.includes('@')) {
+            isValid = false;
+            emailInput.style.borderColor = '#d32f2f';
+            const errorText = emailInput.nextElementSibling;
+            if(errorText && errorText.classList.contains('error-text')) {
+              errorText.style.display = 'block';
+            }
+        }
+        
+        if (isValid) {
+          // Simulate API call and success
+          formContainer.style.display = 'none';
+          successMessage.style.display = 'flex';
+          
+          // Confetti or visual flair could go here
+        }
+      });
+      
+      // Reset form function for the "Make Another Reservation" button
+      window.resetForm = function() {
+        form.reset();
+        successMessage.style.display = 'none';
+        formContainer.style.display = 'block';
+      };
+    });
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+

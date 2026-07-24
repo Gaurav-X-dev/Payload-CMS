@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catering Services - Zuru Zuru Izakaya</title>
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/responsive.css">
+
+    <style>
+    .hero-section {
+        position: relative;
+        height: 60vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        background: linear-gradient(rgba(17, 17, 17, 0.7), rgba(17, 17, 17, 0.7)), url('images/hero_sushi.png') center/cover;
+        color: #F7F3ED;
+        padding-top: 80px;
+    }
+    .hero-title {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        font-family: 'Playfair Display', serif;
+    }
+    .hero-subtitle {
+        font-size: 1.2rem;
+        color: #D9C5A0;
+    }
+    .catering-types {
+        padding: 100px 5%;
+        background-color: #F7F3ED;
+    }
+    .type-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 3rem;
+        margin-top: 4rem;
+    }
+    .type-card {
+        position: relative;
+        border-radius: 8px;
+        overflow: hidden;
+        height: 400px;
+        display: flex;
+        align-items: flex-end;
+    }
+    .type-img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: 1;
+        transition: transform 0.5s ease;
+    }
+    .type-card:hover .type-img {
+        transform: scale(1.05);
+    }
+    .type-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to top, rgba(17, 17, 17, 0.95), rgba(17, 17, 17, 0.2));
+        z-index: 2;
+    }
+    .type-content {
+        position: relative;
+        z-index: 3;
+        padding: 3rem;
+        color: #fff;
+    }
+    .type-content h3 {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        color: #D9C5A0;
+        font-family: 'Playfair Display', serif;
+    }
+    .type-content p {
+        font-size: 1rem;
+        line-height: 1.6;
+        color: #eee;
+    }
+    .how-it-works {
+        padding: 100px 5%;
+        background-color: #111111;
+        color: #F7F3ED;
+        text-align: center;
+    }
+    .steps-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 2rem;
+        margin-top: 4rem;
+    }
+    .step-card {
+        padding: 2rem;
+        position: relative;
+    }
+    .step-card:not(:last-child)::after {
+        content: '';
+        position: absolute;
+        top: 3.5rem;
+        right: -1rem;
+        width: 2rem;
+        height: 2px;
+        background: #333;
+    }
+    .step-icon {
+        font-size: 3rem;
+        color: #8B1A1A;
+        margin-bottom: 1.5rem;
+    }
+    .step-card h4 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        color: #C9A227;
+        font-family: 'Playfair Display', serif;
+    }
+    .step-card p {
+        color: #aaa;
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+    .menu-booking {
+        padding: 100px 5%;
+        background-color: #fff;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+    }
+    .sample-menu h3 {
+        font-size: 2rem;
+        color: #8B1A1A;
+        margin-bottom: 2rem;
+        font-family: 'Playfair Display', serif;
+    }
+    .menu-category {
+        margin-bottom: 2.5rem;
+    }
+    .menu-category h4 {
+        color: #111;
+        font-size: 1.2rem;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 0.5rem;
+        margin-bottom: 1.5rem;
+        font-family: 'Playfair Display', serif;
+    }
+    .menu-item {
+        margin-bottom: 1rem;
+    }
+    .menu-item-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.3rem;
+    }
+    .menu-item-name {
+        font-weight: 600;
+        color: #111;
+    }
+    .menu-item-desc {
+        font-size: 0.9rem;
+        color: #666;
+    }
+    .booking-form {
+        background: #F7F3ED;
+        padding: 3rem;
+        border-radius: 8px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    }
+    .booking-form h3 {
+        font-size: 2rem;
+        color: #8B1A1A;
+        margin-bottom: 2rem;
+        font-family: 'Playfair Display', serif;
+    }
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: #111;
+        font-weight: 500;
+    }
+    .form-control {
+        width: 100%;
+        padding: 1rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        background: #fff;
+        font-family: inherit;
+    }
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
+    @media (max-width: 992px) {
+        .type-grid, .menu-booking { grid-template-columns: 1fr; }
+        .steps-grid { grid-template-columns: repeat(2, 1fr); }
+        .step-card:not(:last-child)::after { display: none; }
+    }
+    @media (max-width: 576px) {
+        .steps-grid { grid-template-columns: 1fr; }
+        .type-content { padding: 1.5rem; }
+        .form-row { grid-template-columns: 1fr; }
+        .booking-form { padding: 2rem; }
+    }
+    </style>
+</head>
+<body>
+    <!-- Preloader -->
+    <div class="preloader">
+        <img src="zuruzuru_logo.png" alt="Loading" class="preloader-logo">
+        <div class="preloader-bar"></div>
+    </div>
+
+    <!-- Scroll Progress -->
+    <div class="scroll-progress"></div>
+
+    <!-- Header -->
+    <header class="header header-inner">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+        <img src="zuruzuru_logo.png" alt="Zuru Zuru Izakaya">
+        <span class="brand-name">Zuru Zuru</span>
+      </a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li>
+          <a href="menu.html">Menu <i class="ph-bold ph-caret-down" style="font-size:0.7rem;"></i></a>
+          <ul class="nav-dropdown">
+            <li><a href="menu.html?location=delhi">Delhi Menu</a></li>
+            <li><a href="menu.html?location=gurugram">Gurugram Menu</a></li>
+          </ul>
+        </li>
+                <li><a href="about.html">Our Story</a></li>
+                <li><a href="chefs.html">Chefs</a></li>
+                <li><a href="gallery.html">Gallery</a></li>
+                <li><a href="reservation.html">Reservations</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+            <div class="nav-right">
+                <a href="reservation.html" class="btn btn-primary btn-sm"><span>Reserve</span></a>
+                <div class="hamburger">
+                    <span></span><span></span><span></span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu">
+        <a href="index.html">Home</a>
+        <a href="menu.html">Menu</a>
+        <a href="about.html">Our Story</a>
+        <a href="chefs.html">Chefs</a>
+        <a href="gallery.html">Gallery</a>
+        <a href="reservation.html">Reservations</a>
+        <a href="private-dining.html">Private Dining</a>
+        <a href="events.html">Events</a>
+        <a href="catering.html" class="active">Catering</a>
+        <a href="blog.html">Blog</a>
+        <a href="contact.html">Contact</a>
+    </div>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Page Hero -->
+        <section class="hero-section">
+            <div class="hero-content reveal">
+                <h1 class="hero-title">Catering Services</h1>
+                <p class="hero-subtitle">Bring the exceptional taste of Zuru Zuru to your chosen venue</p>
+            </div>
+        </section>
+
+        <!-- Catering Types -->
+        <section class="catering-types">
+            <div class="section-header text-center reveal">
+                <div class="section-subtitle">Our Expertise</div>
+                <h2>Catered Events</h2>
+                <p class="section-desc" style="margin: 0 auto;">We offer bespoke catering solutions tailored perfectly to the scale and style of your gathering.</p>
+            </div>
+            <div class="type-grid">
+                <div class="type-card reveal-left">
+                    <img src="images/chef.png" alt="Wedding Catering" class="type-img">
+                    <div class="type-overlay"></div>
+                    <div class="type-content">
+                        <h3>Wedding Receptions</h3>
+                        <p>Make your special day unforgettable with a spectacular feast of premium sushi, elegant izakaya dishes, and live action stations that will dazzle your guests.</p>
+                    </div>
+                </div>
+                <div class="type-card reveal-right">
+                    <img src="images/hero_sushi.png" alt="Corporate Events" class="type-img">
+                    <div class="type-overlay"></div>
+                    <div class="type-content">
+                        <h3>Corporate Events</h3>
+                        <p>From executive board lunches to grand gala dinners, our corporate catering ensures a sophisticated and smooth dining experience for your business associates.</p>
+                    </div>
+                </div>
+                <div class="type-card reveal-left delay-1">
+                    <img src="images/interior.png" alt="Birthday Parties" class="type-img">
+                    <div class="type-overlay"></div>
+                    <div class="type-content">
+                        <h3>Birthday Celebrations</h3>
+                        <p>Turn your party into a lively culinary celebration. We provide interactive food stations, customized sake menus, and vibrant flavors for all ages.</p>
+                    </div>
+                </div>
+                <div class="type-card reveal-right delay-1">
+                    <img src="images/hero_sushi.png" alt="Outdoor Events" class="type-img">
+                    <div class="type-overlay"></div>
+                    <div class="type-content">
+                        <h3>Outdoor Gatherings</h3>
+                        <p>Enjoy our robust yakitori grills and refreshing Japanese salads in the open air. Perfect for summer garden parties and outdoor retreats.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- How It Works -->
+        <section class="how-it-works">
+            <div class="section-header text-center reveal">
+                <div class="section-subtitle">The Process</div>
+                <h2 style="color: #F7F3ED;">How It Works</h2>
+            </div>
+            <div class="steps-grid">
+                <div class="step-card reveal delay-1">
+                    <div class="step-icon"><i class="ph ph-chat-circle-text"></i></div>
+                    <h4>1. Consultation</h4>
+                    <p>Contact us to discuss your event size, dietary requirements, and specific vision.</p>
+                </div>
+                <div class="step-card reveal delay-2">
+                    <div class="step-icon"><i class="ph ph-fork-knife"></i></div>
+                    <h4>2. Tasting & Menu</h4>
+                    <p>Experience a private tasting session and finalize your bespoke menu selection.</p>
+                </div>
+                <div class="step-card reveal delay-3">
+                    <div class="step-icon"><i class="ph ph-calendar-check"></i></div>
+                    <h4>3. Preparation</h4>
+                    <p>We coordinate logistics, staffing, and equipment with your venue managers.</p>
+                </div>
+                <div class="step-card reveal delay-4">
+                    <div class="step-icon"><i class="ph ph-champagne"></i></div>
+                    <h4>4. Execution</h4>
+                    <p>Relax and enjoy your event as our expert team delivers a flawless culinary experience.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Menu & Booking Form -->
+        <section class="menu-booking" id="book-catering">
+            <div class="sample-menu reveal-left">
+                <h3>Sample Catering Menu</h3>
+                <p style="margin-bottom: 2rem; color: #555;">This is a representative selection. We customize menus for every event.</p>
+                
+                <div class="menu-category">
+                    <h4>Hors d'Oeuvres</h4>
+                    <div class="menu-item">
+                        <div class="menu-item-header">
+                            <span class="menu-item-name">Wagyu Beef Tataki</span>
+                        </div>
+                        <div class="menu-item-desc">Ponzu, crispy garlic, microgreens</div>
+                    </div>
+                    <div class="menu-item">
+                        <div class="menu-item-header">
+                            <span class="menu-item-name">Spicy Tuna Tartare</span>
+                        </div>
+                        <div class="menu-item-desc">Served on crispy rice cakes</div>
+                    </div>
+                    <div class="menu-item">
+                        <div class="menu-item-header">
+                            <span class="menu-item-name">Mushroom Gyoza (V)</span>
+                        </div>
+                        <div class="menu-item-desc">Truffle oil, scallion soy dipping sauce</div>
+                    </div>
+                </div>
+
+                <div class="menu-category">
+                    <h4>Live Stations</h4>
+                    <div class="menu-item">
+                        <div class="menu-item-header">
+                            <span class="menu-item-name">Premium Sushi Bar</span>
+                        </div>
+                        <div class="menu-item-desc">Chef-prepared nigiri and signature rolls</div>
+                    </div>
+                    <div class="menu-item">
+                        <div class="menu-item-header">
+                            <span class="menu-item-name">Robata Grill</span>
+                        </div>
+                        <div class="menu-item-desc">Assorted yakitori skewers, glazed with tare</div>
+                    </div>
+                </div>
+
+                <div class="menu-category">
+                    <h4>Main Courses</h4>
+                    <div class="menu-item">
+                        <div class="menu-item-header">
+                            <span class="menu-item-name">Miso Black Cod</span>
+                        </div>
+                        <div class="menu-item-desc">Saikyo miso marinade, hajikami ginger</div>
+                    </div>
+                    <div class="menu-item">
+                        <div class="menu-item-header">
+                            <span class="menu-item-name">Braised Pork Belly (Kakuni)</span>
+                        </div>
+                        <div class="menu-item-desc">Slow-cooked in soy and daikon</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="booking-form reveal-right">
+                <h3>Book Catering</h3>
+                <form action="#" method="POST">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="c_name">Full Name</label>
+                            <input type="text" id="c_name" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="c_company">Company (Optional)</label>
+                            <input type="text" id="c_company" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="c_email">Email</label>
+                            <input type="email" id="c_email" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="c_phone">Phone</label>
+                            <input type="tel" id="c_phone" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="c_date">Event Date</label>
+                            <input type="date" id="c_date" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="c_guests">Est. Guest Count</label>
+                            <input type="number" id="c_guests" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="c_location">Event Location/Venue</label>
+                        <input type="text" id="c_location" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="c_details">Event Details & Requests</label>
+                        <textarea id="c_details" class="form-control" rows="4" placeholder="Tell us about the occasion, preferred catering style, and any specific requirements..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Request Proposal</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+      <!-- --- NEWSLETTER --- -->
+  <section class="nl-section section-alt">
+    <div class="container reveal">
+      <div class="section-subtitle" style="justify-content:center;">Stay Connected</div>
+      <h2 class="heading-section text-center">Join Our Inner Circle</h2>
+      <p class="section-desc text-center" style="margin:0 auto 2rem;">Receive exclusive recipes, event invitations, and special offers directly in your inbox. No spam, just Japanese inspiration.</p>
+      <div class="nl-form">
+        <input type="email" placeholder="Enter your email address" aria-label="Email address">
+        <button type="button">Subscribe</button>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-about">
+          <div class="footer-brand-container">
+            <img src="zuruzuru_logo.png" alt="Zuru Zuru" class="footer-logo">
+            <span class="brand-name">Zuru Zuru</span>
+          </div>
+          <p>A premium Japanese Izakaya experience bringing the authentic flavours of Tokyo to New Delhi. Every dish tells a story of tradition, passion, and culinary excellence.</p>
+          <div class="footer-social">
+            <a href="https://www.instagram.com/zuruzuru.in/?hl=en" aria-label="Instagram" target="_blank"><i class="ph ph-instagram-logo"></i></a>
+            <a href="#" aria-label="Facebook"><i class="ph ph-facebook-logo"></i></a>
+            <a href="#" aria-label="Twitter"><i class="ph ph-twitter-logo"></i></a>
+            <a href="#" aria-label="YouTube"><i class="ph ph-youtube-logo"></i></a>
+          </div>
+        </div>
+        <div class="footer-links">
+          <h4>Explore</h4>
+          <a href="menu.html">Our Menu</a>
+          <a href="about.html">Our Story</a>
+          <a href="chefs.html">Our Chefs</a>
+          <a href="gallery.html">Gallery</a>
+          <a href="blog.html">Blog</a>
+        </div>
+        <div class="footer-links">
+          <h4>Services</h4>
+          <a href="reservation.html">Reservations</a>
+          <a href="private-dining.html">Private Dining</a>
+          <a href="events.html">Events</a>
+          <a href="catering.html">Catering</a>
+          <a href="careers.html">Careers</a>
+        </div>
+        <div class="footer-links">
+          <h4>Information</h4>
+          <a href="locations.html">Locations</a>
+          <a href="franchise.html">Franchise</a>
+          <a href="faq.html">FAQ</a>
+          <a href="privacy-policy.html">Privacy Policy</a>
+          <a href="terms.html">Terms</a>
+        </div>
+        <div>
+          <h4>Contact</h4>
+          <ul class="footer-contact">
+            <li><i class="ph ph-map-pin"></i> Zuru Zuru, Delhi, India 110049</li>
+            <li><i class="ph ph-phone"></i> +91 11 4052 7373</li>
+            <li><i class="ph ph-envelope"></i> hello@zuruzuru.in</li>
+          </ul>
+          <h4 style="margin-top:2rem;">Hours</h4>
+          <ul class="footer-hours">
+              <li style="flex-direction:column; align-items:flex-start; margin-bottom:10px;">
+                <span style="color:var(--clr-primary); font-weight:600; margin-bottom:5px;">1:00 PM - 4:00 PM & 7:00 PM - 10:30 PM</span>
+                <span style="font-size:0.85rem; color:#888;">Lunch & Dinner (Full Menu)</span>
+              </li>
+              <li style="flex-direction:column; align-items:flex-start;">
+                <span style="color:var(--clr-primary); font-weight:600; margin-bottom:5px;">4:00 PM - 7:00 PM</span>
+                <span style="font-size:0.85rem; color:#888;">Tempura, Gyoza & Cold Ramen</span>
+              </li>
+            </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 Zuru Zuru Izakaya. All Rights Reserved.</p>
+        <div class="footer-bottom-links">
+          <a href="privacy-policy.html">Privacy Policy</a>
+          <a href="terms.html">Terms of Service</a>
+          <a href="faq.html">FAQ</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+
+    <!-- Back to Top -->
+    <button class="back-to-top" aria-label="Back to top">
+        <i class="ph ph-caret-up"></i>
+    </button>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+

@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Our Story - Zuru Zuru Izakaya</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <style>
+    /* Specific styles for about page */
+    .hero-about {
+      height: 60vh;
+      background: linear-gradient(rgba(17, 17, 17, 0.7), rgba(17, 17, 17, 0.7)), url('images/gyoza_tempura.png') center/cover;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: #F7F3ED;
+    }
+    .hero-about h1 {
+      font-size: 4rem;
+      color: #D9C5A0;
+      margin-bottom: 1rem;
+    }
+    .breadcrumb {
+      font-size: 0.9rem;
+      color: #C9A227;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    .breadcrumb a {
+      color: #F7F3ED;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    .breadcrumb a:hover {
+      color: #C9A227;
+    }
+    .history-section {
+      padding: 100px 5%;
+      background-color: #F7F3ED;
+    }
+    .history-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .history-img-wrapper {
+      position: relative;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    }
+    .history-img-wrapper img {
+      width: 100%;
+      height: 600px;
+      object-fit: cover;
+      display: block;
+    }
+    .history-content h2 {
+      font-size: 3rem;
+      color: #8B1A1A;
+      margin-bottom: 1.5rem;
+    }
+    .history-content p {
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: #333;
+      margin-bottom: 1.5rem;
+    }
+    
+    .mission-vision {
+      padding: 100px 5%;
+      background-color: #111111;
+      color: #F7F3ED;
+    }
+    .mv-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .mv-card {
+      background-color: #1a1a1a;
+      padding: 4rem;
+      border-radius: 8px;
+      text-align: center;
+      border-bottom: 4px solid #8B1A1A;
+      transition: transform 0.3s ease;
+    }
+    .mv-card:hover {
+      transform: translateY(-10px);
+    }
+    .mv-card i {
+      font-size: 4rem;
+      color: #C9A227;
+      margin-bottom: 1.5rem;
+    }
+    .mv-card h3 {
+      font-size: 2rem;
+      color: #D9C5A0;
+      margin-bottom: 1.5rem;
+    }
+    .mv-card p {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      color: #ccc;
+    }
+    
+    .philosophy-section {
+      padding: 100px 5%;
+      background-color: #F7F3ED;
+      text-align: center;
+    }
+    .section-header {
+      margin-bottom: 3rem;
+    }
+    .section-subtitle {
+      color: #C9A227;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+    .phil-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 3rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      margin-top: 4rem;
+    }
+    .phil-card {
+      background: #fff;
+      padding: 3rem;
+      border-radius: 8px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+      transition: transform 0.3s ease;
+    }
+    .phil-card:hover {
+      transform: translateY(-10px);
+    }
+    .phil-card h3 {
+      font-size: 1.8rem;
+      color: #8B1A1A;
+      margin-bottom: 1rem;
+    }
+    .phil-card h4 {
+      font-size: 1.2rem;
+      color: #C9A227;
+      margin-bottom: 1rem;
+      font-style: italic;
+    }
+    .phil-card p {
+      color: #555;
+      line-height: 1.6;
+    }
+    
+    .timeline-section {
+      padding: 100px 5%;
+      background-color: #111111;
+      color: #F7F3ED;
+    }
+    .timeline {
+      max-width: 800px;
+      margin: 4rem auto 0;
+      position: relative;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      width: 2px;
+      background: #8B1A1A;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      margin-left: -1px;
+    }
+    .timeline-item {
+      padding: 20px 40px;
+      position: relative;
+      background: inherit;
+      width: 50%;
+      box-sizing: border-box;
+    }
+    .timeline-item::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      right: -10px;
+      background: #C9A227;
+      border: 4px solid #111111;
+      top: 25px;
+      border-radius: 50%;
+      z-index: 1;
+    }
+    .left {
+      left: 0;
+    }
+    .right {
+      left: 50%;
+    }
+    .right::after {
+      left: -10px;
+    }
+    .timeline-content {
+      padding: 20px;
+      background: #1a1a1a;
+      border-radius: 6px;
+    }
+    .timeline-content h3 {
+      color: #C9A227;
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .timeline-content h4 {
+      color: #D9C5A0;
+      margin-bottom: 1rem;
+    }
+    .timeline-content p {
+      color: #ccc;
+      line-height: 1.6;
+    }
+    
+    .achievements-section {
+      padding: 100px 5%;
+      background-color: #F7F3ED;
+      text-align: center;
+    }
+    .achievements-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2rem;
+      max-width: 1200px;
+      margin: 4rem auto 0;
+    }
+    .achievement-card {
+      text-align: center;
+      padding: 2.5rem 1.5rem;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+      transition: transform 0.3s ease;
+    }
+    .achievement-card:hover {
+      transform: translateY(-5px);
+    }
+    .achievement-card i {
+      font-size: 3rem;
+      color: #8B1A1A;
+      margin-bottom: 1rem;
+    }
+    .achievement-card h4 {
+      color: #111111;
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+    }
+    .achievement-card p {
+      color: #666;
+      font-size: 0.9rem;
+    }
+    
+    .team-section {
+      padding: 100px 5%;
+      background-color: #111111;
+      color: #F7F3ED;
+      text-align: center;
+    }
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 3rem;
+      max-width: 1200px;
+      margin: 4rem auto 0;
+    }
+    .team-card {
+      text-align: center;
+    }
+    .team-img {
+      width: 250px;
+      height: 250px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin: 0 auto 1.5rem;
+      border: 4px solid #8B1A1A;
+      transition: border-color 0.3s ease;
+    }
+    .team-card:hover .team-img {
+      border-color: #C9A227;
+    }
+    .team-card h3 {
+      color: #D9C5A0;
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .team-card p {
+      color: #C9A227;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-size: 0.9rem;
+    }
+    
+    .promise-section {
+      padding: 100px 5%;
+      background-color: #8B1A1A;
+      color: #F7F3ED;
+      text-align: center;
+    }
+    .promise-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2rem;
+      max-width: 1200px;
+      margin: 4rem auto 0;
+    }
+    .promise-card {
+      text-align: center;
+      padding: 2.5rem 1.5rem;
+      border: 1px solid rgba(217, 197, 160, 0.3);
+      border-radius: 8px;
+      background: rgba(0,0,0,0.1);
+      transition: background 0.3s ease;
+    }
+    .promise-card:hover {
+      background: rgba(0,0,0,0.2);
+    }
+    .promise-card i {
+      font-size: 3rem;
+      color: #D9C5A0;
+      margin-bottom: 1rem;
+    }
+    .promise-card h3 {
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+      color: #C9A227;
+    }
+    .promise-card p {
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: #F7F3ED;
+      opacity: 0.9;
+    }
+    
+    @media (max-width: 992px) {
+      .history-grid { grid-template-columns: 1fr; }
+      .timeline::before { left: 31px; }
+      .timeline-item { width: 100%; padding-left: 70px; padding-right: 25px; }
+      .timeline-item.right { left: 0; }
+      .timeline-item::after { left: 21px; }
+      .timeline-item.right::after { left: 21px; }
+      .achievements-grid, .promise-grid { grid-template-columns: repeat(2, 1fr); }
+      .team-grid, .phil-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .mv-grid { grid-template-columns: 1fr; }
+      .team-grid, .phil-grid { grid-template-columns: 1fr; }
+      .achievements-grid, .promise-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Preloader -->
+  <div class="preloader">
+    <img src="zuruzuru_logo.png" alt="Loading" class="preloader-logo">
+    <div class="preloader-bar"></div>
+  </div>
+
+  <!-- Scroll Progress -->
+  <div class="scroll-progress"></div>
+
+  <!-- Header -->
+  <header class="header header-inner">
+    <div class="nav-container">
+      <a href="index.html" class="logo">
+        <img src="zuruzuru_logo.png" alt="Zuru Zuru Izakaya">
+        <span class="brand-name">Zuru Zuru</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li>
+          <a href="menu.html">Menu <i class="ph-bold ph-caret-down" style="font-size:0.7rem;"></i></a>
+          <ul class="nav-dropdown">
+            <li><a href="menu.html?location=delhi">Delhi Menu</a></li>
+            <li><a href="menu.html?location=gurugram">Gurugram Menu</a></li>
+          </ul>
+        </li>
+        <li><a href="about.html" class="active">Our Story</a></li>
+        <li><a href="chefs.html">Chefs</a></li>
+        <li><a href="gallery.html">Gallery</a></li>
+        <li><a href="reservation.html">Reservations</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+      <div class="nav-right">
+        <a href="reservation.html" class="btn btn-primary btn-sm"><span>Reserve</span></a>
+        <div class="hamburger">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu">
+    <a href="index.html">Home</a>
+    <a href="menu.html">Menu</a>
+    <a href="about.html" class="active">Our Story</a>
+    <a href="chefs.html">Chefs</a>
+    <a href="gallery.html">Gallery</a>
+    <a href="reservation.html">Reservations</a>
+    <a href="private-dining.html">Private Dining</a>
+    <a href="events.html">Events</a>
+    <a href="blog.html">Blog</a>
+    <a href="contact.html">Contact</a>
+  </div>
+
+  <!-- PAGE HERO -->
+  <section class="hero-about reveal">
+    <div>
+      <h1>Our Story</h1>
+      <div class="breadcrumb">
+        <a href="index.html">Home</a> &nbsp;/&nbsp; Our Story
+      </div>
+    </div>
+  </section>
+
+  <!-- RESTAURANT HISTORY -->
+  <section class="history-section">
+    <div class="history-grid">
+      <div class="history-img-wrapper hover-zoom reveal-left">
+        <img src="images/hero_ramen.png" alt="Chef Kenji preparing ramen">
+      </div>
+      <div class="history-content reveal-right">
+        <span class="section-subtitle">Our Roots</span>
+        <h2>A Journey Begun in Tokyo</h2>
+        <p>Founded in 2015 by Chef Kenji Tanaka, Zuru Zuru Izakaya was born out of a profound passion for the spirited dining culture of Tokyo's alleyways. After spending 15 years mastering the intricate arts of Japanese cuisine in prestigious traditional kitchens, Chef Tanaka envisioned a space where uncompromising quality met a relaxed, communal atmosphere.</p>
+        <p>He returned with a singular mission: to introduce the true essence of an izakaya experience to our city. At Zuru Zuru, every bowl of ramen and every perfectly grilled skewer tells the story of a chef who believes that great food is an experience meant to be shared, loudly and joyfully.</p>
+        <p>Our journey is one of continuous exploration, blending centuries-old techniques with modern culinary sensibilities, ensuring that every guest experiences the unmistakable warmth of Japanese hospitality.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- MISSION & VISION -->
+  <section class="mission-vision">
+    <div class="mv-grid">
+      <div class="mv-card reveal delay-1">
+        <i class="ph ph-target"></i>
+        <h3>Our Mission</h3>
+        <p>To bring the authentic spirit of Tokyo's alleyway izakayas to our patrons by delivering unpretentious, flavor-packed dishes crafted with the finest ingredients and an unwavering dedication to tradition.</p>
+      </div>
+      <div class="mv-card reveal delay-2">
+        <i class="ph ph-eye"></i>
+        <h3>Our Vision</h3>
+        <p>To be recognized as Asia's most celebrated izakaya brand, redefining casual Japanese dining through continuous innovation, authentic hospitality, and a relentless pursuit of culinary excellence.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- JAPANESE PHILOSOPHY -->
+  <section class="philosophy-section">
+    <div class="section-header reveal">
+      <span class="section-subtitle">The Core Pillars</span>
+      <h2 style="font-size: 2.5rem; color: #111111; margin-bottom: 1rem;">Japanese Philosophy</h2>
+      <p style="color: #666; max-width: 600px; margin: 0 auto;">The guiding principles that shape every interaction and every dish at Zuru Zuru Izakaya.</p>
+    </div>
+    
+    <div class="phil-grid">
+      <div class="phil-card reveal delay-1">
+        <h3>Omotenashi</h3>
+        <h4>(Hospitality from the Heart)</h4>
+        <p>More than just service, Omotenashi is the anticipation of your needs before they arise. We welcome you not as a customer, but as an honored guest in our home, ensuring your comfort is our utmost priority.</p>
+      </div>
+      <div class="phil-card reveal delay-2">
+        <h3>Kodawari</h3>
+        <h4>(Relentless Devotion)</h4>
+        <p>Our uncompromising dedication to our craft. From simmering our tonkotsu broth for 24 hours to sourcing the freshest seasonal ingredients, Kodawari represents our pursuit of perfection in every detail.</p>
+      </div>
+      <div class="phil-card reveal delay-3">
+        <h3>Shokunin</h3>
+        <h4>(Artisan Spirit)</h4>
+        <p>The spirit of the craftsman. Our chefs spend decades refining a single technique, taking immense pride in their work to elevate simple ingredients into extraordinary, memorable culinary experiences.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESTAURANT TIMELINE -->
+  <section class="timeline-section">
+    <div class="section-header text-center reveal" style="text-align: center;">
+      <span class="section-subtitle">Our Evolution</span>
+      <h2 style="font-size: 2.5rem; color: #D9C5A0; margin-bottom: 1rem;">The Zuru Zuru Story</h2>
+    </div>
+    
+    <div class="timeline">
+      <div class="timeline-item left reveal-left">
+        <div class="timeline-content">
+          <h3>2015</h3>
+          <h4>The Founding</h4>
+          <p>Chef Kenji Tanaka opens the first intimate 20-seat Zuru Zuru Izakaya, introducing authentic Tokyo-style ramen and yakitori.</p>
+        </div>
+      </div>
+      <div class="timeline-item right reveal-right">
+        <div class="timeline-content">
+          <h3>2018</h3>
+          <h4>The Second Branch</h4>
+          <p>Due to overwhelming demand, we expand our footprint, opening our flagship location with a dedicated robatayaki grill and sake lounge.</p>
+        </div>
+      </div>
+      <div class="timeline-item left reveal-left">
+        <div class="timeline-content">
+          <h3>2021</h3>
+          <h4>Culinary Excellence Award</h4>
+          <p>Recognized globally by critics, Zuru Zuru receives the prestigious Asian Dining Award for Best Casual Japanese Restaurant.</p>
+        </div>
+      </div>
+      <div class="timeline-item right reveal-right">
+        <div class="timeline-content">
+          <h3>2024</h3>
+          <h4>A New Era</h4>
+          <p>Launching our exclusive Omakase dining experience and importing rare, artisanal sakes from boutique breweries across Japan.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ACHIEVEMENTS -->
+  <section class="achievements-section">
+    <div class="section-header text-center reveal" style="text-align: center;">
+      <span class="section-subtitle">By The Numbers</span>
+      <h2 style="font-size: 2.5rem; color: #111111; margin-bottom: 1rem;">Our Achievements</h2>
+    </div>
+    
+    <div class="achievements-grid">
+      <div class="achievement-card hover-lift reveal delay-1">
+        <i class="ph ph-bowl-food"></i>
+        <h4>1.2M+</h4>
+        <p>Bowls of Ramen Served</p>
+      </div>
+      <div class="achievement-card hover-lift reveal delay-2">
+        <i class="ph ph-map-pin"></i>
+        <h4>3</h4>
+        <p>Locations Globally</p>
+      </div>
+      <div class="achievement-card hover-lift reveal delay-3">
+        <i class="ph ph-star"></i>
+        <h4>15+</h4>
+        <p>Culinary Awards</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-about">
+          <div class="footer-brand-container">
+            <img src="images/hero_sushi.png" alt="Zuru Zuru" class="footer-logo">
+            <span class="brand-name">Zuru Zuru</span>
+          </div>
+          <p>A premium Japanese Izakaya experience bringing the authentic flavours of Tokyo to New Delhi. Every dish tells a story of tradition, passion, and culinary excellence.</p>
+          <div class="footer-social">
+            <a href="https://www.instagram.com/zuruzuru.in/?hl=en" aria-label="Instagram" target="_blank"><i class="ph ph-instagram-logo"></i></a>
+            <a href="#" aria-label="Facebook"><i class="ph ph-facebook-logo"></i></a>
+            <a href="#" aria-label="Twitter"><i class="ph ph-twitter-logo"></i></a>
+            <a href="#" aria-label="YouTube"><i class="ph ph-youtube-logo"></i></a>
+          </div>
+        </div>
+        
+        <div class="footer-links">
+          <div>
+            <h4>Explore</h4>
+            <ul>
+              <li><a href="menu.html">Our Menu</a></li>
+              <li><a href="reservation.html">Reservations</a></li>
+              <li><a href="private-dining.html">Private Dining</a></li>
+              <li><a href="gallery.html">Gallery</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4>Contact</h4>
+            <ul class="footer-contact">
+              <li><i class="ph ph-map-pin"></i> Zuru Zuru, Delhi, India 110049</li>
+              <li><i class="ph ph-phone"></i> +91 11 4052 7373</li>
+            <li><i class="ph ph-envelope"></i> hello@zuruzuru.in</li>
+          </ul>
+          <h4 style="margin-top:2rem">Hours</h4>
+          <ul class="footer-hours">
+              <li style="flex-direction:column; align-items:flex-start; margin-bottom:10px;">
+                <span style="color:var(--clr-primary); font-weight:600; margin-bottom:5px;">1:00 PM - 4:00 PM & 7:00 PM - 10:30 PM</span>
+                <span style="font-size:0.85rem; color:#888;">Lunch & Dinner (Full Menu)</span>
+              </li>
+              <li style="flex-direction:column; align-items:flex-start;">
+                <span style="color:var(--clr-primary); font-weight:600; margin-bottom:5px;">4:00 PM - 7:00 PM</span>
+                <span style="font-size:0.85rem; color:#888;">Tempura, Gyoza & Cold Ramen</span>
+              </li>
+            </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Zuru Zuru Izakaya. All Rights Reserved.</p>
+        <div class="footer-bottom-links">
+          <a href="privacy-policy.html">Privacy Policy</a>
+          <a href="terms.html">Terms of Service</a>
+          <a href="faq.html">FAQ</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Back to Top -->
+  <button class="back-to-top" aria-label="Back to top">
+    <i class="ph ph-caret-up"></i>
+  </button>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+

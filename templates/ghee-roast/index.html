@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VERY GOOD GHEE ROAST | Authentic South Indian Cuisine – Delhi & Gurugram</title>
+  <meta name="description" content="VERY GOOD GHEE ROAST – Premium South Indian coastal cuisine. Slow roasted in pure ghee. Serving Delhi & Gurugram. Order on Swiggy & Zomato.">
+
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/home.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+  <style>
+    /* ── Hero ────────────────────────────────── */
+    .hero { background-color: var(--clr-bg); background-image: url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%233e5237' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' opacity='0.07'%3E%3Cpath d='M20,20 C30,10 45,15 50,30 C40,40 25,35 20,20 Z'/%3E%3Cpath d='M20,20 L50,30'/%3E%3Cpath d='M80,80 L80,65 M80,80 L95,80 M80,80 L65,80 M80,80 L80,95 M80,80 L90,70 M80,80 L70,90 M80,80 L90,90 M80,80 L70,70'/%3E%3Cpath d='M90,20 C100,20 100,40 90,50 C80,45 80,25 90,20 Z'/%3E%3Cpath d='M90,20 C85,15 80,15 80,20'/%3E%3Cpath d='M30,80 L35,95 L25,95 Z'/%3E%3Ccircle cx='30' cy='75' r='3'/%3E%3C/g%3E%3C/svg%3E"); background-size: 100px 100px; min-height: 100vh; display: flex; align-items: center; padding-top: 90px; position: relative; overflow: hidden; }
+    .hero::before { content:''; position:absolute; inset:0; background: radial-gradient(ellipse at 70% 50%, color-mix(in srgb, var(--clr-primary), transparent 92%) 0%, transparent 60%); pointer-events:none; }
+    .hero-inner { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 4rem; width: 95%; max-width: var(--max-w); margin: 0 auto; }
+    .hero-left h1 { font-family: var(--ff-heading); font-size: clamp(3rem, 5.5vw, 5.5rem); line-height: 1.02; color: var(--clr-primary); text-transform: uppercase; margin-bottom: 1.5rem; }
+    .hero-left h1 span { color: var(--clr-accent); }
+    .hero-left p { font-size: 1.2rem; color: var(--clr-text-light); line-height: 1.7; max-width: 460px; margin-bottom: 2.5rem; }
+    .hero-left p em { font-style: italic; color: var(--clr-accent); }
+    .hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 2rem; }
+    .hero-btns a { padding: 1rem 2rem; font-family: var(--ff-heading); font-size: 1rem; letter-spacing: 1px; text-transform: uppercase; border-radius: 4px; text-decoration: none; display: flex; align-items: center; gap: 8px; transition: var(--transition); font-weight: 600; }
+    .hero-btn-primary { background: var(--clr-primary); color: var(--clr-white); border: 2px solid var(--clr-primary); }
+    .hero-btn-primary:hover { background: var(--clr-accent); border-color: var(--clr-accent); transform: translateY(-3px); box-shadow: var(--shadow-md); }
+    .hero-btn-outline { background: transparent; color: var(--clr-primary); border: 2px solid var(--clr-primary); }
+    .hero-btn-outline:hover { background: var(--clr-primary); color: var(--clr-white); transform: translateY(-3px); }
+    .hero-apps { display: flex; align-items: center; gap: 15px; font-size: 0.9rem; color: var(--clr-text-light); }
+    .hero-apps a { font-weight: 700; text-decoration: none; transition: var(--transition); }
+    .hero-apps a.swiggy { color: #fc8019; }
+    .hero-apps a.zomato { color: #e23744; }
+    .hero-apps a:hover { opacity: 0.75; }
+
+    /* hero right image blob */
+    .hero-right { position: relative; display: flex; justify-content: center; align-items: center; }
+    @keyframes blobAnim { 0%,100%{border-radius:63% 37% 54% 46%/55% 48% 52% 45%} 33%{border-radius:40% 60% 54% 46%/49% 60% 40% 51%} 66%{border-radius:54% 46% 38% 62%/49% 70% 30% 51%} }
+    @keyframes floatAnim { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-18px)} }
+    .hero-blob-wrap { width: 100%; max-width: 560px; aspect-ratio: 1/1; animation: floatAnim 7s ease-in-out infinite; position: relative; }
+    .hero-blob-glow { position:absolute; inset:-20px; background: linear-gradient(135deg, var(--clr-accent), var(--clr-primary)); border-radius: 63% 37% 54% 46%/55% 48% 52% 45%; animation: blobAnim 14s ease-in-out infinite reverse; opacity: 0.12; filter: blur(30px); }
+    .hero-blob-img { width:100%; height:100%; object-fit:cover; border-radius: 63% 37% 54% 46%/55% 48% 52% 45%; animation: blobAnim 10s ease-in-out infinite; box-shadow: 0 30px 70px rgba(62,82,55,0.25); position:relative; z-index:2; border: 6px solid color-mix(in srgb, var(--clr-bg), transparent 30%); }
+    .stamp { position:absolute; bottom:-10px; left:-10px; z-index:3; width: 100px; height: 100px; background: var(--clr-accent); border-radius: 50%; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding: 10px; box-shadow: 0 8px 25px rgba(196,77,24,0.35); animation: floatAnim 5s ease-in-out infinite reverse; }
+    .stamp span { font-family: var(--ff-heading); color: white; font-size: 0.55rem; letter-spacing: 1.5px; text-transform: uppercase; line-height: 1.4; }
+    .stamp-heart { font-size: 1.1rem; color: white; margin-bottom: 2px; }
+
+    /* ── Feature Strip ─────────────────────── */
+    .feature-strip { background: var(--clr-bg); border-top: 1px solid color-mix(in srgb, var(--clr-primary), transparent 85%); border-bottom: 1px solid color-mix(in srgb, var(--clr-primary), transparent 85%); padding: 2.5rem 0; }
+    .feature-strip-inner { display: flex; justify-content: space-around; align-items: flex-start; width: 95%; max-width: var(--max-w); margin: 0 auto; }
+    .feature-item { text-align: center; flex: 1; padding: 0 1rem; border-right: 1px solid color-mix(in srgb, var(--clr-primary), transparent 85%); }
+    .feature-item:last-child { border-right: none; }
+    .feature-item i { font-size: 2.2rem; color: var(--clr-primary); display: block; margin-bottom: 0.8rem; }
+    .feature-item h4 { font-family: var(--ff-heading); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--clr-primary); margin-bottom: 0.4rem; }
+    .feature-item p { font-size: 0.8rem; color: var(--clr-text-light); line-height: 1.5; margin: 0; }
+
+    /* ── Intro / About ──────────────────────── */
+    .intro-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; }
+    .intro-images { position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .intro-img-1 { grid-column: 1/-1; border-radius: 12px; width: 100%; height: 300px; object-fit: cover; box-shadow: var(--shadow-lg); }
+    .intro-img-2 { border-radius: 12px; width: 100%; height: 180px; object-fit: cover; box-shadow: var(--shadow-md); }
+    .intro-img-3 { border-radius: 12px; width: 100%; height: 180px; object-fit: cover; box-shadow: var(--shadow-md); }
+    .intro-badge { position: absolute; bottom: 0; right: 0; background: var(--clr-accent); color: white; font-family: var(--ff-heading); padding: 1.2rem 1.5rem; border-radius: 12px 0 12px 0; text-align:center; font-size: 1.4rem; line-height: 1.2; }
+    .intro-badge small { display:block; font-size: 0.65rem; letter-spacing: 1px; text-transform: uppercase; margin-top: 2px; }
+
+    /* ── Why Ghee Section ──────────────────── */
+    .why-ghee-section { background: var(--clr-primary); padding: 6rem 0; }
+    .why-ghee-inner { width: 95%; max-width: var(--max-w); margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; }
+    .why-ghee-img { border-radius: 16px; width: 100%; aspect-ratio: 4/3; object-fit: cover; box-shadow: 0 30px 60px rgba(0,0,0,0.3); }
+    .why-ghee-content h2 { font-family: var(--ff-heading); font-size: clamp(2rem, 4vw, 3rem); color: var(--clr-white); text-transform: uppercase; margin-bottom: 1.5rem; line-height: 1.1; }
+    .why-ghee-content h2 span { color: var(--clr-accent); }
+    .why-ghee-content p { color: rgba(255,255,255,0.8); font-size: 1.05rem; line-height: 1.8; margin-bottom: 2rem; }
+    .why-list { list-style: none; display: flex; flex-direction: column; gap: 1.2rem; margin-bottom: 2.5rem; }
+    .why-list li { display: flex; align-items: flex-start; gap: 1rem; color: rgba(255,255,255,0.85); font-size: 1rem; line-height: 1.5; }
+    .why-list li i { color: var(--clr-accent); font-size: 1.4rem; margin-top: 1px; flex-shrink: 0; }
+
+    /* ── Signature Specials ─────────────────── */
+    .specials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+    .special-card { background: var(--clr-white); border-radius: 12px; overflow: hidden; box-shadow: var(--shadow-md); transition: var(--transition); }
+    .special-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-lg); }
+    .special-card-img { position: relative; aspect-ratio: 4/3; overflow: hidden; }
+    .special-card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+    .special-card:hover .special-card-img img { transform: scale(1.07); }
+    .special-badge { position: absolute; top: 1rem; left: 1rem; background: var(--clr-accent); color: white; font-family: var(--ff-heading); font-size: 0.75rem; letter-spacing: 1px; padding: 4px 12px; border-radius: 30px; text-transform: uppercase; }
+    .special-badge.green { background: var(--clr-primary); }
+    .special-card-body { padding: 1.5rem; }
+    .special-card-body h3 { font-family: var(--ff-heading); font-size: 1.3rem; color: var(--clr-primary); margin-bottom: 0.5rem; }
+    .special-card-body p { color: var(--clr-text-light); font-size: 0.9rem; line-height: 1.5; margin-bottom: 1.2rem; }
+    .special-card-footer { display: flex; align-items: center; justify-content: space-between; }
+    .special-price { font-family: var(--ff-heading); font-size: 1.5rem; color: var(--clr-accent); }
+    .special-order { background: var(--clr-primary); color: white; border: none; padding: 8px 18px; border-radius: 4px; font-family: var(--ff-heading); font-size: 0.85rem; letter-spacing: 1px; cursor: pointer; text-decoration: none; text-transform: uppercase; transition: var(--transition); }
+    .special-order:hover { background: var(--clr-accent); }
+
+    /* ── Process Steps ─────────────────────── */
+    .process-section { background: color-mix(in srgb, var(--clr-bg), var(--clr-primary) 6%); padding: 6rem 0; }
+    .process-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; margin-top: 4rem; }
+    .process-step { text-align: center; padding: 2rem; background: var(--clr-white); border-radius: 12px; box-shadow: var(--shadow-sm); transition: var(--transition); position: relative; }
+    .process-step:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); }
+    .process-step::after { content: '→'; position: absolute; right: -20px; top: 50%; transform: translateY(-50%); font-size: 1.5rem; color: var(--clr-accent); font-weight: bold; z-index: 2; }
+    .process-step:last-child::after { display: none; }
+    .process-num { width: 56px; height: 56px; border-radius: 50%; background: var(--clr-primary); color: white; font-family: var(--ff-heading); font-size: 1.4rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; }
+    .process-step h4 { font-family: var(--ff-heading); font-size: 1.1rem; color: var(--clr-primary); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px; }
+    .process-step p { font-size: 0.88rem; color: var(--clr-text-light); line-height: 1.5; margin: 0; }
+    .process-step i { font-size: 2rem; color: var(--clr-accent); margin-bottom: 0.8rem; display: block; }
+
+    /* ── Testimonials ───────────────────────── */
+    .testimonials-section { background: var(--clr-primary); padding: 6rem 0; }
+    .testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-top: 4rem; }
+    .testimonial-card { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; padding: 2rem; backdrop-filter: blur(4px); transition: var(--transition); }
+    .testimonial-card:hover { background: rgba(255,255,255,0.12); transform: translateY(-4px); }
+    .testimonial-stars { color: var(--clr-accent); font-size: 1.1rem; margin-bottom: 1rem; letter-spacing: 3px; }
+    .testimonial-text { color: rgba(255,255,255,0.85); font-size: 1rem; line-height: 1.7; margin-bottom: 1.5rem; font-style: italic; }
+    .testimonial-author { display: flex; align-items: center; gap: 1rem; }
+    .testimonial-avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--clr-accent); display: flex; align-items: center; justify-content: center; font-family: var(--ff-heading); font-size: 1.2rem; color: white; }
+    .testimonial-name { font-family: var(--ff-heading); color: white; font-size: 1rem; letter-spacing: 0.5px; }
+    .testimonial-loc { color: rgba(255,255,255,0.5); font-size: 0.8rem; margin-top: 2px; }
+
+    /* ── Stats ─────────────────────────────── */
+    .stats-strip { background: var(--clr-accent); padding: 3.5rem 0; }
+    .stats-inner { display: grid; grid-template-columns: repeat(4, 1fr); text-align: center; gap: 2rem; width: 95%; max-width: var(--max-w); margin: 0 auto; }
+    .stat-item h3 { font-family: var(--ff-heading); font-size: clamp(2.5rem, 5vw, 4rem); color: white; margin-bottom: 0.4rem; }
+    .stat-item p { color: rgba(255,255,255,0.85); font-size: 0.85rem; letter-spacing: 2px; text-transform: uppercase; font-family: var(--ff-heading); }
+
+    /* ── Delivery & Catering ────────────────── */
+    .split-section { display: grid; grid-template-columns: 1fr 1fr; min-height: 500px; }
+    .split-half { position: relative; display: flex; align-items: center; overflow: hidden; }
+    .split-bg { position: absolute; inset: 0; background-size: cover; background-position: center; transition: transform 0.6s ease; }
+    .split-half:hover .split-bg { transform: scale(1.04); }
+    .split-overlay { position: absolute; inset: 0; }
+    .split-body { position: relative; z-index: 2; padding: 4rem; max-width: 500px; }
+    .split-body .subtitle { color: rgba(255,255,255,0.7); display: block; margin-bottom: 1rem; font-family: var(--ff-heading); letter-spacing: 2px; font-size: 0.85rem; }
+    .split-body h2 { font-family: var(--ff-heading); color: white; font-size: clamp(2rem, 3.5vw, 2.8rem); text-transform: uppercase; margin-bottom: 1rem; line-height: 1.1; }
+    .split-body p { color: rgba(255,255,255,0.8); line-height: 1.7; margin-bottom: 2rem; }
+    .split-body .btn-split { display: inline-flex; align-items: center; gap: 8px; padding: 0.9rem 2rem; background: white; color: var(--clr-primary); font-family: var(--ff-heading); letter-spacing: 1px; font-size: 0.9rem; text-transform: uppercase; text-decoration: none; border-radius: 4px; transition: var(--transition); font-weight: 700; }
+    .split-body .btn-split:hover { background: var(--clr-accent); color: white; transform: translateY(-3px); }
+    .split-body .checklist { list-style: none; margin-bottom: 2rem; display: flex; flex-direction: column; gap: 0.7rem; }
+    .split-body .checklist li { color: rgba(255,255,255,0.9); display: flex; align-items: center; gap: 10px; font-size: 0.95rem; }
+    .split-body .checklist li i { color: white; font-size: 1.1rem; }
+
+    /* ── Gallery ──────────────────────────── */
+    .gallery-mosaic { display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: 220px 220px; gap: 1rem; }
+    .gallery-mosaic .g-item { overflow: hidden; border-radius: 10px; }
+    .gallery-mosaic .g-item img { width:100%; height:100%; object-fit:cover; display:block; transition: transform 0.5s ease; }
+    .gallery-mosaic .g-item:hover img { transform: scale(1.07); }
+    .gallery-mosaic .g-item:nth-child(1) { grid-column: span 2; }
+    .gallery-mosaic .g-item:nth-child(5) { grid-column: span 2; }
+
+    /* ── Hero Header ─────────────────────── */
+    .header-home { position: fixed; width: 100%; top: 0; z-index: 1000; padding: 1.2rem 0; background: transparent; border-bottom: 1px solid rgba(255,255,255,0.1); transition: var(--transition); }
+    .header-home.scrolled { background: var(--clr-primary); padding: 0.7rem 0; box-shadow: 0 6px 30px rgba(0,0,0,0.2); }
+    .header-home .logo-text { color: var(--clr-primary); font-family: var(--ff-heading); font-size: 1.1rem; line-height: 1.1; }
+    .header-home.scrolled .logo-text { color: white; }
+    .header-home .nav-links a { color: var(--clr-primary); }
+    .header-home.scrolled .nav-links a { color: rgba(255,255,255,0.9); }
+    .header-home .nav-links a:hover, .header-home .nav-links a.active { color: var(--clr-accent) !important; }
+    .header-home .nav-dropdown-menu { background: var(--clr-primary); border-color: rgba(255,255,255,0.1); }
+    .header-home .nav-dropdown-menu a { color: rgba(255,255,255,0.9) !important; border-bottom-color: rgba(255,255,255,0.08); }
+    .header-home .nav-dropdown-menu a:hover { background: rgba(255,255,255,0.1); color: var(--clr-accent) !important; }
+    .header-home .hamburger span { background: var(--clr-primary); }
+    .header-home.scrolled .hamburger span { background: white; }
+
+    /* ── Newsletter ────────────────────────── */
+    .newsletter-section { background: color-mix(in srgb, var(--clr-bg), var(--clr-primary) 8%); padding: 5rem 0; }
+    .newsletter-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; width: 95%; max-width: var(--max-w); margin: 0 auto; }
+    .newsletter-left h2 { font-family: var(--ff-heading); font-size: clamp(2rem, 3.5vw, 2.8rem); color: var(--clr-primary); text-transform: uppercase; margin-bottom: 1rem; line-height: 1.1; }
+    .newsletter-left h2 span { color: var(--clr-accent); }
+    .newsletter-left p { color: var(--clr-text-light); font-size: 1rem; line-height: 1.7; }
+    .newsletter-right form { display: flex; gap: 0; overflow: hidden; border-radius: 4px; box-shadow: var(--shadow-md); }
+    .newsletter-right input { flex: 1; padding: 1rem 1.5rem; border: none; font-size: 1rem; background: white; outline: none; font-family: var(--ff-body); }
+    .newsletter-right button { background: var(--clr-primary); color: white; padding: 1rem 2rem; border: none; font-family: var(--ff-heading); font-size: 1rem; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: var(--transition); }
+    .newsletter-right button:hover { background: var(--clr-accent); }
+    .newsletter-right small { display: block; color: var(--clr-text-light); font-size: 0.78rem; margin-top: 0.8rem; }
+
+    /* ── Footer ────────────────────────────── */
+    .site-footer { background: var(--clr-bg-dark); color: rgba(255,255,255,0.8); }
+    .footer-main { display: grid; grid-template-columns: 2fr 1fr 1fr 1.5fr; gap: 3rem; padding: 5rem 0 3rem; }
+    .footer-brand p { font-size: 0.9rem; line-height: 1.7; color: rgba(255,255,255,0.6); margin-top: 1rem; }
+    .footer-tagline { font-style: italic; font-family: Georgia, serif; color: rgba(255,255,255,0.4); font-size: 0.9rem; margin-top: 1rem; }
+    .footer-logo { display: flex; align-items: center; gap: 1rem; text-decoration: none; }
+    .footer-logo-text { font-family: var(--ff-heading); font-size: 1.6rem; color: white; letter-spacing: 2px; line-height: 1.1; }
+    .footer-logo-text span { color: var(--clr-accent); }
+    .footer-col h5 { font-family: var(--ff-heading); color: var(--clr-accent); font-size: 1rem; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 1.5rem; }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.9rem; }
+    .footer-col ul li a { color: rgba(255,255,255,0.7); text-decoration: none; transition: var(--transition); font-size: 0.9rem; display: flex; align-items: center; gap: 8px; }
+    .footer-col ul li a i { color: var(--clr-accent); font-size: 0.7rem; }
+    .footer-col ul li a:hover { color: var(--clr-accent); padding-left: 4px; }
+    .footer-contact li { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 1.2rem; font-size: 0.9rem; }
+    .footer-contact li i { color: var(--clr-accent); font-size: 1.2rem; margin-top: 2px; flex-shrink: 0; }
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,0.07); padding: 1.5rem 0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; font-size: 0.85rem; color: rgba(255,255,255,0.4); }
+    .footer-bottom a { color: rgba(255,255,255,0.5); text-decoration: none; transition: var(--transition); }
+    .footer-bottom a:hover { color: var(--clr-accent); }
+    .footer-socials { display: flex; gap: 0.8rem; margin-top: 1.5rem; }
+    .footer-socials a { width: 40px; height: 40px; border: 1px solid rgba(255,255,255,0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.7); font-size: 1.1rem; text-decoration: none; transition: var(--transition); }
+    .footer-socials a:hover { background: var(--clr-accent); border-color: var(--clr-accent); color: white; transform: translateY(-3px); }
+
+    /* Section helpers */
+    .section { padding: 6rem 0; }
+    .section-bg { background: color-mix(in srgb, var(--clr-bg), var(--clr-primary) 5%); }
+    .container { width: 95%; max-width: var(--max-w); margin: 0 auto; }
+    .section-header { text-align: center; margin-bottom: 3rem; }
+    .section-header .subtitle { font-family: var(--ff-heading); font-size: 0.85rem; letter-spacing: 3px; text-transform: uppercase; color: var(--clr-accent); display: block; margin-bottom: 0.5rem; }
+    .section-header h2 { font-family: var(--ff-heading); font-size: clamp(2rem, 4vw, 3rem); color: var(--clr-primary); text-transform: uppercase; margin-bottom: 1rem; line-height: 1.1; }
+    .section-header.dark h2 { color: white; }
+    .section-header p { color: var(--clr-text-light); font-size: 1.05rem; max-width: 600px; margin: 0 auto; line-height: 1.7; }
+    .section-header.dark p { color: rgba(255,255,255,0.7); }
+    .text-center { text-align: center; }
+    .btn-primary-theme { display: inline-flex; align-items: center; gap: 8px; padding: 1rem 2.5rem; background: var(--clr-primary); color: white; font-family: var(--ff-heading); font-size: 1rem; letter-spacing: 1px; text-transform: uppercase; text-decoration: none; border-radius: 4px; transition: var(--transition); }
+    .btn-primary-theme:hover { background: var(--clr-accent); transform: translateY(-3px); box-shadow: var(--shadow-md); }
+    .btn-outline-theme { display: inline-flex; align-items: center; gap: 8px; padding: 1rem 2.5rem; border: 2px solid var(--clr-primary); color: var(--clr-primary); font-family: var(--ff-heading); font-size: 1rem; letter-spacing: 1px; text-transform: uppercase; text-decoration: none; border-radius: 4px; transition: var(--transition); background: transparent; }
+    .btn-outline-theme:hover { background: var(--clr-primary); color: white; transform: translateY(-3px); }
+    .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 992px) {
+      .hero-inner, .intro-grid, .why-ghee-inner, .specials-grid, .process-steps, .testimonials-grid, .split-section, .newsletter-inner, .footer-main { grid-template-columns: 1fr; }
+      .hero { padding-top: 100px; padding-bottom: 3rem; }
+      .hero-right { margin-top: 2rem; }
+      .hero-blob-wrap { max-width: 380px; }
+      .stamp { display: none; }
+      .gallery-mosaic { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
+      .gallery-mosaic .g-item:nth-child(1), .gallery-mosaic .g-item:nth-child(5) { grid-column: span 1; }
+      .process-step::after { display: none; }
+      .stats-inner { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- =========================================================
+       HEADER
+  ========================================================= -->
+  <header class="header-home" id="main-header">
+    <div class="nav-container" style="display:flex; justify-content:space-between; align-items:center; width:95%; max-width:var(--max-w); margin:0 auto;">
+      <a href="index.html" class="footer-logo">
+        <img src="images/logo.jpg" alt="VERY GOOD GHEE ROAST Logo" style="height:52px; border-radius:8px;">
+        <span class="logo-text">VERY GOOD<br><span style="font-size:0.65rem; letter-spacing:2px; color:var(--clr-accent);">FLAVOURS THAT STAY</span></span>
+      </a>
+
+      <nav>
+        <ul class="nav-links" style="display:flex; gap:2rem; align-items:center; list-style:none;">
+          <li><a href="index.html" class="active">Home</a></li>
+          <li class="nav-dropdown">
+            <a href="menu.html">Menu <i class="ph-bold ph-caret-down" style="font-size:0.7rem;"></i></a>
+            <ul class="nav-dropdown-menu">
+              <li><a href="menu.html?location=delhi"><i class="ph-fill ph-map-pin"></i> Delhi Menu</a></li>
+              <li><a href="menu.html?location=gurugram"><i class="ph-fill ph-map-pin"></i> Gurugram Menu</a></li>
+            </ul>
+          </li>
+          <li><a href="about.html">Our Story</a></li>
+          <li><a href="quality.html">Quality</a></li>
+          <li><a href="delivery.html">Delivery</a></li>
+          <li><a href="catering.html">Catering</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </nav>
+
+      <div style="display:flex; gap:1rem; align-items:center;">
+        <a href="menu.html" class="nav-order-btn">Order Online</a>
+        <div class="hamburger" id="mobile-menu-btn" style="display:none; flex-direction:column; gap:6px; cursor:pointer;">
+          <span style="width:28px; height:2px; background:var(--clr-primary); display:block;"></span>
+          <span style="width:28px; height:2px; background:var(--clr-primary); display:block;"></span>
+          <span style="width:28px; height:2px; background:var(--clr-primary); display:block;"></span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- =========================================================
+         1. HERO SECTION
+    ========================================================= -->
+    <section class="hero">
+      <div class="hero-inner">
+
+        <!-- Left -->
+        <div class="hero-left reveal">
+          <h1>Real Ingredients.<br>Rich Flavours.<br><span>Pure Ghee.</span></h1>
+          <p>We slow roast every dish in ghee to bring out bold flavours and aromas that <em>stay</em> with you.</p>
+          <div class="hero-btns">
+            <a href="menu.html" class="hero-btn-primary">Explore Menu <i class="ph-bold ph-arrow-right"></i></a>
+            <a href="delivery.html" class="hero-btn-outline">Order Now <i class="ph-bold ph-moped"></i></a>
+          </div>
+          <div class="hero-apps">
+            <span>Also available on</span>
+            <a href="#" class="swiggy"><span style="background:#fc8019; color:white; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:0.65rem; font-weight:900; margin-right:4px;">S</span>Swiggy</a>
+            <a href="#" class="zomato">zomato</a>
+          </div>
+        </div>
+
+        <!-- Right -->
+        <div class="hero-right reveal" style="animation-delay:0.2s;">
+          <div class="hero-blob-wrap">
+            <div class="hero-blob-glow"></div>
+            <img src="images/hero_ghee_roast.png" alt="Signature Ghee Roast" class="hero-blob-img">
+            <div class="stamp">
+              <span class="stamp-heart">♥</span>
+              <span>Slow<br>Roasted<br>In Ghee<br>With Love</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =========================================================
+         2. FEATURE STRIP
+    ========================================================= -->
+    <section class="feature-strip">
+      <div class="feature-strip-inner">
+        <div class="feature-item reveal">
+          <i class="ph-fill ph-leaf"></i>
+          <h4>Authentic Recipes</h4>
+          <p>Rooted in tradition.<br>Made for today.</p>
+        </div>
+        <div class="feature-item reveal" style="animation-delay:0.1s;">
+          <i class="ph-fill ph-cooking-pot"></i>
+          <h4>Cooked In Ghee</h4>
+          <p>Slow roasted in<br>pure ghee for rich aroma.</p>
+        </div>
+        <div class="feature-item reveal" style="animation-delay:0.2s;">
+          <i class="ph-fill ph-bowl-food"></i>
+          <h4>Freshly Made</h4>
+          <p>Prepared in small batches.<br>Always fresh.</p>
+        </div>
+        <div class="feature-item reveal" style="animation-delay:0.3s;">
+          <i class="ph-fill ph-pepper"></i>
+          <h4>Bold &amp; Spicy</h4>
+          <p>Flavours that are bold,<br>spicy and deeply satisfying.</p>
+        </div>
+        <div class="feature-item reveal" style="animation-delay:0.4s;">
+          <i class="ph-fill ph-moped"></i>
+          <h4>Delivered Fast</h4>
+          <p>Hot, hygienic and<br>right at your doorstep.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         3. ABOUT INTRO
+    ========================================================= -->
+    <section class="section">
+      <div class="container intro-grid">
+        <div class="intro-images reveal">
+          <img class="intro-img-1" src="images/hero_ghee_roast.png" alt="Our Kitchen">
+          <img class="intro-img-2" src="images/premium_spices.png" alt="Premium Spices">
+          <img class="intro-img-3" src="images/quality_ingredients.png" alt="Quality Ingredients">
+          <div class="intro-badge">25+<small>Years of<br>Legacy</small></div>
+        </div>
+        <div class="reveal" style="animation-delay:0.2s;">
+          <div class="section-header" style="text-align:left; margin-bottom:2rem;">
+            <span class="subtitle">Welcome to Ghee Roast</span>
+            <h2>Where Tradition<br>Meets Luxury.</h2>
+          </div>
+          <p style="font-size:1.05rem; color:var(--clr-text-light); margin-bottom:1.2rem; line-height:1.8;">Since our inception, we have been on a relentless pursuit of culinary perfection. Our brand is built on a single, uncompromising promise: to serve food that speaks to the soul.</p>
+          <p style="font-size:1.05rem; color:var(--clr-text-light); margin-bottom:1.5rem; line-height:1.8;">By honoring age-old recipes from the Mangalorean coastal kitchen and employing modern culinary techniques, we have crafted an experience that is both deeply comforting and profoundly luxurious.</p>
+          <ul style="list-style:none; display:flex; flex-direction:column; gap:0.8rem; margin-bottom:2.5rem;">
+            <li style="display:flex; align-items:center; gap:10px; color:var(--clr-text-light);"><i class="ph-fill ph-check-circle" style="color:var(--clr-primary); font-size:1.2rem;"></i> 100% Pure Cow Ghee — No shortcuts, ever.</li>
+            <li style="display:flex; align-items:center; gap:10px; color:var(--clr-text-light);"><i class="ph-fill ph-check-circle" style="color:var(--clr-primary); font-size:1.2rem;"></i> Fresh spices hand-ground every single morning.</li>
+            <li style="display:flex; align-items:center; gap:10px; color:var(--clr-text-light);"><i class="ph-fill ph-check-circle" style="color:var(--clr-primary); font-size:1.2rem;"></i> Serving Delhi &amp; Gurugram with love since 1995.</li>
+          </ul>
+          <a href="about.html" class="btn-outline-theme">Read Our Full Story <i class="ph-bold ph-arrow-right"></i></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         4. SIGNATURE SPECIALS
+    ========================================================= -->
+    <section class="section section-bg">
+      <div class="container">
+        <div class="section-header reveal">
+          <span class="subtitle">Chef's Recommendations</span>
+          <h2>Today's Signature Specials</h2>
+          <p>Experience the crown jewels of our menu, slow-roasted to absolute perfection.</p>
+        </div>
+        <div class="specials-grid">
+
+          <div class="special-card reveal">
+            <div class="special-card-img">
+              <span class="special-badge">Best Seller</span>
+              <img src="images/hero_ghee_roast.png" alt="Signature Chicken Ghee Roast">
+            </div>
+            <div class="special-card-body">
+              <h3>Signature Chicken Ghee Roast</h3>
+              <p>Tender chicken marinated for 24 hours in Byadgi chili paste, slow-roasted in pure ghee until deeply caramelized.</p>
+              <div class="special-card-footer">
+                <span class="special-price">₹450</span>
+                <a href="menu.html" class="special-order">Order Now</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="special-card reveal" style="animation-delay:0.15s;">
+            <div class="special-card-img">
+              <span class="special-badge">Chef's Pick</span>
+              <img src="images/quality_ingredients.png" alt="Coastal Prawn Ghee Roast">
+            </div>
+            <div class="special-card-body">
+              <h3>Coastal Prawn Ghee Roast</h3>
+              <p>Fresh coastal tiger prawns tossed in our signature fiery red masala, perfectly balancing the natural sweetness of the sea.</p>
+              <div class="special-card-footer">
+                <span class="special-price">₹750</span>
+                <a href="menu.html" class="special-order">Order Now</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="special-card reveal" style="animation-delay:0.3s;">
+            <div class="special-card-img">
+              <span class="special-badge green">100% Veg</span>
+              <img src="images/premium_spices.png" alt="Malai Paneer Ghee Roast">
+            </div>
+            <div class="special-card-body">
+              <h3>Malai Paneer Ghee Roast</h3>
+              <p>Soft, fresh malai paneer cubes roasted to perfection in our iconic spicy and tangy ghee masala. A vegetarian delight.</p>
+              <div class="special-card-footer">
+                <span class="special-price">₹380</span>
+                <a href="menu.html" class="special-order">Order Now</a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <div class="text-center reveal" style="margin-top:3rem;">
+          <a href="menu.html" class="btn-primary-theme">View Complete Menu <i class="ph-bold ph-arrow-right"></i></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         5. WHY GHEE?
+    ========================================================= -->
+    <section class="why-ghee-section">
+      <div class="why-ghee-inner">
+        <div class="reveal">
+          <img src="images/quality_ingredients.png" alt="Pure Cow Ghee" class="why-ghee-img">
+        </div>
+        <div class="why-ghee-content reveal" style="animation-delay:0.2s;">
+          <h2>Why We Cook<br>Only In <span>Pure Ghee</span></h2>
+          <p>Ghee isn't just an ingredient — it's the soul of our cooking. Used for millennia in traditional Indian kitchens, pure cow ghee is the secret that makes our food taste, smell, and feel unlike anything else.</p>
+          <ul class="why-list">
+            <li><i class="ph-fill ph-fire-simple"></i><span><strong>Superior Flavor:</strong> Ghee's high smoke point brings out deep, nutty caramelized flavors that no other oil can replicate.</span></li>
+            <li><i class="ph-fill ph-heart"></i><span><strong>Rich in Nutrients:</strong> Packed with fat-soluble vitamins A, D, E, and K — ghee nourishes as it delights.</span></li>
+            <li><i class="ph-fill ph-leaf"></i><span><strong>Zero Shortcuts:</strong> We source only 100% pure cow ghee and use it fresh in every single dish, every single day.</span></li>
+            <li><i class="ph-fill ph-sparkle"></i><span><strong>Aroma That Lingers:</strong> The intoxicating fragrance of ghee-roasted spices is the reason our flavours truly <em>stay</em> with you.</span></li>
+          </ul>
+          <a href="quality.html" class="hero-btn-primary" style="background:var(--clr-accent); border-color:var(--clr-accent); color:white; display:inline-flex; align-items:center; gap:8px; padding:1rem 2rem; font-family:var(--ff-heading); font-size:1rem; letter-spacing:1px; text-transform:uppercase; border-radius:4px; text-decoration:none; transition:var(--transition);">Our Quality Promise <i class="ph-bold ph-arrow-right"></i></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         6. OUR PROCESS
+    ========================================================= -->
+    <section class="process-section">
+      <div class="container">
+        <div class="section-header reveal">
+          <span class="subtitle">The GR Promise</span>
+          <h2>From Farm To Your Table</h2>
+          <p>Every dish goes through a rigorous 4-step journey to ensure it arrives perfect, every single time.</p>
+        </div>
+        <div class="process-steps">
+          <div class="process-step reveal">
+            <i class="ph ph-plant"></i>
+            <div class="process-num">1</div>
+            <h4>Farm Fresh</h4>
+            <p>Premium spices and ingredients sourced directly from certified farms in Kerala and Karnataka.</p>
+          </div>
+          <div class="process-step reveal" style="animation-delay:0.15s;">
+            <i class="ph ph-mortar-pestle"></i>
+            <div class="process-num">2</div>
+            <h4>Hand Pounded</h4>
+            <p>Spices are freshly ground every single morning using traditional stone grinding methods.</p>
+          </div>
+          <div class="process-step reveal" style="animation-delay:0.3s;">
+            <i class="ph ph-fire"></i>
+            <div class="process-num">3</div>
+            <h4>Slow Roasted</h4>
+            <p>Cooked patiently in 100% pure cow ghee over low-to-medium heat for maximum depth of flavour.</p>
+          </div>
+          <div class="process-step reveal" style="animation-delay:0.45s;">
+            <i class="ph ph-moped"></i>
+            <div class="process-num">4</div>
+            <h4>Delivered Hot</h4>
+            <p>Hygienically packed and dispatched within minutes so you receive it piping hot at your doorstep.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         7. STATISTICS STRIP
+    ========================================================= -->
+    <section class="stats-strip">
+      <div class="stats-inner">
+        <div class="stat-item reveal">
+          <h3 class="counter" data-target="2500000">0</h3>
+          <p>Customers Served</p>
+        </div>
+        <div class="stat-item reveal" style="animation-delay:0.1s;">
+          <h3 class="counter" data-target="15">0</h3>
+          <p>Premium Locations</p>
+        </div>
+        <div class="stat-item reveal" style="animation-delay:0.2s;">
+          <h3 class="counter" data-target="12">0</h3>
+          <p>Secret Spices</p>
+        </div>
+        <div class="stat-item reveal" style="animation-delay:0.3s;">
+          <h3 class="counter" data-target="25">0</h3>
+          <p>Years of Legacy</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         8. TESTIMONIALS
+    ========================================================= -->
+    <section class="testimonials-section">
+      <div class="container">
+        <div class="section-header dark reveal">
+          <span class="subtitle">What Our Guests Say</span>
+          <h2>Real People. Real Flavours.</h2>
+          <p>Don't just take our word for it — here's what our loyal customers say about the experience.</p>
+        </div>
+        <div class="testimonials-grid">
+          <div class="testimonial-card reveal">
+            <div class="testimonial-stars">★★★★★</div>
+            <p class="testimonial-text">"The chicken ghee roast is absolutely phenomenal. The depth of flavour from the ghee is unlike anything I've had in Delhi. This is now my weekly ritual."</p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">A</div>
+              <div>
+                <div class="testimonial-name">Arjun Mehta</div>
+                <div class="testimonial-loc">Delhi, via Swiggy</div>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial-card reveal" style="animation-delay:0.15s;">
+            <div class="testimonial-stars">★★★★★</div>
+            <p class="testimonial-text">"Ordered the prawn ghee roast for the first time and was completely blown away. The aroma, the spice balance — it's like getting coastal Mangalore right at home in Gurugram!"</p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">P</div>
+              <div>
+                <div class="testimonial-name">Priya Sharma</div>
+                <div class="testimonial-loc">Gurugram, via Zomato</div>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial-card reveal" style="animation-delay:0.3s;">
+            <div class="testimonial-stars">★★★★★</div>
+            <p class="testimonial-text">"We ordered VGGR for our corporate team lunch. Everyone was raving about it for days. The catering team was incredibly professional. Highly recommend to everyone!"</p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">R</div>
+              <div>
+                <div class="testimonial-name">Rohan Gupta</div>
+                <div class="testimonial-loc">Delhi (Corporate Event)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         9. DELIVERY & CATERING
+    ========================================================= -->
+    <section class="split-section">
+      <div class="split-half">
+        <div class="split-bg" style="background-image:url('images/hero_ghee_roast.png');"></div>
+        <div class="split-overlay" style="background:linear-gradient(90deg, rgba(62,82,55,0.92) 0%, rgba(62,82,55,0.75) 100%);"></div>
+        <div class="split-body reveal">
+          <span class="subtitle">Doorstep Dining</span>
+          <h2>Fast &amp; Reliable Delivery</h2>
+          <p>Craving our signature dishes at home? We ensure your food arrives piping hot, hygienically packed, and bursting with flavour. Available across Delhi &amp; Gurugram.</p>
+          <div style="display:flex; gap:1rem; margin-bottom:2rem; flex-wrap:wrap;">
+            <a href="#" style="background:#fc8019; color:white; padding:0.75rem 1.5rem; border-radius:6px; font-weight:700; text-decoration:none; font-size:0.9rem;">🍊 Order on Swiggy</a>
+            <a href="#" style="background:#e23744; color:white; padding:0.75rem 1.5rem; border-radius:6px; font-weight:700; text-decoration:none; font-size:0.9rem;">z Order on Zomato</a>
+          </div>
+          <a href="delivery.html" class="btn-split">View Delivery Zones <i class="ph-bold ph-arrow-right"></i></a>
+        </div>
+      </div>
+      <div class="split-half">
+        <div class="split-bg" style="background-image:url('images/catering_event.png');"></div>
+        <div class="split-overlay" style="background:linear-gradient(90deg, rgba(196,77,24,0.9) 0%, rgba(196,77,24,0.75) 100%);"></div>
+        <div class="split-body reveal">
+          <span class="subtitle">Events &amp; Parties</span>
+          <h2>Premium Event Catering</h2>
+          <p>Make your special moments unforgettable. From weddings to corporate galas, we provide a luxury culinary experience your guests will talk about for years.</p>
+          <ul class="checklist">
+            <li><i class="ph-fill ph-check-circle"></i> Custom Menu Packages</li>
+            <li><i class="ph-fill ph-check-circle"></i> Live Ghee Roast Cooking Stations</li>
+            <li><i class="ph-fill ph-check-circle"></i> Professional Service &amp; Hygiene Standards</li>
+          </ul>
+          <a href="catering.html" class="btn-split">Book Catering <i class="ph-bold ph-arrow-right"></i></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         10. GALLERY
+    ========================================================= -->
+    <section class="section">
+      <div class="container">
+        <div class="section-header reveal">
+          <span class="subtitle">Visual Feast</span>
+          <h2>The Restaurant Experience</h2>
+        </div>
+        <div class="gallery-mosaic reveal">
+          <div class="g-item"><img src="images/hero_ghee_roast.png" alt="Ghee Roast"></div>
+          <div class="g-item"><img src="images/premium_spices.png" alt="Spices"></div>
+          <div class="g-item"><img src="images/quality_ingredients.png" alt="Ingredients"></div>
+          <div class="g-item"><img src="images/origin_kitchen.png" alt="Kitchen"></div>
+          <div class="g-item"><img src="images/catering_event.png" alt="Catering Event"></div>
+          <div class="g-item"><img src="images/founder_chef.png" alt="Our Chef"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         11. NEWSLETTER
+    ========================================================= -->
+    <section class="newsletter-section">
+      <div class="newsletter-inner">
+        <div class="newsletter-left reveal">
+          <h2>Join The <span>Flavour</span> Club</h2>
+          <p>Subscribe to our newsletter for exclusive offers, secret recipes, early access to new dishes, and VIP event invitations. No spam — only the good stuff.</p>
+        </div>
+        <div class="newsletter-right reveal" style="animation-delay:0.2s;">
+          <form class="newsletter-form" onsubmit="event.preventDefault();">
+            <input type="email" placeholder="Enter your email address" required>
+            <button type="submit">Subscribe</button>
+          </form>
+          <small>We respect your privacy. Unsubscribe anytime.</small>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- =========================================================
+       FOOTER
+  ========================================================= -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-main">
+
+        <div class="footer-brand">
+          <a href="index.html" class="footer-logo">
+            <img src="images/logo.jpg" alt="VERY GOOD GHEE ROAST" style="height:55px; border-radius:8px;">
+            <span class="footer-logo-text">VERY GOOD<br><span>GHEE ROAST</span></span>
+          </a>
+          <p>South Indian inspired food, and an original saucy Ghee Roast! A premium delivery kitchen bringing authentic coastal flavors right to your doorstep in Delhi &amp; Gurugram.</p>
+          <div class="footer-tagline">"Flavours that stay."</div>
+          <div class="footer-socials">
+            <a href="https://www.instagram.com/verygoodgheeroast/" target="_blank"><i class="ph-fill ph-instagram-logo"></i></a>
+            <a href="#"><i class="ph-fill ph-facebook-logo"></i></a>
+            <a href="#"><i class="ph-fill ph-youtube-logo"></i></a>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <h5>Explore</h5>
+          <ul>
+            <li><a href="index.html"><i class="ph-bold ph-caret-right"></i> Home</a></li>
+            <li><a href="menu.html"><i class="ph-bold ph-caret-right"></i> The Menu</a></li>
+            <li><a href="about.html"><i class="ph-bold ph-caret-right"></i> Our Story</a></li>
+            <li><a href="quality.html"><i class="ph-bold ph-caret-right"></i> Quality Promise</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>Services</h5>
+          <ul>
+            <li><a href="delivery.html"><i class="ph-bold ph-caret-right"></i> Order Delivery</a></li>
+            <li><a href="catering.html"><i class="ph-bold ph-caret-right"></i> Luxury Catering</a></li>
+            <li><a href="menu.html?location=delhi"><i class="ph-bold ph-caret-right"></i> Delhi Menu</a></li>
+            <li><a href="menu.html?location=gurugram"><i class="ph-bold ph-caret-right"></i> Gurugram Menu</a></li>
+            <li><a href="contact.html"><i class="ph-bold ph-caret-right"></i> Contact Us</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>Get In Touch</h5>
+          <ul class="footer-contact">
+            <li><i class="ph-fill ph-map-pin"></i><div><strong style="color:white; display:block;">Delivery Kitchen</strong><span style="color:rgba(255,255,255,0.55);">Delhi & Gurugram, India</span></div></li>
+            <li><i class="ph-fill ph-phone"></i><div><span style="color:white;">+91 99102 13465</span></div></li>
+            <li><i class="ph-fill ph-clock"></i><div><span style="color:white;">1 PM – 10 PM</span><span style="color:rgba(255,255,255,0.55); display:block; font-size:0.8rem;">Tuesdays Closed</span></div></li>
+          </ul>
+        </div>
+
+      </div>
+
+      <div class="footer-bottom">
+        <div>© 2026 VERY GOOD GHEE ROAST. All Rights Reserved.</div>
+        <div style="display:flex; gap:2rem; flex-wrap:wrap;">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms &amp; Conditions</a>
+          <a href="#">Refund Policy</a>
+          <a href="#">Sitemap</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scroll To Top Button -->
+  <button id="scroll-top-btn" aria-label="Scroll to top" title="Scroll to top">
+    <i class="ph-bold ph-arrow-up"></i>
+  </button>
+
+  <script src="js/main.js"></script>
+  <script>
+    // Header scroll effect
+    const header = document.getElementById('main-header');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 60) header.classList.add('scrolled');
+      else header.classList.remove('scrolled');
+    });
+
+    // Scroll To Top
+    const scrollBtn = document.getElementById('scroll-top-btn');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 400) scrollBtn.classList.add('visible');
+      else scrollBtn.classList.remove('visible');
+    });
+    scrollBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+    // Reveal on scroll
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+    }, { threshold: 0.12 });
+    reveals.forEach(r => observer.observe(r));
+
+    // Counter animation
+    const counters = document.querySelectorAll('.counter');
+    const counterObs = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const el = entry.target;
+          const target = +el.getAttribute('data-target');
+          let count = 0;
+          const step = Math.ceil(target / 60);
+          const timer = setInterval(() => {
+            count += step;
+            if (count >= target) { count = target; clearInterval(timer); }
+            el.textContent = count >= 1000000 ? (count / 1000000).toFixed(1) + 'M+' : count + '+';
+          }, 25);
+          counterObs.unobserve(el);
+        }
+      });
+    }, { threshold: 0.5 });
+    counters.forEach(c => counterObs.observe(c));
+  </script>
+</body>
+</html>

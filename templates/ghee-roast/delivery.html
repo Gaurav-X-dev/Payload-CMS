@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Delivery | Very Good Ghee Roast</title>
+  <meta name="description" content="Order premium South Indian coastal cuisine, slow roasted in pure ghee, delivered hot to your door in Delhi and Gurugram.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/inner.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    body { background: #f4efe6; font-family: 'Inter', sans-serif; margin: 0; color: #2c2a25; }
+    .container { width: 95%; max-width: 1400px; margin: 0 auto; }
+    .section { padding: 6rem 0; }
+    
+    .inner-hero { background: #3e5237; padding: 6rem 0 4rem; text-align: center; position: relative; overflow: hidden; }
+    .inner-hero::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(196,77,24,0.15), transparent 60%); }
+    .inner-hero h1 { font-family: 'Oswald', sans-serif; font-size: clamp(2.5rem, 5vw, 4.5rem); color: white; text-transform: uppercase; margin: 0 0 1rem; position: relative; z-index: 2; line-height: 1.1; }
+    .inner-hero .bc { font-size: 0.85rem; color: rgba(255,255,255,0.5); margin-bottom: 1rem; position: relative; z-index: 2; }
+    .inner-hero .bc a { color: #c44d18; text-decoration: none; }
+    .inner-hero p { color: rgba(255,255,255,0.75); font-size: 1.1rem; max-width: 580px; margin: 0 auto; position: relative; z-index: 2; line-height: 1.7; }
+
+    /* Order Platform Cards */
+    .platform-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2rem; margin-top: -3rem; position: relative; z-index: 10; padding: 0 1rem; }
+    .plat-card { border-radius: 12px; padding: 3rem 2rem; color: white; text-align: center; text-decoration: none; transition: transform 0.3s ease, box-shadow 0.3s ease; box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .plat-card:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(0,0,0,0.25); }
+    .plat-swiggy { background: linear-gradient(135deg, #fc8019, #e5741a); }
+    .plat-zomato { background: linear-gradient(135deg, #e23744, #c52e3a); }
+    .plat-icon { font-size: 4rem; font-weight: 800; margin-bottom: 1rem; font-family: sans-serif; line-height: 1; }
+    .plat-title { font-family: 'Oswald', sans-serif; font-size: 2rem; margin: 0 0 0.5rem; text-transform: uppercase; }
+    .plat-desc { font-size: 1rem; opacity: 0.9; margin: 0 0 2rem; }
+    .plat-btn { display: inline-block; background: white; color: #111; font-family: 'Oswald', sans-serif; padding: 1rem 2.5rem; border-radius: 50px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+    .plat-swiggy .plat-btn { color: #fc8019; }
+    .plat-zomato .plat-btn { color: #e23744; }
+
+    /* Process Steps */
+    .process-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 3rem; position: relative; text-align: center; }
+    .process-step { position: relative; z-index: 2; background: #f4efe6; padding: 2rem; }
+    .step-icon { width: 100px; height: 100px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 3rem; color: #c44d18; margin: 0 auto 1.5rem; border: 2px dashed rgba(196,77,24,0.3); position: relative; }
+    .step-num { position: absolute; top: -10px; right: -10px; width: 35px; height: 35px; background: #3e5237; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Oswald', sans-serif; font-weight: bold; font-size: 1.1rem; border: 3px solid #f4efe6; }
+    .process-step h3 { font-family: 'Oswald', sans-serif; color: #3e5237; font-size: 1.4rem; margin: 0 0 1rem; }
+    .process-step p { color: #666; line-height: 1.6; margin: 0; }
+    @media (min-width: 768px) {
+      .process-grid::before { content: ''; position: absolute; top: 70px; left: 10%; right: 10%; border-top: 2px dashed rgba(196,77,24,0.3); z-index: 1; }
+    }
+
+    /* Zones */
+    .zone-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
+    .zone-card { background: color-mix(in srgb, #3e5237, black 10%); padding: 3rem 2rem; border-radius: 12px; border-top: 4px solid #c44d18; text-align: center; }
+    .zone-card h3 { font-family: 'Oswald', sans-serif; color: white; font-size: 1.8rem; margin: 0 0 1.5rem; display: flex; align-items: center; justify-content: center; gap: 10px; }
+    .zone-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 1rem; }
+    .zone-list li { color: rgba(255,255,255,0.8); font-size: 1.05rem; display: flex; align-items: center; justify-content: center; gap: 10px; }
+    .zone-list li::before { content: '•'; color: #c44d18; }
+
+    /* Promise Badges */
+    .promise-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; }
+    .promise-badge { background: white; padding: 2rem 1.5rem; border-radius: 12px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid rgba(62,82,55,0.08); transition: transform 0.3s; }
+    .promise-badge:hover { transform: translateY(-5px); border-color: rgba(62,82,55,0.3); }
+    .promise-badge i { font-size: 2.5rem; color: #c44d18; margin-bottom: 1rem; }
+    .promise-badge h4 { font-family: 'Oswald', sans-serif; color: #3e5237; font-size: 1.1rem; margin: 0; line-height: 1.3; text-transform: uppercase; }
+
+    /* FAQ */
+    .faq-container { max-width: 800px; margin: 0 auto; }
+    details { background: white; margin-bottom: 1rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); overflow: hidden; border: 1px solid rgba(62,82,55,0.1); }
+    summary { padding: 1.5rem; font-family: 'Oswald', sans-serif; font-size: 1.2rem; color: #3e5237; cursor: pointer; display: flex; justify-content: space-between; align-items: center; list-style: none; }
+    summary::-webkit-details-marker { display: none; }
+    summary::after { content: '+'; font-size: 1.5rem; color: #c44d18; transition: transform 0.3s; }
+    details[open] summary::after { content: '−'; transform: rotate(180deg); }
+    .faq-content { padding: 0 1.5rem 1.5rem; color: #555; line-height: 1.7; border-top: 1px solid rgba(0,0,0,0.05); margin-top: 0.5rem; padding-top: 1rem; }
+
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="header-home on-dark" id="main-header">
+    <div class="nav-container" style="display:flex; justify-content:space-between; align-items:center; width:95%; max-width:var(--max-w); margin:0 auto;">
+      <a href="index.html" class="footer-logo">
+        <img src="images/logo.jpg" alt="VERY GOOD GHEE ROAST Logo" style="height:52px; border-radius:8px;">
+        <span class="logo-text">VERY GOOD<br><span style="font-size:0.65rem; letter-spacing:2px; color:var(--clr-accent);">FLAVOURS THAT STAY</span></span>
+      </a>
+
+      <nav>
+        <ul class="nav-links" style="display:flex; gap:2rem; align-items:center; list-style:none;">
+          <li><a href="index.html" >Home</a></li>
+          <li class="nav-dropdown">
+            <a href="menu.html">Menu <i class="ph-bold ph-caret-down" style="font-size:0.7rem;"></i></a>
+            <ul class="nav-dropdown-menu">
+              <li><a href="menu.html?location=delhi"><i class="ph-fill ph-map-pin"></i> Delhi Menu</a></li>
+              <li><a href="menu.html?location=gurugram"><i class="ph-fill ph-map-pin"></i> Gurugram Menu</a></li>
+            </ul>
+          </li>
+          <li><a href="about.html">Our Story</a></li>
+          <li><a href="quality.html">Quality</a></li>
+          <li><a href="delivery.html" class="active">Delivery</a></li>
+          <li><a href="catering.html">Catering</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </nav>
+
+      <div style="display:flex; gap:1rem; align-items:center;">
+        <a href="menu.html" class="nav-order-btn">Order Online</a>
+        <div class="hamburger" id="mobile-menu-btn" style="display:none; flex-direction:column; gap:6px; cursor:pointer;">
+          <span style="width:28px; height:2px; background:var(--clr-primary); display:block;"></span>
+          <span style="width:28px; height:2px; background:var(--clr-primary); display:block;"></span>
+          <span style="width:28px; height:2px; background:var(--clr-primary); display:block;"></span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- HERO -->
+    <section class="inner-hero">
+      <div class="bc"><a href="index.html">Home</a> <span style="color:rgba(255,255,255,0.3);">/</span> Delivery</div>
+      <h1>Hot. Fresh. At Your Door.</h1>
+      <p>Premium ghee roast delivered directly to your home — piping hot, hygienically packed, and bursting with flavour.</p>
+    </section>
+
+    <!-- ORDER PLATFORMS -->
+    <div class="container">
+      <div class="platform-cards reveal">
+        <a href="#" class="plat-card plat-swiggy">
+          <div class="plat-icon">S</div>
+          <h2 class="plat-title">Swiggy</h2>
+          <p class="plat-desc">Superfast delivery across zones</p>
+          <span class="plat-btn">Order Now</span>
+        </a>
+        <a href="#" class="plat-card plat-zomato">
+          <div class="plat-icon">Z</div>
+          <h2 class="plat-title">Zomato</h2>
+          <p class="plat-desc">Live tracking &amp; seamless ordering</p>
+          <span class="plat-btn">Order Now</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- HOW IT WORKS -->
+    <section class="section" style="margin-top:2rem;">
+      <div class="container">
+        <div style="text-align:center; margin-bottom:4rem;" class="reveal">
+          <span style="font-family:'Oswald',sans-serif; font-size:0.85rem; letter-spacing:3px; color:#c44d18; text-transform:uppercase; display:block; margin-bottom:0.5rem;">The Process</span>
+          <h2 style="font-family:'Oswald',sans-serif; font-size:2.5rem; color:#3e5237; text-transform:uppercase; margin:0;">How It Works</h2>
+        </div>
+        
+        <div class="process-grid reveal">
+          <div class="process-step">
+            <div class="step-icon">
+              <i class="ph-bold ph-device-mobile"></i>
+              <div class="step-num">1</div>
+            </div>
+            <h3>Browse &amp; Select</h3>
+            <p>Choose your favorites from our premium menu on Swiggy or Zomato.</p>
+          </div>
+          <div class="process-step">
+            <div class="step-icon">
+              <i class="ph-bold ph-cooking-pot"></i>
+              <div class="step-num">2</div>
+            </div>
+            <h3>We Prepare Fresh</h3>
+            <p>Your meal is slow-roasted in pure ghee only after you place the order.</p>
+          </div>
+          <div class="process-step">
+            <div class="step-icon">
+              <i class="ph-bold ph-moped"></i>
+              <div class="step-num">3</div>
+            </div>
+            <h3>Delivered Hot</h3>
+            <p>Packed securely in tamper-proof boxes to retain heat and aroma.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ZONES -->
+    <section class="section" style="background:#3e5237;">
+      <div class="container">
+        <div style="text-align:center; margin-bottom:4rem;" class="reveal">
+          <span style="font-family:'Oswald',sans-serif; font-size:0.85rem; letter-spacing:3px; color:#c44d18; text-transform:uppercase; display:block; margin-bottom:0.5rem;">Service Areas</span>
+          <h2 style="font-family:'Oswald',sans-serif; font-size:2.5rem; color:white; text-transform:uppercase; margin:0;">Delivery Zones</h2>
+          <p style="color:rgba(255,255,255,0.7); max-width:600px; margin:1rem auto 0;">We currently operate out of two premium cloud kitchens serving major parts of Delhi NCR.</p>
+        </div>
+        
+        <div class="zone-cards reveal">
+          <div class="zone-card">
+            <h3><i class="ph-fill ph-map-pin" style="color:#c44d18;"></i> Delhi Kitchen</h3>
+            <ul class="zone-list">
+              <li>Connaught Place &amp; Central Delhi</li>
+              <li>South Delhi (Select Areas)</li>
+              <li>East Delhi Hubs</li>
+              <li>Noida Border Regions</li>
+            </ul>
+          </div>
+          <div class="zone-card">
+            <h3><i class="ph-fill ph-map-pin" style="color:#c44d18;"></i> Gurugram Kitchen</h3>
+            <ul class="zone-list">
+              <li>Sector 29 &amp; Cyber City</li>
+              <li>Golf Course Road</li>
+              <li>DLF Phases 1-5</li>
+              <li>Sohna Road Vicinity</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROMISES -->
+    <section class="section">
+      <div class="container">
+        <div style="text-align:center; margin-bottom:4rem;" class="reveal">
+          <h2 style="font-family:'Oswald',sans-serif; font-size:2.5rem; color:#3e5237; text-transform:uppercase; margin:0;">Our Delivery Promise</h2>
+        </div>
+        
+        <div class="promise-grid reveal">
+          <div class="promise-badge">
+            <i class="ph-fill ph-clock"></i>
+            <h4>Fast Delivery</h4>
+          </div>
+          <div class="promise-badge">
+            <i class="ph-fill ph-package"></i>
+            <h4>Tamper-Proof Packing</h4>
+          </div>
+          <div class="promise-badge">
+            <i class="ph-fill ph-thermometer-hot"></i>
+            <h4>Hot &amp; Fresh</h4>
+          </div>
+          <div class="promise-badge">
+            <i class="ph-fill ph-crosshair"></i>
+            <h4>Live Tracking</h4>
+          </div>
+          <div class="promise-badge">
+            <i class="ph-fill ph-shield-check"></i>
+            <h4>No Compromise</h4>
+          </div>
+          <div class="promise-badge">
+            <i class="ph-fill ph-moped"></i>
+            <h4>Hygiene Certified</h4>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQS -->
+    <section class="section" style="background:color-mix(in srgb, #f4efe6, #3e5237 5%); border-top:1px solid rgba(62,82,55,0.1);">
+      <div class="container">
+        <div style="text-align:center; margin-bottom:3rem;" class="reveal">
+          <h2 style="font-family:'Oswald',sans-serif; font-size:2.5rem; color:#3e5237; text-transform:uppercase; margin:0;">Common Questions</h2>
+        </div>
+        
+        <div class="faq-container reveal">
+          <details open>
+            <summary>Which areas do you deliver to?</summary>
+            <div class="faq-content">We deliver to major parts of Central/South/East Delhi and Gurugram. If you are within a 8-10km radius of our kitchens, you should be able to find us on Swiggy or Zomato.</div>
+          </details>
+          <details>
+            <summary>How long does delivery take?</summary>
+            <div class="faq-content">Our average preparation time is 15-20 minutes, and delivery takes another 15-25 minutes depending on traffic and your distance from our kitchen.</div>
+          </details>
+          <details>
+            <summary>Can I track my order?</summary>
+            <div class="faq-content">Yes! Since all our orders are processed through Swiggy and Zomato, you get real-time GPS tracking from the moment the food leaves our kitchen to your doorstep.</div>
+          </details>
+          <details>
+            <summary>What if my food arrives cold?</summary>
+            <div class="faq-content">We use premium insulated packaging to ensure your ghee roast arrives piping hot. In the rare event of an issue, please reach out to the delivery partner's support for immediate assistance.</div>
+          </details>
+          <details>
+            <summary>Do you offer contactless delivery?</summary>
+            <div class="faq-content">Absolutely. You can select the "Leave at door" or "Contactless delivery" option during checkout on both Swiggy and Zomato.</div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section" style="text-align:center;">
+      <div class="container reveal">
+        <h2 style="font-family:'Oswald',sans-serif; font-size:3rem; color:#3e5237; text-transform:uppercase; margin:0 0 2rem;">Ready for a Feast?</h2>
+        <div style="display:flex; justify-content:center; gap:1.5rem; flex-wrap:wrap;">
+          <a href="#" style="background:#fc8019; color:white; padding:1.2rem 3rem; border-radius:4px; font-family:'Oswald',sans-serif; font-size:1.2rem; text-decoration:none; text-transform:uppercase; display:flex; align-items:center; gap:10px; transition:transform 0.3s;"><span style="background:white; color:#fc8019; width:24px; height:24px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:0.9rem; font-weight:bold;">S</span> Swiggy</a>
+          <a href="#" style="background:#e23744; color:white; padding:1.2rem 3rem; border-radius:4px; font-family:'Oswald',sans-serif; font-size:1.2rem; text-decoration:none; text-transform:uppercase; display:flex; align-items:center; gap:10px; transition:transform 0.3s;"><span style="font-weight:bold; font-size:1.4rem; line-height:1;">z</span> Zomato</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <section class="newsletter-section">
+      <div class="newsletter-inner">
+        <div class="newsletter-left reveal">
+          <h2>Join The <span>Flavour</span> Club</h2>
+          <p>Subscribe to our newsletter for exclusive offers, secret recipes, early access to new dishes, and VIP event invitations. No spam — only the good stuff.</p>
+        </div>
+        <div class="newsletter-right reveal" style="animation-delay:0.2s;">
+          <form class="newsletter-form" onsubmit="event.preventDefault();">
+            <input type="email" placeholder="Enter your email address" required>
+            <button type="submit">Subscribe</button>
+          </form>
+          <small>We respect your privacy. Unsubscribe anytime.</small>
+        </div>
+      </div>
+    </section>
+
+<footer class="site-footer">
+    <div class="container">
+      <div class="footer-main">
+
+        <div class="footer-brand">
+          <a href="index.html" class="footer-logo">
+            <img src="images/logo.jpg" alt="VERY GOOD GHEE ROAST" style="height:55px; border-radius:8px;">
+            <span class="footer-logo-text">VERY GOOD<br><span>GHEE ROAST</span></span>
+          </a>
+          <p>South Indian inspired food, and an original saucy Ghee Roast! A premium delivery kitchen bringing authentic coastal flavors right to your doorstep in Delhi &amp; Gurugram.</p>
+          <div class="footer-tagline">"Flavours that stay."</div>
+          <div class="footer-socials">
+            <a href="https://www.instagram.com/verygoodgheeroast/" target="_blank"><i class="ph-fill ph-instagram-logo"></i></a>
+            <a href="#"><i class="ph-fill ph-facebook-logo"></i></a>
+            <a href="#"><i class="ph-fill ph-youtube-logo"></i></a>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <h5>Explore</h5>
+          <ul>
+            <li><a href="index.html"><i class="ph-bold ph-caret-right"></i> Home</a></li>
+            <li><a href="menu.html"><i class="ph-bold ph-caret-right"></i> The Menu</a></li>
+            <li><a href="about.html"><i class="ph-bold ph-caret-right"></i> Our Story</a></li>
+            <li><a href="quality.html"><i class="ph-bold ph-caret-right"></i> Quality Promise</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>Services</h5>
+          <ul>
+            <li><a href="delivery.html"><i class="ph-bold ph-caret-right"></i> Order Delivery</a></li>
+            <li><a href="catering.html"><i class="ph-bold ph-caret-right"></i> Luxury Catering</a></li>
+            <li><a href="menu.html?location=delhi"><i class="ph-bold ph-caret-right"></i> Delhi Menu</a></li>
+            <li><a href="menu.html?location=gurugram"><i class="ph-bold ph-caret-right"></i> Gurugram Menu</a></li>
+            <li><a href="contact.html"><i class="ph-bold ph-caret-right"></i> Contact Us</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>Get In Touch</h5>
+          <ul class="footer-contact">
+            <li><i class="ph-fill ph-map-pin"></i><div><strong style="color:white; display:block;">Delivery Kitchen</strong><span style="color:rgba(255,255,255,0.55);">Delhi & Gurugram, India</span></div></li>
+            <li><i class="ph-fill ph-phone"></i><div><span style="color:white;">+91 99102 13465</span></div></li>
+            <li><i class="ph-fill ph-clock"></i><div><span style="color:white;">1 PM – 10 PM</span><span style="color:rgba(255,255,255,0.55); display:block; font-size:0.8rem;">Tuesdays Closed</span></div></li>
+          </ul>
+        </div>
+
+      </div>
+
+      <div class="footer-bottom">
+        <div>© 2026 VERY GOOD GHEE ROAST. All Rights Reserved.</div>
+        <div style="display:flex; gap:2rem; flex-wrap:wrap;">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms &amp; Conditions</a>
+          <a href="#">Refund Policy</a>
+          <a href="#">Sitemap</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <button id="scroll-top-btn" aria-label="Scroll to top"><i class="ph-bold ph-arrow-up"></i></button>
+  
+  <script>
+    const sb = document.getElementById('scroll-top-btn');
+    window.addEventListener('scroll', () => { if (window.scrollY > 400) sb.classList.add('visible'); else sb.classList.remove('visible'); });
+    sb.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    
+    document.querySelectorAll('.reveal').forEach(r => new IntersectionObserver((e, o) => {
+      e.forEach(en => { if (en.isIntersecting) { en.target.classList.add('visible'); o.unobserve(en.target); } });
+    }, { threshold: 0.12 }).observe(r));
+  </script>
+</body>
+</html>

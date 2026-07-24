@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Frequently Asked Questions - Zuru Zuru | Japanese Ramen Diner</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <style>
+    .faq-hero {
+      height: 50vh;
+      background: linear-gradient(rgba(17, 17, 17, 0.8), rgba(17, 17, 17, 0.8)), url('images/gyoza_tempura.png') center/cover;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: #F7F3ED;
+    }
+    .faq-hero h1 {
+      font-size: 4rem;
+      color: #C9A227;
+      margin-bottom: 1rem;
+    }
+    .faq-container {
+      max-width: 800px;
+      margin: 4rem auto;
+    }
+    .faq-category {
+      margin-bottom: 4rem;
+    }
+    .faq-category h2 {
+      color: #8B1A1A;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid rgba(139, 26, 26, 0.2);
+      padding-bottom: 0.5rem;
+      font-size: 2rem;
+    }
+    .accordion-item {
+      background: #fff;
+      margin-bottom: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .accordion-header {
+      width: 100%;
+      text-align: left;
+      padding: 1.5rem;
+      background: #fff;
+      border: none;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #111;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: inherit;
+      transition: background-color 0.3s ease;
+    }
+    .accordion-header:hover {
+      background: #F7F3ED;
+      color: #8B1A1A;
+    }
+    .accordion-content {
+      padding: 0 1.5rem;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease, padding 0.4s ease;
+      background: #fff;
+    }
+    .accordion-content p {
+      padding-bottom: 1.5rem;
+      color: #555;
+      margin: 0;
+      line-height: 1.6;
+    }
+    .accordion-item.active .accordion-content {
+      max-height: 500px;
+      padding-top: 0.5rem;
+    }
+    .accordion-item.active .accordion-header {
+      border-bottom: 1px solid #eee;
+      color: #8B1A1A;
+    }
+    .accordion-item.active .accordion-header i {
+      transform: rotate(180deg);
+      color: #8B1A1A;
+    }
+    .accordion-header i {
+      transition: transform 0.3s ease;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <!-- Preloader -->
+  <div class="preloader">
+    <img src="zuruzuru_logo.png" alt="Loading" class="preloader-logo">
+    <div class="preloader-bar"></div>
+  </div>
+
+  <!-- Scroll Progress -->
+  <div class="scroll-progress"></div>
+
+  <!-- Header -->
+  <header class="header header-inner">
+    <div class="nav-container">
+      <a href="index.html" class="logo">
+        <img src="zuruzuru_logo.png" alt="Zuru Zuru Izakaya">
+        <span class="brand-name">Zuru Zuru</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li>
+          <a href="menu.html">Menu <i class="ph-bold ph-caret-down" style="font-size:0.7rem;"></i></a>
+          <ul class="nav-dropdown">
+            <li><a href="menu.html?location=delhi">Delhi Menu</a></li>
+            <li><a href="menu.html?location=gurugram">Gurugram Menu</a></li>
+          </ul>
+        </li>
+        <li><a href="about.html">Our Story</a></li>
+        <li><a href="chefs.html">Chefs</a></li>
+        <li><a href="gallery.html">Gallery</a></li>
+        <li><a href="reservation.html">Reservations</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+      <div class="nav-right">
+        <a href="reservation.html" class="btn btn-primary btn-sm"><span>Reserve</span></a>
+        <div class="hamburger">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu">
+    <a href="index.html">Home</a>
+    <a href="menu.html">Menu</a>
+    <a href="about.html">Our Story</a>
+    <a href="chefs.html">Chefs</a>
+    <a href="gallery.html">Gallery</a>
+    <a href="reservation.html">Reservations</a>
+    <a href="private-dining.html">Private Dining</a>
+    <a href="events.html">Events</a>
+    <a href="blog.html">Blog</a>
+    <a href="contact.html">Contact</a>
+  </div>
+
+  <!-- Hero Section -->
+  <section class="faq-hero reveal">
+    <div class="container">
+      <h1>Frequently Asked Questions</h1>
+      <p style="font-size: 1.2rem; max-width: 600px; margin: 0 auto;">Find answers to our most common questions regarding reservations, dining, delivery, and more.</p>
+    </div>
+  </section>
+
+  <!-- FAQ Content -->
+  <section class="section section-alt">
+    <div class="container">
+      <div class="faq-container reveal-scale">
+        
+        <!-- Category: Reservations -->
+        <div class="faq-category">
+          <h2>Reservations</h2>
+          
+          <div class="accordion-item">
+            <button class="accordion-header">Do you accept walk-ins or are reservations required? <i class="ph-bold ph-caret-down"></i></button>
+            <div class="accordion-content">
+              <p>We gladly accept walk-ins, though seating is subject to availability. As we tend to get quite busy during dinner service, particularly on weekends, we strongly recommend making a reservation in advance to guarantee your table.</p>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <button class="accordion-header">How far in advance can I book a table? <i class="ph-bold ph-caret-down"></i></button>
+            <div class="accordion-content">
+              <p>You can book a table up to 30 days in advance through our website reservation portal. For larger groups or special events, you can reach out to us up to 6 months prior.</p>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <button class="accordion-header">What is your cancellation policy? <i class="ph-bold ph-caret-down"></i></button>
+            <div class="accordion-content">
+              <p>We ask that you cancel at least 4 hours before your scheduled reservation time. For groups of 6 or more, a cancellation fee may apply if not cancelled within 24 hours.</p>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <button class="accordion-header">Do you accommodate large parties or private events? <i class="ph-bold ph-caret-down"></i></button>
+            <div class="accordion-content">
+              <p>Yes, we have a beautiful private dining room that can accommodate up to 20 guests. For larger parties, we also offer full or partial restaurant buyouts. Please visit our Private Dining page for more information.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Category: Dining Experience -->
+        <div class="faq-category">
+          <h2>Dining Experience</h2>
+          
+          <div class="accordion-item">
+            <button class="accordion-header">What is the dress code at Zuru Zuru? <i class="ph-bold ph-caret-down"></i></button>
+            <div class="accordion-content">
+              <p>Our dress code is smart casual. We encourage you to dress comfortably yet stylishly. Please avoid activewear, beachwear, and flip-flops during dinner service.</p>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <button class="accordion-header">Is the restaurant child-friendly? <i class="ph-bold ph-caret-down"></i></button>
+            <div class="accordion-content">
+              <p>Yes, children are welcome at Zuru Zuru. We offer a dedicated kids' menu and have high chairs available upon request. Please let us know if you need a high chair when making your reservation.</p>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <button class="accordion-header">Do you have parking available? <i class="ph-bold ph-caret-down"></i></button>
+            <div class="accordion-content">
+              <p>We offer complimentary valet parking for all our dining guests. There is also paid public parking available within a short walking distance from the restaurant.</p>
+            </div>
+          </div>
+          
+          <div class="accordion-item">
+            <button class="accordion-header">Can I bring my own wine (BYOB)? <i class="ph-bold ph-caret-down"></i></button>
+            <div class="accordion-content">
+              <p>We have a carefully curated selection of Japanese sake, wines, and signature cocktails. However, if you wish to bring a special bottle, our corkage fee is ₹1,500 per 750ml bottle, with a limit of two bottles per table.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Category: Menu & Dietary -->
+        <div class="faq-category">
+          <h2>Menu & Dietary Requirements</h2>
+          
+          <div class="accordion-item">
+            <button class="accordion-header">Do you offer vegetarian or vegan options? <i class="ph-bold ph-caret-down"></i></button>
+            <div class="accordion-content">
+              <p>Absolutely. We have a dedicated section of vegetarian and vegan dishes, including our signature Mushroom Truffle Ramen and various vegetable robata skewers. Our staff can help guide you through the menu.</p>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <button class="accordion-header">Can you accommodate gluten-free diets? <i class="ph-bold ph-caret-down"></i></button>
+            <div class="accordion-content">
+              <p>Yes, we offer gluten-free soy sauce (tamari) upon request and many of our dishes can be modified to be gluten-free. Please inform your server of any severe allergies before ordering, as cross-contamination is a possibility in our busy kitchen.</p>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <button class="accordion-header">Is your meat Halal certified? <i class="ph-bold ph-caret-down"></i></button>
+            <div class="accordion-content">
+              <p>Our chicken and lamb are sourced from Halal-certified suppliers. However, please note that we do serve pork and alcohol on the premises, so we are not a fully Halal establishment.</p>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <button class="accordion-header">Are the ramen noodles made in-house? <i class="ph-bold ph-caret-down"></i></button>
+            <div class="accordion-content">
+              <p>Yes! Our ramen noodles are crafted fresh daily in our kitchen using specialized noodle-making machines imported directly from Japan, ensuring the perfect texture and bite.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Category: Delivery & Takeaway -->
+        <div class="faq-category">
+          <h2>Delivery & Takeaway</h2>
+          
+          <div class="accordion-item">
+            <button class="accordion-header">Do you offer food delivery? <i class="ph-bold ph-caret-down"></i></button>
+            <div class="accordion-content">
+              <p>Yes, we offer delivery within a 7km radius of our location. You can order directly through our website for the best rates, or find us on premium food delivery platforms like Zomato and Swiggy.</p>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <button class="accordion-header">Can I order ramen for takeaway? <i class="ph-bold ph-caret-down"></i></button>
+            <div class="accordion-content">
+              <p>Yes! We have specially designed packaging that separates the broth from the noodles and toppings to ensure your ramen stays fresh and doesn't get soggy on the way home.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Category: Payments & Gift Cards -->
+        <div class="faq-category">
+          <h2>Payments & Gift Cards</h2>
+          
+          <div class="accordion-item">
+            <button class="accordion-header">What payment methods do you accept? <i class="ph-bold ph-caret-down"></i></button>
+            <div class="accordion-content">
+              <p>We accept all major credit and debit cards (Visa, Mastercard, Amex), UPI payments (Google Pay, PhonePe, Paytm), and cash.</p>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <button class="accordion-header">Do you sell gift cards? <i class="ph-bold ph-caret-down"></i></button>
+            <div class="accordion-content">
+              <p>Yes, digital and physical gift cards are available for purchase. You can buy digital gift cards directly from our website, or pick up a physical card at the restaurant.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+    <!-- --- NEWSLETTER --- -->
+  <section class="nl-section section-alt">
+    <div class="container reveal">
+      <div class="section-subtitle" style="justify-content:center;">Stay Connected</div>
+      <h2 class="heading-section text-center">Join Our Inner Circle</h2>
+      <p class="section-desc text-center" style="margin:0 auto 2rem;">Receive exclusive recipes, event invitations, and special offers directly in your inbox. No spam, just Japanese inspiration.</p>
+      <div class="nl-form">
+        <input type="email" placeholder="Enter your email address" aria-label="Email address">
+        <button type="button">Subscribe</button>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-about">
+          <div class="footer-brand-container">
+            <img src="zuruzuru_logo.png" alt="Zuru Zuru" class="footer-logo">
+            <span class="brand-name">Zuru Zuru</span>
+          </div>
+          <p>A premium Japanese Izakaya experience bringing the authentic flavours of Tokyo to New Delhi. Every dish tells a story of tradition, passion, and culinary excellence.</p>
+          <div class="footer-social">
+            <a href="https://www.instagram.com/zuruzuru.in/?hl=en" aria-label="Instagram" target="_blank"><i class="ph ph-instagram-logo"></i></a>
+            <a href="#" aria-label="Facebook"><i class="ph ph-facebook-logo"></i></a>
+            <a href="#" aria-label="Twitter"><i class="ph ph-twitter-logo"></i></a>
+            <a href="#" aria-label="YouTube"><i class="ph ph-youtube-logo"></i></a>
+          </div>
+        </div>
+        <div class="footer-links">
+          <h4>Explore</h4>
+          <a href="menu.html">Our Menu</a>
+          <a href="about.html">Our Story</a>
+          <a href="chefs.html">Our Chefs</a>
+          <a href="gallery.html">Gallery</a>
+          <a href="blog.html">Blog</a>
+        </div>
+        <div class="footer-links">
+          <h4>Services</h4>
+          <a href="reservation.html">Reservations</a>
+          <a href="private-dining.html">Private Dining</a>
+          <a href="events.html">Events</a>
+          <a href="catering.html">Catering</a>
+          <a href="careers.html">Careers</a>
+        </div>
+        <div class="footer-links">
+          <h4>Information</h4>
+          <a href="locations.html">Locations</a>
+          <a href="franchise.html">Franchise</a>
+          <a href="faq.html">FAQ</a>
+          <a href="privacy-policy.html">Privacy Policy</a>
+          <a href="terms.html">Terms</a>
+        </div>
+        <div>
+          <h4>Contact</h4>
+          <ul class="footer-contact">
+            <li><i class="ph ph-map-pin"></i> Zuru Zuru, Delhi, India 110049</li>
+            <li><i class="ph ph-phone"></i> +91 11 4052 7373</li>
+            <li><i class="ph ph-envelope"></i> hello@zuruzuru.in</li>
+          </ul>
+          <h4 style="margin-top:2rem">Hours</h4>
+          <ul class="footer-hours">
+              <li style="flex-direction:column; align-items:flex-start; margin-bottom:10px;">
+                <span style="color:var(--clr-primary); font-weight:600; margin-bottom:5px;">1:00 PM - 4:00 PM & 7:00 PM - 10:30 PM</span>
+                <span style="font-size:0.85rem; color:#888;">Lunch & Dinner (Full Menu)</span>
+              </li>
+              <li style="flex-direction:column; align-items:flex-start;">
+                <span style="color:var(--clr-primary); font-weight:600; margin-bottom:5px;">4:00 PM - 7:00 PM</span>
+                <span style="font-size:0.85rem; color:#888;">Tempura, Gyoza & Cold Ramen</span>
+              </li>
+            </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Zuru Zuru Izakaya. All Rights Reserved.</p>
+        <div class="footer-bottom-links">
+          <a href="privacy-policy.html">Privacy Policy</a>
+          <a href="terms.html">Terms of Service</a>
+          <a href="faq.html">FAQ</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Back to Top -->
+  <button class="back-to-top" aria-label="Back to top">
+    <i class="ph ph-caret-up"></i>
+  </button>
+
+  <script src="js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const accordionHeaders = document.querySelectorAll('.accordion-header');
+      accordionHeaders.forEach(header => {
+        header.addEventListener('click', () => {
+          const currentItem = header.parentElement;
+          const isActive = currentItem.classList.contains('active');
+          
+          // Close all
+          document.querySelectorAll('.accordion-item').forEach(item => {
+            item.classList.remove('active');
+          });
+          
+          // Open clicked if it wasn't active
+          if (!isActive) {
+            currentItem.classList.add('active');
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+

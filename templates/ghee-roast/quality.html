@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quality Promise | Very Good Ghee Roast</title>
+  <meta name="description" content="At VGGR, quality is non-negotiable. From Byadgi chilies sourced in Karnataka to pure cow ghee from local farms — discover our zero-shortcut promise.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/inner.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <style>
+    .reveal{opacity:0;transform:translateY(28px);transition:opacity 0.6s ease,transform 0.6s ease;}
+    .reveal.visible{opacity:1;transform:translateY(0);}
+    body{background:var(--clr-bg); font-family:'Inter',sans-serif; margin:0;}
+    h1,h2,h3,h4{font-family:'Oswald',sans-serif;}
+    .container{width:95%; max-width:1400px; margin:0 auto;}
+    .section{padding:6rem 0;}
+    .section-alt{background:color-mix(in srgb,var(--clr-bg),var(--clr-primary) 5%);}
+    .section-dark{background:var(--clr-primary); color:white;}
+    .section-header{text-align:center; margin-bottom:3.5rem;}
+    .section-header .sub{font-family:'Oswald',sans-serif; font-size:0.82rem; letter-spacing:3px; text-transform:uppercase; color:var(--clr-accent); display:block; margin-bottom:0.5rem;}
+    .section-header h2{font-family:'Oswald',sans-serif; font-size:clamp(2rem,4vw,3rem); color:var(--clr-primary); text-transform:uppercase; margin:0 0 1rem; line-height:1.1;}
+    .section-header.on-dark h2{color:white;}
+    .section-header p{color:var(--clr-text-light,#6b7280); font-size:1.05rem; max-width:600px; margin:0 auto; line-height:1.7;}
+    .section-header.on-dark p{color:rgba(255,255,255,0.75);}
+    .inner-hero{background-color:var(--clr-primary); background-image:url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23f4efe6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' opacity='0.07'%3E%3Cpath d='M20,20 C30,10 45,15 50,30 C40,40 25,35 20,20 Z'/%3E%3Cpath d='M20,20 L50,30'/%3E%3Cpath d='M80,80 L80,65 M80,80 L95,80 M80,80 L65,80 M80,80 L80,95 M80,80 L90,70 M80,80 L70,90 M80,80 L90,90 M80,80 L70,70'/%3E%3Cpath d='M90,20 C100,20 100,40 90,50 C80,45 80,25 90,20 Z'/%3E%3Cpath d='M90,20 C85,15 80,15 80,20'/%3E%3Cpath d='M30,80 L35,95 L25,95 Z'/%3E%3Ccircle cx='30' cy='75' r='3'/%3E%3C/g%3E%3C/svg%3E"); background-size:100px 100px; padding:6rem 0 4rem; text-align:center; position:relative; overflow:hidden;}
+    .inner-hero::before{content:''; position:absolute; inset:0; background:linear-gradient(135deg,color-mix(in srgb,var(--clr-accent),transparent 80%) 0%,transparent 60%); pointer-events:none;}
+    .inner-hero .breadcrumb{font-size:0.85rem; color:rgba(255,255,255,0.55); margin-bottom:1rem; position:relative; z-index:2;}
+    .inner-hero .breadcrumb a{color:var(--clr-accent); text-decoration:none;}
+    .inner-hero h1{font-family:'Oswald',sans-serif; font-size:clamp(2.5rem,5vw,4.5rem); color:white; text-transform:uppercase; margin:0 0 1rem; position:relative; z-index:2;}
+    .inner-hero p{color:rgba(255,255,255,0.75); font-size:1.1rem; max-width:600px; margin:0 auto; position:relative; z-index:2;}
+    .btn-primary{display:inline-flex; align-items:center; gap:8px; padding:1rem 2.5rem; background:var(--clr-primary); color:white; font-family:'Oswald',sans-serif; font-size:1rem; letter-spacing:1px; text-transform:uppercase; text-decoration:none; border-radius:4px; transition:all 0.3s; border:none; cursor:pointer;}
+    .btn-primary:hover{background:var(--clr-accent); transform:translateY(-3px); box-shadow:0 10px 30px rgba(0,0,0,0.15);}
+    .btn-accent{display:inline-flex; align-items:center; gap:8px; padding:1rem 2.5rem; background:var(--clr-accent); color:white; font-family:'Oswald',sans-serif; font-size:1rem; letter-spacing:1px; text-transform:uppercase; text-decoration:none; border-radius:4px; transition:all 0.3s;}
+    .btn-accent:hover{background:color-mix(in srgb,var(--clr-accent),black 15%); transform:translateY(-3px);}
+
+    /* ── PROMISE SECTION ── */
+    .promise-grid{display:grid; grid-template-columns:1fr 1.1fr; gap:5rem; align-items:center;}
+    .promise-img-wrap{position:relative;}
+    .promise-img-wrap img{width:100%; border-radius:12px; display:block; object-fit:cover; aspect-ratio:4/5; box-shadow:0 30px 80px rgba(62,82,55,0.2);}
+    .promise-img-wrap .img-badge{position:absolute; bottom:2rem; right:-1.5rem; background:var(--clr-accent); color:white; font-family:'Oswald',sans-serif; padding:1.2rem 1.5rem; border-radius:8px; text-align:center; box-shadow:0 10px 30px rgba(196,77,24,0.4);}
+    .promise-img-wrap .img-badge span{display:block; font-size:2rem; font-weight:700; line-height:1;}
+    .promise-img-wrap .img-badge small{font-size:0.75rem; letter-spacing:2px; text-transform:uppercase; opacity:0.85;}
+    .promise-text .eyebrow{display:block; font-family:'Oswald',sans-serif; font-size:0.82rem; letter-spacing:3px; text-transform:uppercase; color:var(--clr-accent); margin-bottom:0.75rem;}
+    .promise-text h2{font-family:'Oswald',sans-serif; font-size:clamp(2rem,3.5vw,2.8rem); color:var(--clr-primary); text-transform:uppercase; line-height:1.1; margin:0 0 1.2rem;}
+    .promise-text > p{color:#5a5a4e; line-height:1.85; font-size:1rem; margin-bottom:2rem;}
+    .promise-checks{display:flex; flex-direction:column; gap:1rem; list-style:none; padding:0; margin:0;}
+    .promise-checks li{display:flex; gap:1rem; align-items:flex-start; font-size:0.97rem; color:#4a4a3e; line-height:1.6;}
+    .promise-checks li .chk{width:26px; height:26px; border-radius:50%; background:color-mix(in srgb,var(--clr-accent),transparent 85%); display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;}
+    .promise-checks li .chk i{color:var(--clr-accent); font-size:1rem;}
+    .promise-checks li strong{color:var(--clr-primary); display:block; margin-bottom:2px;}
+
+    /* ── INGREDIENT CARDS ── */
+    .ingredient-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:2.5rem;}
+    .ingredient-card{background:white; border-radius:12px; padding:0; overflow:hidden; box-shadow:0 4px 30px rgba(62,82,55,0.08); border:1px solid rgba(62,82,55,0.08); transition:all 0.3s;}
+    .ingredient-card:hover{transform:translateY(-8px); box-shadow:0 20px 60px rgba(62,82,55,0.15);}
+    .ingredient-card-top{background:linear-gradient(135deg,var(--clr-primary),color-mix(in srgb,var(--clr-primary),black 20%)); padding:2.5rem 2rem; text-align:center;}
+    .ingredient-icon{width:70px; height:70px; border-radius:50%; background:rgba(255,255,255,0.12); display:flex; align-items:center; justify-content:center; margin:0 auto 1rem; font-size:2rem; color:var(--clr-accent);}
+    .ingredient-card-top h3{font-family:'Oswald',sans-serif; font-size:1.25rem; color:white; text-transform:uppercase; margin:0 0 0.5rem;}
+    .ingredient-origin{display:inline-flex; align-items:center; gap:5px; font-size:0.8rem; color:rgba(255,255,255,0.6); background:rgba(255,255,255,0.1); border-radius:20px; padding:4px 12px;}
+    .ingredient-card-body{padding:2rem;}
+    .ingredient-label{display:block; font-family:'Oswald',sans-serif; font-size:0.78rem; letter-spacing:2px; text-transform:uppercase; color:var(--clr-accent); margin-bottom:0.5rem;}
+    .ingredient-card-body p{color:#5a5a4e; line-height:1.75; font-size:0.92rem; margin:0;}
+
+    /* ── GHEE DIFFERENCE (COMPARISON TABLE) ── */
+    .comparison-wrap{max-width:800px; margin:0 auto;}
+    .compare-table{width:100%; border-collapse:collapse;}
+    .compare-table th{padding:1.2rem 2rem; font-family:'Oswald',sans-serif; font-size:1.1rem; letter-spacing:1px; text-transform:uppercase;}
+    .compare-table th.ghee-col{background:var(--clr-accent); color:white; border-radius:8px 8px 0 0;}
+    .compare-table th.oil-col{background:rgba(255,255,255,0.08); color:rgba(255,255,255,0.5); border-radius:8px 8px 0 0;}
+    .compare-table th.feature-col{color:rgba(255,255,255,0.55); font-size:0.9rem;}
+    .compare-table td{padding:1.1rem 2rem; font-size:0.95rem; border-bottom:1px solid rgba(255,255,255,0.07); vertical-align:middle;}
+    .compare-table td.feature-col{color:rgba(255,255,255,0.8); font-weight:500;}
+    .compare-table td.ghee-col{background:rgba(196,77,24,0.08); text-align:center;}
+    .compare-table td.oil-col{background:rgba(255,255,255,0.03); text-align:center;}
+    .compare-table tr:last-child td{border-bottom:none;}
+    .compare-table tr:hover td{background:rgba(255,255,255,0.04);}
+    .tick{color:#4ade80; font-size:1.3rem;}
+    .cross{color:#f87171; font-size:1.3rem;}
+
+    /* ── DAILY PROCESS ── */
+    .process-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:0; position:relative;}
+    .process-grid::before{content:''; position:absolute; top:3.5rem; left:12%; right:12%; height:2px; background:linear-gradient(to right,var(--clr-accent),color-mix(in srgb,var(--clr-accent),transparent 60%)); z-index:0;}
+    .process-step{text-align:center; padding:2rem 1.5rem; position:relative; z-index:1;}
+    .step-num{width:64px; height:64px; border-radius:50%; background:var(--clr-accent); color:white; font-family:'Oswald',sans-serif; font-size:1.5rem; font-weight:700; display:flex; align-items:center; justify-content:center; margin:0 auto 1.5rem; box-shadow:0 6px 20px rgba(196,77,24,0.35); border:4px solid var(--clr-bg);}
+    .process-step h3{font-family:'Oswald',sans-serif; font-size:1.1rem; color:var(--clr-primary); text-transform:uppercase; margin:0 0 0.75rem;}
+    .process-step p{color:#6b7280; font-size:0.9rem; line-height:1.7; margin:0;}
+    .process-step .step-time{display:inline-block; font-family:'Oswald',sans-serif; font-size:0.75rem; letter-spacing:2px; text-transform:uppercase; color:var(--clr-accent); background:color-mix(in srgb,var(--clr-accent),transparent 90%); padding:3px 10px; border-radius:20px; margin-bottom:1rem;}
+
+    /* ── QUALITY PLEDGES ── */
+    .pledges-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:2rem;}
+    .pledge-card{background:white; border-radius:12px; padding:2.5rem 2rem; display:flex; align-items:flex-start; gap:1.25rem; box-shadow:0 4px 20px rgba(62,82,55,0.07); border:1px solid rgba(62,82,55,0.08); transition:all 0.3s;}
+    .pledge-card:hover{transform:translateY(-5px); box-shadow:0 16px 50px rgba(62,82,55,0.14); border-color:var(--clr-accent);}
+    .pledge-icon{width:54px; height:54px; border-radius:10px; background:color-mix(in srgb,var(--clr-accent),transparent 88%); display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:1.5rem; color:var(--clr-accent);}
+    .pledge-card h3{font-family:'Oswald',sans-serif; font-size:1.1rem; color:var(--clr-primary); text-transform:uppercase; margin:0 0 0.5rem;}
+    .pledge-card p{color:#6b7280; font-size:0.88rem; line-height:1.65; margin:0;}
+
+    /* ── CTA ── */
+    .cta-section{background:var(--clr-primary); padding:7rem 0; text-align:center; position:relative; overflow:hidden;}
+    .cta-section::before{content:''; position:absolute; inset:0; background:radial-gradient(ellipse at center, color-mix(in srgb,var(--clr-accent),transparent 85%) 0%, transparent 65%);}
+    .cta-section .eyebrow{display:block; font-family:'Oswald',sans-serif; font-size:0.82rem; letter-spacing:4px; text-transform:uppercase; color:var(--clr-accent); margin-bottom:1rem; position:relative; z-index:2;}
+    .cta-section h2{font-family:'Oswald',sans-serif; font-size:clamp(2.5rem,5vw,4rem); color:white; text-transform:uppercase; margin:0 0 1.2rem; line-height:1.05; position:relative; z-index:2;}
+    .cta-section p{color:rgba(255,255,255,0.7); font-size:1.1rem; max-width:500px; margin:0 auto 2.5rem; line-height:1.7; position:relative; z-index:2;}
+    .cta-section a{position:relative; z-index:2;}
+    .btn-white{display:inline-flex; align-items:center; gap:8px; padding:1.1rem 3rem; background:white; color:var(--clr-primary); font-family:'Oswald',sans-serif; font-size:1rem; letter-spacing:2px; text-transform:uppercase; text-decoration:none; border-radius:4px; transition:all 0.3s; font-weight:600;}
+    .btn-white:hover{background:var(--clr-accent); color:white; transform:translateY(-3px); box-shadow:0 15px 40px rgba(0,0,0,0.25);}
+
+    /* ── NAV active state ── */
+    nav ul li a[href="quality.html"]{color:var(--clr-accent) !important; font-weight:600;}
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════ HEADER ═══════════════════ -->
+<header class="header-home on-dark" id="main-header">
+    <div class="nav-container" style="display:flex; justify-content:space-between; align-items:center; width:95%; max-width:var(--max-w); margin:0 auto;">
+      <a href="index.html" class="footer-logo">
+        <img src="images/logo.jpg" alt="VERY GOOD GHEE ROAST Logo" style="height:52px; border-radius:8px;">
+        <span class="logo-text">VERY GOOD<br><span style="font-size:0.65rem; letter-spacing:2px; color:var(--clr-accent);">FLAVOURS THAT STAY</span></span>
+      </a>
+
+      <nav>
+        <ul class="nav-links" style="display:flex; gap:2rem; align-items:center; list-style:none;">
+          <li><a href="index.html" >Home</a></li>
+          <li class="nav-dropdown">
+            <a href="menu.html">Menu <i class="ph-bold ph-caret-down" style="font-size:0.7rem;"></i></a>
+            <ul class="nav-dropdown-menu">
+              <li><a href="menu.html?location=delhi"><i class="ph-fill ph-map-pin"></i> Delhi Menu</a></li>
+              <li><a href="menu.html?location=gurugram"><i class="ph-fill ph-map-pin"></i> Gurugram Menu</a></li>
+            </ul>
+          </li>
+          <li><a href="about.html">Our Story</a></li>
+          <li><a href="quality.html" class="active">Quality</a></li>
+          <li><a href="delivery.html">Delivery</a></li>
+          <li><a href="catering.html">Catering</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </nav>
+
+      <div style="display:flex; gap:1rem; align-items:center;">
+        <a href="menu.html" class="nav-order-btn">Order Online</a>
+        <div class="hamburger" id="mobile-menu-btn" style="display:none; flex-direction:column; gap:6px; cursor:pointer;">
+          <span style="width:28px; height:2px; background:var(--clr-primary); display:block;"></span>
+          <span style="width:28px; height:2px; background:var(--clr-primary); display:block;"></span>
+          <span style="width:28px; height:2px; background:var(--clr-primary); display:block;"></span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+<!-- ═══════════════════ INNER HERO ═══════════════════ -->
+<section class="inner-hero">
+  <div class="container">
+    <p class="breadcrumb"><a href="index.html">Home</a> &nbsp;/&nbsp; Quality Promise</p>
+    <h1>Quality Without Compromise</h1>
+    <p>Every ingredient, every step, every plate — held to the same exacting standard that has defined VGGR for over three decades. No exceptions. No shortcuts.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════ OPENING PROMISE ═══════════════════ -->
+<section class="section" style="background:var(--clr-bg);">
+  <div class="container">
+    <div class="promise-grid">
+      <div class="promise-img-wrap reveal">
+        <img src="images/quality_ingredients.png" alt="Fresh, hand-sourced ingredients used at VGGR" loading="lazy">
+        <div class="img-badge">
+          <span>0</span>
+          <small>Shortcuts Taken</small>
+        </div>
+      </div>
+      <div class="promise-text reveal" style="transition-delay:0.15s;">
+        <span class="eyebrow">Our Zero-Shortcut Philosophy</span>
+        <h2>The Standard We Set<br>For Ourselves Is Yours</h2>
+        <p>
+          At Very Good Ghee Roast, quality is not a marketing claim — it's a daily practice. From the moment our chefs arrive to hand-grind the morning masala to the final check before a plate leaves the kitchen, every action is guided by one question: <em>"Would we serve this to our own family?"</em>
+        </p>
+        <p>
+          If the answer is anything less than a confident yes, it doesn't leave the kitchen. This is not a policy — it is a culture, built over thirty years and reinforced by every chef, every morning, at every VGGR outlet.
+        </p>
+        <ul class="promise-checks">
+          <li>
+            <div class="chk"><i class="ph-bold ph-check"></i></div>
+            <div><strong>Hand-sourced ingredients from named farms and regions</strong> We know exactly where every key ingredient comes from — the farm, the district, and the season.</div>
+          </li>
+          <li>
+            <div class="chk"><i class="ph-bold ph-check"></i></div>
+            <div><strong>No preservatives, ever</strong> Our food is cooked fresh daily. We do not use artificial preservatives, stabilisers, or shelf-life extenders of any kind.</div>
+          </li>
+          <li>
+            <div class="chk"><i class="ph-bold ph-check"></i></div>
+            <div><strong>100% pure cow ghee — tested, not assumed</strong> Every batch of ghee we use is tested for purity before it enters our kitchen. No blends, no vegetable shortenings.</div>
+          </li>
+          <li>
+            <div class="chk"><i class="ph-bold ph-check"></i></div>
+            <div><strong>Daily hygiene audits at every outlet</strong> Our kitchens are audited every single day against FSSAI-compliant checklists. Certificates are displayed at every outlet.</div>
+          </li>
+          <li>
+            <div class="chk"><i class="ph-bold ph-check"></i></div>
+            <div><strong>Same masala formula since 1995 — ground fresh every morning</strong> We do not pre-mix or buy pre-ground spice blends. Our signature masala is stone-ground each morning in-house.</div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ INGREDIENT SOURCING ═══════════════════ -->
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="sub">From Source to Plate</span>
+      <h2>The Ingredients We Choose</h2>
+      <p>Great food begins long before the kitchen. It begins with the grower, the region, and the decision to never compromise on what goes in.</p>
+    </div>
+    <div class="ingredient-grid">
+
+      <div class="ingredient-card reveal">
+        <div class="ingredient-card-top">
+          <div class="ingredient-icon"><i class="ph-fill ph-pepper"></i></div>
+          <h3>Byadgi Chilies</h3>
+          <span class="ingredient-origin"><i class="ph-bold ph-map-pin" style="font-size:0.9rem;"></i>Haveri District, Karnataka</span>
+        </div>
+        <div class="ingredient-card-body">
+          <span class="ingredient-label">Why It Matters</span>
+          <p>Byadgi chilies are prized across coastal Karnataka for their deep crimson colour, mild heat, and intensely fruity aroma. Unlike generic red chilies, they provide the rich colour of our gravy without overpowering heat — giving VGGR's Ghee Roast its distinctive look and complex, layered flavour.</p>
+        </div>
+      </div>
+
+      <div class="ingredient-card reveal" style="transition-delay:0.1s;">
+        <div class="ingredient-card-top">
+          <div class="ingredient-icon"><i class="ph-fill ph-drop"></i></div>
+          <h3>Pure Cow Ghee</h3>
+          <span class="ingredient-origin"><i class="ph-bold ph-map-pin" style="font-size:0.9rem;"></i>Local Partner Farms, Haryana</span>
+        </div>
+        <div class="ingredient-card-body">
+          <span class="ingredient-label">Why It Matters</span>
+          <p>Our ghee is sourced exclusively from desi cow dairy farms with whom we have long-term relationships. The ghee is traditionally churned from cultured butter, giving it a nutty, rich aroma and high smoke point ideal for slow roasting. Every batch is tested for purity. We use no refined oils — ever.</p>
+        </div>
+      </div>
+
+      <div class="ingredient-card reveal" style="transition-delay:0.2s;">
+        <div class="ingredient-card-top">
+          <div class="ingredient-icon"><i class="ph-fill ph-plant"></i></div>
+          <h3>Fresh Coriander</h3>
+          <span class="ingredient-origin"><i class="ph-bold ph-map-pin" style="font-size:0.9rem;"></i>Rajasthan & Local Markets</span>
+        </div>
+        <div class="ingredient-card-body">
+          <span class="ingredient-label">Why It Matters</span>
+          <p>Coriander — both the seeds and the fresh leaf — is fundamental to our masala and garnish. We source whole coriander seeds from Rajasthan, known for producing the most fragrant, oil-rich varieties in India. Fresh coriander leaves arrive daily from local markets, always same-day, never pre-cut.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ THE GHEE DIFFERENCE ═══════════════════ -->
+<section class="section section-dark" style="overflow:hidden;">
+  <div class="container">
+    <div class="section-header on-dark reveal">
+      <span class="sub">Why It Changes Everything</span>
+      <h2>The Ghee Difference</h2>
+      <p>This is not just a cooking medium. It is the reason our flavour is different from everything else you've tasted. Here's the science — and the soul — of why we cook in pure ghee.</p>
+    </div>
+    <div class="comparison-wrap reveal" style="transition-delay:0.1s;">
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th class="feature-col" style="text-align:left;">Attribute</th>
+            <th class="ghee-col"><i class="ph-fill ph-seal-check" style="margin-right:6px;"></i>Pure Cow Ghee</th>
+            <th class="oil-col">Refined Oil</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="feature-col">Smoke Point</td>
+            <td class="ghee-col" style="color:white; font-weight:500;">485°F / 252°C — ideal for high-heat roasting</td>
+            <td class="oil-col" style="color:rgba(255,255,255,0.5);">Lower &amp; unstable at high heat</td>
+          </tr>
+          <tr>
+            <td class="feature-col">Flavour Profile</td>
+            <td class="ghee-col" style="color:white; font-weight:500;">Rich, nutty, complex aroma that enhances spices</td>
+            <td class="oil-col" style="color:rgba(255,255,255,0.5);">Neutral — adds no flavour depth</td>
+          </tr>
+          <tr>
+            <td class="feature-col">Lactose-Free</td>
+            <td class="ghee-col"><i class="ph-fill ph-check-circle tick"></i></td>
+            <td class="oil-col"><i class="ph-fill ph-check-circle tick"></i></td>
+          </tr>
+          <tr>
+            <td class="feature-col">Trans Fats</td>
+            <td class="ghee-col"><i class="ph-fill ph-x-circle cross"></i><span style="color:rgba(255,255,255,0.7); font-size:0.85rem; margin-left:6px;">None</span></td>
+            <td class="oil-col"><i class="ph-fill ph-warning" style="color:#fbbf24; font-size:1.2rem;"></i><span style="color:rgba(255,255,255,0.5); font-size:0.85rem; margin-left:6px;">Present in many</span></td>
+          </tr>
+          <tr>
+            <td class="feature-col">Supports Spice Blooming</td>
+            <td class="ghee-col"><i class="ph-fill ph-check-circle tick"></i><span style="color:rgba(255,255,255,0.7); font-size:0.85rem; margin-left:6px;">Superior fat-soluble compound extraction</span></td>
+            <td class="oil-col"><i class="ph-fill ph-x-circle cross"></i></td>
+          </tr>
+          <tr>
+            <td class="feature-col">Digestive Benefits</td>
+            <td class="ghee-col" style="color:white; font-weight:500;">Contains butyric acid — supports gut health</td>
+            <td class="oil-col" style="color:rgba(255,255,255,0.5);">None documented</td>
+          </tr>
+          <tr>
+            <td class="feature-col">Shelf-Stable Without Refrigeration</td>
+            <td class="ghee-col"><i class="ph-fill ph-check-circle tick"></i></td>
+            <td class="oil-col"><i class="ph-fill ph-x-circle cross"></i></td>
+          </tr>
+          <tr>
+            <td class="feature-col">Traditional Coastal Cooking</td>
+            <td class="ghee-col"><i class="ph-fill ph-check-circle tick"></i><span style="color:rgba(255,255,255,0.7); font-size:0.85rem; margin-left:6px;">Authentic to the Kundapur tradition</span></td>
+            <td class="oil-col"><i class="ph-fill ph-x-circle cross"></i></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ DAILY PROCESS ═══════════════════ -->
+<section class="section" style="background:var(--clr-bg);">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="sub">How Every Day Begins</span>
+      <h2>Our Daily Process</h2>
+      <p>Before a single customer walks through our door, our kitchen has already been in motion for hours. This is what happens every morning — without exception.</p>
+    </div>
+    <div class="process-grid">
+
+      <div class="process-step reveal">
+        <div class="step-num">1</div>
+        <span class="step-time">6:00 AM</span>
+        <h3>Morning Grinding</h3>
+        <p>Our chefs arrive at 6 AM to begin grinding the base masala fresh — Byadgi chilies, coriander seeds, cumin, black pepper, and nine other spices — in our stone grinders. This cannot be done the night before. The aromatics must be fresh.</p>
+      </div>
+
+      <div class="process-step reveal" style="transition-delay:0.1s;">
+        <div class="step-num">2</div>
+        <span class="step-time">8:00 AM</span>
+        <h3>Fresh Marination</h3>
+        <p>Freshly arrived poultry and proteins are marinated in the morning-ground masala paste for a minimum of 2 hours. No pre-marinated stock, no frozen shortcuts. Every batch is prepared the day it is served.</p>
+      </div>
+
+      <div class="process-step reveal" style="transition-delay:0.2s;">
+        <div class="step-num">3</div>
+        <span class="step-time">10:00 AM</span>
+        <h3>Slow Roasting in Pure Ghee</h3>
+        <p>The marinated protein is slow-roasted in a cast-iron kadhai over a measured flame. Pure cow ghee is added in stages — not as a finishing touch, but as an active cooking medium. The roasting takes 35–45 minutes per batch. It cannot be rushed.</p>
+      </div>
+
+      <div class="process-step reveal" style="transition-delay:0.3s;">
+        <div class="step-num">4</div>
+        <span class="step-time">From 1 PM</span>
+        <h3>Hot Packaging & Dispatch</h3>
+        <p>Every order is plated or packaged immediately after cooking — never held in warming trays. For delivery orders, our insulated packaging ensures the food arrives at the same temperature it left the kitchen. No reheating. No holding. Just fresh.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ QUALITY PLEDGES ═══════════════════ -->
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="sub">Our Commitments to You</span>
+      <h2>The VGGR Quality Pledges</h2>
+      <p>Six promises we make to every customer, every day, without exception. These are not aspirations — they are operational standards.</p>
+    </div>
+    <div class="pledges-grid">
+
+      <div class="pledge-card reveal">
+        <div class="pledge-icon"><i class="ph-fill ph-prohibit"></i></div>
+        <div>
+          <h3>No Preservatives</h3>
+          <p>We use zero artificial preservatives, MSG, or synthetic flavour enhancers. Our food has a natural shelf life because it is made with real ingredients — and we're proud of that.</p>
+        </div>
+      </div>
+
+      <div class="pledge-card reveal" style="transition-delay:0.08s;">
+        <div class="pledge-icon"><i class="ph-fill ph-eyedropper-sample"></i></div>
+        <div>
+          <h3>No Artificial Colors</h3>
+          <p>The deep red-orange colour of our Ghee Roast comes entirely from Byadgi chilies. No food coloring, no turmeric overdose, no artificial hue enhancement. What you see is what nature and fire created.</p>
+        </div>
+      </div>
+
+      <div class="pledge-card reveal" style="transition-delay:0.16s;">
+        <div class="pledge-icon"><i class="ph-fill ph-shield-check"></i></div>
+        <div>
+          <h3>Hygiene Certified</h3>
+          <p>All VGGR kitchens are FSSAI registered and undergo daily internal hygiene audits. We conduct external third-party inspections quarterly. Our certificates are prominently displayed at every outlet.</p>
+        </div>
+      </div>
+
+      <div class="pledge-card reveal" style="transition-delay:0.24s;">
+        <div class="pledge-icon"><i class="ph-fill ph-sun"></i></div>
+        <div>
+          <h3>Fresh Daily</h3>
+          <p>We do not carry over food from the previous day. Every morning is a fresh start — new masala, new marination, new batch. If we run out before closing time, we close early. Simple.</p>
+        </div>
+      </div>
+
+      <div class="pledge-card reveal" style="transition-delay:0.32s;">
+        <div class="pledge-icon"><i class="ph-fill ph-seal-check"></i></div>
+        <div>
+          <h3>100% Pure Ghee</h3>
+          <p>Every batch of ghee we receive from our farm partners is tested in-house before use. We check for adulteration, impurities, and fat profile. Only batches that pass are used. No blends, no exceptions.</p>
+        </div>
+      </div>
+
+      <div class="pledge-card reveal" style="transition-delay:0.4s;">
+        <div class="pledge-icon"><i class="ph-fill ph-hands-clapping"></i></div>
+        <div>
+          <h3>Handcrafted</h3>
+          <p>Our masala is stone-ground by hand. Our marination is done by hand. Our roasting is monitored and adjusted by hand. No automated production lines touch the core of our cooking — and never will.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ CTA SECTION ═══════════════════ -->
+<section class="cta-section">
+  <div class="container">
+    <span class="eyebrow">The Proof Is In The Plate</span>
+    <h2>Taste the Difference</h2>
+    <p>Read about quality, or experience it. We think the experience speaks for itself — one bite at a time.</p>
+    <a href="menu.html" class="btn-white">Explore Our Menu &nbsp;<i class="ph-bold ph-arrow-right"></i></a>
+  </div>
+</section>
+
+<!-- ═══════════════════ FOOTER ═══════════════════ -->
+<section class="newsletter-section">
+      <div class="newsletter-inner">
+        <div class="newsletter-left reveal">
+          <h2>Join The <span>Flavour</span> Club</h2>
+          <p>Subscribe to our newsletter for exclusive offers, secret recipes, early access to new dishes, and VIP event invitations. No spam — only the good stuff.</p>
+        </div>
+        <div class="newsletter-right reveal" style="animation-delay:0.2s;">
+          <form class="newsletter-form" onsubmit="event.preventDefault();">
+            <input type="email" placeholder="Enter your email address" required>
+            <button type="submit">Subscribe</button>
+          </form>
+          <small>We respect your privacy. Unsubscribe anytime.</small>
+        </div>
+      </div>
+    </section>
+
+<footer class="site-footer">
+    <div class="container">
+      <div class="footer-main">
+
+        <div class="footer-brand">
+          <a href="index.html" class="footer-logo">
+            <img src="images/logo.jpg" alt="VERY GOOD GHEE ROAST" style="height:55px; border-radius:8px;">
+            <span class="footer-logo-text">VERY GOOD<br><span>GHEE ROAST</span></span>
+          </a>
+          <p>South Indian inspired food, and an original saucy Ghee Roast! A premium delivery kitchen bringing authentic coastal flavors right to your doorstep in Delhi &amp; Gurugram.</p>
+          <div class="footer-tagline">"Flavours that stay."</div>
+          <div class="footer-socials">
+            <a href="https://www.instagram.com/verygoodgheeroast/" target="_blank"><i class="ph-fill ph-instagram-logo"></i></a>
+            <a href="#"><i class="ph-fill ph-facebook-logo"></i></a>
+            <a href="#"><i class="ph-fill ph-youtube-logo"></i></a>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <h5>Explore</h5>
+          <ul>
+            <li><a href="index.html"><i class="ph-bold ph-caret-right"></i> Home</a></li>
+            <li><a href="menu.html"><i class="ph-bold ph-caret-right"></i> The Menu</a></li>
+            <li><a href="about.html"><i class="ph-bold ph-caret-right"></i> Our Story</a></li>
+            <li><a href="quality.html"><i class="ph-bold ph-caret-right"></i> Quality Promise</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>Services</h5>
+          <ul>
+            <li><a href="delivery.html"><i class="ph-bold ph-caret-right"></i> Order Delivery</a></li>
+            <li><a href="catering.html"><i class="ph-bold ph-caret-right"></i> Luxury Catering</a></li>
+            <li><a href="menu.html?location=delhi"><i class="ph-bold ph-caret-right"></i> Delhi Menu</a></li>
+            <li><a href="menu.html?location=gurugram"><i class="ph-bold ph-caret-right"></i> Gurugram Menu</a></li>
+            <li><a href="contact.html"><i class="ph-bold ph-caret-right"></i> Contact Us</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>Get In Touch</h5>
+          <ul class="footer-contact">
+            <li><i class="ph-fill ph-map-pin"></i><div><strong style="color:white; display:block;">Delivery Kitchen</strong><span style="color:rgba(255,255,255,0.55);">Delhi & Gurugram, India</span></div></li>
+            <li><i class="ph-fill ph-phone"></i><div><span style="color:white;">+91 99102 13465</span></div></li>
+            <li><i class="ph-fill ph-clock"></i><div><span style="color:white;">1 PM – 10 PM</span><span style="color:rgba(255,255,255,0.55); display:block; font-size:0.8rem;">Tuesdays Closed</span></div></li>
+          </ul>
+        </div>
+
+      </div>
+
+      <div class="footer-bottom">
+        <div>© 2026 VERY GOOD GHEE ROAST. All Rights Reserved.</div>
+        <div style="display:flex; gap:2rem; flex-wrap:wrap;">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms &amp; Conditions</a>
+          <a href="#">Refund Policy</a>
+          <a href="#">Sitemap</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+<button id="scroll-top-btn" aria-label="Scroll to top"><i class="ph-bold ph-arrow-up"></i></button>
+<script>
+  const scrollBtn=document.getElementById('scroll-top-btn');
+  window.addEventListener('scroll',()=>{if(window.scrollY>400)scrollBtn.classList.add('visible');else scrollBtn.classList.remove('visible');});
+  scrollBtn.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+  const reveals=document.querySelectorAll('.reveal');
+  const obs=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}});},{threshold:0.12});
+  reveals.forEach(r=>obs.observe(r));
+</script>
+
+</body>
+</html>

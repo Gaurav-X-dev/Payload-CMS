@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Our Menu | Very Good Ghee Roast – Delhi & Gurugram</title>
+  <meta name="description" content="Explore the premium menu of Very Good Ghee Roast. Authentic South Indian coastal cuisine, slow-roasted in pure ghee. Available in Delhi & Gurugram.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/inner.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+    body { background: var(--clr-bg); font-family: 'Inter', sans-serif; margin: 0; }
+
+    /* ── Inner Hero ───────────────────────── */
+    .menu-hero {
+      background: var(--clr-primary);
+      padding: 5rem 0 4rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .menu-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(196,77,24,0.2) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .menu-hero .bc { font-size: 0.85rem; color: rgba(255,255,255,0.5); margin-bottom: 1rem; position: relative; z-index: 2; }
+    .menu-hero .bc a { color: var(--clr-accent); text-decoration: none; }
+    .menu-hero h1 {
+      font-family: 'Oswald', sans-serif;
+      font-size: clamp(2.5rem, 5vw, 4.5rem);
+      color: white;
+      text-transform: uppercase;
+      margin: 0 0 1rem;
+      position: relative;
+      z-index: 2;
+      line-height: 1.05;
+    }
+    .menu-hero p { color: rgba(255,255,255,0.75); font-size: 1.1rem; max-width: 580px; margin: 0 auto; position: relative; z-index: 2; line-height: 1.7; }
+
+    /* ── Location Selector ────────────────── */
+    .location-bar {
+      background: color-mix(in srgb, var(--clr-bg), var(--clr-primary) 8%);
+      border-bottom: 1px solid rgba(62,82,55,0.12);
+      padding: 1.5rem 0;
+      position: sticky;
+      top: 70px;
+      z-index: 100;
+    }
+    .location-bar-inner {
+      width: 95%;
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    .loc-label {
+      font-family: 'Oswald', sans-serif;
+      font-size: 0.85rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--clr-text-light);
+      margin-right: 1rem;
+    }
+    .loc-toggle { display: none; }
+    .loc-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0.7rem 2rem;
+      border-radius: 50px;
+      font-family: 'Oswald', sans-serif;
+      font-size: 1rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px solid rgba(62,82,55,0.25);
+      background: white;
+      color: var(--clr-text-light);
+    }
+    .loc-toggle:checked + .loc-btn {
+      background: var(--clr-primary);
+      color: white;
+      border-color: var(--clr-primary);
+      box-shadow: 0 4px 15px rgba(62,82,55,0.25);
+    }
+
+    /* ── Menu Section ─────────────────────── */
+    .menu-section {
+      padding: 3rem 0 6rem;
+      width: 95%;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .menu-container { padding-top: 2rem; }
+
+    /* ── Category Filter ──────────────────── */
+    .menu-categories {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.7rem;
+      margin-bottom: 2.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid rgba(62,82,55,0.12);
+    }
+    .category-btn {
+      padding: 0.55rem 1.4rem;
+      border-radius: 50px;
+      border: 1.5px solid rgba(62,82,55,0.2);
+      background: white;
+      color: var(--clr-text-light);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+    .category-btn:hover { border-color: var(--clr-primary); color: var(--clr-primary); }
+    .category-btn.active { background: var(--clr-primary); color: white; border-color: var(--clr-primary); }
+
+    /* ── Delhi Premium Card Grid ─────────── */
+    .full-menu-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.2rem;
+    }
+    .menu-list-item {
+      display: grid;
+      grid-template-columns: 130px 1fr;
+      gap: 0;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      transition: all 0.3s ease;
+      border: 1px solid rgba(62,82,55,0.08);
+    }
+    .menu-list-item:hover {
+      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+      transform: translateY(-2px);
+    }
+    .menu-list-img {
+      width: 130px;
+      height: 130px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .menu-list-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+    .menu-list-item:hover .menu-list-img img { transform: scale(1.08); }
+    .menu-list-content {
+      padding: 1.2rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .menu-list-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 0.5rem;
+    }
+    .menu-list-header h3 {
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.2rem;
+      color: var(--clr-primary);
+      margin: 0;
+      letter-spacing: 0.5px;
+      line-height: 1.2;
+    }
+    .menu-list-price {
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--clr-accent);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .menu-list-desc {
+      font-size: 0.88rem;
+      color: var(--clr-text-light);
+      line-height: 1.55;
+      margin: 0 0 0.8rem;
+    }
+    .menu-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .menu-meta span {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.75rem;
+      padding: 3px 10px;
+      border-radius: 30px;
+      background: color-mix(in srgb, var(--clr-bg), var(--clr-primary) 8%);
+      color: var(--clr-text-light);
+      font-weight: 500;
+    }
+
+    /* ── Gurgaon Text Menu ────────────────── */
+    .gurgaon-wrapper {
+      background: white;
+      border-radius: 12px;
+      padding: 2.5rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+    .gurgaon-text-menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 0;
+    }
+    .gurgaon-menu-item {
+      padding: 1.2rem 1rem;
+      border-bottom: 1px solid rgba(62,82,55,0.1);
+      transition: all 0.25s ease;
+      border-left: 3px solid transparent;
+    }
+    .gurgaon-menu-item:hover {
+      background: color-mix(in srgb, var(--clr-bg), var(--clr-primary) 4%);
+      border-left-color: var(--clr-accent);
+    }
+    .text-menu-header {
+      display: flex;
+      align-items: flex-end;
+      width: 100%;
+      margin-bottom: 0.5rem;
+    }
+    .text-menu-header h4 {
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.15rem;
+      color: var(--clr-primary);
+      margin: 0;
+      letter-spacing: 0.5px;
+      line-height: 1.2;
+    }
+    .text-menu-dots {
+      flex-grow: 1;
+      border-bottom: 2px dotted rgba(62,82,55,0.2);
+      margin: 0 0.8rem;
+      position: relative;
+      top: -5px;
+      min-width: 20px;
+    }
+    .text-menu-price {
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--clr-accent);
+      white-space: nowrap;
+    }
+    .text-menu-desc {
+      font-size: 0.85rem;
+      color: var(--clr-text-light);
+      line-height: 1.55;
+      margin: 0;
+    }
+
+    /* ── Gurgaon Filter Btns (reuse category-btn) ── */
+    .gurgaon-filter-btn {
+      padding: 0.55rem 1.4rem;
+      border-radius: 50px;
+      border: 1.5px solid rgba(62,82,55,0.2);
+      background: white;
+      color: var(--clr-text-light);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+    .gurgaon-filter-btn:hover { border-color: var(--clr-primary); color: var(--clr-primary); }
+    .gurgaon-filter-btn.active { background: var(--clr-primary); color: white; border-color: var(--clr-primary); }
+
+    /* ── Fade animation ───────────────────── */
+    @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+    /* ── Menu CTA Banner ──────────────────── */
+    .menu-cta {
+      background: var(--clr-primary);
+      padding: 4rem 0;
+      text-align: center;
+      margin-top: 2rem;
+    }
+    .menu-cta h2 { font-family: 'Oswald', sans-serif; font-size: clamp(1.8rem, 3vw, 2.5rem); color: white; text-transform: uppercase; margin: 0 0 0.8rem; }
+    .menu-cta p { color: rgba(255,255,255,0.75); font-size: 1rem; margin: 0 0 2rem; }
+    .menu-cta-btns { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+    .menu-cta-btns a {
+      padding: 0.9rem 2rem;
+      border-radius: 4px;
+      font-family: 'Oswald', sans-serif;
+      font-size: 1rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+    .btn-swiggy { background: #fc8019; color: white; }
+    .btn-swiggy:hover { background: #e5741a; transform: translateY(-3px); }
+    .btn-zomato { background: #e23744; color: white; }
+    .btn-zomato:hover { background: #c52e3a; transform: translateY(-3px); }
+
+    @media (max-width: 768px) {
+      .menu-list-item { grid-template-columns: 100px 1fr; }
+      .menu-list-img { width: 100px; height: 100px; }
+      .gurgaon-text-menu-grid { grid-template-columns: 1fr; }
+      .gurgaon-wrapper { padding: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── HEADER ─────────────────────────────────── -->
+  <header class="header-home on-dark" id="main-header">
+    <div class="nav-container" style="display:flex; justify-content:space-between; align-items:center; width:95%; max-width:var(--max-w); margin:0 auto;">
+      <a href="index.html" class="footer-logo">
+        <img src="images/logo.jpg" alt="VERY GOOD GHEE ROAST Logo" style="height:52px; border-radius:8px;">
+        <span class="logo-text">VERY GOOD<br><span style="font-size:0.65rem; letter-spacing:2px; color:var(--clr-accent);">FLAVOURS THAT STAY</span></span>
+      </a>
+
+      <nav>
+        <ul class="nav-links" style="display:flex; gap:2rem; align-items:center; list-style:none;">
+          <li><a href="index.html" >Home</a></li>
+          <li class="nav-dropdown">
+            <a href="menu.html" class="active">Menu <i class="ph-bold ph-caret-down" style="font-size:0.7rem;"></i></a>
+            <ul class="nav-dropdown-menu">
+              <li><a href="menu.html?location=delhi"><i class="ph-fill ph-map-pin"></i> Delhi Menu</a></li>
+              <li><a href="menu.html?location=gurugram"><i class="ph-fill ph-map-pin"></i> Gurugram Menu</a></li>
+            </ul>
+          </li>
+          <li><a href="about.html">Our Story</a></li>
+          <li><a href="quality.html">Quality</a></li>
+          <li><a href="delivery.html">Delivery</a></li>
+          <li><a href="catering.html">Catering</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </nav>
+
+      <div style="display:flex; gap:1rem; align-items:center;">
+        <a href="menu.html" class="nav-order-btn">Order Online</a>
+        <div class="hamburger" id="mobile-menu-btn" style="display:none; flex-direction:column; gap:6px; cursor:pointer;">
+          <span style="width:28px; height:2px; background:var(--clr-primary); display:block;"></span>
+          <span style="width:28px; height:2px; background:var(--clr-primary); display:block;"></span>
+          <span style="width:28px; height:2px; background:var(--clr-primary); display:block;"></span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ── HERO ────────────────────────────── -->
+    <section class="menu-hero">
+      <div class="bc"><a href="index.html">Home</a> <span style="color:rgba(255,255,255,0.3);">/</span> Our Menu</div>
+      <h1>The Royal Menu</h1>
+      <p>Every dish is a masterpiece — slow-roasted in pure cow ghee with our secret 12-spice masala blend. Available in Delhi &amp; Gurugram.</p>
+    </section>
+
+    <!-- ── LOCATION SELECTOR ──────────────── -->
+    <div class="location-bar">
+      <div class="location-bar-inner">
+        <span class="loc-label"><i class="ph-fill ph-map-pin"></i> Choose Location:</span>
+        <input type="radio" name="location" id="loc-delhi" value="delhi" class="loc-toggle" checked>
+        <label for="loc-delhi" class="loc-btn"><i class="ph-fill ph-map-pin"></i> Delhi</label>
+        <input type="radio" name="location" id="loc-gurgaon" value="gurgaon" class="loc-toggle">
+        <label for="loc-gurgaon" class="loc-btn"><i class="ph-fill ph-map-pin"></i> Gurugram</label>
+      </div>
+    </div>
+
+    <!-- ── MENU CONTENT ───────────────────── -->
+    <div class="menu-section">
+
+      <!-- Delhi Menu -->
+      <div id="delhi-menu-container" class="menu-container">
+
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:2rem; flex-wrap:wrap; gap:1rem;">
+          <div>
+            <span style="font-family:'Oswald',sans-serif; font-size:0.8rem; letter-spacing:2px; text-transform:uppercase; color:var(--clr-accent);">Delhi Location</span>
+            <h2 style="font-family:'Oswald',sans-serif; font-size:2rem; color:var(--clr-primary); margin:0.2rem 0 0; text-transform:uppercase;">Signature Menu</h2>
+          </div>
+          <div style="display:flex; gap:0.8rem;">
+            <a href="#" style="background:#fc8019; color:white; padding:0.6rem 1.2rem; border-radius:4px; font-family:'Oswald',sans-serif; font-size:0.8rem; letter-spacing:1px; text-decoration:none; text-transform:uppercase; display:flex; align-items:center; gap:6px;"><i class="ph-bold ph-storefront"></i> Swiggy</a>
+            <a href="#" style="background:#e23744; color:white; padding:0.6rem 1.2rem; border-radius:4px; font-family:'Oswald',sans-serif; font-size:0.8rem; letter-spacing:1px; text-decoration:none; text-transform:uppercase; display:flex; align-items:center; gap:6px;"><i class="ph-bold ph-storefront"></i> Zomato</a>
+          </div>
+        </div>
+
+        <div class="menu-categories">
+          <button class="category-btn active" data-filter="all">All Items</button>
+          <button class="category-btn" data-filter="chicken">Signature Chicken</button>
+          <button class="category-btn" data-filter="mutton">Mutton</button>
+          <button class="category-btn" data-filter="seafood">Coastal Seafood</button>
+          <button class="category-btn" data-filter="veg">Pure Veg</button>
+          <button class="category-btn" data-filter="biryani">Biryani</button>
+          <button class="category-btn" data-filter="dessert">Desserts</button>
+        </div>
+
+        <div class="full-menu-grid" id="menu-grid">
+
+          <div class="menu-list-item" data-category="chicken">
+            <div class="menu-list-img"><img src="images/hero_ghee_roast.png" alt="Signature Chicken Ghee Roast"></div>
+            <div class="menu-list-content">
+              <div class="menu-list-header">
+                <h3>Signature Chicken Ghee Roast</h3>
+                <span class="menu-list-price">₹450</span>
+              </div>
+              <p class="menu-list-desc">Our flagship dish. Tender chicken marinated for 24 hours in Byadgi chili paste, slow-roasted in pure ghee until deeply caramelized.</p>
+              <div class="menu-meta">
+                <span style="color:var(--clr-accent);"><i class="ph-fill ph-fire"></i> High Spice</span>
+                <span><i class="ph ph-clock"></i> 25 Min</span>
+                <span><i class="ph ph-flame"></i> 650 kcal</span>
+                <span style="background:var(--clr-accent); color:white;"><i class="ph-fill ph-star"></i> Chef's Pick</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="menu-list-item" data-category="mutton">
+            <div class="menu-list-img"><img src="images/quality_ingredients.png" alt="Kundapur Mutton Ghee Roast"></div>
+            <div class="menu-list-content">
+              <div class="menu-list-header">
+                <h3>Kundapur Mutton Ghee Roast</h3>
+                <span class="menu-list-price">₹650</span>
+              </div>
+              <p class="menu-list-desc">Premium tender mutton cuts bone-in, slow-cooked for 4 hours to achieve a melt-in-the-mouth texture with rich ghee aromas.</p>
+              <div class="menu-meta">
+                <span style="color:#c44d18;"><i class="ph-fill ph-fire"></i> Med Spice</span>
+                <span><i class="ph ph-clock"></i> 35 Min</span>
+                <span style="background:var(--clr-primary); color:white;">Best Seller</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="menu-list-item" data-category="seafood">
+            <div class="menu-list-img"><img src="images/hero_ghee_roast.png" alt="Mangalorean Prawn Ghee Roast"></div>
+            <div class="menu-list-content">
+              <div class="menu-list-header">
+                <h3>Mangalorean Prawn Ghee Roast</h3>
+                <span class="menu-list-price">₹750</span>
+              </div>
+              <p class="menu-list-desc">Fresh coastal tiger prawns tossed in our signature fiery red masala, perfectly balancing the natural sweetness of the seafood.</p>
+              <div class="menu-meta">
+                <span style="color:#c44d18;"><i class="ph-fill ph-fire"></i> High Spice</span>
+                <span><i class="ph ph-clock"></i> 20 Min</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="menu-list-item" data-category="seafood">
+            <div class="menu-list-img"><img src="images/quality_ingredients.png" alt="Anjal Seer Fish Ghee Roast"></div>
+            <div class="menu-list-content">
+              <div class="menu-list-header">
+                <h3>Anjal (Seer Fish) Ghee Roast</h3>
+                <span class="menu-list-price">₹850</span>
+              </div>
+              <p class="menu-list-desc">Premium Seer fish slices coated in our vibrant red ghee roast masala and pan-fried to a crisp, golden exterior.</p>
+              <div class="menu-meta">
+                <span style="color:#c44d18;"><i class="ph-fill ph-fire"></i> High Spice</span>
+                <span><i class="ph ph-clock"></i> 20 Min</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="menu-list-item" data-category="veg">
+            <div class="menu-list-img"><img src="images/premium_spices.png" alt="Malai Paneer Ghee Roast"></div>
+            <div class="menu-list-content">
+              <div class="menu-list-header">
+                <h3>Malai Paneer Ghee Roast</h3>
+                <span class="menu-list-price">₹380</span>
+              </div>
+              <p class="menu-list-desc">Soft, fresh malai paneer cubes roasted to perfection in our iconic spicy and tangy ghee masala. A vegetarian delight.</p>
+              <div class="menu-meta">
+                <span style="color:#228b22;"><i class="ph-fill ph-leaf"></i> 100% Veg</span>
+                <span style="color:#c44d18;"><i class="ph-fill ph-fire"></i> Med Spice</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="menu-list-item" data-category="veg">
+            <div class="menu-list-img"><img src="images/quality_ingredients.png" alt="Mushroom Ghee Roast"></div>
+            <div class="menu-list-content">
+              <div class="menu-list-header">
+                <h3>Mushroom Ghee Roast</h3>
+                <span class="menu-list-price">₹350</span>
+              </div>
+              <p class="menu-list-desc">Earthy button mushrooms infused with our rich, spicy Kundapur masala. An absolute must-try for vegetarians and mushroom lovers.</p>
+              <div class="menu-meta">
+                <span style="color:#228b22;"><i class="ph-fill ph-leaf"></i> 100% Veg</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="menu-list-item" data-category="biryani">
+            <div class="menu-list-img"><img src="images/hero_ghee_roast.png" alt="Ghee Roast Chicken Biryani"></div>
+            <div class="menu-list-content">
+              <div class="menu-list-header">
+                <h3>Ghee Roast Chicken Biryani</h3>
+                <span class="menu-list-price">₹550</span>
+              </div>
+              <p class="menu-list-desc">Long grain Basmati rice layered with our signature chicken ghee roast and dum-cooked to aromatic perfection. A crowd favourite.</p>
+              <div class="menu-meta">
+                <span style="background:var(--clr-accent); color:white;"><i class="ph-fill ph-star"></i> Highly Recommended</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="menu-list-item" data-category="biryani">
+            <div class="menu-list-img"><img src="images/quality_ingredients.png" alt="Mutton Ghee Roast Biryani"></div>
+            <div class="menu-list-content">
+              <div class="menu-list-header">
+                <h3>Mutton Ghee Roast Biryani</h3>
+                <span class="menu-list-price">₹750</span>
+              </div>
+              <p class="menu-list-desc">Rich Kundapur-style mutton ghee roast layered with fragrant Basmati rice, slow-cooked to deliver deep, complex flavors.</p>
+              <div class="menu-meta">
+                <span style="color:#c44d18;"><i class="ph-fill ph-fire"></i> Med Spice</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="menu-list-item" data-category="dessert">
+            <div class="menu-list-img"><img src="images/hero_ghee_roast.png" alt="Tender Coconut Payasam"></div>
+            <div class="menu-list-content">
+              <div class="menu-list-header">
+                <h3>Tender Coconut Payasam</h3>
+                <span class="menu-list-price">₹250</span>
+              </div>
+              <p class="menu-list-desc">A cooling, sweet coastal delicacy made with fresh tender coconut milk, jaggery, and a hint of cardamom. The perfect finish.</p>
+              <div class="menu-meta">
+                <span style="color:#228b22;"><i class="ph-fill ph-leaf"></i> 100% Veg</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="menu-list-item" data-category="dessert">
+            <div class="menu-list-img"><img src="images/premium_spices.png" alt="Ghee Rice Kheer"></div>
+            <div class="menu-list-content">
+              <div class="menu-list-header">
+                <h3>Ghee Rice Kheer</h3>
+                <span class="menu-list-price">₹220</span>
+              </div>
+              <p class="menu-list-desc">Traditional rice pudding cooked slowly in pure ghee and milk, sweetened with sugar, garnished with cashews and saffron.</p>
+              <div class="menu-meta">
+                <span style="color:#228b22;"><i class="ph-fill ph-leaf"></i> 100% Veg</span>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /full-menu-grid -->
+      </div><!-- /delhi-menu-container -->
+
+      <!-- Gurugram Menu -->
+      <div id="gurgaon-menu-container" style="display:none;" class="menu-container">
+
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:2rem; flex-wrap:wrap; gap:1rem;">
+          <div>
+            <span style="font-family:'Oswald',sans-serif; font-size:0.8rem; letter-spacing:2px; text-transform:uppercase; color:var(--clr-accent);">Gurugram Location</span>
+            <h2 style="font-family:'Oswald',sans-serif; font-size:2rem; color:var(--clr-primary); margin:0.2rem 0 0; text-transform:uppercase;">Signature Menu</h2>
+          </div>
+          <div style="display:flex; gap:0.8rem;">
+            <a href="#" style="background:#fc8019; color:white; padding:0.6rem 1.2rem; border-radius:4px; font-family:'Oswald',sans-serif; font-size:0.8rem; letter-spacing:1px; text-decoration:none; text-transform:uppercase; display:flex; align-items:center; gap:6px;"><i class="ph-bold ph-storefront"></i> Swiggy</a>
+            <a href="#" style="background:#e23744; color:white; padding:0.6rem 1.2rem; border-radius:4px; font-family:'Oswald',sans-serif; font-size:0.8rem; letter-spacing:1px; text-decoration:none; text-transform:uppercase; display:flex; align-items:center; gap:6px;"><i class="ph-bold ph-storefront"></i> Zomato</a>
+          </div>
+        </div>
+
+        <div class="menu-categories" style="margin-bottom:2rem;">
+          <button class="category-btn gurgaon-filter-btn active" data-filter="all">All Items</button>
+          <button class="category-btn gurgaon-filter-btn" data-filter="chicken">Signature Chicken</button>
+          <button class="category-btn gurgaon-filter-btn" data-filter="mutton">Mutton</button>
+          <button class="category-btn gurgaon-filter-btn" data-filter="seafood">Coastal Seafood</button>
+          <button class="category-btn gurgaon-filter-btn" data-filter="veg">Pure Veg</button>
+          <button class="category-btn gurgaon-filter-btn" data-filter="biryani">Biryani</button>
+          <button class="category-btn gurgaon-filter-btn" data-filter="dessert">Desserts</button>
+        </div>
+
+        <div class="gurgaon-wrapper">
+          <p style="font-size:0.85rem; color:var(--clr-text-light); margin:0 0 1.5rem; padding-bottom:1.5rem; border-bottom:1px solid rgba(62,82,55,0.1); font-style:italic;">Our Gurugram kitchen presents the same authentic flavours — dish name, description, and price.</p>
+          <div class="gurgaon-text-menu-grid">
+
+            <div class="gurgaon-menu-item" data-category="chicken">
+              <div class="text-menu-header"><h4>Signature Chicken Ghee Roast</h4><div class="text-menu-dots"></div><div class="text-menu-price">₹ 450</div></div>
+              <p class="text-menu-desc">Tender chicken in Byadgi chili paste, slow-roasted in pure ghee until deeply caramelized.</p>
+            </div>
+
+            <div class="gurgaon-menu-item" data-category="mutton">
+              <div class="text-menu-header"><h4>Kundapur Mutton Ghee Roast</h4><div class="text-menu-dots"></div><div class="text-menu-price">₹ 650</div></div>
+              <p class="text-menu-desc">Bone-in mutton slow-cooked 4 hours for melt-in-the-mouth texture with rich ghee aromas.</p>
+            </div>
+
+            <div class="gurgaon-menu-item" data-category="seafood">
+              <div class="text-menu-header"><h4>Mangalorean Prawn Ghee Roast</h4><div class="text-menu-dots"></div><div class="text-menu-price">₹ 750</div></div>
+              <p class="text-menu-desc">Tiger prawns in fiery red masala, balancing the natural sweetness of fresh coastal seafood.</p>
+            </div>
+
+            <div class="gurgaon-menu-item" data-category="seafood">
+              <div class="text-menu-header"><h4>Anjal (Seer Fish) Ghee Roast</h4><div class="text-menu-dots"></div><div class="text-menu-price">₹ 850</div></div>
+              <p class="text-menu-desc">Premium Seer fish coated in vibrant red masala, pan-fried to a crisp golden exterior.</p>
+            </div>
+
+            <div class="gurgaon-menu-item" data-category="veg">
+              <div class="text-menu-header"><h4>Malai Paneer Ghee Roast</h4><div class="text-menu-dots"></div><div class="text-menu-price">₹ 380</div></div>
+              <p class="text-menu-desc">Soft paneer cubes roasted in our iconic spicy and tangy ghee masala. A vegetarian delight.</p>
+            </div>
+
+            <div class="gurgaon-menu-item" data-category="veg">
+              <div class="text-menu-header"><h4>Mushroom Ghee Roast</h4><div class="text-menu-dots"></div><div class="text-menu-price">₹ 350</div></div>
+              <p class="text-menu-desc">Earthy button mushrooms in rich spicy Kundapur masala. A must-try for vegetarians.</p>
+            </div>
+
+            <div class="gurgaon-menu-item" data-category="biryani">
+              <div class="text-menu-header"><h4>Ghee Roast Chicken Biryani</h4><div class="text-menu-dots"></div><div class="text-menu-price">₹ 550</div></div>
+              <p class="text-menu-desc">Basmati rice layered with signature chicken ghee roast, dum-cooked to aromatic perfection.</p>
+            </div>
+
+            <div class="gurgaon-menu-item" data-category="biryani">
+              <div class="text-menu-header"><h4>Mutton Ghee Roast Biryani</h4><div class="text-menu-dots"></div><div class="text-menu-price">₹ 750</div></div>
+              <p class="text-menu-desc">Rich Kundapur mutton ghee roast layered with fragrant Basmati, slow-cooked to perfection.</p>
+            </div>
+
+            <div class="gurgaon-menu-item" data-category="dessert">
+              <div class="text-menu-header"><h4>Tender Coconut Payasam</h4><div class="text-menu-dots"></div><div class="text-menu-price">₹ 250</div></div>
+              <p class="text-menu-desc">Fresh tender coconut milk, jaggery, and cardamom. The perfect sweet coastal finish.</p>
+            </div>
+
+            <div class="gurgaon-menu-item" data-category="dessert">
+              <div class="text-menu-header"><h4>Ghee Rice Kheer</h4><div class="text-menu-dots"></div><div class="text-menu-price">₹ 220</div></div>
+              <p class="text-menu-desc">Traditional rice pudding in pure ghee and milk, sweetened and garnished with cashews and saffron.</p>
+            </div>
+
+          </div>
+        </div>
+      </div><!-- /gurgaon-menu-container -->
+
+    </div><!-- /menu-section -->
+
+    <!-- ── ORDER CTA ──────────────────────── -->
+    <section class="menu-cta">
+      <div style="width:95%; max-width:800px; margin:0 auto;">
+        <h2>Hungry? Order Now</h2>
+        <p>Available on Swiggy &amp; Zomato — hot, fresh, and delivered straight to your door.</p>
+        <div class="menu-cta-btns">
+          <a href="#" class="btn-swiggy"><span style="background:white; color:#fc8019; width:20px; height:20px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:0.7rem; font-weight:900; margin-right:4px;">S</span> Order on Swiggy</a>
+          <a href="#" class="btn-zomato">z Order on Zomato</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ── FOOTER ──────────────────────────── -->
+  <section class="newsletter-section">
+      <div class="newsletter-inner">
+        <div class="newsletter-left reveal">
+          <h2>Join The <span>Flavour</span> Club</h2>
+          <p>Subscribe to our newsletter for exclusive offers, secret recipes, early access to new dishes, and VIP event invitations. No spam — only the good stuff.</p>
+        </div>
+        <div class="newsletter-right reveal" style="animation-delay:0.2s;">
+          <form class="newsletter-form" onsubmit="event.preventDefault();">
+            <input type="email" placeholder="Enter your email address" required>
+            <button type="submit">Subscribe</button>
+          </form>
+          <small>We respect your privacy. Unsubscribe anytime.</small>
+        </div>
+      </div>
+    </section>
+
+<footer class="site-footer">
+    <div class="container">
+      <div class="footer-main">
+
+        <div class="footer-brand">
+          <a href="index.html" class="footer-logo">
+            <img src="images/logo.jpg" alt="VERY GOOD GHEE ROAST" style="height:55px; border-radius:8px;">
+            <span class="footer-logo-text">VERY GOOD<br><span>GHEE ROAST</span></span>
+          </a>
+          <p>South Indian inspired food, and an original saucy Ghee Roast! A premium delivery kitchen bringing authentic coastal flavors right to your doorstep in Delhi &amp; Gurugram.</p>
+          <div class="footer-tagline">"Flavours that stay."</div>
+          <div class="footer-socials">
+            <a href="https://www.instagram.com/verygoodgheeroast/" target="_blank"><i class="ph-fill ph-instagram-logo"></i></a>
+            <a href="#"><i class="ph-fill ph-facebook-logo"></i></a>
+            <a href="#"><i class="ph-fill ph-youtube-logo"></i></a>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <h5>Explore</h5>
+          <ul>
+            <li><a href="index.html"><i class="ph-bold ph-caret-right"></i> Home</a></li>
+            <li><a href="menu.html"><i class="ph-bold ph-caret-right"></i> The Menu</a></li>
+            <li><a href="about.html"><i class="ph-bold ph-caret-right"></i> Our Story</a></li>
+            <li><a href="quality.html"><i class="ph-bold ph-caret-right"></i> Quality Promise</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>Services</h5>
+          <ul>
+            <li><a href="delivery.html"><i class="ph-bold ph-caret-right"></i> Order Delivery</a></li>
+            <li><a href="catering.html"><i class="ph-bold ph-caret-right"></i> Luxury Catering</a></li>
+            <li><a href="menu.html?location=delhi"><i class="ph-bold ph-caret-right"></i> Delhi Menu</a></li>
+            <li><a href="menu.html?location=gurugram"><i class="ph-bold ph-caret-right"></i> Gurugram Menu</a></li>
+            <li><a href="contact.html"><i class="ph-bold ph-caret-right"></i> Contact Us</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>Get In Touch</h5>
+          <ul class="footer-contact">
+            <li><i class="ph-fill ph-map-pin"></i><div><strong style="color:white; display:block;">Delivery Kitchen</strong><span style="color:rgba(255,255,255,0.55);">Delhi & Gurugram, India</span></div></li>
+            <li><i class="ph-fill ph-phone"></i><div><span style="color:white;">+91 99102 13465</span></div></li>
+            <li><i class="ph-fill ph-clock"></i><div><span style="color:white;">1 PM – 10 PM</span><span style="color:rgba(255,255,255,0.55); display:block; font-size:0.8rem;">Tuesdays Closed</span></div></li>
+          </ul>
+        </div>
+
+      </div>
+
+      <div class="footer-bottom">
+        <div>© 2026 VERY GOOD GHEE ROAST. All Rights Reserved.</div>
+        <div style="display:flex; gap:2rem; flex-wrap:wrap;">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms &amp; Conditions</a>
+          <a href="#">Refund Policy</a>
+          <a href="#">Sitemap</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scroll To Top Button -->
+  <button id="scroll-top-btn" aria-label="Scroll to top"><i class="ph-bold ph-arrow-up"></i></button>
+
+  <script src="js/main.js"></script>
+  <script>
+    // Scroll to top
+    const scrollBtn = document.getElementById('scroll-top-btn');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 400) scrollBtn.classList.add('visible');
+      else scrollBtn.classList.remove('visible');
+    });
+    scrollBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+    // Delhi filter logic
+    const categoryBtns = document.querySelectorAll('#delhi-menu-container .category-btn');
+    const menuItems = document.querySelectorAll('#delhi-menu-container .menu-list-item');
+    categoryBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        categoryBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const filter = btn.getAttribute('data-filter');
+        menuItems.forEach(item => {
+          if (filter === 'all' || item.getAttribute('data-category') === filter) {
+            item.style.display = 'grid';
+            item.style.animation = 'fadeIn 0.4s ease forwards';
+          } else {
+            item.style.display = 'none';
+          }
+        });
+      });
+    });
+
+    // Gurgaon filter logic
+    const gurgaonBtns = document.querySelectorAll('.gurgaon-filter-btn');
+    const gurgaonItems = document.querySelectorAll('.gurgaon-menu-item');
+    gurgaonBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        gurgaonBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const filter = btn.getAttribute('data-filter');
+        gurgaonItems.forEach(item => {
+          if (filter === 'all' || item.getAttribute('data-category') === filter) {
+            item.style.display = 'block';
+          } else {
+            item.style.display = 'none';
+          }
+        });
+      });
+    });
+
+    // Location toggle logic
+    const locRadios = document.querySelectorAll('input[name="location"]');
+    const delhiMenu = document.getElementById('delhi-menu-container');
+    const gurgaonMenu = document.getElementById('gurgaon-menu-container');
+    locRadios.forEach(radio => {
+      radio.addEventListener('change', function () {
+        if (this.value === 'gurgaon') {
+          delhiMenu.style.display = 'none';
+          gurgaonMenu.style.display = 'block';
+        } else {
+          delhiMenu.style.display = 'block';
+          gurgaonMenu.style.display = 'none';
+        }
+      });
+    });
+
+    // Auto-select from URL param
+    const urlParams = new URLSearchParams(window.location.search);
+    const locParam = urlParams.get('location');
+    if (locParam === 'gurugram') {
+      document.getElementById('loc-gurgaon').checked = true;
+      delhiMenu.style.display = 'none';
+      gurgaonMenu.style.display = 'block';
+    } else if (locParam === 'delhi') {
+      document.getElementById('loc-delhi').checked = true;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gallery | Zuru Zuru Izakaya</title>
+  
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  
+  <style>
+    .gallery-hero {
+      padding: 180px 5% 80px;
+      text-align: center;
+      background-color: #F7F3ED;
+    }
+    .gallery-hero h1 {
+      font-size: 3.5rem;
+      color: #8B1A1A;
+      margin-bottom: 1rem;
+    }
+    .gallery-hero p {
+      max-width: 600px;
+      margin: 0 auto;
+      color: #333;
+      font-size: 1.1rem;
+    }
+
+    .gallery-filters {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+      padding: 2rem 5% 3rem;
+      background-color: #F7F3ED;
+    }
+    .filter-btn {
+      background: transparent;
+      border: 1px solid #C9A227;
+      color: #111111;
+      padding: 0.75rem 1.5rem;
+      cursor: pointer;
+      border-radius: 30px;
+      transition: all 0.3s ease;
+      font-family: inherit;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-size: 0.9rem;
+    }
+    .filter-btn:hover, .filter-btn.active {
+      background-color: #8B1A1A;
+      color: #fff;
+      border-color: #8B1A1A;
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      padding: 0 5% 80px;
+      background-color: #F7F3ED;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .gallery-item {
+      position: relative;
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: pointer;
+      display: block;
+    }
+    .gallery-item.hide {
+      display: none;
+    }
+    .gallery-item img {
+      width: 100%;
+      height: 350px;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+      display: block;
+    }
+    .gallery-item:hover img {
+      transform: scale(1.1);
+    }
+    .gallery-item-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(17, 17, 17, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .gallery-item:hover .gallery-item-overlay {
+      opacity: 1;
+    }
+    .gallery-item-overlay i {
+      color: #fff;
+      font-size: 2.5rem;
+    }
+
+    /* Lightbox Styles */
+    .lightbox {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(17, 17, 17, 0.95);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .lightbox.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .lightbox-content {
+      position: relative;
+      max-width: 90%;
+      max-height: 90%;
+    }
+    .lightbox-content img {
+      max-width: 100%;
+      max-height: 85vh;
+      border-radius: 5px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .lightbox-close {
+      position: absolute;
+      top: -40px;
+      right: 0;
+      color: #fff;
+      font-size: 2rem;
+      cursor: pointer;
+      background: transparent;
+      border: none;
+    }
+    .lightbox-prev, .lightbox-next {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255,255,255,0.1);
+      border: none;
+      color: #fff;
+      font-size: 2.5rem;
+      padding: 1rem;
+      cursor: pointer;
+      border-radius: 50%;
+      transition: background 0.3s;
+      z-index: 10000;
+    }
+    .lightbox-prev:hover, .lightbox-next:hover {
+      background: rgba(201, 162, 39, 0.8);
+    }
+    .lightbox-prev {
+      left: 20px;
+    }
+    .lightbox-next {
+      right: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Preloader -->
+  <div class="preloader">
+    <img src="zuruzuru_logo.png" alt="Loading" class="preloader-logo">
+    <div class="preloader-bar"></div>
+  </div>
+
+  <!-- Scroll Progress -->
+  <div class="scroll-progress"></div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="nav-container">
+      <a href="index.html" class="logo">
+        <img src="zuruzuru_logo.png" alt="Zuru Zuru Izakaya">
+        <span class="brand-name">Zuru Zuru</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li>
+          <a href="menu.html">Menu <i class="ph-bold ph-caret-down" style="font-size:0.7rem;"></i></a>
+          <ul class="nav-dropdown">
+            <li><a href="menu.html?location=delhi">Delhi Menu</a></li>
+            <li><a href="menu.html?location=gurugram">Gurugram Menu</a></li>
+          </ul>
+        </li>
+        <li><a href="about.html">Our Story</a></li>
+        <li><a href="chefs.html">Chefs</a></li>
+        <li><a href="gallery.html" class="active">Gallery</a></li>
+        <li><a href="reservation.html">Reservations</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+      <div class="nav-right">
+        <a href="reservation.html" class="btn btn-primary btn-sm"><span>Reserve</span></a>
+        <div class="hamburger">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu">
+    <a href="index.html">Home</a>
+    <a href="menu.html">Menu</a>
+    <a href="about.html">Our Story</a>
+    <a href="chefs.html">Chefs</a>
+    <a href="gallery.html" class="active">Gallery</a>
+    <a href="reservation.html">Reservations</a>
+    <a href="private-dining.html">Private Dining</a>
+    <a href="events.html">Events</a>
+    <a href="blog.html">Blog</a>
+    <a href="contact.html">Contact</a>
+  </div>
+
+  <!-- Gallery Hero -->
+  <section class="gallery-hero reveal">
+    <h1>Our Gallery</h1>
+    <p>Step inside the world of Zuru Zuru Izakaya. A visual journey through our dishes, our vibrant space, and the experiences we craft.</p>
+  </section>
+
+  <!-- Filters -->
+  <div class="gallery-filters reveal delay-1">
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="food">Food</button>
+    <button class="filter-btn" data-filter="restaurant">Restaurant</button>
+    <button class="filter-btn" data-filter="kitchen">Kitchen</button>
+    <button class="filter-btn" data-filter="events">Events</button>
+    <button class="filter-btn" data-filter="interior">Interior</button>
+  </div>
+
+  <!-- Gallery Grid -->
+  <div class="gallery-grid reveal delay-2">
+    <!-- Food -->
+    <div class="gallery-item" data-category="food">
+      <img src="images/hero_sushi.png" alt="Authentic Ramen">
+      <div class="gallery-item-overlay"><i class="ph ph-magnifying-glass-plus"></i></div>
+    </div>
+    <div class="gallery-item" data-category="food">
+      <img src="images/hero_ramen.png" alt="Sushi Platter">
+      <div class="gallery-item-overlay"><i class="ph ph-magnifying-glass-plus"></i></div>
+    </div>
+    <div class="gallery-item" data-category="food">
+      <img src="images/interior.png" alt="Yakitori Skewers">
+      <div class="gallery-item-overlay"><i class="ph ph-magnifying-glass-plus"></i></div>
+    </div>
+    <div class="gallery-item" data-category="food">
+      <img src="images/gyoza_tempura.png" alt="Spicy Noodles">
+      <div class="gallery-item-overlay"><i class="ph ph-magnifying-glass-plus"></i></div>
+    </div>
+
+    <!-- Restaurant & Interior -->
+    <div class="gallery-item" data-category="restaurant interior">
+      <img src="images/hero_ramen.png" alt="Restaurant Ambiance">
+      <div class="gallery-item-overlay"><i class="ph ph-magnifying-glass-plus"></i></div>
+    </div>
+    <div class="gallery-item" data-category="restaurant interior">
+      <img src="images/gyoza_tempura.png" alt="Table Setting">
+      <div class="gallery-item-overlay"><i class="ph ph-magnifying-glass-plus"></i></div>
+    </div>
+    <div class="gallery-item" data-category="restaurant interior">
+      <img src="images/interior.png" alt="Cozy Dining Area">
+      <div class="gallery-item-overlay"><i class="ph ph-magnifying-glass-plus"></i></div>
+    </div>
+    <div class="gallery-item" data-category="restaurant interior">
+      <img src="images/hero_sushi.png" alt="Izakaya Bar">
+      <div class="gallery-item-overlay"><i class="ph ph-magnifying-glass-plus"></i></div>
+    </div>
+
+    <!-- Kitchen -->
+    <div class="gallery-item" data-category="kitchen">
+      <img src="images/hero_sushi.png" alt="Chef Cooking">
+      <div class="gallery-item-overlay"><i class="ph ph-magnifying-glass-plus"></i></div>
+    </div>
+    <div class="gallery-item" data-category="kitchen">
+      <img src="images/hero_ramen.png" alt="Kitchen Preparation">
+      <div class="gallery-item-overlay"><i class="ph ph-magnifying-glass-plus"></i></div>
+    </div>
+    <div class="gallery-item" data-category="kitchen">
+      <img src="images/chef.png" alt="Master Chef">
+      <div class="gallery-item-overlay"><i class="ph ph-magnifying-glass-plus"></i></div>
+    </div>
+    <div class="gallery-item" data-category="kitchen">
+      <img src="images/chef.png" alt="Wok Flames">
+      <div class="gallery-item-overlay"><i class="ph ph-magnifying-glass-plus"></i></div>
+    </div>
+
+    <!-- Events -->
+    <div class="gallery-item" data-category="events">
+      <img src="images/chef.png" alt="Event Gatherings">
+      <div class="gallery-item-overlay"><i class="ph ph-magnifying-glass-plus"></i></div>
+    </div>
+    <div class="gallery-item" data-category="events">
+      <img src="images/interior.png" alt="Toasting Together">
+      <div class="gallery-item-overlay"><i class="ph ph-magnifying-glass-plus"></i></div>
+    </div>
+    <div class="gallery-item" data-category="events">
+      <img src="images/hero_sushi.png" alt="Night Event Setup">
+      <div class="gallery-item-overlay"><i class="ph ph-magnifying-glass-plus"></i></div>
+    </div>
+    <div class="gallery-item" data-category="events">
+      <img src="images/hero_sushi.png" alt="Group Dining Experience">
+      <div class="gallery-item-overlay"><i class="ph ph-magnifying-glass-plus"></i></div>
+    </div>
+  </div>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox">
+    <button class="lightbox-prev" id="lightbox-prev"><i class="ph ph-caret-left"></i></button>
+    <div class="lightbox-content">
+      <button class="lightbox-close" id="lightbox-close"><i class="ph ph-x"></i></button>
+      <img src="" alt="Lightbox Image" id="lightbox-img">
+    </div>
+    <button class="lightbox-next" id="lightbox-next"><i class="ph ph-caret-right"></i></button>
+  </div>
+
+  <!-- Footer -->
+    <!-- --- NEWSLETTER --- -->
+  <section class="nl-section section-alt">
+    <div class="container reveal">
+      <div class="section-subtitle" style="justify-content:center;">Stay Connected</div>
+      <h2 class="heading-section text-center">Join Our Inner Circle</h2>
+      <p class="section-desc text-center" style="margin:0 auto 2rem;">Receive exclusive recipes, event invitations, and special offers directly in your inbox. No spam, just Japanese inspiration.</p>
+      <div class="nl-form">
+        <input type="email" placeholder="Enter your email address" aria-label="Email address">
+        <button type="button">Subscribe</button>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-about">
+          <div class="footer-brand-container">
+            <img src="zuruzuru_logo.png" alt="Zuru Zuru" class="footer-logo">
+            <span class="brand-name">Zuru Zuru</span>
+          </div>
+          <p>A premium Japanese Izakaya experience bringing the authentic flavours of Tokyo to New Delhi. Every dish tells a story of tradition, passion, and culinary excellence.</p>
+          <div class="footer-social">
+            <a href="https://www.instagram.com/zuruzuru.in/?hl=en" aria-label="Instagram" target="_blank"><i class="ph ph-instagram-logo"></i></a>
+            <a href="#" aria-label="Facebook"><i class="ph ph-facebook-logo"></i></a>
+            <a href="#" aria-label="Twitter"><i class="ph ph-twitter-logo"></i></a>
+            <a href="#" aria-label="YouTube"><i class="ph ph-youtube-logo"></i></a>
+          </div>
+        </div>
+        <div class="footer-links">
+          <h4>Explore</h4>
+          <a href="menu.html">Our Menu</a>
+          <a href="about.html">Our Story</a>
+          <a href="chefs.html">Our Chefs</a>
+          <a href="gallery.html">Gallery</a>
+          <a href="blog.html">Blog</a>
+        </div>
+        <div class="footer-links">
+          <h4>Services</h4>
+          <a href="reservation.html">Reservations</a>
+          <a href="private-dining.html">Private Dining</a>
+          <a href="events.html">Events</a>
+          <a href="catering.html">Catering</a>
+          <a href="careers.html">Careers</a>
+        </div>
+        <div class="footer-links">
+          <h4>Information</h4>
+          <a href="locations.html">Locations</a>
+          <a href="franchise.html">Franchise</a>
+          <a href="faq.html">FAQ</a>
+          <a href="privacy-policy.html">Privacy Policy</a>
+          <a href="terms.html">Terms</a>
+        </div>
+        <div>
+          <h4>Contact</h4>
+          <ul class="footer-contact">
+            <li><i class="ph ph-map-pin"></i> Zuru Zuru, Delhi, India 110049</li>
+            <li><i class="ph ph-phone"></i> +91 11 4052 7373</li>
+            <li><i class="ph ph-envelope"></i> hello@zuruzuru.in</li>
+          </ul>
+          <h4 style="margin-top:2rem">Hours</h4>
+          <ul class="footer-hours">
+              <li style="flex-direction:column; align-items:flex-start; margin-bottom:10px;">
+                <span style="color:var(--clr-primary); font-weight:600; margin-bottom:5px;">1:00 PM - 4:00 PM & 7:00 PM - 10:30 PM</span>
+                <span style="font-size:0.85rem; color:#888;">Lunch & Dinner (Full Menu)</span>
+              </li>
+              <li style="flex-direction:column; align-items:flex-start;">
+                <span style="color:var(--clr-primary); font-weight:600; margin-bottom:5px;">4:00 PM - 7:00 PM</span>
+                <span style="font-size:0.85rem; color:#888;">Tempura, Gyoza & Cold Ramen</span>
+              </li>
+            </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Zuru Zuru Izakaya. All Rights Reserved.</p>
+        <div class="footer-bottom-links">
+          <a href="privacy-policy.html">Privacy Policy</a>
+          <a href="terms.html">Terms of Service</a>
+          <a href="faq.html">FAQ</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Back to Top -->
+  <button class="back-to-top" aria-label="Back to top">
+    <i class="ph ph-caret-up"></i>
+  </button>
+
+  <!-- JS -->
+  <script src="js/main.js"></script>
+  <script>
+    // Gallery Filtering and Lightbox logic
+    document.addEventListener('DOMContentLoaded', () => {
+      const filterBtns = document.querySelectorAll('.filter-btn');
+      const galleryItems = document.querySelectorAll('.gallery-item');
+      
+      const lightbox = document.getElementById('lightbox');
+      const lightboxImg = document.getElementById('lightbox-img');
+      const closeBtn = document.getElementById('lightbox-close');
+      const prevBtn = document.getElementById('lightbox-prev');
+      const nextBtn = document.getElementById('lightbox-next');
+      
+      let visibleItems = [];
+      let currentIndex = 0;
+
+      // Filter functionality
+      filterBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          // Remove active class from all buttons
+          filterBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+
+          const filterValue = btn.getAttribute('data-filter');
+
+          galleryItems.forEach(item => {
+            const categories = item.getAttribute('data-category').split(' ');
+            if (filterValue === 'all' || categories.includes(filterValue)) {
+              item.classList.remove('hide');
+            } else {
+              item.classList.add('hide');
+            }
+          });
+        });
+      });
+
+      // Lightbox functionality
+      function updateVisibleItems() {
+        visibleItems = Array.from(galleryItems).filter(item => !item.classList.contains('hide'));
+      }
+
+      function openLightbox(index) {
+        if (index < 0 || index >= visibleItems.length) return;
+        currentIndex = index;
+        const img = visibleItems[currentIndex].querySelector('img');
+        lightboxImg.src = img.src;
+        lightbox.classList.add('active');
+        document.body.style.overflow = 'hidden'; // Prevent scrolling
+      }
+
+      function closeLightbox() {
+        lightbox.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+
+      galleryItems.forEach((item) => {
+        item.addEventListener('click', () => {
+          updateVisibleItems();
+          const index = visibleItems.indexOf(item);
+          if (index !== -1) {
+            openLightbox(index);
+          }
+        });
+      });
+
+      closeBtn.addEventListener('click', closeLightbox);
+      
+      lightbox.addEventListener('click', (e) => {
+        if (e.target === lightbox) {
+          closeLightbox();
+        }
+      });
+
+      prevBtn.addEventListener('click', () => {
+        if (currentIndex > 0) {
+          openLightbox(currentIndex - 1);
+        } else {
+          openLightbox(visibleItems.length - 1); // Loop to end
+        }
+      });
+
+      nextBtn.addEventListener('click', () => {
+        if (currentIndex < visibleItems.length - 1) {
+          openLightbox(currentIndex + 1);
+        } else {
+          openLightbox(0); // Loop to start
+        }
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (!lightbox.classList.contains('active')) return;
+        if (e.key === 'Escape') closeLightbox();
+        if (e.key === 'ArrowLeft') prevBtn.click();
+        if (e.key === 'ArrowRight') nextBtn.click();
+      });
+    });
+  </script>
+</body>
+</html>
+
+
+
+
+
+

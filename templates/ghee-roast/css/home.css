@@ -1,0 +1,181 @@
+/* =========================================================
+   GHEE ROAST V2 ?" Home Page Sections (1-20)
+   ========================================================= */
+
+/* 2. Hero Banner */
+.hero {
+  min-height: 100vh; display: flex; align-items: center; position: relative;
+  padding-top: var(--header-h); overflow: hidden;
+}
+.hero-bg {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;
+}
+.hero-overlay {
+  position: absolute; inset: 0; background: linear-gradient(to right, rgba(20,25,12,0.9) 0%, rgba(20,25,12,0.4) 100%); z-index: 1;
+}
+.hero-content {
+  position: relative; z-index: 2; max-width: 700px; color: var(--clr-white);
+}
+.hero-subtitle {
+  font-family: var(--ff-heading); color: var(--clr-accent); font-size: 1.2rem;
+  letter-spacing: 3px; display: block; margin-bottom: 1rem;
+}
+.hero h1 { font-size: var(--fs-hero); line-height: 1.05; margin-bottom: 1.5rem; text-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+.hero h1 span { color: var(--clr-accent); }
+.hero p { font-size: 1.2rem; color: rgba(255,255,255,0.8); margin-bottom: 2.5rem; max-width: 500px; }
+.hero-actions { display: flex; gap: 1rem; }
+.scroll-indicator {
+  position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 2;
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  color: var(--clr-white); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px;
+  animation: float 2s infinite ease-in-out;
+}
+.scroll-indicator i { font-size: 1.5rem; }
+
+@keyframes float {
+  0%, 100% { transform: translate(-50%, 0); }
+  50% { transform: translate(-50%, 10px); }
+}
+
+/* 3. Restaurant Introduction */
+.intro-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
+}
+.intro-images { position: relative; }
+.intro-img-1 { width: 80%; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); }
+.intro-img-2 { width: 60%; position: absolute; bottom: -10%; right: 0; border-radius: var(--radius-md); border: 10px solid var(--clr-bg); box-shadow: var(--shadow-lg); }
+
+/* 4. Featured Categories */
+.category-slider {
+  display: flex; gap: 2rem; overflow-x: auto; padding-bottom: 2rem; scroll-snap-type: x mandatory;
+}
+.category-slider::-webkit-scrollbar { height: 8px; }
+.category-slider::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); border-radius: 10px; }
+.category-slider::-webkit-scrollbar-thumb { background: var(--clr-primary); border-radius: 10px; }
+.category-card {
+  min-width: 250px; scroll-snap-align: start; position: relative; border-radius: var(--radius-md); overflow: hidden;
+  height: 350px; cursor: pointer;
+}
+.category-card img { width: 100%; height: 100%; transition: transform 0.5s ease; }
+.category-card::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); }
+.category-card:hover img { transform: scale(1.1); }
+.category-card h3 { position: absolute; bottom: 20px; left: 20px; color: var(--clr-white); z-index: 2; font-size: 1.5rem; }
+
+/* 5. Today's Special & 6. Menu Preview */
+.menu-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2.5rem; margin-bottom: 4rem;
+}
+.menu-card {
+  background: var(--clr-white); border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-sm);
+  transition: var(--transition); display: flex; flex-direction: column;
+}
+.menu-card:hover { transform: translateY(-10px); box-shadow: var(--shadow-lg); }
+.menu-img-wrap { height: 250px; overflow: hidden; position: relative; }
+.menu-img-wrap img { width: 100%; height: 100%; transition: transform 0.5s ease; }
+.menu-card:hover .menu-img-wrap img { transform: scale(1.1); }
+.menu-badge { position: absolute; top: 15px; right: 15px; background: var(--clr-accent); color: var(--clr-white); padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; z-index: 2; }
+.menu-details { padding: 2rem; display: flex; flex-direction: column; flex-grow: 1; }
+.menu-title-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; }
+.menu-title-row h3 { font-size: 1.4rem; color: var(--clr-primary); }
+.menu-price { font-family: var(--ff-heading); font-size: 1.5rem; color: var(--clr-accent); }
+.menu-desc { color: var(--clr-text-light); font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.5rem; flex-grow: 1; }
+
+/* 7. Our Story Preview */
+.story-preview {
+  display: grid; grid-template-columns: 1.2fr 1fr; gap: 4rem; align-items: center;
+}
+.timeline-preview { border-left: 2px dashed var(--clr-accent); padding-left: 2rem; margin-top: 2rem; }
+.timeline-item { position: relative; margin-bottom: 2rem; }
+.timeline-item::before { content: ''; position: absolute; left: -2.4rem; top: 0; width: 15px; height: 15px; border-radius: 50%; background: var(--clr-accent); border: 4px solid var(--clr-bg); }
+.timeline-year { font-family: var(--ff-heading); color: var(--clr-primary); font-size: 1.5rem; line-height: 1; }
+
+/* 8. Quality & 9. Cooking Process */
+.process-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; margin-top: 3rem; text-align: center;
+}
+.process-step { position: relative; }
+.process-step:not(:last-child)::after {
+  content: '\2192'; font-size: 2rem; color: rgba(255,255,255,0.2);
+  position: absolute; right: -1.5rem; top: 20%;
+}
+.process-icon { width: 80px; height: 80px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-size: 2.5rem; color: var(--clr-accent); transition: var(--transition); }
+.process-step:hover .process-icon { background: var(--clr-accent); color: var(--clr-white); transform: translateY(-10px); }
+
+/* 10. Why Choose Us */
+.features-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 3rem;
+}
+.feature-box { text-align: center; padding: 3rem 2rem; background: var(--clr-white); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); transition: var(--transition); border-bottom: 4px solid transparent; }
+.feature-box:hover { transform: translateY(-10px); border-bottom-color: var(--clr-accent); }
+.feature-box i { font-size: 3rem; color: var(--clr-primary); margin-bottom: 1.5rem; }
+
+/* 11. Delivery & 12. Catering */
+.split-section { display: grid; grid-template-columns: 1fr 1fr; }
+.split-half { padding: 6rem 10%; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; min-height: 600px; }
+.split-img { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; }
+.split-overlay { position: absolute; inset: 0; background: rgba(31, 37, 20, 0.85); z-index: 1; }
+.split-content { position: relative; z-index: 2; color: var(--clr-white); }
+.split-content h2 { font-size: 3rem; margin-bottom: 1.5rem; }
+.split-content p { font-size: 1.1rem; color: rgba(255,255,255,0.8); margin-bottom: 2rem; }
+.app-buttons { display: flex; gap: 1rem; margin-bottom: 2rem; }
+.app-btn { background: #fff; color: #111; padding: 10px 20px; border-radius: 30px; display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 0.9rem; transition: var(--transition); }
+.app-btn img { height: 20px; }
+.app-btn:hover { transform: translateY(-3px); }
+
+/* 13. Customer Reviews */
+.reviews-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+.review-card { background: var(--clr-bg); padding: 3rem 2rem; border-radius: var(--radius-md); position: relative; }
+.review-card::before { content: '"'; position: absolute; top: 1rem; right: 2rem; font-family: Georgia, serif; font-size: 6rem; color: rgba(0,0,0,0.05); line-height: 1; }
+.stars { color: #FFD700; margin-bottom: 1.5rem; font-size: 1.2rem; }
+.review-text { font-style: italic; color: var(--clr-text-light); margin-bottom: 2rem; }
+.reviewer { display: flex; align-items: center; gap: 1rem; }
+.reviewer img { width: 50px; height: 50px; border-radius: 50%; }
+
+/* 14. Gallery Preview */
+.gallery-grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: 250px; gap: 1rem; }
+.gallery-item { position: relative; overflow: hidden; border-radius: var(--radius-sm); }
+.gallery-item:nth-child(1) { grid-column: span 2; grid-row: span 2; }
+.gallery-item:nth-child(4) { grid-column: span 2; }
+.gallery-item img { width: 100%; height: 100%; transition: transform 0.5s ease; }
+.gallery-item:hover img { transform: scale(1.1); }
+.gallery-item::after { content: '\ea3e'; font-family: "Phosphor"; position: absolute; inset: 0; background: rgba(196, 77, 24, 0.8); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 3rem; opacity: 0; transition: var(--transition); }
+.gallery-item:hover::after { opacity: 1; }
+
+/* 15. Statistics */
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; text-align: center; }
+.stat-item h3 { font-size: 4rem; color: var(--clr-accent); margin-bottom: 0.5rem; }
+.stat-item p { font-family: var(--ff-heading); font-size: 1.2rem; letter-spacing: 1px; color: var(--clr-white); }
+
+/* 16. Instagram Feed */
+.insta-grid { display: flex; overflow: hidden; }
+.insta-item { flex: 1; position: relative; aspect-ratio: 1/1; }
+.insta-item img { width: 100%; height: 100%; }
+.insta-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.6); display: flex; gap: 1.5rem; align-items: center; justify-content: center; color: #fff; opacity: 0; transition: var(--transition); font-weight: 600; font-size: 1.2rem; }
+.insta-overlay i { margin-right: 5px; }
+.insta-item:hover .insta-overlay { opacity: 1; }
+
+/* 17. Blog Preview */
+.blog-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+.blog-card { background: var(--clr-white); border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-sm); }
+.blog-img { height: 220px; overflow: hidden; }
+.blog-img img { width: 100%; height: 100%; transition: transform 0.5s ease; }
+.blog-card:hover .blog-img img { transform: scale(1.1); }
+.blog-content { padding: 2rem; }
+.blog-date { color: var(--clr-accent); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; margin-bottom: 1rem; display: block; }
+.blog-content h3 { font-size: 1.3rem; margin-bottom: 1rem; color: var(--clr-primary); }
+
+/* 18. Contact Preview & 19. Newsletter */
+.contact-newsletter-section { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; }
+.contact-info-card { background: var(--clr-white); padding: 3rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); }
+.contact-item { display: flex; gap: 1.5rem; margin-bottom: 2rem; align-items: flex-start; }
+.contact-icon { width: 50px; height: 50px; background: var(--clr-bg-alt); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--clr-accent); font-size: 1.5rem; flex-shrink: 0; }
+.contact-text h4 { font-size: 1.1rem; color: var(--clr-primary); margin-bottom: 0.5rem; }
+.contact-text p { color: var(--clr-text-light); }
+
+.newsletter-box { background: var(--clr-primary); color: var(--clr-white); padding: 4rem; border-radius: var(--radius-md); text-align: center; }
+.newsletter-box h2 { font-size: 2.5rem; margin-bottom: 1rem; }
+.newsletter-box p { color: rgba(255,255,255,0.8); margin-bottom: 2rem; }
+.newsletter-form { display: flex; gap: 0; border-radius: var(--radius-sm); overflow: hidden; }
+.newsletter-form input { flex: 1; padding: 1.2rem; border: none; outline: none; font-family: var(--ff-body); font-size: 1rem; }
+.newsletter-form button { background: var(--clr-accent); color: #fff; border: none; padding: 0 2rem; font-family: var(--ff-heading); font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: var(--transition); }
+.newsletter-form button:hover { background: var(--clr-accent-hover); }

@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - Zuru Zuru Izakaya</title>
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/responsive.css">
+
+    <style>
+    .hero-section {
+        position: relative;
+        height: 50vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        background: linear-gradient(rgba(17, 17, 17, 0.7), rgba(17, 17, 17, 0.7)), url('images/chef.png') center/cover;
+        color: #F7F3ED;
+        padding-top: 80px;
+    }
+    .hero-title {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        font-family: 'Playfair Display', serif;
+    }
+    .hero-subtitle {
+        font-size: 1.2rem;
+        color: #D9C5A0;
+    }
+    .info-grid-section {
+        padding: 80px 5% 40px;
+        background-color: #111111;
+    }
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    .info-card {
+        background: #1a1a1a;
+        padding: 3rem 2rem;
+        text-align: center;
+        border-radius: 2px;
+        border: 1px solid rgba(255,255,255,0.05);
+        transition: transform 0.3s ease, border-color 0.3s ease;
+    }
+    .info-card:hover {
+        transform: translateY(-5px);
+        border-color: #C9A227;
+    }
+    .info-icon {
+        font-size: 2.5rem;
+        color: #C9A227;
+        margin-bottom: 1rem;
+    }
+    .info-card h3 {
+        font-size: 1.2rem;
+        color: #F7F3ED;
+        margin-bottom: 1rem;
+        font-family: 'Playfair Display', serif;
+    }
+    .info-card p {
+        color: #aaa;
+        line-height: 1.6;
+        margin: 0;
+    }
+    .contact-map-section {
+        padding: 40px 5% 100px;
+        background-color: #111111;
+    }
+    .contact-map-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0;
+        max-width: 1200px;
+        margin: 0 auto;
+        background: #1a1a1a;
+        border-radius: 2px;
+        overflow: hidden;
+        border: 1px solid rgba(201, 162, 39, 0.2);
+        box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+    }
+    .contact-form-wrap {
+        padding: 4rem;
+        background: #1a1a1a;
+    }
+    .contact-form-wrap h2 {
+        font-size: 2.5rem;
+        color: #C9A227;
+        margin-bottom: 2rem;
+        font-family: 'Playfair Display', serif;
+    }
+    .form-group {
+        margin-bottom: 2rem;
+    }
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: #F7F3ED;
+        font-weight: 500;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 1px;
+    }
+    .form-control {
+        width: 100%;
+        padding: 0.8rem 0;
+        border: none;
+        border-bottom: 1px solid #333;
+        background: transparent;
+        color: #F7F3ED;
+        font-family: inherit;
+        font-size: 1.1rem;
+        transition: border-color 0.3s ease;
+        outline: none;
+    }
+    .form-control:focus {
+        border-bottom-color: #C9A227;
+    }
+    .form-group select option {
+        background: #1a1a1a;
+        color: #F7F3ED;
+    }
+    .map-placeholder {
+        background: #e9ecef;
+        width: 100%;
+        height: 100%;
+        min-height: 400px;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        color: #888;
+        background-image: url('images/hero_sushi.png');
+        background-size: cover;
+        background-position: center;
+    }
+    .map-placeholder::after {
+        content: '';
+        position: absolute;
+        top: 0;left: 0;width: 100%;height: 100%;
+        background: rgba(0,0,0,0.4);
+    }
+    .map-placeholder-content {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+        color: #fff;
+    }
+    .map-placeholder i {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        color: #fff;
+    }
+    .faq-section {
+        padding: 100px 5%;
+        background-color: #111111;
+        color: #F7F3ED;
+    }
+    .faq-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    .faq-header {
+        text-align: center;
+        margin-bottom: 4rem;
+    }
+    .faq-header h2 {
+        font-size: 2.5rem;
+        color: #C9A227;
+        font-family: 'Playfair Display', serif;
+    }
+    .accordion-item {
+        border-bottom: 1px solid #333;
+        margin-bottom: 1rem;
+    }
+    .accordion-header {
+        width: 100%;
+        text-align: left;
+        background: none;
+        border: none;
+        padding: 1.5rem 0;
+        font-size: 1.2rem;
+        color: #F7F3ED;
+        font-weight: 500;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .accordion-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+    }
+    .accordion-content p {
+        padding-bottom: 1.5rem;
+        color: #aaa;
+        line-height: 1.6;
+    }
+    .accordion-item.active .accordion-content {
+        max-height: 300px;
+    }
+    .accordion-item.active .accordion-header .ph-plus {
+        transform: rotate(45deg);
+    }
+    .accordion-header i {
+        transition: transform 0.3s ease;
+    }
+    @media (max-width: 992px) {
+        .info-grid { grid-template-columns: repeat(2, 1fr); }
+        .contact-map-container { grid-template-columns: 1fr; }
+        .map-placeholder { height: 400px; }
+    }
+    @media (max-width: 576px) {
+        .info-grid { grid-template-columns: 1fr; }
+        .contact-form-wrap { padding: 2rem; }
+    }
+    </style>
+</head>
+<body>
+    <!-- Preloader -->
+    <div class="preloader">
+        <img src="zuruzuru_logo.png" alt="Loading" class="preloader-logo">
+        <div class="preloader-bar"></div>
+    </div>
+
+    <!-- Scroll Progress -->
+    <div class="scroll-progress"></div>
+
+    <!-- Header -->
+    <header class="header header-inner">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+        <img src="zuruzuru_logo.png" alt="Zuru Zuru Izakaya">
+        <span class="brand-name">Zuru Zuru</span>
+      </a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li>
+          <a href="menu.html">Menu <i class="ph-bold ph-caret-down" style="font-size:0.7rem;"></i></a>
+          <ul class="nav-dropdown">
+            <li><a href="menu.html?location=delhi">Delhi Menu</a></li>
+            <li><a href="menu.html?location=gurugram">Gurugram Menu</a></li>
+          </ul>
+        </li>
+                <li><a href="about.html">Our Story</a></li>
+                <li><a href="chefs.html">Chefs</a></li>
+                <li><a href="gallery.html">Gallery</a></li>
+                <li><a href="reservation.html">Reservations</a></li>
+                <li><a href="contact.html" class="active">Contact</a></li>
+            </ul>
+            <div class="nav-right">
+                <a href="reservation.html" class="btn btn-primary btn-sm"><span>Reserve</span></a>
+                <div class="hamburger">
+                    <span></span><span></span><span></span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu">
+        <a href="index.html">Home</a>
+        <a href="menu.html">Menu</a>
+        <a href="about.html">Our Story</a>
+        <a href="chefs.html">Chefs</a>
+        <a href="gallery.html">Gallery</a>
+        <a href="reservation.html">Reservations</a>
+        <a href="private-dining.html">Private Dining</a>
+        <a href="events.html">Events</a>
+        <a href="blog.html">Blog</a>
+        <a href="contact.html" class="active">Contact</a>
+    </div>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Page Hero -->
+        <section class="hero-section">
+            <div class="hero-content reveal">
+                <h1 class="hero-title">Get in Touch</h1>
+                <p class="hero-subtitle">We would love to hear from you</p>
+            </div>
+        </section>
+
+        <!-- Info Grid -->
+        <section class="info-grid-section">
+            <div class="info-grid">
+                <div class="info-card reveal delay-1">
+                    <div class="info-icon"><i class="ph ph-map-pin"></i></div>
+                    <h3>Location</h3>
+                    <p>Zuru Zuru, Delhi,</p>
+                    <p>India 110049</p>
+                </div>
+                <div class="info-card reveal delay-2">
+                    <div class="info-icon"><i class="ph ph-clock"></i></div>
+                    <h3>Opening Hours</h3>
+                    <p>1:00 PM - 4:00 PM & 7:00 PM - 10:30 PM (Lunch & Dinner)</p>
+                    <p>4:00 PM - 7:00 PM (Tempura, Gyoza & Cold Ramen)</p>
+                </div>
+                <div class="info-card reveal delay-3">
+                    <div class="info-icon"><i class="ph ph-phone"></i></div>
+                    <h3>Contact</h3>
+                    <p>+91 11 4052 7373</p>
+                    <p>hello@zuruzuru.in</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Form & Map Section -->
+        <section class="contact-section">
+            <div class="contact-map-container">
+                <div class="contact-form-wrap reveal-left">
+                    <h2>Send a Message</h2>
+                    <p style="color:var(--clr-gray-3); margin-bottom:2rem;">Have a question or feedback? We'd love to hear from you.</p>
+                    <form class="contact-form">
+                        <div class="form-group">
+                            <label for="name">Name</label>
+                            <input type="text" id="name" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="subject">Subject</label>
+                            <select id="subject" class="form-control" required>
+                                <option value="" disabled selected>Select a subject</option>
+                                <option value="general">General Inquiry</option>
+                                <option value="feedback">Feedback</option>
+                                <option value="careers">Careers</option>
+                                <option value="press">Press & Media</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message" class="form-control" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary"><span>Send Message</span></button>
+                    </form>
+                </div>
+                <div class="map-wrap reveal-right" style="height: 100%;">
+                    <iframe 
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3504.664878206969!2d77.21404107528574!3d28.549791487834575!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390ce21213401737%3A0xe54e616c68bf5bf6!2sNew%20Delhi%2C%20Delhi%20110049!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin" 
+                        width="100%" 
+                        height="100%" 
+                        style="border:0; min-height: 400px; filter: grayscale(100%) invert(100%) contrast(85%);" 
+                        allowfullscreen="" 
+                        loading="lazy" 
+                        referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                </div>
+            </div>
+            </div>
+        </section>
+
+        <!-- FAQ Teaser Section -->
+        <section class="faq-section">
+            <div class="faq-container">
+                <div class="faq-header reveal">
+                    <h2>Frequently Asked Questions</h2>
+                    <p style="color: #aaa; margin-top:1rem; font-size:1.1rem;">Quick answers to common inquiries</p>
+                </div>
+                <div class="accordion">
+                    <div class="accordion-item reveal delay-1">
+                        <button class="accordion-header">
+                            Do you offer vegetarian options?
+                            <i class="ph ph-plus"></i>
+                        </button>
+                        <div class="accordion-content">
+                            <p>Yes, we have a dedicated vegetarian and vegan menu, including our signature Mushroom Shoyu Ramen and various plant-based sushi rolls.</p>
+                        </div>
+                    </div>
+                    <div class="accordion-item reveal delay-2">
+                        <button class="accordion-header">
+                            Is there a dress code?
+                            <i class="ph ph-plus"></i>
+                        </button>
+                        <div class="accordion-content">
+                            <p>We embrace a smart casual dress code. We ask that guests refrain from wearing athletic wear or beachwear.</p>
+                        </div>
+                    </div>
+                    <div class="accordion-item reveal delay-3">
+                        <button class="accordion-header">
+                            Do you have parking?
+                            <i class="ph ph-plus"></i>
+                        </button>
+                        <div class="accordion-content">
+                            <p>Yes, we offer complimentary valet parking for all our dining guests.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+   <section class="nl-section section-alt">
+    <div class="container reveal">
+      <div class="section-subtitle" style="justify-content:center;">Stay Connected</div>
+      <h2 class="heading-section text-center">Join Our Inner Circle</h2>
+      <p class="section-desc text-center" style="margin:0 auto 2rem;">Receive exclusive recipes, event invitations, and special offers directly in your inbox. No spam, just Japanese inspiration.</p>
+      <div class="nl-form">
+        <input type="email" placeholder="Enter your email address" aria-label="Email address">
+        <button type="button">Subscribe</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+ <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-about">
+          <div class="footer-brand-container">
+            <img src="zuruzuru_logo.png" alt="Zuru Zuru" class="footer-logo">
+            <span class="brand-name">Zuru Zuru</span>
+          </div>
+          <p>A premium Japanese Izakaya experience bringing the authentic flavours of Tokyo to New Delhi. Every dish tells a story of tradition, passion, and culinary excellence.</p>
+          <div class="footer-social">
+            <a href="https://www.instagram.com/zuruzuru.in/?hl=en" aria-label="Instagram" target="_blank"><i class="ph ph-instagram-logo"></i></a>
+            <a href="#" aria-label="Facebook"><i class="ph ph-facebook-logo"></i></a>
+            <a href="#" aria-label="Twitter"><i class="ph ph-twitter-logo"></i></a>
+            <a href="#" aria-label="YouTube"><i class="ph ph-youtube-logo"></i></a>
+          </div>
+        </div>
+        <div class="footer-links">
+          <h4>Explore</h4>
+          <a href="menu.html">Our Menu</a>
+          <a href="about.html">Our Story</a>
+          <a href="chefs.html">Our Chefs</a>
+          <a href="gallery.html">Gallery</a>
+          <a href="blog.html">Blog</a>
+        </div>
+        <div class="footer-links">
+          <h4>Services</h4>
+          <a href="reservation.html">Reservations</a>
+          <a href="private-dining.html">Private Dining</a>
+          <a href="events.html">Events</a>
+          <a href="catering.html">Catering</a>
+          <a href="careers.html">Careers</a>
+        </div>
+        <div class="footer-links">
+          <h4>Information</h4>
+          <a href="locations.html">Locations</a>
+          <a href="franchise.html">Franchise</a>
+          <a href="faq.html">FAQ</a>
+          <a href="privacy-policy.html">Privacy Policy</a>
+          <a href="terms.html">Terms</a>
+        </div>
+        <div>
+          <h4>Contact</h4>
+          <ul class="footer-contact">
+            <li><i class="ph ph-map-pin"></i> Zuru Zuru, Delhi, India 110049</li>
+            <li><i class="ph ph-phone"></i> +91 11 4052 7373</li>
+            <li><i class="ph ph-envelope"></i> hello@zuruzuru.in</li>
+          </ul>
+          <h4 style="margin-top:2rem;">Hours</h4>
+          <ul class="footer-hours">
+              <li style="flex-direction:column; align-items:flex-start; margin-bottom:10px;">
+                <span style="color:var(--clr-primary); font-weight:600; margin-bottom:5px;">1:00 PM - 4:00 PM & 7:00 PM - 10:30 PM</span>
+                <span style="font-size:0.85rem; color:#888;">Lunch & Dinner (Full Menu)</span>
+              </li>
+              <li style="flex-direction:column; align-items:flex-start;">
+                <span style="color:var(--clr-primary); font-weight:600; margin-bottom:5px;">4:00 PM - 7:00 PM</span>
+                <span style="font-size:0.85rem; color:#888;">Tempura, Gyoza & Cold Ramen</span>
+              </li>
+            </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 Zuru Zuru Izakaya. All Rights Reserved.</p>
+        <div class="footer-bottom-links">
+          <a href="privacy-policy.html">Privacy Policy</a>
+          <a href="terms.html">Terms of Service</a>
+          <a href="faq.html">FAQ</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+    <!-- Back to Top -->
+    <button class="back-to-top" aria-label="Back to top">
+        <i class="ph ph-caret-up"></i>
+    </button>
+
+    <script src="js/main.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const accordions = document.querySelectorAll('.accordion-header');
+        accordions.forEach(acc => {
+            acc.addEventListener('click', function() {
+                const item = this.parentElement;
+                const content = this.nextElementSibling;
+                
+                // Close all others
+                document.querySelectorAll('.accordion-item').forEach(otherItem => {
+                    if(otherItem !== item) {
+                        otherItem.classList.remove('active');
+                        otherItem.querySelector('.accordion-content').style.maxHeight = null;
+                    }
+                });
+
+                // Toggle current
+                item.classList.toggle('active');
+                if (item.classList.contains('active')) {
+                    content.style.maxHeight = content.scrollHeight + "px";
+                } else {
+                    content.style.maxHeight = null;
+                }
+            });
+        });
+    });
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+

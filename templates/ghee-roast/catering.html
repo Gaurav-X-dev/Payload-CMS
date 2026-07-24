@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luxury Catering | Very Good Ghee Roast</title>
+  <meta name="description" content="Elevate your events with premium catering from Very Good Ghee Roast. Weddings, corporate lunches, and private dinners in Delhi NCR.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/inner.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    body { background: #f4efe6; font-family: 'Inter', sans-serif; margin: 0; color: #2c2a25; }
+    .container { width: 95%; max-width: 1400px; margin: 0 auto; }
+    .section { padding: 6rem 0; }
+    
+    .catering-hero { background: url('images/hero_ghee_roast.png') center/cover no-repeat; padding: 10rem 0 8rem; text-align: center; position: relative; }
+    .catering-hero::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(62,82,55,0.9), rgba(20,28,18,0.95)); }
+    .catering-hero h1 { font-family: 'Oswald', sans-serif; font-size: clamp(3rem, 6vw, 5.5rem); color: white; text-transform: uppercase; margin: 0 0 1rem; position: relative; z-index: 2; line-height: 1; text-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+    .catering-hero .bc { font-size: 0.85rem; color: rgba(255,255,255,0.5); margin-bottom: 1rem; position: relative; z-index: 2; }
+    .catering-hero .bc a { color: #c44d18; text-decoration: none; }
+    .catering-hero p { color: rgba(255,255,255,0.85); font-size: 1.25rem; max-width: 700px; margin: 0 auto; position: relative; z-index: 2; line-height: 1.7; font-weight: 300; }
+
+    /* Event Types */
+    .event-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-top: -4rem; position: relative; z-index: 10; padding: 0 1rem; }
+    .event-card { background: white; border-radius: 12px; padding: 2.5rem 2rem; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.08); transition: transform 0.3s; border-bottom: 4px solid #3e5237; }
+    .event-card:hover { transform: translateY(-10px); border-bottom-color: #c44d18; }
+    .event-card i { font-size: 3rem; color: #c44d18; margin-bottom: 1.5rem; }
+    .event-card h3 { font-family: 'Oswald', sans-serif; color: #3e5237; font-size: 1.6rem; margin: 0 0 1rem; text-transform: uppercase; }
+    .event-card p { color: #666; font-size: 0.95rem; line-height: 1.6; margin: 0; }
+
+    /* Highlights */
+    .highlight-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; }
+    .high-card { text-align: center; padding: 2rem; border-right: 1px solid rgba(255,255,255,0.1); }
+    .high-card:last-child { border-right: none; }
+    .high-num { font-family: 'Oswald', sans-serif; font-size: 4rem; color: #c44d18; line-height: 1; margin-bottom: 0.5rem; }
+    .high-text { color: white; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 500; }
+
+    /* Offer Layout */
+    .offer-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+    .offer-img img { width: 100%; border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
+    .offer-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 1.5rem; }
+    .offer-list li { display: flex; align-items: flex-start; gap: 1rem; }
+    .offer-list i { color: #c44d18; font-size: 1.5rem; margin-top: 3px; }
+    .offer-list h4 { font-family: 'Oswald', sans-serif; color: #3e5237; font-size: 1.2rem; margin: 0 0 0.3rem; }
+    .offer-list p { color: #666; margin: 0; font-size: 0.95rem; line-height: 1.6; }
+
+    /* Form */
+    .form-section { background: white; padding: 4rem; border-radius: 16px; box-shadow: 0 15px 40px rgba(0,0,0,0.05); max-width: 900px; margin: 0 auto; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+    .form-group { margin-bottom: 1.5rem; }
+    .form-group.full { grid-column: 1 / -1; }
+    .form-label { display: block; font-family: 'Oswald', sans-serif; color: #3e5237; margin-bottom: 0.5rem; letter-spacing: 0.5px; }
+    .form-input { width: 100%; padding: 1rem; border: 1px solid rgba(62,82,55,0.2); border-radius: 6px; font-family: 'Inter', sans-serif; font-size: 1rem; transition: border-color 0.3s; box-sizing: border-box; }
+    .form-input:focus { outline: none; border-color: #c44d18; }
+    textarea.form-input { resize: vertical; min-height: 120px; }
+    .submit-btn { width: 100%; padding: 1.2rem; background: #3e5237; color: white; border: none; border-radius: 6px; font-family: 'Oswald', sans-serif; font-size: 1.2rem; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: background 0.3s; }
+    .submit-btn:hover { background: #c44d18; }
+
+    /* Gallery */
+    .gallery-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-top: 2rem; }
+    .gal-img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; transition: transform 0.4s; }
+    .gal-item { overflow: hidden; border-radius: 8px; }
+    .gal-item:hover .gal-img { transform: scale(1.1); }
+
+    @media (max-width: 768px) {
+      .offer-layout { grid-template-columns: 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
+      .gallery-grid { grid-template-columns: 1fr 1fr; }
+      .high-card { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="header-home on-dark" id="main-header">
+    <div class="nav-container" style="display:flex; justify-content:space-between; align-items:center; width:95%; max-width:var(--max-w); margin:0 auto;">
+      <a href="index.html" class="footer-logo">
+        <img src="images/logo.jpg" alt="VERY GOOD GHEE ROAST Logo" style="height:52px; border-radius:8px;">
+        <span class="logo-text">VERY GOOD<br><span style="font-size:0.65rem; letter-spacing:2px; color:var(--clr-accent);">FLAVOURS THAT STAY</span></span>
+      </a>
+
+      <nav>
+        <ul class="nav-links" style="display:flex; gap:2rem; align-items:center; list-style:none;">
+          <li><a href="index.html" >Home</a></li>
+          <li class="nav-dropdown">
+            <a href="menu.html">Menu <i class="ph-bold ph-caret-down" style="font-size:0.7rem;"></i></a>
+            <ul class="nav-dropdown-menu">
+              <li><a href="menu.html?location=delhi"><i class="ph-fill ph-map-pin"></i> Delhi Menu</a></li>
+              <li><a href="menu.html?location=gurugram"><i class="ph-fill ph-map-pin"></i> Gurugram Menu</a></li>
+            </ul>
+          </li>
+          <li><a href="about.html">Our Story</a></li>
+          <li><a href="quality.html">Quality</a></li>
+          <li><a href="delivery.html">Delivery</a></li>
+          <li><a href="catering.html" class="active">Catering</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </nav>
+
+      <div style="display:flex; gap:1rem; align-items:center;">
+        <a href="menu.html" class="nav-order-btn">Order Online</a>
+        <div class="hamburger" id="mobile-menu-btn" style="display:none; flex-direction:column; gap:6px; cursor:pointer;">
+          <span style="width:28px; height:2px; background:var(--clr-primary); display:block;"></span>
+          <span style="width:28px; height:2px; background:var(--clr-primary); display:block;"></span>
+          <span style="width:28px; height:2px; background:var(--clr-primary); display:block;"></span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- HERO -->
+    <section class="catering-hero">
+      <div class="bc"><a href="index.html">Home</a> <span style="color:rgba(255,255,255,0.3);">/</span> Catering</div>
+      <h1>Luxury Catering</h1>
+      <p>Transform your special occasions into unforgettable culinary experiences with our authentic, slow-roasted coastal delicacies.</p>
+    </section>
+
+    <!-- EVENT TYPES -->
+    <div class="container">
+      <div class="event-cards reveal">
+        <div class="event-card">
+          <i class="ph-fill ph-rings-wedding"></i>
+          <h3>Weddings &amp; Receptions</h3>
+          <p>Grand setups with live ghee roast stations designed to wow your guests.</p>
+        </div>
+        <div class="event-card">
+          <i class="ph-fill ph-briefcase"></i>
+          <h3>Corporate Events</h3>
+          <p>Premium boxed meals or buffet setups for office lunches and board meetings.</p>
+        </div>
+        <div class="event-card">
+          <i class="ph-fill ph-cake"></i>
+          <h3>Birthday Parties</h3>
+          <p>Customized menus that appeal to all ages, ensuring a memorable celebration.</p>
+        </div>
+        <div class="event-card">
+          <i class="ph-fill ph-martini"></i>
+          <h3>Private Dinners</h3>
+          <p>Intimate gatherings catered with exquisite detail and personalized service.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- WHAT WE OFFER -->
+    <section class="section">
+      <div class="container">
+        <div class="offer-layout reveal">
+          <div class="offer-img">
+            <img src="images/hero_ghee_roast.png" alt="Catering setup">
+          </div>
+          <div>
+            <span style="font-family:'Oswald',sans-serif; font-size:0.85rem; letter-spacing:3px; color:#c44d18; text-transform:uppercase; display:block; margin-bottom:0.5rem;">The Experience</span>
+            <h2 style="font-family:'Oswald',sans-serif; font-size:2.5rem; color:#3e5237; text-transform:uppercase; margin:0 0 2rem;">A Culinary Experience Like No Other</h2>
+            <ul class="offer-list">
+              <li>
+                <i class="ph-fill ph-check-circle"></i>
+                <div>
+                  <h4>Custom Menu Curation</h4>
+                  <p>Work with our head chef to design a menu perfectly tailored to your event's theme and guests' preferences.</p>
+                </div>
+              </li>
+              <li>
+                <i class="ph-fill ph-check-circle"></i>
+                <div>
+                  <h4>Live Cooking Stations</h4>
+                  <p>Elevate the atmosphere with live ghee roast counters where food is cooked fresh in front of your guests.</p>
+                </div>
+              </li>
+              <li>
+                <i class="ph-fill ph-check-circle"></i>
+                <div>
+                  <h4>Professional Service Staff</h4>
+                  <p>Our highly trained hospitality team ensures seamless service, from elegant setups to post-event cleanup.</p>
+                </div>
+              </li>
+              <li>
+                <i class="ph-fill ph-check-circle"></i>
+                <div>
+                  <h4>Flexible Capacity</h4>
+                  <p>Whether it's an intimate gathering of 20 or a grand wedding of 2,000, we scale our operations flawlessly.</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HIGHLIGHTS -->
+    <section class="section" style="background:#3e5237;">
+      <div class="container">
+        <div class="highlight-grid reveal">
+          <div class="high-card">
+            <div class="high-num">500+</div>
+            <div class="high-text">Events Catered</div>
+          </div>
+          <div class="high-card">
+            <div class="high-num">98%</div>
+            <div class="high-text">Client Satisfaction</div>
+          </div>
+          <div class="high-card">
+            <div class="high-num">20+</div>
+            <div class="high-text">Years Experience</div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- GALLERY -->
+    <section class="section">
+      <div class="container reveal">
+        <div style="text-align:center; margin-bottom:2rem;">
+          <h2 style="font-family:'Oswald',sans-serif; font-size:2.5rem; color:#3e5237; text-transform:uppercase; margin:0;">Catering Gallery</h2>
+        </div>
+        <div class="gallery-grid">
+          <div class="gal-item"><img src="images/quality_ingredients.png" class="gal-img" alt="Catering setup"></div>
+          <div class="gal-item"><img src="images/hero_ghee_roast.png" class="gal-img" alt="Food presentation"></div>
+          <div class="gal-item"><img src="images/premium_spices.png" class="gal-img" alt="Spices"></div>
+          <div class="gal-item"><img src="images/origin_kitchen.png" class="gal-img" alt="Live station"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <section class="newsletter-section">
+      <div class="newsletter-inner">
+        <div class="newsletter-left reveal">
+          <h2>Join The <span>Flavour</span> Club</h2>
+          <p>Subscribe to our newsletter for exclusive offers, secret recipes, early access to new dishes, and VIP event invitations. No spam — only the good stuff.</p>
+        </div>
+        <div class="newsletter-right reveal" style="animation-delay:0.2s;">
+          <form class="newsletter-form" onsubmit="event.preventDefault();">
+            <input type="email" placeholder="Enter your email address" required>
+            <button type="submit">Subscribe</button>
+          </form>
+          <small>We respect your privacy. Unsubscribe anytime.</small>
+        </div>
+      </div>
+    </section>
+
+<footer class="site-footer">
+    <div class="container">
+      <div class="footer-main">
+
+        <div class="footer-brand">
+          <a href="index.html" class="footer-logo">
+            <img src="images/logo.jpg" alt="VERY GOOD GHEE ROAST" style="height:55px; border-radius:8px;">
+            <span class="footer-logo-text">VERY GOOD<br><span>GHEE ROAST</span></span>
+          </a>
+          <p>South Indian inspired food, and an original saucy Ghee Roast! A premium delivery kitchen bringing authentic coastal flavors right to your doorstep in Delhi &amp; Gurugram.</p>
+          <div class="footer-tagline">"Flavours that stay."</div>
+          <div class="footer-socials">
+            <a href="https://www.instagram.com/verygoodgheeroast/" target="_blank"><i class="ph-fill ph-instagram-logo"></i></a>
+            <a href="#"><i class="ph-fill ph-facebook-logo"></i></a>
+            <a href="#"><i class="ph-fill ph-youtube-logo"></i></a>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <h5>Explore</h5>
+          <ul>
+            <li><a href="index.html"><i class="ph-bold ph-caret-right"></i> Home</a></li>
+            <li><a href="menu.html"><i class="ph-bold ph-caret-right"></i> The Menu</a></li>
+            <li><a href="about.html"><i class="ph-bold ph-caret-right"></i> Our Story</a></li>
+            <li><a href="quality.html"><i class="ph-bold ph-caret-right"></i> Quality Promise</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>Services</h5>
+          <ul>
+            <li><a href="delivery.html"><i class="ph-bold ph-caret-right"></i> Order Delivery</a></li>
+            <li><a href="catering.html"><i class="ph-bold ph-caret-right"></i> Luxury Catering</a></li>
+            <li><a href="menu.html?location=delhi"><i class="ph-bold ph-caret-right"></i> Delhi Menu</a></li>
+            <li><a href="menu.html?location=gurugram"><i class="ph-bold ph-caret-right"></i> Gurugram Menu</a></li>
+            <li><a href="contact.html"><i class="ph-bold ph-caret-right"></i> Contact Us</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>Get In Touch</h5>
+          <ul class="footer-contact">
+            <li><i class="ph-fill ph-map-pin"></i><div><strong style="color:white; display:block;">Delivery Kitchen</strong><span style="color:rgba(255,255,255,0.55);">Delhi & Gurugram, India</span></div></li>
+            <li><i class="ph-fill ph-phone"></i><div><span style="color:white;">+91 99102 13465</span></div></li>
+            <li><i class="ph-fill ph-clock"></i><div><span style="color:white;">1 PM – 10 PM</span><span style="color:rgba(255,255,255,0.55); display:block; font-size:0.8rem;">Tuesdays Closed</span></div></li>
+          </ul>
+        </div>
+
+      </div>
+
+      <div class="footer-bottom">
+        <div>© 2026 VERY GOOD GHEE ROAST. All Rights Reserved.</div>
+        <div style="display:flex; gap:2rem; flex-wrap:wrap;">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms &amp; Conditions</a>
+          <a href="#">Refund Policy</a>
+          <a href="#">Sitemap</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <button id="scroll-top-btn" aria-label="Scroll to top"><i class="ph-bold ph-arrow-up"></i></button>
+  
+  <script>
+    const sb = document.getElementById('scroll-top-btn');
+    window.addEventListener('scroll', () => { if (window.scrollY > 400) sb.classList.add('visible'); else sb.classList.remove('visible'); });
+    sb.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    
+    document.querySelectorAll('.reveal').forEach(r => new IntersectionObserver((e, o) => {
+      e.forEach(en => { if (en.isIntersecting) { en.target.classList.add('visible'); o.unobserve(en.target); } });
+    }, { threshold: 0.12 }).observe(r));
+  </script>
+</body>
+</html>

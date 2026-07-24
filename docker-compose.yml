@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    restart: always
+    environment:
+      - DATABASE_URI=postgresql://payload:${POSTGRES_PASSWORD}@db:5432/payload
+      - PAYLOAD_SECRET=${PAYLOAD_SECRET}
+      - NEXT_PUBLIC_SERVER_URL=${NEXT_PUBLIC_SERVER_URL}
+      - S3_ENDPOINT=${S3_ENDPOINT}
+      - S3_ACCESS_KEY=${S3_ACCESS_KEY}
+      - S3_SECRET_KEY=${S3_SECRET_KEY}
+      - S3_BUCKET=${S3_BUCKET}
+      - S3_REGION=${S3_REGION}
+      - RESEND_API_KEY=${RESEND_API_KEY}
+      - REVALIDATE_SECRET=${REVALIDATE_SECRET}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - proxy
+      - internal
+
+  db:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=payload
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=payload
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U payload"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Watchtower for automatic updates when new images are pushed to registry
+  watchtower:
+    image: containrrr/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --interval 300
+    networks:
+      - internal
+
+networks:
+  proxy:
+    external: true # Assumes Nginx Proxy Manager or Traefik is handling SSL
+  internal:
+
+volumes:
+  pgdata:

@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Franchise Opportunity - Zuru Zuru | Japanese Ramen Diner</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <style>
+    .page-hero {
+      height: 60vh;
+      background: linear-gradient(rgba(17, 17, 17, 0.7), rgba(17, 17, 17, 0.7)), url('images/interior.png') center/cover;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: #F7F3ED;
+    }
+    .page-hero h1 {
+      font-size: 4rem;
+      color: #C9A227;
+      margin-bottom: 1rem;
+    }
+    .page-hero p {
+      font-size: 1.2rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .investment-tiers {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+    .tier-card {
+      background: #fff;
+      padding: 3rem 2rem;
+      border: 1px solid rgba(201, 162, 39, 0.3);
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+    .tier-card.premium {
+      border-color: #C9A227;
+      box-shadow: 0 10px 30px rgba(201, 162, 39, 0.15);
+      position: relative;
+    }
+    .tier-card.premium::before {
+      content: 'Most Popular';
+      position: absolute;
+      top: -15px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #C9A227;
+      color: #111;
+      padding: 0.5rem 1.5rem;
+      font-weight: bold;
+      font-size: 0.9rem;
+      border-radius: 20px;
+    }
+    .tier-card:hover {
+      border-color: #C9A227;
+      transform: translateY(-10px);
+    }
+    .tier-card h3 {
+      color: #8B1A1A;
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+    .tier-price {
+      font-size: 2.5rem;
+      color: #111;
+      margin-bottom: 2rem;
+      font-weight: bold;
+    }
+    .tier-price span {
+      font-size: 1rem;
+      color: #666;
+      font-weight: normal;
+    }
+    .tier-features {
+      list-style: none;
+      padding: 0;
+      margin-bottom: 2rem;
+      text-align: left;
+    }
+    .tier-features li {
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      color: #555;
+    }
+    .tier-features i {
+      color: #C9A227;
+      font-size: 1.2rem;
+    }
+    .support-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+    .support-card {
+      text-align: center;
+      padding: 2.5rem 2rem;
+      background: #fff;
+      border: 1px solid #ddd;
+    }
+    .support-card i {
+      font-size: 3rem;
+      color: #8B1A1A;
+      margin-bottom: 1.5rem;
+    }
+    .support-card h4 {
+      margin-bottom: 1rem;
+      font-size: 1.3rem;
+      color: #111;
+    }
+    .support-card p {
+      color: #555;
+    }
+    .form-container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 4rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    }
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #111;
+      font-weight: 500;
+    }
+    .form-control {
+      width: 100%;
+      padding: 1rem;
+      border: 1px solid #ddd;
+      background: #F7F3ED;
+      font-family: inherit;
+    }
+    .form-control:focus {
+      outline: none;
+      border-color: #C9A227;
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    @media (max-width: 768px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+      .form-container {
+        padding: 2rem;
+      }
+      .page-hero h1 {
+        font-size: 3rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Preloader -->
+  <div class="preloader">
+    <img src="zuruzuru_logo.png" alt="Loading" class="preloader-logo">
+    <div class="preloader-bar"></div>
+  </div>
+
+  <!-- Scroll Progress -->
+  <div class="scroll-progress"></div>
+
+  <!-- Header -->
+  <header class="header header-inner">
+    <div class="nav-container">
+      <a href="index.html" class="logo">
+        <img src="zuruzuru_logo.png" alt="Zuru Zuru Izakaya">
+        <span class="brand-name">Zuru Zuru</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li>
+          <a href="menu.html">Menu <i class="ph-bold ph-caret-down" style="font-size:0.7rem;"></i></a>
+          <ul class="nav-dropdown">
+            <li><a href="menu.html?location=delhi">Delhi Menu</a></li>
+            <li><a href="menu.html?location=gurugram">Gurugram Menu</a></li>
+          </ul>
+        </li>
+        <li><a href="about.html">Our Story</a></li>
+        <li><a href="chefs.html">Chefs</a></li>
+        <li><a href="gallery.html">Gallery</a></li>
+        <li><a href="reservation.html">Reservations</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+      <div class="nav-right">
+        <a href="reservation.html" class="btn btn-primary btn-sm"><span>Reserve</span></a>
+        <div class="hamburger">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu">
+    <a href="index.html">Home</a>
+    <a href="menu.html">Menu</a>
+    <a href="about.html">Our Story</a>
+    <a href="chefs.html">Chefs</a>
+    <a href="gallery.html">Gallery</a>
+    <a href="reservation.html">Reservations</a>
+    <a href="private-dining.html">Private Dining</a>
+    <a href="events.html">Events</a>
+    <a href="blog.html">Blog</a>
+    <a href="contact.html">Contact</a>
+  </div>
+
+  <!-- Hero Section -->
+  <section class="page-hero reveal">
+    <div class="container">
+      <h1>Franchise Opportunity</h1>
+      <p>Partner with Zuru Zuru and bring the authentic Japanese Izakaya experience to your city. Discover our lucrative franchise models today.</p>
+    </div>
+  </section>
+
+  <!-- Investment Overview -->
+  <section class="section section-alt">
+    <div class="container">
+      <div class="section-header text-center reveal">
+        <div class="section-subtitle">Financials</div>
+        <h2>Investment Overview</h2>
+        <p class="section-desc">We offer three flexible franchise tiers designed to accommodate various market sizes, locations, and investment capacities.</p>
+      </div>
+      
+      <div class="investment-tiers reveal-scale">
+        <!-- Tier 1 -->
+        <div class="tier-card hover-lift delay-1">
+          <h3>Express</h3>
+          <p>Ideal for food courts, malls, and high foot-traffic transit hubs.</p>
+          <div class="tier-price">₹45 Lakhs <span>approx</span></div>
+          <ul class="tier-features">
+            <li><i class="ph-fill ph-check-circle"></i> 500 - 800 sq. ft. area</li>
+            <li><i class="ph-fill ph-check-circle"></i> Counter service model</li>
+            <li><i class="ph-fill ph-check-circle"></i> Limited express menu</li>
+            <li><i class="ph-fill ph-check-circle"></i> Minimal seating (10-15 pax)</li>
+            <li><i class="ph-fill ph-check-circle"></i> Quick ROI (14-18 months)</li>
+          </ul>
+          <a href="#inquiry-form" class="btn btn-outline" style="width: 100%;">Inquire Now</a>
+        </div>
+        <!-- Tier 2 -->
+        <div class="tier-card premium hover-lift delay-2">
+          <h3>Classic</h3>
+          <p>The authentic Izakaya dining experience for prime street locations.</p>
+          <div class="tier-price">₹85 Lakhs <span>approx</span></div>
+          <ul class="tier-features">
+            <li><i class="ph-fill ph-check-circle"></i> 1500 - 2000 sq. ft. area</li>
+            <li><i class="ph-fill ph-check-circle"></i> Full table service</li>
+            <li><i class="ph-fill ph-check-circle"></i> Complete food & bar menu</li>
+            <li><i class="ph-fill ph-check-circle"></i> Seating for 50-70 pax</li>
+            <li><i class="ph-fill ph-check-circle"></i> Expected ROI (18-24 months)</li>
+          </ul>
+          <a href="#inquiry-form" class="btn btn-primary" style="width: 100%;"><span>Inquire Now</span></a>
+        </div>
+        <!-- Tier 3 -->
+        <div class="tier-card hover-lift delay-3">
+          <h3>Premium</h3>
+          <p>A flagship, large-format destination restaurant for luxury spaces.</p>
+          <div class="tier-price">₹1.5 Crores <span>approx</span></div>
+          <ul class="tier-features">
+            <li><i class="ph-fill ph-check-circle"></i> 3000+ sq. ft. area</li>
+            <li><i class="ph-fill ph-check-circle"></i> Private dining & event spaces</li>
+            <li><i class="ph-fill ph-check-circle"></i> Exclusive premium menu additions</li>
+            <li><i class="ph-fill ph-check-circle"></i> Seating for 100+ pax</li>
+            <li><i class="ph-fill ph-check-circle"></i> Dedicated sushi bar & cocktail lounge</li>
+          </ul>
+          <a href="#inquiry-form" class="btn btn-outline" style="width: 100%;">Inquire Now</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- What We Provide -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header text-center reveal">
+        <div class="section-subtitle">Support System</div>
+        <h2>What We Provide</h2>
+        <p class="section-desc">Your success is our success. Zuru Zuru provides comprehensive 360-degree support from day one.</p>
+      </div>
+
+      <div class="support-grid reveal-scale">
+        <div class="support-card delay-1">
+          <i class="ph ph-storefront"></i>
+          <h4>Location & Setup</h4>
+          <p>Assistance with site selection, lease negotiation, interior design guidelines, and complete architectural layouts to ensure brand consistency.</p>
+        </div>
+        <div class="support-card delay-2">
+          <i class="ph ph-cooking-pot"></i>
+          <h4>Culinary Training</h4>
+          <p>Rigorous training programs for your head chef and kitchen staff at our flagship location, covering recipes, plating, and quality control.</p>
+        </div>
+        <div class="support-card delay-3">
+          <i class="ph ph-users-three"></i>
+          <h4>Operations Support</h4>
+          <p>Comprehensive SOP manuals, software systems implementation (POS, inventory), and pre-opening on-site operational support.</p>
+        </div>
+        <div class="support-card delay-4">
+          <i class="ph ph-megaphone"></i>
+          <h4>Marketing & Brand</h4>
+          <p>National brand campaigns, localized launch marketing strategy, social media support, and continuous promotional materials.</p>
+        </div>
+        <div class="support-card delay-5">
+          <i class="ph ph-truck"></i>
+          <h4>Supply Chain</h4>
+          <p>Access to our approved vendor network, centralized procurement for proprietary sauces/spices, ensuring cost efficiency and quality.</p>
+        </div>
+        <div class="support-card delay-6">
+          <i class="ph ph-chart-line-up"></i>
+          <h4>Business Review</h4>
+          <p>Monthly audits, financial reviews, and continuous consulting to help optimize food costs, reduce waste, and maximize profitability.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Success Metrics (Image + Text) -->
+  <section class="section section-dark">
+    <div class="container">
+      <div class="grid-2 align-center">
+        <div class="reveal-left">
+          <img src="images/gyoza_tempura.png" alt="Restaurant interior" style="width:100%; border: 1px solid #C9A227; padding: 10px;">
+        </div>
+        <div class="reveal-right" style="padding: 2rem;">
+          <div class="section-subtitle">Why Partner With Us?</div>
+          <h2 style="color: #F7F3ED;">Proven Success Metrics</h2>
+          <p style="color: #aaa; margin-bottom: 2rem; font-size: 1.1rem; line-height: 1.8;">Zuru Zuru has consistently outperformed industry standards. Our unique blend of authentic Japanese cuisine and vibrant dining atmosphere creates a highly profitable business model.</p>
+          
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+            <div>
+              <h3 style="color: #C9A227; font-size: 2.5rem; margin-bottom: 0.5rem;">28%</h3>
+              <p style="color: #ddd;">Average EBITDA Margin</p>
+            </div>
+            <div>
+              <h3 style="color: #C9A227; font-size: 2.5rem; margin-bottom: 0.5rem;">18 Mo</h3>
+              <p style="color: #ddd;">Average Payback Period</p>
+            </div>
+            <div>
+              <h3 style="color: #C9A227; font-size: 2.5rem; margin-bottom: 0.5rem;">4.8<i class="ph-fill ph-star" style="font-size:1.5rem; color:#C9A227; vertical-align: middle; margin-left: 5px;"></i></h3>
+              <p style="color: #ddd;">Average Customer Rating</p>
+            </div>
+            <div>
+              <h3 style="color: #C9A227; font-size: 2.5rem; margin-bottom: 0.5rem;">65%</h3>
+              <p style="color: #ddd;">Customer Retention Rate</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Inquiry Form -->
+  <section id="inquiry-form" class="section section-cream">
+    <div class="container">
+      <div class="section-header text-center reveal">
+        <div class="section-subtitle">Take The First Step</div>
+        <h2>Franchise Inquiry Form</h2>
+        <p class="section-desc">Fill out the form below to receive our detailed franchise prospectus. Our expansion team will get in touch with you within 48 hours.</p>
+      </div>
+
+      <div class="form-container reveal">
+        <form action="#" method="POST" onsubmit="event.preventDefault(); alert('Thank you for your interest. Our franchise team will contact you shortly.');">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="fname">First Name *</label>
+              <input type="text" id="fname" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label for="lname">Last Name *</label>
+              <input type="text" id="lname" class="form-control" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="email">Email Address *</label>
+              <input type="email" id="email" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label for="phone">Phone Number *</label>
+              <input type="tel" id="phone" class="form-control" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="city">Target City / Location *</label>
+              <input type="text" id="city" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label for="capital">Available Capital *</label>
+              <select id="capital" class="form-control" required>
+                <option value="">Select an option</option>
+                <option value="40-60">₹40 Lakhs - ₹60 Lakhs</option>
+                <option value="60-100">₹60 Lakhs - ₹1 Crore</option>
+                <option value="100-200">₹1 Crore - ₹2 Crores</option>
+                <option value="200+">₹2 Crores +</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="experience">F&B Experience</label>
+            <textarea id="experience" class="form-control" rows="3" placeholder="Briefly describe any previous experience in the Food & Beverage industry (if any)."></textarea>
+          </div>
+          <div class="form-group">
+            <label for="message">Additional Comments</label>
+            <textarea id="message" class="form-control" rows="3" placeholder="Any specific questions or details you'd like to share?"></textarea>
+          </div>
+          <div style="text-align: center; margin-top: 2rem;">
+            <button type="submit" class="btn btn-primary"><span>Submit Inquiry</span></button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+    <!-- --- NEWSLETTER --- -->
+  <section class="nl-section section-alt">
+    <div class="container reveal">
+      <div class="section-subtitle" style="justify-content:center;">Stay Connected</div>
+      <h2 class="heading-section text-center">Join Our Inner Circle</h2>
+      <p class="section-desc text-center" style="margin:0 auto 2rem;">Receive exclusive recipes, event invitations, and special offers directly in your inbox. No spam, just Japanese inspiration.</p>
+      <div class="nl-form">
+        <input type="email" placeholder="Enter your email address" aria-label="Email address">
+        <button type="button">Subscribe</button>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-about">
+          <div class="footer-brand-container">
+            <img src="zuruzuru_logo.png" alt="Zuru Zuru" class="footer-logo">
+            <span class="brand-name">Zuru Zuru</span>
+          </div>
+          <p>A premium Japanese Izakaya experience bringing the authentic flavours of Tokyo to New Delhi. Every dish tells a story of tradition, passion, and culinary excellence.</p>
+          <div class="footer-social">
+            <a href="https://www.instagram.com/zuruzuru.in/?hl=en" aria-label="Instagram" target="_blank"><i class="ph ph-instagram-logo"></i></a>
+            <a href="#" aria-label="Facebook"><i class="ph ph-facebook-logo"></i></a>
+            <a href="#" aria-label="Twitter"><i class="ph ph-twitter-logo"></i></a>
+            <a href="#" aria-label="YouTube"><i class="ph ph-youtube-logo"></i></a>
+          </div>
+        </div>
+        <div class="footer-links">
+          <h4>Explore</h4>
+          <a href="menu.html">Our Menu</a>
+          <a href="about.html">Our Story</a>
+          <a href="chefs.html">Our Chefs</a>
+          <a href="gallery.html">Gallery</a>
+          <a href="blog.html">Blog</a>
+        </div>
+        <div class="footer-links">
+          <h4>Services</h4>
+          <a href="reservation.html">Reservations</a>
+          <a href="private-dining.html">Private Dining</a>
+          <a href="events.html">Events</a>
+          <a href="catering.html">Catering</a>
+          <a href="careers.html">Careers</a>
+        </div>
+        <div class="footer-links">
+          <h4>Information</h4>
+          <a href="locations.html">Locations</a>
+          <a href="franchise.html">Franchise</a>
+          <a href="faq.html">FAQ</a>
+          <a href="privacy-policy.html">Privacy Policy</a>
+          <a href="terms.html">Terms</a>
+        </div>
+        <div>
+          <h4>Contact</h4>
+          <ul class="footer-contact">
+            <li><i class="ph ph-map-pin"></i> Zuru Zuru, Delhi, India 110049</li>
+            <li><i class="ph ph-phone"></i> +91 11 4052 7373</li>
+            <li><i class="ph ph-envelope"></i> hello@zuruzuru.in</li>
+          </ul>
+          <h4 style="margin-top:2rem">Hours</h4>
+          <ul class="footer-hours">
+              <li style="flex-direction:column; align-items:flex-start; margin-bottom:10px;">
+                <span style="color:var(--clr-primary); font-weight:600; margin-bottom:5px;">1:00 PM - 4:00 PM & 7:00 PM - 10:30 PM</span>
+                <span style="font-size:0.85rem; color:#888;">Lunch & Dinner (Full Menu)</span>
+              </li>
+              <li style="flex-direction:column; align-items:flex-start;">
+                <span style="color:var(--clr-primary); font-weight:600; margin-bottom:5px;">4:00 PM - 7:00 PM</span>
+                <span style="font-size:0.85rem; color:#888;">Tempura, Gyoza & Cold Ramen</span>
+              </li>
+            </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Zuru Zuru Izakaya. All Rights Reserved.</p>
+        <div class="footer-bottom-links">
+          <a href="privacy-policy.html">Privacy Policy</a>
+          <a href="terms.html">Terms of Service</a>
+          <a href="faq.html">FAQ</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Back to Top -->
+  <button class="back-to-top" aria-label="Back to top">
+    <i class="ph ph-caret-up"></i>
+  </button>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+

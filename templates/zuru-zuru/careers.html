@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Careers | Zuru Zuru Izakaya</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <style>
+    :root {
+      --primary: #8B1A1A;
+      --secondary: #D9C5A0;
+      --background: #F7F3ED;
+      --dark: #111111;
+      --accent: #C9A227;
+    }
+    .page-hero { padding: 180px 5% 100px; text-align: center; background: url('images/chef.png') center/cover no-repeat; color: var(--background); position: relative; }
+    .page-hero::before { content: ''; position: absolute; inset: 0; background: rgba(17, 17, 17, 0.85); z-index: 1; }
+    .page-hero .container { position: relative; z-index: 2; }
+    .page-hero h1 { font-size: 4rem; margin-bottom: 1rem; color: var(--secondary); font-family: serif; }
+    .page-hero p { font-size: 1.2rem; max-width: 600px; margin: 0 auto; color: #ddd; }
+    
+    .section-title { text-align: center; margin-bottom: 3rem; }
+    .section-title h2 { font-size: 2.5rem; color: var(--dark); font-family: serif; margin-bottom: 0.5rem; }
+    .section-title p { color: #666; font-size: 1.1rem; }
+    
+    .why-join-section { padding: 6rem 5%; background: var(--background); }
+    .why-join-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; max-width: 1200px; margin: 0 auto; }
+    .why-card { background: #fff; padding: 3rem 2rem; border-radius: 12px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.05); transition: transform 0.3s ease; border-bottom: 4px solid transparent; }
+    .why-card:hover { transform: translateY(-10px); border-bottom-color: var(--primary); }
+    .why-card i { font-size: 3.5rem; color: var(--primary); margin-bottom: 1.5rem; }
+    .why-card h3 { font-size: 1.4rem; margin-bottom: 1rem; color: var(--dark); font-family: serif; }
+    .why-card p { color: #666; line-height: 1.6; }
+    
+    .benefits-section { padding: 6rem 5%; background: #fff; }
+    .benefits-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; max-width: 1000px; margin: 0 auto; }
+    .benefit-item { display: flex; align-items: center; gap: 1.5rem; padding: 1.5rem; background: var(--background); border-radius: 8px; transition: background 0.3s ease; }
+    .benefit-item:hover { background: var(--secondary); }
+    .benefit-item i { font-size: 2.5rem; color: var(--primary); }
+    .benefit-item h4 { color: var(--dark); font-size: 1.1rem; margin: 0; }
+    
+    .openings-section { padding: 6rem 5%; background: var(--background); }
+    .openings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2.5rem; max-width: 1200px; margin: 0 auto; }
+    .job-card { background: #fff; padding: 2.5rem; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); transition: transform 0.3s ease; display: flex; flex-direction: column; border-left: 4px solid var(--primary); }
+    .job-card:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(0,0,0,0.1); }
+    .job-card h3 { font-size: 1.5rem; color: var(--dark); font-family: serif; margin-bottom: 0.5rem; }
+    .job-dept { display: inline-block; padding: 0.3rem 0.8rem; background: rgba(217, 197, 160, 0.3); color: var(--primary); font-size: 0.85rem; font-weight: bold; border-radius: 20px; margin-bottom: 1rem; }
+    .job-meta { display: flex; gap: 1.5rem; margin-bottom: 1.5rem; color: #555; font-size: 0.95rem; }
+    .job-meta span { display: flex; align-items: center; gap: 0.5rem; }
+    .job-desc { color: #666; margin-bottom: 2rem; line-height: 1.6; flex: 1; }
+    .job-btn { margin-top: auto; }
+    .job-btn a { display: inline-block; padding: 0.8rem 1.5rem; border: 2px solid var(--primary); color: var(--primary); font-weight: bold; text-decoration: none; border-radius: 4px; transition: all 0.3s ease; }
+    .job-btn a:hover { background: var(--primary); color: #fff; }
+    
+    .application-section { padding: 6rem 5%; background: var(--dark); color: var(--background); }
+    .application-container { max-width: 800px; margin: 0 auto; background: rgba(255,255,255,0.05); padding: 4rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); }
+    .application-container h2 { text-align: center; font-size: 2.5rem; color: var(--secondary); font-family: serif; margin-bottom: 2rem; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .form-group { margin-bottom: 1.5rem; }
+    .form-group.full-width { grid-column: 1 / -1; }
+    .form-group label { display: block; margin-bottom: 0.5rem; color: #ddd; font-weight: 500; }
+    .form-control { width: 100%; padding: 1.2rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #fff; font-size: 1rem; transition: border-color 0.3s ease; font-family: inherit; }
+    .form-control:focus { outline: none; border-color: var(--secondary); background: rgba(255,255,255,0.1); }
+    textarea.form-control { resize: vertical; min-height: 120px; }
+    .file-upload { position: relative; overflow: hidden; display: inline-block; width: 100%; }
+    .file-upload input[type=file] { position: absolute; font-size: 100px; opacity: 0; right: 0; top: 0; cursor: pointer; }
+    .file-upload-btn { display: block; width: 100%; padding: 1.2rem; background: rgba(255,255,255,0.05); border: 1px dashed rgba(255,255,255,0.3); border-radius: 4px; color: #ddd; text-align: center; cursor: pointer; transition: all 0.3s ease; }
+    .file-upload:hover .file-upload-btn { border-color: var(--secondary); color: var(--secondary); }
+    .submit-btn { background: var(--primary); color: #fff; padding: 1.2rem 2rem; border: none; border-radius: 4px; font-size: 1.1rem; cursor: pointer; font-weight: bold; width: 100%; transition: background 0.3s ease; text-transform: uppercase; letter-spacing: 1px; margin-top: 1rem; }
+    .submit-btn:hover { background: #701010; }
+    
+    @media (max-width: 768px) {
+      .form-grid { grid-template-columns: 1fr; }
+      .application-container { padding: 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Preloader -->
+  <div class="preloader">
+    <img src="zuruzuru_logo.png" alt="Loading" class="preloader-logo">
+    <div class="preloader-bar"></div>
+  </div>
+
+  <!-- Header -->
+  <header class="header header-inner">
+    <div class="nav-container">
+      <a href="index.html" class="logo">
+        <img src="zuruzuru_logo.png" alt="Zuru Zuru Izakaya">
+        <span class="brand-name">Zuru Zuru</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li>
+          <a href="menu.html">Menu <i class="ph-bold ph-caret-down" style="font-size:0.7rem;"></i></a>
+          <ul class="nav-dropdown">
+            <li><a href="menu.html?location=delhi">Delhi Menu</a></li>
+            <li><a href="menu.html?location=gurugram">Gurugram Menu</a></li>
+          </ul>
+        </li>
+        <li><a href="about.html">Our Story</a></li>
+        <li><a href="chefs.html">Chefs</a></li>
+        <li><a href="gallery.html">Gallery</a></li>
+        <li><a href="reservation.html">Reservations</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+      <div class="nav-right">
+        <a href="reservation.html" class="btn btn-primary btn-sm"><span>Reserve</span></a>
+        <div class="hamburger">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="mobile-menu">
+    <a href="index.html">Home</a>
+    <a href="menu.html">Menu</a>
+    <a href="about.html">Our Story</a>
+    <a href="chefs.html">Chefs</a>
+    <a href="gallery.html">Gallery</a>
+    <a href="reservation.html">Reservations</a>
+    <a href="private-dining.html">Private Dining</a>
+    <a href="events.html">Events</a>
+    <a href="blog.html">Blog</a>
+    <a href="contact.html">Contact</a>
+  </div>
+
+  <!-- Page Hero -->
+  <section class="page-hero reveal">
+    <div class="container">
+      <h1>Join Our Team</h1>
+      <p>Build a rewarding career serving authentic Japanese cuisine in an environment that values passion, respect, and continuous growth.</p>
+    </div>
+  </section>
+
+  <!-- Why Join Us -->
+  <section class="why-join-section reveal">
+    <div class="section-title">
+      <h2>Why Work With Us</h2>
+      <p>Discover the Zuru Zuru difference</p>
+    </div>
+    <div class="why-join-grid">
+      <div class="why-card reveal delay-1">
+        <i class="ph ph-handshake"></i>
+        <h3>Respect & Culture</h3>
+        <p>Rooted in the Japanese concept of Wa (harmony), we foster a supportive, respectful workplace where everyone's voice is heard.</p>
+      </div>
+      <div class="why-card reveal delay-2">
+        <i class="ph ph-graduation-cap"></i>
+        <h3>Continuous Training</h3>
+        <p>From knife skills to sake sommelier certification, we invest heavily in your professional development and culinary education.</p>
+      </div>
+      <div class="why-card reveal delay-3">
+        <i class="ph ph-chart-line-up"></i>
+        <h3>Growth Opportunities</h3>
+        <p>We believe in promoting from within. Many of our head chefs and managers started their journey with us in entry-level roles.</p>
+      </div>
+      <div class="why-card reveal delay-4">
+        <i class="ph ph-heart"></i>
+        <h3>Work-Life Balance</h3>
+        <p>We value your well-being with flexible scheduling, consecutive days off, and respect for your personal time outside the kitchen.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Benefits -->
+  <section class="benefits-section reveal">
+    <div class="section-title">
+      <h2>Perks & Benefits</h2>
+      <p>We take care of our team members</p>
+    </div>
+    <div class="benefits-grid">
+      <div class="benefit-item reveal delay-1">
+        <i class="ph ph-first-aid"></i>
+        <h4>Comprehensive Health Insurance</h4>
+      </div>
+      <div class="benefit-item reveal delay-2">
+        <i class="ph ph-bowl-food"></i>
+        <h4>Free Shift Meals</h4>
+      </div>
+      <div class="benefit-item reveal delay-3">
+        <i class="ph ph-money"></i>
+        <h4>Competitive Salary + Tips</h4>
+      </div>
+      <div class="benefit-item reveal delay-4">
+        <i class="ph ph-calendar-check"></i>
+        <h4>Paid Time Off</h4>
+      </div>
+      <div class="benefit-item reveal delay-1">
+        <i class="ph ph-percent"></i>
+        <h4>50% Family Dining Discount</h4>
+      </div>
+      <div class="benefit-item reveal delay-2">
+        <i class="ph ph-bus"></i>
+        <h4>Late Night Commute Allowance</h4>
+      </div>
+      <div class="benefit-item reveal delay-3">
+        <i class="ph ph-medal"></i>
+        <h4>Performance Bonuses</h4>
+      </div>
+      <div class="benefit-item reveal delay-4">
+        <i class="ph ph-sneaker"></i>
+        <h4>Uniforms & Footwear Allowance</h4>
+      </div>
+    </div>
+  </section>
+
+  <!-- Current Openings -->
+  <section class="openings-section reveal">
+    <div class="section-title">
+      <h2>Current Openings</h2>
+      <p>Find your place in our growing family</p>
+    </div>
+    <div class="openings-grid">
+      <!-- Job 1 -->
+      <div class="job-card reveal delay-1">
+        <span class="job-dept">Culinary Team</span>
+        <h3>Sushi Chef (Itamae)</h3>
+        <div class="job-meta">
+          <span><i class="ph ph-map-pin"></i> Delhi, India</span>
+          <span><i class="ph ph-clock"></i> Full-time</span>
+        </div>
+        <p>Seeking an experienced Sushi Chef with a passion for precision and traditional techniques.</p>
+      </div>
+
+      <!-- Job 2 -->
+      <div class="job-card reveal delay-2">
+        <span class="job-dept">Front of House</span>
+        <h3>Restaurant Manager</h3>
+        <div class="job-meta">
+          <span><i class="ph ph-map-pin"></i> Delhi, India</span>
+          <span><i class="ph ph-clock"></i> Full-time</span>
+        </div>
+        <p>Looking for a dynamic leader to oversee daily operations and ensure impeccable guest experiences.</p>
+      </div>
+      
+      <!-- Job 3 -->
+      <div class="job-card reveal delay-3">
+        <span class="job-dept">Beverage</span>
+        <h3>Sake Sommelier</h3>
+        <div class="job-meta">
+          <span><i class="ph ph-map-pin"></i> Delhi, India</span>
+          <span><i class="ph ph-clock"></i> Part-time</span>
+        </div>
+        <p>Passionate about sake? Help our guests navigate our extensive curated sake menu.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Application Form Section -->
+  <section class="application-section reveal">
+    <div class="application-container">
+      <h2>Apply Now</h2>
+      <p style="color:#aaa; margin-bottom: 2rem;">Don't see a role that fits? We're always looking for talent. Submit your resume below.</p>
+      <form class="application-form">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="firstName">First Name</label>
+            <input type="text" id="firstName" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="lastName">Last Name</label>
+            <input type="text" id="lastName" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="phone">Phone Number</label>
+            <input type="tel" id="phone" class="form-control" required>
+          </div>
+          <div class="form-group" style="grid-column: 1 / -1;">
+            <label for="position">Position of Interest</label>
+            <select id="position" class="form-control" required style="background: rgba(255,255,255,0.05);">
+              <option value="" disabled selected style="background: #111;">Select a position...</option>
+              <option value="sushi-chef" style="background: #111;">Sushi Chef</option>
+              <option value="manager" style="background: #111;">Restaurant Manager</option>
+              <option value="sommelier" style="background: #111;">Sake Sommelier</option>
+              <option value="server" style="background: #111;">Server</option>
+              <option value="kitchen" style="background: #111;">Kitchen Staff</option>
+              <option value="other" style="background: #111;">Other</option>
+            </select>
+          </div>
+          <div class="form-group" style="grid-column: 1 / -1;">
+            <label for="coverLetter">Cover Letter (Optional)</label>
+            <textarea id="coverLetter" class="form-control" placeholder="Tell us why you'd be a great fit..."></textarea>
+          </div>
+          <div class="form-group" style="grid-column: 1 / -1;">
+            <label>Resume (PDF or Word)</label>
+            <div class="file-upload">
+              <input type="file" id="resume" accept=".pdf,.doc,.docx" required>
+              <span class="file-upload-btn"><i class="ph ph-upload-simple"></i> Click to upload resume</span>
+            </div>
+          </div>
+        </div>
+        <button type="submit" class="submit-btn">Submit Application</button>
+      </form>
+    </div>
+  </section>
+
+<footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-about">
+          <div class="footer-brand-container">
+            <img src="zuruzuru_logo.png" alt="Zuru Zuru" class="footer-logo">
+            <span class="brand-name">Zuru Zuru</span>
+          </div>
+          <p>A premium Japanese Izakaya experience bringing the authentic flavours of Tokyo to New Delhi. Every dish tells a story of tradition, passion, and culinary excellence.</p>
+          <div class="footer-social">
+            <a href="https://www.instagram.com/zuruzuru.in/?hl=en" aria-label="Instagram" target="_blank"><i class="ph ph-instagram-logo"></i></a>
+            <a href="#" aria-label="Facebook"><i class="ph ph-facebook-logo"></i></a>
+            <a href="#" aria-label="Twitter"><i class="ph ph-twitter-logo"></i></a>
+            <a href="#" aria-label="YouTube"><i class="ph ph-youtube-logo"></i></a>
+          </div>
+        </div>
+        <div class="footer-links">
+          <h4>Explore</h4>
+          <a href="menu.html">Our Menu</a>
+          <a href="about.html">Our Story</a>
+          <a href="chefs.html">Our Chefs</a>
+          <a href="gallery.html">Gallery</a>
+          <a href="blog.html">Blog</a>
+        </div>
+        <div class="footer-links">
+          <h4>Services</h4>
+          <a href="reservation.html">Reservations</a>
+          <a href="private-dining.html">Private Dining</a>
+          <a href="events.html">Events</a>
+          <a href="catering.html">Catering</a>
+          <a href="careers.html">Careers</a>
+        </div>
+        <div class="footer-links">
+          <h4>Information</h4>
+          <a href="locations.html">Locations</a>
+          <a href="franchise.html">Franchise</a>
+          <a href="faq.html">FAQ</a>
+          <a href="privacy-policy.html">Privacy Policy</a>
+          <a href="terms.html">Terms</a>
+        </div>
+        <div>
+          <h4>Contact</h4>
+          <ul class="footer-contact">
+            <li><i class="ph ph-map-pin"></i> Zuru Zuru, Delhi, India 110049</li>
+            <li><i class="ph ph-phone"></i> +91 11 4052 7373</li>
+            <li><i class="ph ph-envelope"></i> hello@zuruzuru.in</li>
+          </ul>
+          <h4 style="margin-top:2rem;">Hours</h4>
+          <ul class="footer-hours">
+              <li style="flex-direction:column; align-items:flex-start; margin-bottom:10px;">
+                <span style="color:var(--clr-primary); font-weight:600; margin-bottom:5px;">1:00 PM - 4:00 PM & 7:00 PM - 10:30 PM</span>
+                <span style="font-size:0.85rem; color:#888;">Lunch & Dinner (Full Menu)</span>
+              </li>
+              <li style="flex-direction:column; align-items:flex-start;">
+                <span style="color:var(--clr-primary); font-weight:600; margin-bottom:5px;">4:00 PM - 7:00 PM</span>
+                <span style="font-size:0.85rem; color:#888;">Tempura, Gyoza & Cold Ramen</span>
+              </li>
+            </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 Zuru Zuru Izakaya. All Rights Reserved.</p>
+        <div class="footer-bottom-links">
+          <a href="privacy-policy.html">Privacy Policy</a>
+          <a href="terms.html">Terms of Service</a>
+          <a href="faq.html">FAQ</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+
+  <!-- Back to Top -->
+  <button class="back-to-top" aria-label="Back to top">
+    <i class="ph ph-caret-up"></i>
+  </button>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+

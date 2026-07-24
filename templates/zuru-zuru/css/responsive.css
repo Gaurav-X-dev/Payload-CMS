@@ -1,0 +1,263 @@
+/* =========================================================
+   RESPONSIVE DESIGN
+   Zuru Zuru — Premium Japanese Restaurant
+   Breakpoints: 1200 / 992 / 768 / 576 / 480
+   ========================================================= */
+
+
+/* ── 1200px — Laptops / Smaller Desktops ── */
+@media (max-width: 1200px) {
+  .footer-grid {
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+  }
+  .footer-grid > :last-child {
+    grid-column: 1 / -1;
+  }
+  .grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+
+/* ── 992px — Tablets Landscape ── */
+@media (max-width: 992px) {
+  /* Header */
+  .nav-links {
+    display: none;
+  }
+  .hamburger {
+    display: flex;
+  }
+  .nav-right .btn {
+    display: none;
+  }
+
+  /* Layout */
+  .grid-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Footer */
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--sp-32);
+  }
+  .footer-bottom {
+    flex-direction: column;
+    gap: var(--sp-12);
+    text-align: center;
+  }
+
+  /* Masonry */
+  .masonry-gallery {
+    columns: 3;
+  }
+
+  /* Two-column layouts */
+  .split-layout {
+    flex-direction: column;
+    gap: var(--sp-48);
+  }
+  .split-layout.reverse {
+    flex-direction: column;
+  }
+
+  /* Announcement */
+  .announcement-bar .announcement-right {
+    display: none;
+  }
+
+  /* Event Card */
+  .event-card {
+    flex-direction: column;
+  }
+}
+
+
+/* ── 768px — Tablets Portrait / Large Mobile ── */
+@media (max-width: 768px) {
+  /* Spacing */
+  section {
+    padding: var(--sp-80) 0;
+  }
+
+  /* Grid */
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+  .grid-3 {
+    grid-template-columns: 1fr;
+  }
+  .grid-4 {
+    grid-template-columns: 1fr;
+  }
+
+  /* Footer */
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: var(--sp-32);
+  }
+
+  /* Forms */
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  /* Masonry */
+  .masonry-gallery {
+    columns: 2;
+  }
+
+  /* Hero */
+  .heading-hero {
+    font-size: clamp(2.5rem, 8vw, 4rem);
+  }
+
+  /* Page Hero */
+  .page-hero {
+    padding: 140px 0 60px;
+  }
+
+  /* Tabs */
+  .tabs-nav {
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Testimonial */
+  .testimonial-card {
+    padding: var(--sp-32) var(--sp-16);
+  }
+
+  /* Chef Card */
+  .chef-card .chef-img-wrapper {
+    width: 200px;
+    height: 200px;
+  }
+
+  /* Timeline */
+  .timeline {
+    padding-left: var(--sp-32);
+  }
+
+  /* Newsletter */
+  .newsletter-form {
+    flex-direction: column;
+  }
+  .newsletter-form button {
+    width: 100%;
+  }
+
+  /* Announcement */
+  .announcement-bar {
+    display: none;
+  }
+  .header.has-announcement {
+    top: 0;
+  }
+}
+
+
+/* ── 576px — Mobile ── */
+@media (max-width: 576px) {
+  section {
+    padding: var(--sp-64) 0;
+  }
+
+  .container {
+    width: 92%;
+    padding: 0 var(--sp-8);
+  }
+
+  /* Typography */
+  .heading-hero {
+    font-size: clamp(2rem, 10vw, 3rem);
+  }
+
+  .heading-section {
+    font-size: clamp(1.6rem, 6vw, 2.2rem);
+  }
+
+  /* Buttons */
+  .btn {
+    padding: 0.8rem 1.8rem;
+    font-size: var(--fs-xs);
+  }
+
+  .hero-cta {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  /* Page Hero */
+  .page-hero {
+    padding: 120px 0 50px;
+  }
+
+  /* Dish Card */
+  .dish-card .card-img-wrapper {
+    height: 200px;
+  }
+
+  /* Back to top */
+  .back-to-top {
+    width: 40px;
+    height: 40px;
+    bottom: var(--sp-16);
+    right: var(--sp-16);
+  }
+
+  /* Masonry */
+  .masonry-gallery {
+    columns: 1;
+  }
+
+  /* Stat */
+  .stat-number {
+    font-size: var(--fs-h2);
+  }
+}
+
+
+/* ── 480px — Small Mobile ── */
+@media (max-width: 480px) {
+  .heading-hero {
+    font-size: 2rem;
+  }
+
+  .section-subtitle {
+    font-size: 0.7rem;
+  }
+
+  .btn {
+    padding: 0.7rem 1.2rem;
+  }
+}
+
+
+/* ── Landscape Mode ── */
+@media (max-height: 500px) and (orientation: landscape) {
+  .hero-section {
+    min-height: auto;
+    padding: var(--sp-64) 0;
+  }
+}
+
+
+/* ── Prefers Reduced Motion ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .reveal, .reveal-left, .reveal-right, .reveal-scale {
+    opacity: 1;
+    transform: none;
+  }
+}

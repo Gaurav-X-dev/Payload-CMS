@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog - Stories & Recipes | Zuru Zuru Izakaya</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <style>
+    :root {
+      --primary: #8B1A1A;
+      --secondary: #D9C5A0;
+      --background: #F7F3ED;
+      --dark: #111111;
+      --accent: #C9A227;
+    }
+    .page-hero { padding: 180px 5% 100px; text-align: center; background: var(--dark); color: var(--background); }
+    .page-hero h1 { font-size: 4rem; margin-bottom: 1rem; color: var(--secondary); font-family: serif; }
+    .page-hero p { font-size: 1.2rem; max-width: 600px; margin: 0 auto; color: #aaa; }
+    
+    .featured-post { padding: 5rem 5%; background: var(--background); }
+    .featured-card { display: grid; grid-template-columns: 1fr 1fr; gap: 0; align-items: stretch; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 15px 40px rgba(0,0,0,0.08); }
+    .featured-img-wrap { overflow: hidden; }
+    .featured-img { width: 100%; height: 100%; object-fit: cover; min-height: 450px; transition: transform 0.5s ease; }
+    .featured-card:hover .featured-img { transform: scale(1.05); }
+    .featured-content { padding: 4rem 3rem; display: flex; flex-direction: column; justify-content: center; }
+    .blog-category { color: var(--primary); font-weight: bold; text-transform: uppercase; letter-spacing: 2px; font-size: 0.85rem; margin-bottom: 1rem; display: block; }
+    .featured-content h2 { font-size: 2.5rem; margin-bottom: 1rem; color: var(--dark); font-family: serif; line-height: 1.2; }
+    .blog-meta { display: flex; gap: 1.5rem; color: #666; font-size: 0.9rem; margin-bottom: 1.5rem; }
+    .blog-meta span { display: flex; align-items: center; gap: 0.5rem; }
+    .featured-content p { color: #555; line-height: 1.8; margin-bottom: 2rem; }
+    .read-more { color: var(--primary); font-weight: bold; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; transition: gap 0.3s ease; }
+    .read-more:hover { gap: 0.8rem; }
+    
+    .blog-grid-section { padding: 0 5% 5rem; background: var(--background); }
+    .blog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2.5rem; }
+    .blog-card { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); transition: transform 0.3s ease, box-shadow 0.3s ease; }
+    .blog-card:hover { transform: translateY(-10px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
+    .blog-card-img-wrapper { height: 240px; overflow: hidden; position: relative; }
+    .blog-card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+    .blog-card:hover .blog-card-img { transform: scale(1.05); }
+    .blog-card-content { padding: 2rem; }
+    .blog-card-title { font-size: 1.4rem; margin-bottom: 1rem; color: var(--dark); line-height: 1.4; font-family: serif; }
+    
+    .newsletter-section { padding: 6rem 5%; background: var(--primary); color: var(--background); text-align: center; }
+    .newsletter-container { max-width: 600px; margin: 0 auto; }
+    .newsletter-container h2 { font-size: 2.5rem; margin-bottom: 1rem; color: var(--secondary); font-family: serif; }
+    .newsletter-container p { margin-bottom: 2rem; opacity: 0.9; line-height: 1.6; }
+    .newsletter-form { display: flex; gap: 1rem; }
+    .newsletter-input { flex: 1; padding: 1.2rem 1.5rem; border: none; border-radius: 4px; font-size: 1rem; }
+    .newsletter-input:focus { outline: 2px solid var(--secondary); }
+    .newsletter-btn { padding: 1.2rem 2.5rem; background: var(--secondary); color: var(--dark); border: none; border-radius: 4px; font-weight: bold; cursor: pointer; transition: background 0.3s ease; text-transform: uppercase; letter-spacing: 1px; }
+    .newsletter-btn:hover { background: #fff; }
+    
+    @media (max-width: 992px) {
+      .featured-card { grid-template-columns: 1fr; }
+      .featured-img { min-height: 300px; }
+      .featured-content { padding: 3rem 2rem; }
+    }
+    @media (max-width: 768px) {
+      .newsletter-form { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Preloader -->
+  <div class="preloader">
+    <img src="zuruzuru_logo.png" alt="Loading" class="preloader-logo">
+    <div class="preloader-bar"></div>
+  </div>
+
+  <!-- Scroll Progress -->
+  <div class="scroll-progress"></div>
+
+  <!-- Header -->
+  <header class="header header-inner">
+    <div class="nav-container">
+      <a href="index.html" class="logo">
+        <img src="zuruzuru_logo.png" alt="Zuru Zuru Izakaya">
+        <span class="brand-name">Zuru Zuru</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li>
+          <a href="menu.html">Menu <i class="ph-bold ph-caret-down" style="font-size:0.7rem;"></i></a>
+          <ul class="nav-dropdown">
+            <li><a href="menu.html?location=delhi">Delhi Menu</a></li>
+            <li><a href="menu.html?location=gurugram">Gurugram Menu</a></li>
+          </ul>
+        </li>
+        <li><a href="about.html">Our Story</a></li>
+        <li><a href="chefs.html">Chefs</a></li>
+        <li><a href="gallery.html">Gallery</a></li>
+        <li><a href="reservation.html">Reservations</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+      <div class="nav-right">
+        <a href="reservation.html" class="btn btn-primary btn-sm"><span>Reserve</span></a>
+        <div class="hamburger">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu">
+    <a href="index.html">Home</a>
+    <a href="menu.html">Menu</a>
+    <a href="about.html">Our Story</a>
+    <a href="chefs.html">Chefs</a>
+    <a href="gallery.html">Gallery</a>
+    <a href="reservation.html">Reservations</a>
+    <a href="private-dining.html">Private Dining</a>
+    <a href="events.html">Events</a>
+    <a href="blog.html">Blog</a>
+    <a href="contact.html">Contact</a>
+  </div>
+
+  <!-- Page Hero -->
+  <section class="page-hero reveal">
+    <h1>Stories & Recipes</h1>
+    <p>Dive deep into the culinary philosophy, secret recipes, and the vibrant Izakaya culture of Japan.</p>
+  </section>
+
+  <!-- Featured Post -->
+  <section class="featured-post reveal">
+    <div class="featured-card">
+      <div class="featured-img-wrap">
+        <img src="images/interior.png" alt="Mastering the Tonkotsu Broth" class="featured-img">
+      </div>
+      <div class="featured-content">
+        <span class="blog-category">Behind the Scenes</span>
+        <h2>Mastering the 48-Hour Tonkotsu Broth</h2>
+        <div class="blog-meta">
+          <span><i class="ph ph-calendar-blank"></i> Oct 12, 2026</span>
+          <span><i class="ph ph-clock"></i> 8 Min Read</span>
+          <span><i class="ph ph-user"></i> Chef Hiroshi</span>
+        </div>
+        <p>The secret to our signature ramen lies in the slow, meticulous simmering of pork bones over two full days. Discover the passion, precision, and traditional techniques that go into every bowl at Zuru Zuru.</p>
+        <a href="#" class="read-more">Read Full Story <i class="ph ph-arrow-right"></i></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Blog Grid -->
+  <section class="blog-grid-section">
+    <div class="blog-grid">
+      <!-- Card 1 -->
+      <article class="blog-card reveal delay-1">
+        <div class="blog-card-img-wrapper">
+          <img src="images/chef.png" alt="Ramen" class="blog-card-img">
+        </div>
+        <div class="blog-card-content">
+          <span class="blog-category">Recipes</span>
+          <h3 class="blog-card-title">Crafting the Perfect Shoyu Tare at Home</h3>
+          <div class="blog-meta">
+            <span><i class="ph ph-calendar-blank"></i> Sep 28, 2026</span>
+            <span><i class="ph ph-clock"></i> 5 Min Read</span>
+          </div>
+          <a href="#" class="read-more">Read More <i class="ph ph-arrow-right"></i></a>
+        </div>
+      </article>
+
+      <!-- Card 2 -->
+      <article class="blog-card reveal delay-2">
+        <div class="blog-card-img-wrapper">
+          <img src="images/gyoza_tempura.png" alt="Sake" class="blog-card-img">
+        </div>
+        <div class="blog-card-content">
+          <span class="blog-category">Culture</span>
+          <h3 class="blog-card-title">A Beginner's Guide to Japanese Sake Pairing</h3>
+          <div class="blog-meta">
+            <span><i class="ph ph-calendar-blank"></i> Sep 15, 2026</span>
+            <span><i class="ph ph-clock"></i> 6 Min Read</span>
+          </div>
+          <a href="#" class="read-more">Read More <i class="ph ph-arrow-right"></i></a>
+        </div>
+      </article>
+
+      <!-- Card 3 -->
+      <article class="blog-card reveal delay-3">
+        <div class="blog-card-img-wrapper">
+          <img src="images/hero_ramen.png" alt="Sushi" class="blog-card-img">
+        </div>
+        <div class="blog-card-content">
+          <span class="blog-category">Ingredients</span>
+          <h3 class="blog-card-title">The Journey of Fresh Tuna: From Sea to Plate</h3>
+          <div class="blog-meta">
+            <span><i class="ph ph-calendar-blank"></i> Sep 02, 2026</span>
+            <span><i class="ph ph-clock"></i> 7 Min Read</span>
+          </div>
+          <a href="#" class="read-more">Read More <i class="ph ph-arrow-right"></i></a>
+        </div>
+      </article>
+
+      <!-- Card 4 -->
+      <article class="blog-card reveal delay-1">
+        <div class="blog-card-img-wrapper">
+          <img src="images/hero_sushi.png" alt="Matcha" class="blog-card-img">
+        </div>
+        <div class="blog-card-content">
+          <span class="blog-category">Desserts</span>
+          <h3 class="blog-card-title">Why Ceremonial Grade Matcha Matters</h3>
+          <div class="blog-meta">
+            <span><i class="ph ph-calendar-blank"></i> Aug 20, 2026</span>
+            <span><i class="ph ph-clock"></i> 4 Min Read</span>
+          </div>
+          <a href="#" class="read-more">Read More <i class="ph ph-arrow-right"></i></a>
+        </div>
+      </article>
+
+      <!-- Card 5 -->
+      <article class="blog-card reveal delay-2">
+        <div class="blog-card-img-wrapper">
+          <img src="images/gyoza_tempura.png" alt="Izakaya" class="blog-card-img">
+        </div>
+        <div class="blog-card-content">
+          <span class="blog-category">Culture</span>
+          <h3 class="blog-card-title">The Evolution of the Izakaya in Modern Times</h3>
+          <div class="blog-meta">
+            <span><i class="ph ph-calendar-blank"></i> Aug 11, 2026</span>
+            <span><i class="ph ph-clock"></i> 10 Min Read</span>
+          </div>
+          <a href="#" class="read-more">Read More <i class="ph ph-arrow-right"></i></a>
+        </div>
+      </article>
+
+      <!-- Card 6 -->
+      <article class="blog-card reveal delay-3">
+        <div class="blog-card-img-wrapper">
+          <img src="images/gyoza_tempura.png" alt="Yakitori" class="blog-card-img">
+        </div>
+        <div class="blog-card-content">
+          <span class="blog-category">Recipes</span>
+          <h3 class="blog-card-title">Grilling Perfection: The Art of Yakitori</h3>
+          <div class="blog-meta">
+            <span><i class="ph ph-calendar-blank"></i> Jul 29, 2026</span>
+            <span><i class="ph ph-clock"></i> 5 Min Read</span>
+          </div>
+          <a href="#" class="read-more">Read More <i class="ph ph-arrow-right"></i></a>
+        </div>
+      </article>
+      
+      <!-- Card 7 -->
+      <article class="blog-card reveal delay-1">
+        <div class="blog-card-img-wrapper">
+          <img src="images/gyoza_tempura.png" alt="Dumplings" class="blog-card-img">
+        </div>
+        <div class="blog-card-content">
+          <span class="blog-category">Behind the Scenes</span>
+          <h3 class="blog-card-title">Hand-folding 1,000 Gyoza Daily</h3>
+          <div class="blog-meta">
+            <span><i class="ph ph-calendar-blank"></i> Jul 15, 2026</span>
+            <span><i class="ph ph-clock"></i> 6 Min Read</span>
+          </div>
+          <a href="#" class="read-more">Read More <i class="ph ph-arrow-right"></i></a>
+        </div>
+      </article>
+      
+      <!-- Card 8 -->
+      <article class="blog-card reveal delay-2">
+        <div class="blog-card-img-wrapper">
+          <img src="images/chef.png" alt="Noodles" class="blog-card-img">
+        </div>
+        <div class="blog-card-content">
+          <span class="blog-category">Ingredients</span>
+          <h3 class="blog-card-title">Alkaline Noodles and the Perfect Slurp</h3>
+          <div class="blog-meta">
+            <span><i class="ph ph-calendar-blank"></i> Jun 30, 2026</span>
+            <span><i class="ph ph-clock"></i> 4 Min Read</span>
+          </div>
+          <a href="#" class="read-more">Read More <i class="ph ph-arrow-right"></i></a>
+        </div>
+      </article>
+      
+      <!-- Card 9 -->
+      <article class="blog-card reveal delay-3">
+        <div class="blog-card-img-wrapper">
+          <img src="images/hero_sushi.png" alt="Chef" class="blog-card-img">
+        </div>
+        <div class="blog-card-content">
+          <span class="blog-category">Culture</span>
+          <h3 class="blog-card-title">Omotenashi: The Japanese Spirit of Hospitality</h3>
+          <div class="blog-meta">
+            <span><i class="ph ph-calendar-blank"></i> Jun 18, 2026</span>
+            <span><i class="ph ph-clock"></i> 7 Min Read</span>
+          </div>
+          <a href="#" class="read-more">Read More <i class="ph ph-arrow-right"></i></a>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- Newsletter Section -->
+  <section class="newsletter-section reveal">
+    <div class="newsletter-container">
+      <h2>Join the Zuru Zuru Family</h2>
+      <p>Subscribe to our newsletter for exclusive recipes, seasonal menu updates, and special event invitations.</p>
+      <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Subscribed!');">
+        <input type="email" placeholder="Enter your email address" class="newsletter-input" required>
+        <button type="submit" class="newsletter-btn">Subscribe</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-about">
+          <div class="footer-brand-container">
+            <img src="zuruzuru_logo.png" alt="Zuru Zuru" class="footer-logo">
+            <span class="brand-name">Zuru Zuru</span>
+          </div>
+          <p>A premium Japanese Izakaya experience bringing the authentic flavours of Tokyo to New Delhi. Every dish tells a story of tradition, passion, and culinary excellence.</p>
+          <div class="footer-social">
+            <a href="https://www.instagram.com/zuruzuru.in/?hl=en" aria-label="Instagram" target="_blank"><i class="ph ph-instagram-logo"></i></a>
+            <a href="#" aria-label="Facebook"><i class="ph ph-facebook-logo"></i></a>
+            <a href="#" aria-label="Twitter"><i class="ph ph-twitter-logo"></i></a>
+            <a href="#" aria-label="YouTube"><i class="ph ph-youtube-logo"></i></a>
+          </div>
+        </div>
+        <div class="footer-links">
+          <h4>Explore</h4>
+          <a href="menu.html">Our Menu</a>
+          <a href="about.html">Our Story</a>
+          <a href="chefs.html">Our Chefs</a>
+          <a href="gallery.html">Gallery</a>
+          <a href="blog.html">Blog</a>
+        </div>
+        <div class="footer-links">
+          <h4>Services</h4>
+          <a href="reservation.html">Reservations</a>
+          <a href="private-dining.html">Private Dining</a>
+          <a href="events.html">Events</a>
+          <a href="catering.html">Catering</a>
+          <a href="careers.html">Careers</a>
+        </div>
+        <div class="footer-links">
+          <h4>Information</h4>
+          <a href="locations.html">Locations</a>
+          <a href="franchise.html">Franchise</a>
+          <a href="faq.html">FAQ</a>
+          <a href="privacy-policy.html">Privacy Policy</a>
+          <a href="terms.html">Terms</a>
+        </div>
+        <div>
+          <h4>Contact</h4>
+          <ul class="footer-contact">
+            <li><i class="ph ph-map-pin"></i> Zuru Zuru, Delhi, India 110049</li>
+            <li><i class="ph ph-phone"></i> +91 11 4052 7373</li>
+            <li><i class="ph ph-envelope"></i> hello@zuruzuru.in</li>
+          </ul>
+          <h4 style="margin-top:2rem">Hours</h4>
+          <ul class="footer-hours">
+              <li style="flex-direction:column; align-items:flex-start; margin-bottom:10px;">
+                <span style="color:var(--clr-primary); font-weight:600; margin-bottom:5px;">1:00 PM - 4:00 PM & 7:00 PM - 10:30 PM</span>
+                <span style="font-size:0.85rem; color:#888;">Lunch & Dinner (Full Menu)</span>
+              </li>
+              <li style="flex-direction:column; align-items:flex-start;">
+                <span style="color:var(--clr-primary); font-weight:600; margin-bottom:5px;">4:00 PM - 7:00 PM</span>
+                <span style="font-size:0.85rem; color:#888;">Tempura, Gyoza & Cold Ramen</span>
+              </li>
+            </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Zuru Zuru Izakaya. All Rights Reserved.</p>
+        <div class="footer-bottom-links">
+          <a href="privacy-policy.html">Privacy Policy</a>
+          <a href="terms.html">Terms of Service</a>
+          <a href="faq.html">FAQ</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Back to Top -->
+  <button class="back-to-top" aria-label="Back to top">
+    <i class="ph ph-caret-up"></i>
+  </button>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
+
+
+
+
+

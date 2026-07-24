@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Events & Experiences | Zuru Zuru Izakaya</title>
+  
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  
+  <style>
+    .events-hero {
+      padding: 200px 5% 100px;
+      text-align: center;
+      background: linear-gradient(rgba(17,17,17,0.7), rgba(17,17,17,0.8)), url('images/interior.png') center/cover;
+      color: #F7F3ED;
+    }
+    .events-hero h1 {
+      font-size: 4rem;
+      margin-bottom: 1.5rem;
+      color: #F7F3ED;
+    }
+    .events-hero p {
+      max-width: 700px;
+      margin: 0 auto;
+      font-size: 1.2rem;
+      color: #D9C5A0;
+      line-height: 1.6;
+    }
+
+    .section-title {
+      text-align: center;
+      margin-bottom: 1rem;
+      color: #8B1A1A;
+      font-size: 2.8rem;
+    }
+    .section-subtitle {
+      text-align: center;
+      color: #666;
+      font-size: 1.1rem;
+      margin-bottom: 4rem;
+    }
+
+    /* Upcoming Events */
+    .events-section {
+      padding: 100px 5%;
+      background-color: #F7F3ED;
+    }
+    .upcoming-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .event-card {
+      background: #fff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+      transition: transform 0.4s ease, box-shadow 0.4s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    .event-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+    }
+    .event-img-wrap {
+      position: relative;
+      overflow: hidden;
+    }
+    .event-img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+    .event-card:hover .event-img {
+      transform: scale(1.05);
+    }
+    .event-tag {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: #8B1A1A;
+      color: #fff;
+      padding: 0.4rem 1rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .event-content {
+      padding: 2rem;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .event-date {
+      color: #C9A227;
+      font-weight: bold;
+      margin-bottom: 0.8rem;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .event-title {
+      color: #111111;
+      font-size: 1.4rem;
+      margin-bottom: 1rem;
+    }
+    .event-desc {
+      color: #666;
+      font-size: 0.95rem;
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+      flex-grow: 1;
+    }
+    .event-card .btn {
+      align-self: flex-start;
+    }
+
+    /* Regular Events */
+    .regular-events {
+      background-color: #111111;
+      color: #F7F3ED;
+      padding: 100px 5%;
+      position: relative;
+    }
+    .regular-events::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: url('https://www.transparenttextures.com/patterns/rice-paper-2.png');
+      opacity: 0.05;
+      pointer-events: none;
+    }
+    .regular-events .section-title {
+      color: #D9C5A0;
+    }
+    .regular-events .section-subtitle {
+      color: #aaa;
+    }
+    .regular-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .regular-card {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      padding: 2.5rem 2rem;
+      border-radius: 12px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+    .regular-card:hover {
+      border-color: #C9A227;
+      transform: translateY(-5px);
+    }
+    .regular-icon {
+      font-size: 3.5rem;
+      color: #8B1A1A;
+      margin-bottom: 1.5rem;
+    }
+    .regular-title {
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+      color: #fff;
+    }
+    .regular-desc {
+      color: #aaa;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    /* Booking Form */
+    .booking-section {
+      padding: 100px 5%;
+      background-color: #F7F3ED;
+      background-image: linear-gradient(#F7F3ED 50%, #fff 50%);
+    }
+    .booking-container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 4rem;
+      border-radius: 16px;
+      box-shadow: 0 15px 50px rgba(0,0,0,0.08);
+      position: relative;
+      z-index: 2;
+    }
+    .booking-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    .booking-header h3 {
+      font-size: 2.2rem;
+      color: #111111;
+      margin-bottom: 0.5rem;
+    }
+    .booking-header p {
+      color: #666;
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    .form-label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #111111;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      padding: 1rem 1.2rem;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 1rem;
+      background: #FAFAFA;
+      transition: all 0.3s;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      outline: none;
+      border-color: #8B1A1A;
+      background: #fff;
+      box-shadow: 0 0 0 4px rgba(139, 26, 26, 0.1);
+    }
+    .form-textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+    .btn-submit {
+      width: 100%;
+      padding: 1.2rem;
+      background: #8B1A1A;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+    }
+    .btn-submit:hover {
+      background: #C9A227;
+      color: #111111;
+    }
+    .btn-submit:active {
+      transform: scale(0.98);
+    }
+    
+    @media (max-width: 768px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+      .booking-container {
+        padding: 2rem;
+      }
+      .events-hero h1 {
+        font-size: 3rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Preloader -->
+  <div class="preloader">
+    <img src="zuruzuru_logo.png" alt="Loading" class="preloader-logo">
+    <div class="preloader-bar"></div>
+  </div>
+
+  <!-- Scroll Progress -->
+  <div class="scroll-progress"></div>
+
+  <!-- Header -->
+  <header class="header header-inner">
+    <div class="nav-container">
+      <a href="index.html" class="logo">
+        <img src="zuruzuru_logo.png" alt="Zuru Zuru Izakaya">
+        <span class="brand-name">Zuru Zuru</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li>
+          <a href="menu.html">Menu <i class="ph-bold ph-caret-down" style="font-size:0.7rem;"></i></a>
+          <ul class="nav-dropdown">
+            <li><a href="menu.html?location=delhi">Delhi Menu</a></li>
+            <li><a href="menu.html?location=gurugram">Gurugram Menu</a></li>
+          </ul>
+        </li>
+        <li><a href="about.html">Our Story</a></li>
+        <li><a href="chefs.html">Chefs</a></li>
+        <li><a href="gallery.html">Gallery</a></li>
+        <li><a href="reservation.html">Reservations</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+      <div class="nav-right">
+        <a href="reservation.html" class="btn btn-primary btn-sm"><span>Reserve</span></a>
+        <div class="hamburger">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu">
+    <a href="index.html">Home</a>
+    <a href="menu.html">Menu</a>
+    <a href="about.html">Our Story</a>
+    <a href="chefs.html">Chefs</a>
+    <a href="gallery.html">Gallery</a>
+    <a href="reservation.html">Reservations</a>
+    <a href="private-dining.html">Private Dining</a>
+    <a href="events.html" class="active">Events</a>
+    <a href="blog.html">Blog</a>
+    <a href="contact.html">Contact</a>
+  </div>
+
+  <!-- Events Hero -->
+  <section class="events-hero reveal">
+    <h1>Events & Experiences</h1>
+    <p>Discover exclusive culinary events, cultural celebrations, and immersive dining experiences at Zuru Zuru Izakaya. Join us in celebrating the art of Japanese cuisine.</p>
+  </section>
+
+  <!-- Upcoming Events -->
+  <section class="events-section">
+    <div class="container">
+      <h2 class="section-title reveal">Upcoming Events</h2>
+      <p class="section-subtitle reveal delay-1">Reserve your spot for our special limited-time experiences.</p>
+      
+      <div class="upcoming-grid">
+        <!-- Event 1 -->
+        <div class="event-card reveal delay-1">
+          <div class="event-img-wrap">
+            <span class="event-tag">Music</span>
+            <img src="images/gyoza_tempura.png" alt="Live Jazz Night" class="event-img">
+          </div>
+          <div class="event-content">
+            <div class="event-date"><i class="ph ph-calendar-blank"></i> Every Friday, 8 PM</div>
+            <h3 class="event-title">Live Tokyo Jazz</h3>
+            <p class="event-desc">Immerse yourself in the soulful sounds of live jazz while enjoying our signature cocktails and Izakaya bites. A perfect start to your weekend.</p>
+            <a href="#book-event" class="btn btn-outline">Book Table</a>
+          </div>
+        </div>
+
+        <!-- Event 2 -->
+        <div class="event-card reveal delay-2">
+          <div class="event-img-wrap">
+            <span class="event-tag">Tasting</span>
+            <img src="images/chef.png" alt="Sake Tasting" class="event-img">
+          </div>
+          <div class="event-content">
+            <div class="event-date"><i class="ph ph-calendar-blank"></i> August 15, 7 PM</div>
+            <h3 class="event-title">Premium Sake Tasting</h3>
+            <p class="event-desc">Join our resident Sommelier for an exclusive journey through Japan's finest regional sakes, perfectly paired with seasonal Otsumami.</p>
+            <a href="#book-event" class="btn btn-outline">Reserve Spot</a>
+          </div>
+        </div>
+
+        <!-- Event 3 -->
+        <div class="event-card reveal delay-3">
+          <div class="event-img-wrap">
+            <span class="event-tag">Exclusive</span>
+            <img src="images/interior.png" alt="Chef's Table" class="event-img">
+          </div>
+          <div class="event-content">
+            <div class="event-date"><i class="ph ph-calendar-blank"></i> August 25, 7:30 PM</div>
+            <h3 class="event-title">Omakase Chef's Table</h3>
+            <p class="event-desc">An intimate 12-course dining experience hosted by Executive Chef Kenji. Watch as he prepares seasonal delicacies right before your eyes.</p>
+            <a href="#book-event" class="btn btn-outline">Reserve Spot</a>
+          </div>
+        </div>
+
+        <!-- Event 4 -->
+        <div class="event-card reveal delay-4">
+          <div class="event-img-wrap">
+            <span class="event-tag">Culture</span>
+            <img src="images/interior.png" alt="Japanese Festival" class="event-img">
+          </div>
+          <div class="event-content">
+            <div class="event-date"><i class="ph ph-calendar-blank"></i> September 5-7</div>
+            <h3 class="event-title">Matsuri Street Food Festival</h3>
+            <p class="event-desc">We're transforming our patio into a vibrant Japanese summer festival! Enjoy yakitori stalls, takoyaki, games, and festive decorations.</p>
+            <a href="#book-event" class="btn btn-outline">Learn More</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Regular Events / Experiences Grid -->
+  <section class="regular-events">
+    <div class="container">
+      <h2 class="section-title reveal">Regular Experiences</h2>
+      <p class="section-subtitle reveal delay-1">Immerse yourself in our weekly and monthly recurring events.</p>
+      
+      <div class="regular-grid">
+        <div class="regular-card reveal delay-1">
+          <i class="ph ph-cooking-pot regular-icon"></i>
+          <h3 class="regular-title">Ramen Masterclass</h3>
+          <p class="regular-desc">Learn the secrets of our rich tonkotsu broth and handmade noodles in this hands-on Sunday afternoon workshop.</p>
+        </div>
+        <div class="regular-card reveal delay-2">
+          <i class="ph ph-wine regular-icon"></i>
+          <h3 class="regular-title">Sake & Sushi Nights</h3>
+          <p class="regular-desc">Every Tuesday, enjoy 50% off select sake carafes and complimentary chef's choice sushi rolls with your first order.</p>
+        </div>
+        <div class="regular-card reveal delay-3">
+          <i class="ph ph-users-three regular-icon"></i>
+          <h3 class="regular-title">Corporate Mixology</h3>
+          <p class="regular-desc">Book our private bar for your team and learn how to craft Japanese-inspired cocktails using matcha, yuzu, and shochu.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Event Booking Form -->
+  <section class="booking-section" id="book-event">
+    <div class="container">
+      <div class="booking-container reveal">
+        <div class="booking-header">
+          <h3>Inquire About an Event</h3>
+          <p>Fill out the form below to book a spot or request more information.</p>
+        </div>
+        <form action="#" method="POST" id="eventForm">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="firstName">First Name *</label>
+              <input type="text" id="firstName" class="form-input" required placeholder="John">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="lastName">Last Name *</label>
+              <input type="text" id="lastName" class="form-input" required placeholder="Doe">
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="email">Email Address *</label>
+              <input type="email" id="email" class="form-input" required placeholder="john@example.com">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="phone">Phone Number *</label>
+              <input type="tel" id="phone" class="form-input" required placeholder="+91 98765 43210">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="eventSelect">Select Event *</label>
+              <select id="eventSelect" class="form-select" required>
+                <option value="" disabled selected>Choose an event...</option>
+                <option value="jazz">Live Tokyo Jazz</option>
+                <option value="sake">Premium Sake Tasting</option>
+                <option value="omakase">Omakase Chef's Table</option>
+                <option value="matsuri">Matsuri Street Food Festival</option>
+                <option value="masterclass">Ramen Masterclass</option>
+                <option value="other">Other / Private Inquiry</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="guests">Number of Guests</label>
+              <input type="number" id="guests" class="form-input" min="1" max="20" placeholder="2">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="message">Special Requests or Questions</label>
+            <textarea id="message" class="form-textarea" placeholder="Tell us about any dietary restrictions or special requests..."></textarea>
+          </div>
+
+          <button type="submit" class="btn-submit">Submit Request</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+    <!-- --- NEWSLETTER --- -->
+  <section class="nl-section section-alt">
+    <div class="container reveal">
+      <div class="section-subtitle" style="justify-content:center;">Stay Connected</div>
+      <h2 class="heading-section text-center">Join Our Inner Circle</h2>
+      <p class="section-desc text-center" style="margin:0 auto 2rem;">Receive exclusive recipes, event invitations, and special offers directly in your inbox. No spam, just Japanese inspiration.</p>
+      <div class="nl-form">
+        <input type="email" placeholder="Enter your email address" aria-label="Email address">
+        <button type="button">Subscribe</button>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-about">
+          <div class="footer-brand-container">
+            <img src="zuruzuru_logo.png" alt="Zuru Zuru" class="footer-logo">
+            <span class="brand-name">Zuru Zuru</span>
+          </div>
+          <p>A premium Japanese Izakaya experience bringing the authentic flavours of Tokyo to New Delhi. Every dish tells a story of tradition, passion, and culinary excellence.</p>
+          <div class="footer-social">
+            <a href="https://www.instagram.com/zuruzuru.in/?hl=en" aria-label="Instagram" target="_blank"><i class="ph ph-instagram-logo"></i></a>
+            <a href="#" aria-label="Facebook"><i class="ph ph-facebook-logo"></i></a>
+            <a href="#" aria-label="Twitter"><i class="ph ph-twitter-logo"></i></a>
+            <a href="#" aria-label="YouTube"><i class="ph ph-youtube-logo"></i></a>
+          </div>
+        </div>
+        <div class="footer-links">
+          <h4>Explore</h4>
+          <a href="menu.html">Our Menu</a>
+          <a href="about.html">Our Story</a>
+          <a href="chefs.html">Our Chefs</a>
+          <a href="gallery.html">Gallery</a>
+          <a href="blog.html">Blog</a>
+        </div>
+        <div class="footer-links">
+          <h4>Services</h4>
+          <a href="reservation.html">Reservations</a>
+          <a href="private-dining.html">Private Dining</a>
+          <a href="events.html">Events</a>
+          <a href="catering.html">Catering</a>
+          <a href="careers.html">Careers</a>
+        </div>
+        <div class="footer-links">
+          <h4>Information</h4>
+          <a href="locations.html">Locations</a>
+          <a href="franchise.html">Franchise</a>
+          <a href="faq.html">FAQ</a>
+          <a href="privacy-policy.html">Privacy Policy</a>
+          <a href="terms.html">Terms</a>
+        </div>
+        <div>
+          <h4>Contact</h4>
+          <ul class="footer-contact">
+            <li><i class="ph ph-map-pin"></i> Zuru Zuru, Delhi, India 110049</li>
+            <li><i class="ph ph-phone"></i> +91 11 4052 7373</li>
+            <li><i class="ph ph-envelope"></i> hello@zuruzuru.in</li>
+          </ul>
+          <h4 style="margin-top:2rem">Hours</h4>
+          <ul class="footer-hours">
+              <li style="flex-direction:column; align-items:flex-start; margin-bottom:10px;">
+                <span style="color:var(--clr-primary); font-weight:600; margin-bottom:5px;">1:00 PM - 4:00 PM & 7:00 PM - 10:30 PM</span>
+                <span style="font-size:0.85rem; color:#888;">Lunch & Dinner (Full Menu)</span>
+              </li>
+              <li style="flex-direction:column; align-items:flex-start;">
+                <span style="color:var(--clr-primary); font-weight:600; margin-bottom:5px;">4:00 PM - 7:00 PM</span>
+                <span style="font-size:0.85rem; color:#888;">Tempura, Gyoza & Cold Ramen</span>
+              </li>
+            </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Zuru Zuru Izakaya. All Rights Reserved.</p>
+        <div class="footer-bottom-links">
+          <a href="privacy-policy.html">Privacy Policy</a>
+          <a href="terms.html">Terms of Service</a>
+          <a href="faq.html">FAQ</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Back to Top -->
+  <button class="back-to-top" aria-label="Back to top">
+    <i class="ph ph-caret-up"></i>
+  </button>
+
+  <!-- JS -->
+  <script src="js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Form submission handling for demo purposes
+      const eventForm = document.getElementById('eventForm');
+      if(eventForm) {
+        eventForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const btn = eventForm.querySelector('.btn-submit');
+          const originalText = btn.textContent;
+          btn.textContent = 'Submitting...';
+          btn.style.backgroundColor = '#C9A227';
+          btn.style.color = '#111';
+          
+          setTimeout(() => {
+            btn.textContent = 'Request Submitted!';
+            btn.style.backgroundColor = '#27ae60';
+            btn.style.color = '#fff';
+            
+            setTimeout(() => {
+              btn.textContent = originalText;
+              btn.style.backgroundColor = '#8B1A1A';
+              eventForm.reset();
+            }, 3000);
+          }, 1500);
+        });
+      }
+    });
+  </script>
+</body>
+</html>
+
+
+
+
+
+

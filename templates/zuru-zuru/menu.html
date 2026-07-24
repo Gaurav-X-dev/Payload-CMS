@@ -1,0 +1,1622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Menu | Zuru Zuru — A Ramen Diner</title>
+  
+  <!-- Phosphor Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- CSS Links -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/responsive.css">
+
+  <style>
+    /* Custom Styles for Menu Page */
+    .menu-hero {
+      background: linear-gradient(rgba(17, 17, 17, 0.7), rgba(17, 17, 17, 0.7)), url('images/chef.png') center/cover;
+      height: 60vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: #F7F3ED;
+      padding-top: 80px;
+    }
+    
+    .menu-hero h1 {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      color: #D9C5A0;
+    }
+
+    .menu-controls {
+      background: #F7F3ED;
+      padding: 1.5rem 5% 2rem;
+      z-index: 90;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      position: relative;
+    }
+    
+    .menu-search {
+      max-width: 500px;
+      margin: 0 auto 2rem;
+      position: relative;
+    }
+    
+    .menu-search input {
+      width: 100%;
+      padding: 1rem 1rem 1rem 3rem;
+      border: 1px solid #D9C5A0;
+      background: #fff;
+      border-radius: 30px;
+      font-family: 'Jost', sans-serif;
+      font-size: 1rem;
+      color: #111111;
+      transition: all 0.3s ease;
+    }
+    
+    .menu-search input:focus {
+      outline: none;
+      border-color: #8B1A1A;
+      box-shadow: 0 0 0 2px rgba(139, 26, 26, 0.1);
+    }
+    
+    .menu-search i {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.2rem;
+      color: #8B1A1A;
+    }
+    
+    .filter-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    
+    .filter-btn {
+      background: transparent;
+      border: 1px solid #111111;
+      padding: 0.5rem 1.5rem;
+      border-radius: 30px;
+      font-family: 'Jost', sans-serif;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: #111111;
+    }
+    
+    .filter-btn:hover, .filter-btn.active {
+      background: #8B1A1A;
+      color: #F7F3ED;
+      border-color: #8B1A1A;
+    }
+    
+    .menu-section {
+      padding: 5rem 5%;
+      background: #F7F3ED;
+    }
+    
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    
+    .menu-item {
+      background: #fff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .menu-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+    
+    .menu-item-img {
+      height: 220px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .menu-item-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+    
+    .menu-item:hover .menu-item-img img {
+      transform: scale(1.05);
+    }
+    
+    .menu-item-badges {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    
+    .badge {
+      padding: 0.2rem 0.8rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #fff;
+    }
+    
+    .badge-popular { background: #8B1A1A; }
+    .badge-chef { background: #C9A227; color: #111111; }
+    .badge-veg { background: #2e7d32; }
+    
+    .menu-item-content {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+    
+    .menu-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.3rem;
+      border-bottom: 1px dashed rgba(17, 17, 17, 0.2);
+      padding-bottom: 0.5rem;
+    }
+    
+    .menu-item-header h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem;
+      color: #111111;
+      margin: 0;
+      flex: 1;
+      padding-right: 1rem;
+    }
+    
+    .menu-item-header .price {
+      font-family: 'Jost', sans-serif;
+      font-weight: 600;
+      color: #8B1A1A;
+      font-size: 1.2rem;
+    }
+    
+    .japanese-name {
+      font-family: 'Jost', sans-serif;
+      font-size: 0.85rem;
+      color: #C9A227;
+      margin-bottom: 0.8rem;
+      display: block;
+    }
+    
+    .menu-item p {
+      font-size: 0.9rem;
+      color: #555;
+      margin-bottom: 1.5rem;
+      flex-grow: 1;
+      line-height: 1.5;
+    }
+    
+    .menu-item-meta {
+      display: flex;
+      gap: 1rem;
+      font-size: 0.8rem;
+      color: #777;
+      margin-top: auto;
+      border-top: 1px solid #eee;
+      padding-top: 1rem;
+    }
+    
+    .menu-item-meta span {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    
+    .menu-item-meta i {
+      color: #8B1A1A;
+      font-size: 1.1rem;
+    }
+    
+    .menu-item.hidden {
+      display: none;
+    }
+    
+    .no-results {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 3rem;
+      font-size: 1.2rem;
+      color: #777;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Preloader -->
+  <div class="preloader">
+    <img src="zuruzuru_logo.png" alt="Loading" class="preloader-logo">
+    <div class="preloader-bar"></div>
+  </div>
+
+  <!-- Scroll Progress -->
+  <div class="scroll-progress"></div>
+
+  <!-- Header -->
+  <header class="header header-inner">
+    <div class="nav-container">
+      <a href="index.html" class="logo">
+        <img src="zuruzuru_logo.png" alt="Zuru Zuru Izakaya">
+        <span class="brand-name">Zuru Zuru</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li>
+          <a href="menu.html" class="active">Menu <i class="ph-bold ph-caret-down" style="font-size:0.7rem;"></i></a>
+          <ul class="nav-dropdown">
+            <li><a href="menu.html?location=delhi">Delhi Menu</a></li>
+            <li><a href="menu.html?location=gurugram">Gurugram Menu</a></li>
+          </ul>
+        </li>
+        <li><a href="about.html">Our Story</a></li>
+        <li><a href="chefs.html">Chefs</a></li>
+        <li><a href="gallery.html">Gallery</a></li>
+        <li><a href="reservation.html">Reservations</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+      <div class="nav-right">
+        <a href="reservation.html" class="btn btn-primary btn-sm"><span>Reserve</span></a>
+        <div class="hamburger">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu">
+    <a href="index.html">Home</a>
+    <a href="menu.html" class="active">Menu</a>
+    <a href="about.html">Our Story</a>
+    <a href="chefs.html">Chefs</a>
+    <a href="gallery.html">Gallery</a>
+    <a href="reservation.html">Reservations</a>
+    <a href="private-dining.html">Private Dining</a>
+    <a href="events.html">Events</a>
+    <a href="blog.html">Blog</a>
+    <a href="contact.html">Contact</a>
+  </div>
+
+  <main>
+    <!-- Hero Section -->
+    <section class="menu-hero">
+      <div class="container reveal">
+        <h1>Our Menu</h1>
+        <p>A culinary journey through the authentic flavors of Japan, carefully crafted by our master chefs.</p>
+      </div>
+    </section>
+
+    
+    <div style="background-color: var(--clr-primary); color: #fff; text-align: center; padding: 15px 5%; font-family: var(--ff-body); font-weight: 500; letter-spacing: 1px;">
+      <i class="ph ph-info" style="vertical-align: middle; font-size: 1.2rem; margin-right: 8px;"></i>
+      SERVICE HOURS: 1:00 PM - 4:00 PM & 7:00 PM - 10:30 PM (Full Menu) | 4:00 PM - 7:00 PM (Tempura, Gyoza & Cold Ramen Only)
+    </div>
+<!-- Search & Filters -->
+    <div class="menu-controls reveal">
+      
+      <!-- Location Toggle -->
+      <div class="location-toggle" style="display:flex; justify-content:center; gap:2rem; margin-bottom: 2rem; padding: 1rem; background: #fff; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); max-width: 400px; margin-left: auto; margin-right: auto;">
+        <label style="cursor:pointer; display:flex; align-items:center; gap:8px; font-family:'Jost',sans-serif; font-weight:600; font-size:1.1rem; color:#8B1A1A;">
+          <input type="radio" name="location" value="delhi" checked onchange="toggleLocation('delhi')" style="accent-color: #8B1A1A; width: 18px; height: 18px;"> Delhi Menu
+        </label>
+        <label style="cursor:pointer; display:flex; align-items:center; gap:8px; font-family:'Jost',sans-serif; font-weight:600; font-size:1.1rem; color:#8B1A1A;">
+          <input type="radio" name="location" value="gurugram" onchange="toggleLocation('gurugram')" style="accent-color: #8B1A1A; width: 18px; height: 18px;"> Gurugram Menu
+        </label>
+      </div>
+      
+      <script>
+        function toggleLocation(loc) {
+          if (loc === 'delhi') {
+            document.getElementById('menuGrid').style.display = 'grid';
+            document.getElementById('menuGridGurugram').style.display = 'none';
+          } else {
+            document.getElementById('menuGrid').style.display = 'none';
+            document.getElementById('menuGridGurugram').style.display = 'grid';
+          }
+        }
+      </script>
+      <div class="menu-search">
+        <i class="ph ph-magnifying-glass"></i>
+        <input type="text" id="searchInput" placeholder="Search for dishes, ingredients, or Japanese names...">
+      </div>
+      <div class="filter-buttons" id="filterButtons">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="sushi">Sushi</button>
+        <button class="filter-btn" data-filter="sashimi">Sashimi</button>
+        <button class="filter-btn" data-filter="nigiri">Nigiri</button>
+        <button class="filter-btn" data-filter="ramen">Ramen</button>
+        <button class="filter-btn" data-filter="tempura">Tempura</button>
+        <button class="filter-btn" data-filter="yakitori">Yakitori</button>
+        <button class="filter-btn" data-filter="desserts">Desserts</button>
+        <button class="filter-btn" data-filter="drinks">Drinks</button>
+      </div>
+    </div>
+
+    <!-- Menu Grid -->
+    
+    <!-- Menu Grid -->
+    <section class="menu-section">
+      <div class="menu-grid" id="menuGrid">
+<!-- Dish 1 -->
+        <div class="menu-item reveal-scale" data-category="sushi">
+          <div class="menu-item-img">
+            <img src="images/hero_sushi.png" alt="Spicy Tuna Roll">
+            <div class="menu-item-badges">
+              <span class="badge badge-popular">Popular</span>
+            </div>
+          </div>
+          <div class="menu-item-content">
+            <div class="menu-item-header">
+              <h3>Spicy Tuna Roll</h3>
+              <span class="price">₹850</span>
+            </div>
+            <span class="japanese-name">スパイシーツナロール</span>
+            <p>Fresh yellowfin tuna minced with our house-made spicy mayo, cucumber, topped with sesame seeds and scallions.</p>
+            <div class="menu-item-meta">
+              <span><i class="ph ph-fire"></i> Mildly Spicy</span>
+              <span><i class="ph ph-lightning"></i> 320 kcal</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dish 2 -->
+        <div class="menu-item reveal-scale delay-1" data-category="sushi">
+          <div class="menu-item-img">
+            <img src="images/hero_ramen.png" alt="Dragon Roll">
+            <div class="menu-item-badges">
+              <span class="badge badge-chef">Chef's Choice</span>
+            </div>
+          </div>
+          <div class="menu-item-content">
+            <div class="menu-item-header">
+              <h3>Dragon Roll</h3>
+              <span class="price">₹1150</span>
+            </div>
+            <span class="japanese-name">ドラゴンロール</span>
+            <p>Shrimp tempura and cucumber inside, draped with thinly sliced avocado, eel sauce, and spicy mayo drizzle.</p>
+            <div class="menu-item-meta">
+              <span><i class="ph ph-fish"></i> Seafood</span>
+              <span><i class="ph ph-lightning"></i> 450 kcal</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dish 3 -->
+        <div class="menu-item reveal-scale delay-2" data-category="sushi">
+          <div class="menu-item-img">
+            <img src="images/gyoza_tempura.png" alt="California Roll">
+          </div>
+          <div class="menu-item-content">
+            <div class="menu-item-header">
+              <h3>California Roll</h3>
+              <span class="price">₹750</span>
+            </div>
+            <span class="japanese-name">カリフォルニアロール</span>
+            <p>Imitation crab, ripe avocado, crisp cucumber, rolled inside-out with toasted sesame seeds.</p>
+            <div class="menu-item-meta">
+              <span><i class="ph ph-fish"></i> Seafood</span>
+              <span><i class="ph ph-lightning"></i> 255 kcal</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dish 4 -->
+        <div class="menu-item reveal-scale" data-category="sashimi">
+          <div class="menu-item-img">
+            <img src="images/interior.png" alt="Salmon Sashimi">
+            <div class="menu-item-badges">
+              <span class="badge badge-popular">Popular</span>
+            </div>
+          </div>
+          <div class="menu-item-content">
+            <div class="menu-item-header">
+              <h3>Salmon Sashimi (Sake)</h3>
+              <span class="price">₹950</span>
+            </div>
+            <span class="japanese-name">サーモン刺身</span>
+            <p>5 pieces of premium, thick-cut Norwegian salmon served raw over shredded daikon radish.</p>
+            <div class="menu-item-meta">
+              <span><i class="ph ph-fish"></i> Raw</span>
+              <span><i class="ph ph-lightning"></i> 210 kcal</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dish 5 -->
+        <div class="menu-item reveal-scale delay-1" data-category="sashimi">
+          <div class="menu-item-img">
+            <img src="images/gyoza_tempura.png" alt="Tuna Sashimi">
+          </div>
+          <div class="menu-item-content">
+            <div class="menu-item-header">
+              <h3>Tuna Sashimi (Maguro)</h3>
+              <span class="price">₹1050</span>
+            </div>
+            <span class="japanese-name">マグロ刺身</span>
+            <p>5 pieces of exquisite bluefin tuna, known for its deep ruby red color and firm, meaty texture.</p>
+            <div class="menu-item-meta">
+              <span><i class="ph ph-fish"></i> Raw</span>
+              <span><i class="ph ph-lightning"></i> 185 kcal</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dish 6 -->
+        <div class="menu-item reveal-scale delay-2" data-category="sashimi">
+          <div class="menu-item-img">
+            <img src="images/hero_sushi.png" alt="Yellowtail Sashimi">
+            <div class="menu-item-badges">
+              <span class="badge badge-chef">Chef's Choice</span>
+            </div>
+          </div>
+          <div class="menu-item-content">
+            <div class="menu-item-header">
+              <h3>Yellowtail Sashimi (Hamachi)</h3>
+              <span class="price">₹1100</span>
+            </div>
+            <span class="japanese-name">ハマチ刺身</span>
+            <p>5 pieces of buttery, delicate yellowtail, served with a hint of jalapeño and yuzu soy.</p>
+            <div class="menu-item-meta">
+              <span><i class="ph ph-fish"></i> Raw</span>
+              <span><i class="ph ph-lightning"></i> 220 kcal</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dish 7 -->
+        <div class="menu-item reveal-scale" data-category="nigiri">
+          <div class="menu-item-img">
+            <img src="images/hero_sushi.png" alt="Ebi Nigiri">
+          </div>
+          <div class="menu-item-content">
+            <div class="menu-item-header">
+              <h3>Ebi Nigiri (Shrimp)</h3>
+              <span class="price">₹600</span>
+            </div>
+            <span class="japanese-name">エビ握り</span>
+            <p>2 pieces of butterflied, cooked tiger shrimp resting gently on hand-pressed vinegared sushi rice.</p>
+            <div class="menu-item-meta">
+              <span><i class="ph ph-fish"></i> Seafood</span>
+              <span><i class="ph ph-lightning"></i> 140 kcal</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dish 8 -->
+        <div class="menu-item reveal-scale delay-1" data-category="nigiri">
+          <div class="menu-item-img">
+            <img src="images/interior.png" alt="Unagi Nigiri">
+            <div class="menu-item-badges">
+              <span class="badge badge-popular">Popular</span>
+            </div>
+          </div>
+          <div class="menu-item-content">
+            <div class="menu-item-header">
+              <h3>Unagi Nigiri (Eel)</h3>
+              <span class="price">₹750</span>
+            </div>
+            <span class="japanese-name">うなぎ握り</span>
+            <p>2 pieces of grilled freshwater eel, glazed with sweet and savory unagi tare, bound with a strip of nori.</p>
+            <div class="menu-item-meta">
+              <span><i class="ph ph-fish"></i> Seafood</span>
+              <span><i class="ph ph-lightning"></i> 210 kcal</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dish 9 -->
+        <div class="menu-item reveal-scale delay-2" data-category="nigiri">
+          <div class="menu-item-img">
+            <img src="images/chef.png" alt="Tamago Nigiri">
+            <div class="menu-item-badges">
+              <span class="badge badge-veg">Vegetarian</span>
+            </div>
+          </div>
+          <div class="menu-item-content">
+            <div class="menu-item-header">
+              <h3>Tamago Nigiri (Egg)</h3>
+              <span class="price">₹450</span>
+            </div>
+            <span class="japanese-name">玉子握り</span>
+            <p>2 pieces of classic Japanese sweet rolled omelette served over sushi rice. A delicate balance of sweet and savory.</p>
+            <div class="menu-item-meta">
+              <span><i class="ph ph-leaf"></i> Vegetarian</span>
+              <span><i class="ph ph-lightning"></i> 160 kcal</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dish 10 -->
+        <div class="menu-item reveal-scale" data-category="ramen">
+          <div class="menu-item-img">
+            <img src="images/hero_ramen.png" alt="Tonkotsu Ramen">
+            <div class="menu-item-badges">
+              <span class="badge badge-popular">Popular</span>
+              <span class="badge badge-chef">Chef's Choice</span>
+            </div>
+          </div>
+          <div class="menu-item-content">
+            <div class="menu-item-header">
+              <h3>Signature Tonkotsu Ramen</h3>
+              <span class="price">₹950</span>
+            </div>
+            <span class="japanese-name">豚骨ラーメン</span>
+            <p>Rich 24-hour pork bone broth, artisanal thin noodles, chashu pork belly, ajitama (soft-boiled egg), wood ear mushrooms, and scallions.</p>
+            <div class="menu-item-meta">
+              <span><i class="ph ph-bowl-food"></i> Pork</span>
+              <span><i class="ph ph-lightning"></i> 750 kcal</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dish 11 -->
+        <div class="menu-item reveal-scale delay-1" data-category="ramen">
+          <div class="menu-item-img">
+            <img src="images/hero_sushi.png" alt="Shoyu Ramen">
+          </div>
+          <div class="menu-item-content">
+            <div class="menu-item-header">
+              <h3>Tokyo Shoyu Ramen</h3>
+              <span class="price">₹850</span>
+            </div>
+            <span class="japanese-name">醤油ラーメン</span>
+            <p>Clear chicken and soy sauce broth, wavy noodles, tender chicken chashu, menma (bamboo shoots), narutomaki, and nori.</p>
+            <div class="menu-item-meta">
+              <span><i class="ph ph-bowl-food"></i> Chicken</span>
+              <span><i class="ph ph-lightning"></i> 580 kcal</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dish 12 -->
+        <div class="menu-item reveal-scale delay-2" data-category="ramen">
+          <div class="menu-item-img">
+            <img src="images/gyoza_tempura.png" alt="Miso Ramen">
+          </div>
+          <div class="menu-item-content">
+            <div class="menu-item-header">
+              <h3>Hokkaido Miso Ramen</h3>
+              <span class="price">₹900</span>
+            </div>
+            <span class="japanese-name">味噌ラーメン</span>
+            <p>Nutty and robust miso-pork broth, thick curly noodles, ground pork, sweet corn, butter, and bean sprouts.</p>
+            <div class="menu-item-meta">
+              <span><i class="ph ph-bowl-food"></i> Pork</span>
+              <span><i class="ph ph-lightning"></i> 820 kcal</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dish 13 -->
+        <div class="menu-item reveal-scale" data-category="ramen">
+          <div class="menu-item-img">
+            <img src="images/gyoza_tempura.png" alt="Spicy Karage Ramen">
+            <div class="menu-item-badges">
+              <span class="badge badge-popular">Popular</span>
+            </div>
+          </div>
+          <div class="menu-item-content">
+            <div class="menu-item-header">
+              <h3>Spicy Karaage Ramen</h3>
+              <span class="price">₹950</span>
+            </div>
+            <span class="japanese-name">スパイシー唐揚げラーメン</span>
+            <p>Fiery chili-infused chicken broth, topped with crispy Japanese fried chicken (karaage), bok choy, and chili oil.</p>
+            <div class="menu-item-meta">
+              <span><i class="ph ph-fire"></i> Very Spicy</span>
+              <span><i class="ph ph-lightning"></i> 910 kcal</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dish 14 -->
+        <div class="menu-item reveal-scale delay-1" data-category="tempura">
+          <div class="menu-item-img">
+            <img src="images/hero_sushi.png" alt="Shrimp Tempura">
+          </div>
+          <div class="menu-item-content">
+            <div class="menu-item-header">
+              <h3>Ebi Tempura (Shrimp)</h3>
+              <span class="price">₹800</span>
+            </div>
+            <span class="japanese-name">海老天ぷら</span>
+            <p>5 pieces of jumbo black tiger shrimp, lightly battered and fried to golden perfection. Served with warm tentsuyu dipping broth.</p>
+            <div class="menu-item-meta">
+              <span><i class="ph ph-fish"></i> Seafood</span>
+              <span><i class="ph ph-lightning"></i> 450 kcal</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dish 15 -->
+        <div class="menu-item reveal-scale delay-2" data-category="tempura">
+          <div class="menu-item-img">
+            <img src="images/hero_sushi.png" alt="Vegetable Tempura">
+            <div class="menu-item-badges">
+              <span class="badge badge-veg">Vegetarian</span>
+            </div>
+          </div>
+          <div class="menu-item-content">
+            <div class="menu-item-header">
+              <h3>Yasai Tempura</h3>
+              <span class="price">₹650</span>
+            </div>
+            <span class="japanese-name">野菜天ぷら</span>
+            <p>An assortment of seasonal vegetables including sweet potato, eggplant, lotus root, and bell peppers in a crispy, light batter.</p>
+            <div class="menu-item-meta">
+              <span><i class="ph ph-leaf"></i> Vegetarian</span>
+              <span><i class="ph ph-lightning"></i> 380 kcal</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dish 16 -->
+        <div class="menu-item reveal-scale" data-category="yakitori">
+          <div class="menu-item-img">
+            <img src="images/gyoza_tempura.png" alt="Negima Yakitori">
+            <div class="menu-item-badges">
+              <span class="badge badge-popular">Popular</span>
+            </div>
+          </div>
+          <div class="menu-item-content">
+            <div class="menu-item-header">
+              <h3>Negima (Chicken & Scallion)</h3>
+              <span class="price">₹500</span>
+            </div>
+            <span class="japanese-name">ねぎま</span>
+            <p>2 skewers of succulent chicken thigh and charred negi (Japanese scallions), grilled over binchotan charcoal with tare glaze.</p>
+            <div class="menu-item-meta">
+              <span><i class="ph ph-fire"></i> Grilled</span>
+              <span><i class="ph ph-lightning"></i> 220 kcal</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dish 17 -->
+        <div class="menu-item reveal-scale delay-1" data-category="yakitori">
+          <div class="menu-item-img">
+            <img src="images/chef.png" alt="Tsukune Yakitori">
+            <div class="menu-item-badges">
+              <span class="badge badge-chef">Chef's Choice</span>
+            </div>
+          </div>
+          <div class="menu-item-content">
+            <div class="menu-item-header">
+              <h3>Tsukune (Chicken Meatballs)</h3>
+              <span class="price">₹550</span>
+            </div>
+            <span class="japanese-name">つくね</span>
+            <p>2 skewers of house-ground seasoned chicken meatballs, glazed with sweet soy and served with a raw egg yolk for dipping.</p>
+            <div class="menu-item-meta">
+              <span><i class="ph ph-fire"></i> Grilled</span>
+              <span><i class="ph ph-lightning"></i> 290 kcal</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dish 18 -->
+        <div class="menu-item reveal-scale delay-2" data-category="yakitori">
+          <div class="menu-item-img">
+            <img src="images/hero_ramen.png" alt="Momo Yakitori">
+          </div>
+          <div class="menu-item-content">
+            <div class="menu-item-header">
+              <h3>Momo (Chicken Thigh)</h3>
+              <span class="price">₹480</span>
+            </div>
+            <span class="japanese-name">もも</span>
+            <p>2 skewers of tender, juicy chicken thigh seasoned simply with sea salt (shio) and a squeeze of fresh lemon.</p>
+            <div class="menu-item-meta">
+              <span><i class="ph ph-fire"></i> Grilled</span>
+              <span><i class="ph ph-lightning"></i> 240 kcal</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dish 19 -->
+        <div class="menu-item reveal-scale" data-category="desserts">
+          <div class="menu-item-img">
+            <img src="images/gyoza_tempura.png" alt="Matcha Ice Cream">
+            <div class="menu-item-badges">
+              <span class="badge badge-popular">Popular</span>
+            </div>
+          </div>
+          <div class="menu-item-content">
+            <div class="menu-item-header">
+              <h3>Matcha Ice Cream</h3>
+              <span class="price">₹400</span>
+            </div>
+            <span class="japanese-name">抹茶アイス</span>
+            <p>Premium Uji matcha infused ice cream, delivering a perfect balance of earthy bitterness and creamy sweetness.</p>
+            <div class="menu-item-meta">
+              <span><i class="ph ph-leaf"></i> Vegetarian</span>
+              <span><i class="ph ph-lightning"></i> 260 kcal</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dish 20 -->
+        <div class="menu-item reveal-scale delay-1" data-category="desserts">
+          <div class="menu-item-img">
+            <img src="images/chef.png" alt="Mochi Ice Cream">
+          </div>
+          <div class="menu-item-content">
+            <div class="menu-item-header">
+              <h3>Assorted Mochi Ice Cream</h3>
+              <span class="price">₹450</span>
+            </div>
+            <span class="japanese-name">雪見だいふく</span>
+            <p>3 pieces of chewy, sweet rice dough filled with assorted ice cream flavors (Strawberry, Mango, Black Sesame).</p>
+            <div class="menu-item-meta">
+              <span><i class="ph ph-leaf"></i> Vegetarian</span>
+              <span><i class="ph ph-lightning"></i> 320 kcal</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dish 21 -->
+        <div class="menu-item reveal-scale delay-2" data-category="desserts">
+          <div class="menu-item-img">
+            <img src="images/interior.png" alt="Yuzu Cheesecake">
+            <div class="menu-item-badges">
+              <span class="badge badge-chef">Chef's Choice</span>
+            </div>
+          </div>
+          <div class="menu-item-content">
+            <div class="menu-item-header">
+              <h3>Yuzu Cheesecake</h3>
+              <span class="price">₹550</span>
+            </div>
+            <span class="japanese-name">柚子チーズケーキ</span>
+            <p>A Japanese twist on a classic. Light, fluffy, and infused with tart yuzu citrus, set on a buttery graham cracker crust.</p>
+            <div class="menu-item-meta">
+              <span><i class="ph ph-leaf"></i> Vegetarian</span>
+              <span><i class="ph ph-lightning"></i> 410 kcal</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dish 22 -->
+        <div class="menu-item reveal-scale" data-category="drinks">
+          <div class="menu-item-img">
+            <img src="images/interior.png" alt="Hot Sake">
+          </div>
+          <div class="menu-item-content">
+            <div class="menu-item-header">
+              <h3>Traditional Hot Sake</h3>
+              <span class="price">₹800</span>
+            </div>
+            <span class="japanese-name">熱燗 (Atsukan)</span>
+            <p>A comforting carafe of our house Junmai sake, gently warmed to enhance its aromatic and savory profile. Serves 2.</p>
+            <div class="menu-item-meta">
+              <span><i class="ph ph-wine"></i> Alcohol</span>
+              <span><i class="ph ph-lightning"></i> 180 kcal</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dish 23 -->
+        <div class="menu-item reveal-scale delay-1" data-category="drinks">
+          <div class="menu-item-img">
+            <img src="images/gyoza_tempura.png" alt="Sapporo Draft">
+            <div class="menu-item-badges">
+              <span class="badge badge-popular">Popular</span>
+            </div>
+          </div>
+          <div class="menu-item-content">
+            <div class="menu-item-header">
+              <h3>Sapporo Premium Draft</h3>
+              <span class="price">₹450</span>
+            </div>
+            <span class="japanese-name">サッポロ生ビール</span>
+            <p>Japan's oldest beer brand. Crisp, perfectly balanced taste and a smooth finish. Served ice cold on tap. 500ml.</p>
+            <div class="menu-item-meta">
+              <span><i class="ph ph-beer-glass"></i> Alcohol</span>
+              <span><i class="ph ph-lightning"></i> 210 kcal</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dish 24 -->
+        <div class="menu-item reveal-scale delay-2" data-category="drinks">
+          <div class="menu-item-img">
+            <img src="images/hero_ramen.png" alt="Matcha Lemonade">
+          </div>
+          <div class="menu-item-content">
+            <div class="menu-item-header">
+              <h3>Matcha Yuzu Lemonade</h3>
+              <span class="price">₹350</span>
+            </div>
+            <span class="japanese-name">抹茶柚子レモネード</span>
+            <p>A refreshing mocktail blending ceremonial grade matcha, fresh yuzu juice, sparkling water, and a touch of honey.</p>
+            <div class="menu-item-meta">
+              <span><i class="ph ph-drop"></i> Non-Alcoholic</span>
+              <span><i class="ph ph-lightning"></i> 120 kcal</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="menu-grid" id="menuGridGurugram" style="display:none;">
+
+        <!-- Dish 25 (Gurugram Exclusive) -->
+        <div class="menu-item reveal-scale" data-category="ramen">
+          <div class="menu-item-img">
+            <img src="images/hero_ramen.png" alt="Truffle Shoyu Ramen">
+            <div class="menu-item-badges">
+              <span class="badge badge-popular">Gurugram Exclusive</span>
+            </div>
+          </div>
+          <div class="menu-item-content">
+            <div class="menu-item-header">
+              <h3>Truffle Shoyu Ramen</h3>
+              <span class="price">₹1250</span>
+            </div>
+            <span class="japanese-name">トリュフ醤油ラーメン</span>
+            <p>Our signature clear broth infused with white truffle oil, topped with chashu, bamboo shoots, and a perfectly soft-boiled egg.</p>
+            <div class="menu-item-meta">
+              <span><i class="ph ph-fire"></i> Non-Veg</span>
+              <span><i class="ph ph-lightning"></i> 650 kcal</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dish 26 (Gurugram Exclusive) -->
+        <div class="menu-item reveal-scale" data-category="sushi">
+          <div class="menu-item-img">
+            <img src="images/hero_sushi.png" alt="Cyber Hub Roll">
+            <div class="menu-item-badges">
+              <span class="badge badge-chef">Gurugram Exclusive</span>
+            </div>
+          </div>
+          <div class="menu-item-content">
+            <div class="menu-item-header">
+              <h3>Cyber Hub Roll</h3>
+              <span class="price">₹1400</span>
+            </div>
+            <span class="japanese-name">サイバーハブロール</span>
+            <p>Premium wagyu beef, asparagus tempura, truffle mayo, and gold flakes in a breathtaking presentation.</p>
+            <div class="menu-item-meta">
+              <span><i class="ph ph-fire"></i> Non-Veg</span>
+              <span><i class="ph ph-lightning"></i> 480 kcal</span>
+            </div>
+          </div>
+        </div>
+        <!-- Dish 1 -->
+        <div class="menu-item reveal-scale" data-category="sushi">
+          <div class="menu-item-img">
+            <img src="images/hero_sushi.png" alt="Spicy Tuna Roll">
+            <div class="menu-item-badges">
+              
+            </div>
+          </div>
+          <div class="menu-item-content">
+            <div class="menu-item-header">
+              <h3>Spicy Tuna Roll</h3>
+              <span class="price">₹900</span>
+            </div>
+            <span class="japanese-name">スパイシーツナロール</span>
+            <p>Fresh yellowfin tuna minced with our house-made spicy mayo, cucumber, topped with sesame seeds and scallions.</p>
+            <div class="menu-item-meta">
+              <span><i class="ph ph-fire"></i> Mildly Spicy</span>
+              <span><i class="ph ph-lightning"></i> 320 kcal</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dish 2 -->
+        <div class="menu-item reveal-scale delay-1" data-category="sushi">
+          <div class="menu-item-img">
+            <img src="images/hero_ramen.png" alt="Dragon Roll">
+            <div class="menu-item-badges">
+              <span class="badge badge-chef">Chef's Choice</span>
+            </div>
+          </div>
+          <div class="menu-item-content">
+            <div class="menu-item-header">
+              <h3>Dragon Roll</h3>
+              <span class="price">₹1200</span>
+            </div>
+            <span class="japanese-name">ドラゴンロール</span>
+            <p>Shrimp tempura and cucumber inside, draped with thinly sliced avocado, eel sauce, and spicy mayo drizzle.</p>
+            <div class="menu-item-meta">
+              <span><i class="ph ph-fish"></i> Seafood</span>
+              <span><i class="ph ph-lightning"></i> 450 kcal</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dish 3 -->
+        <div class="menu-item reveal-scale delay-2" data-category="sushi">
+          <div class="menu-item-img">
+            <img src="images/gyoza_tempura.png" alt="California Roll">
+          </div>
+          <div class="menu-item-content">
+            <div class="menu-item-header">
+              <h3>California Roll</h3>
+              <span class="price">₹800</span>
+            </div>
+            <span class="japanese-name">カリフォルニアロール</span>
+            <p>Imitation crab, ripe avocado, crisp cucumber, rolled inside-out with toasted sesame seeds.</p>
+            <div class="menu-item-meta">
+              <span><i class="ph ph-fish"></i> Seafood</span>
+              <span><i class="ph ph-lightning"></i> 255 kcal</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dish 4 -->
+        <div class="menu-item reveal-scale" data-category="sashimi">
+          <div class="menu-item-img">
+            <img src="images/interior.png" alt="Salmon Sashimi">
+            <div class="menu-item-badges">
+              
+            </div>
+          </div>
+          <div class="menu-item-content">
+            <div class="menu-item-header">
+              <h3>Salmon Sashimi (Sake)</h3>
+              <span class="price">₹1000</span>
+            </div>
+            <span class="japanese-name">サーモン刺身</span>
+            <p>5 pieces of premium, thick-cut Norwegian salmon served raw over shredded daikon radish.</p>
+            <div class="menu-item-meta">
+              <span><i class="ph ph-fish"></i> Raw</span>
+              <span><i class="ph ph-lightning"></i> 210 kcal</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dish 5 -->
+        <div class="menu-item reveal-scale delay-1" data-category="sashimi">
+          <div class="menu-item-img">
+            <img src="images/gyoza_tempura.png" alt="Tuna Sashimi">
+          </div>
+          <div class="menu-item-content">
+            <div class="menu-item-header">
+              <h3>Tuna Sashimi (Maguro)</h3>
+              <span class="price">₹1100</span>
+            </div>
+            <span class="japanese-name">マグロ刺身</span>
+            <p>5 pieces of exquisite bluefin tuna, known for its deep ruby red color and firm, meaty texture.</p>
+            <div class="menu-item-meta">
+              <span><i class="ph ph-fish"></i> Raw</span>
+              <span><i class="ph ph-lightning"></i> 185 kcal</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dish 6 -->
+        <div class="menu-item reveal-scale delay-2" data-category="sashimi">
+          <div class="menu-item-img">
+            <img src="images/hero_sushi.png" alt="Yellowtail Sashimi">
+            <div class="menu-item-badges">
+              <span class="badge badge-chef">Chef's Choice</span>
+            </div>
+          </div>
+          <div class="menu-item-content">
+            <div class="menu-item-header">
+              <h3>Yellowtail Sashimi (Hamachi)</h3>
+              <span class="price">₹1150</span>
+            </div>
+            <span class="japanese-name">ハマチ刺身</span>
+            <p>5 pieces of buttery, delicate yellowtail, served with a hint of jalapeño and yuzu soy.</p>
+            <div class="menu-item-meta">
+              <span><i class="ph ph-fish"></i> Raw</span>
+              <span><i class="ph ph-lightning"></i> 220 kcal</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dish 7 -->
+        <div class="menu-item reveal-scale" data-category="nigiri">
+          <div class="menu-item-img">
+            <img src="images/hero_sushi.png" alt="Ebi Nigiri">
+          </div>
+          <div class="menu-item-content">
+            <div class="menu-item-header">
+              <h3>Ebi Nigiri (Shrimp)</h3>
+              <span class="price">₹650</span>
+            </div>
+            <span class="japanese-name">エビ握り</span>
+            <p>2 pieces of butterflied, cooked tiger shrimp resting gently on hand-pressed vinegared sushi rice.</p>
+            <div class="menu-item-meta">
+              <span><i class="ph ph-fish"></i> Seafood</span>
+              <span><i class="ph ph-lightning"></i> 140 kcal</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dish 8 -->
+        <div class="menu-item reveal-scale delay-1" data-category="nigiri">
+          <div class="menu-item-img">
+            <img src="images/interior.png" alt="Unagi Nigiri">
+            <div class="menu-item-badges">
+              
+            </div>
+          </div>
+          <div class="menu-item-content">
+            <div class="menu-item-header">
+              <h3>Unagi Nigiri (Eel)</h3>
+              <span class="price">₹800</span>
+            </div>
+            <span class="japanese-name">うなぎ握り</span>
+            <p>2 pieces of grilled freshwater eel, glazed with sweet and savory unagi tare, bound with a strip of nori.</p>
+            <div class="menu-item-meta">
+              <span><i class="ph ph-fish"></i> Seafood</span>
+              <span><i class="ph ph-lightning"></i> 210 kcal</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dish 9 -->
+        <div class="menu-item reveal-scale delay-2" data-category="nigiri">
+          <div class="menu-item-img">
+            <img src="images/chef.png" alt="Tamago Nigiri">
+            <div class="menu-item-badges">
+              <span class="badge badge-veg">Vegetarian</span>
+            </div>
+          </div>
+          <div class="menu-item-content">
+            <div class="menu-item-header">
+              <h3>Tamago Nigiri (Egg)</h3>
+              <span class="price">₹500</span>
+            </div>
+            <span class="japanese-name">玉子握り</span>
+            <p>2 pieces of classic Japanese sweet rolled omelette served over sushi rice. A delicate balance of sweet and savory.</p>
+            <div class="menu-item-meta">
+              <span><i class="ph ph-leaf"></i> Vegetarian</span>
+              <span><i class="ph ph-lightning"></i> 160 kcal</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dish 10 -->
+        <div class="menu-item reveal-scale" data-category="ramen">
+          <div class="menu-item-img">
+            <img src="images/hero_ramen.png" alt="Tonkotsu Ramen">
+            <div class="menu-item-badges">
+              
+              <span class="badge badge-chef">Chef's Choice</span>
+            </div>
+          </div>
+          <div class="menu-item-content">
+            <div class="menu-item-header">
+              <h3>Signature Tonkotsu Ramen</h3>
+              <span class="price">₹1000</span>
+            </div>
+            <span class="japanese-name">豚骨ラーメン</span>
+            <p>Rich 24-hour pork bone broth, artisanal thin noodles, chashu pork belly, ajitama (soft-boiled egg), wood ear mushrooms, and scallions.</p>
+            <div class="menu-item-meta">
+              <span><i class="ph ph-bowl-food"></i> Pork</span>
+              <span><i class="ph ph-lightning"></i> 750 kcal</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dish 11 -->
+        <div class="menu-item reveal-scale delay-1" data-category="ramen">
+          <div class="menu-item-img">
+            <img src="images/hero_sushi.png" alt="Shoyu Ramen">
+          </div>
+          <div class="menu-item-content">
+            <div class="menu-item-header">
+              <h3>Tokyo Shoyu Ramen</h3>
+              <span class="price">₹900</span>
+            </div>
+            <span class="japanese-name">醤油ラーメン</span>
+            <p>Clear chicken and soy sauce broth, wavy noodles, tender chicken chashu, menma (bamboo shoots), narutomaki, and nori.</p>
+            <div class="menu-item-meta">
+              <span><i class="ph ph-bowl-food"></i> Chicken</span>
+              <span><i class="ph ph-lightning"></i> 580 kcal</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dish 12 -->
+        <div class="menu-item reveal-scale delay-2" data-category="ramen">
+          <div class="menu-item-img">
+            <img src="images/gyoza_tempura.png" alt="Miso Ramen">
+          </div>
+          <div class="menu-item-content">
+            <div class="menu-item-header">
+              <h3>Hokkaido Miso Ramen</h3>
+              <span class="price">₹950</span>
+            </div>
+            <span class="japanese-name">味噌ラーメン</span>
+            <p>Nutty and robust miso-pork broth, thick curly noodles, ground pork, sweet corn, butter, and bean sprouts.</p>
+            <div class="menu-item-meta">
+              <span><i class="ph ph-bowl-food"></i> Pork</span>
+              <span><i class="ph ph-lightning"></i> 820 kcal</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dish 13 -->
+        <div class="menu-item reveal-scale" data-category="ramen">
+          <div class="menu-item-img">
+            <img src="images/gyoza_tempura.png" alt="Spicy Karage Ramen">
+            <div class="menu-item-badges">
+              
+            </div>
+          </div>
+          <div class="menu-item-content">
+            <div class="menu-item-header">
+              <h3>Spicy Karaage Ramen</h3>
+              <span class="price">₹1000</span>
+            </div>
+            <span class="japanese-name">スパイシー唐揚げラーメン</span>
+            <p>Fiery chili-infused chicken broth, topped with crispy Japanese fried chicken (karaage), bok choy, and chili oil.</p>
+            <div class="menu-item-meta">
+              <span><i class="ph ph-fire"></i> Very Spicy</span>
+              <span><i class="ph ph-lightning"></i> 910 kcal</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dish 14 -->
+        <div class="menu-item reveal-scale delay-1" data-category="tempura">
+          <div class="menu-item-img">
+            <img src="images/hero_sushi.png" alt="Shrimp Tempura">
+          </div>
+          <div class="menu-item-content">
+            <div class="menu-item-header">
+              <h3>Ebi Tempura (Shrimp)</h3>
+              <span class="price">₹850</span>
+            </div>
+            <span class="japanese-name">海老天ぷら</span>
+            <p>5 pieces of jumbo black tiger shrimp, lightly battered and fried to golden perfection. Served with warm tentsuyu dipping broth.</p>
+            <div class="menu-item-meta">
+              <span><i class="ph ph-fish"></i> Seafood</span>
+              <span><i class="ph ph-lightning"></i> 450 kcal</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dish 15 -->
+        <div class="menu-item reveal-scale delay-2" data-category="tempura">
+          <div class="menu-item-img">
+            <img src="images/hero_sushi.png" alt="Vegetable Tempura">
+            <div class="menu-item-badges">
+              <span class="badge badge-veg">Vegetarian</span>
+            </div>
+          </div>
+          <div class="menu-item-content">
+            <div class="menu-item-header">
+              <h3>Yasai Tempura</h3>
+              <span class="price">₹700</span>
+            </div>
+            <span class="japanese-name">野菜天ぷら</span>
+            <p>An assortment of seasonal vegetables including sweet potato, eggplant, lotus root, and bell peppers in a crispy, light batter.</p>
+            <div class="menu-item-meta">
+              <span><i class="ph ph-leaf"></i> Vegetarian</span>
+              <span><i class="ph ph-lightning"></i> 380 kcal</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dish 16 -->
+        <div class="menu-item reveal-scale" data-category="yakitori">
+          <div class="menu-item-img">
+            <img src="images/gyoza_tempura.png" alt="Negima Yakitori">
+            <div class="menu-item-badges">
+              
+            </div>
+          </div>
+          <div class="menu-item-content">
+            <div class="menu-item-header">
+              <h3>Negima (Chicken & Scallion)</h3>
+              <span class="price">₹550</span>
+            </div>
+            <span class="japanese-name">ねぎま</span>
+            <p>2 skewers of succulent chicken thigh and charred negi (Japanese scallions), grilled over binchotan charcoal with tare glaze.</p>
+            <div class="menu-item-meta">
+              <span><i class="ph ph-fire"></i> Grilled</span>
+              <span><i class="ph ph-lightning"></i> 220 kcal</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dish 17 -->
+        <div class="menu-item reveal-scale delay-1" data-category="yakitori">
+          <div class="menu-item-img">
+            <img src="images/chef.png" alt="Tsukune Yakitori">
+            <div class="menu-item-badges">
+              <span class="badge badge-chef">Chef's Choice</span>
+            </div>
+          </div>
+          <div class="menu-item-content">
+            <div class="menu-item-header">
+              <h3>Tsukune (Chicken Meatballs)</h3>
+              <span class="price">₹600</span>
+            </div>
+            <span class="japanese-name">つくね</span>
+            <p>2 skewers of house-ground seasoned chicken meatballs, glazed with sweet soy and served with a raw egg yolk for dipping.</p>
+            <div class="menu-item-meta">
+              <span><i class="ph ph-fire"></i> Grilled</span>
+              <span><i class="ph ph-lightning"></i> 290 kcal</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dish 18 -->
+        <div class="menu-item reveal-scale delay-2" data-category="yakitori">
+          <div class="menu-item-img">
+            <img src="images/hero_ramen.png" alt="Momo Yakitori">
+          </div>
+          <div class="menu-item-content">
+            <div class="menu-item-header">
+              <h3>Momo (Chicken Thigh)</h3>
+              <span class="price">₹530</span>
+            </div>
+            <span class="japanese-name">もも</span>
+            <p>2 skewers of tender, juicy chicken thigh seasoned simply with sea salt (shio) and a squeeze of fresh lemon.</p>
+            <div class="menu-item-meta">
+              <span><i class="ph ph-fire"></i> Grilled</span>
+              <span><i class="ph ph-lightning"></i> 240 kcal</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dish 19 -->
+        <div class="menu-item reveal-scale" data-category="desserts">
+          <div class="menu-item-img">
+            <img src="images/gyoza_tempura.png" alt="Matcha Ice Cream">
+            <div class="menu-item-badges">
+              
+            </div>
+          </div>
+          <div class="menu-item-content">
+            <div class="menu-item-header">
+              <h3>Matcha Ice Cream</h3>
+              <span class="price">₹450</span>
+            </div>
+            <span class="japanese-name">抹茶アイス</span>
+            <p>Premium Uji matcha infused ice cream, delivering a perfect balance of earthy bitterness and creamy sweetness.</p>
+            <div class="menu-item-meta">
+              <span><i class="ph ph-leaf"></i> Vegetarian</span>
+              <span><i class="ph ph-lightning"></i> 260 kcal</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dish 20 -->
+        <div class="menu-item reveal-scale delay-1" data-category="desserts">
+          <div class="menu-item-img">
+            <img src="images/chef.png" alt="Mochi Ice Cream">
+          </div>
+          <div class="menu-item-content">
+            <div class="menu-item-header">
+              <h3>Assorted Mochi Ice Cream</h3>
+              <span class="price">₹500</span>
+            </div>
+            <span class="japanese-name">雪見だいふく</span>
+            <p>3 pieces of chewy, sweet rice dough filled with assorted ice cream flavors (Strawberry, Mango, Black Sesame).</p>
+            <div class="menu-item-meta">
+              <span><i class="ph ph-leaf"></i> Vegetarian</span>
+              <span><i class="ph ph-lightning"></i> 320 kcal</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dish 21 -->
+        <div class="menu-item reveal-scale delay-2" data-category="desserts">
+          <div class="menu-item-img">
+            <img src="images/interior.png" alt="Yuzu Cheesecake">
+            <div class="menu-item-badges">
+              <span class="badge badge-chef">Chef's Choice</span>
+            </div>
+          </div>
+          <div class="menu-item-content">
+            <div class="menu-item-header">
+              <h3>Yuzu Cheesecake</h3>
+              <span class="price">₹600</span>
+            </div>
+            <span class="japanese-name">柚子チーズケーキ</span>
+            <p>A Japanese twist on a classic. Light, fluffy, and infused with tart yuzu citrus, set on a buttery graham cracker crust.</p>
+            <div class="menu-item-meta">
+              <span><i class="ph ph-leaf"></i> Vegetarian</span>
+              <span><i class="ph ph-lightning"></i> 410 kcal</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dish 22 -->
+        <div class="menu-item reveal-scale" data-category="drinks">
+          <div class="menu-item-img">
+            <img src="images/interior.png" alt="Hot Sake">
+          </div>
+          <div class="menu-item-content">
+            <div class="menu-item-header">
+              <h3>Traditional Hot Sake</h3>
+              <span class="price">₹850</span>
+            </div>
+            <span class="japanese-name">熱燗 (Atsukan)</span>
+            <p>A comforting carafe of our house Junmai sake, gently warmed to enhance its aromatic and savory profile. Serves 2.</p>
+            <div class="menu-item-meta">
+              <span><i class="ph ph-wine"></i> Alcohol</span>
+              <span><i class="ph ph-lightning"></i> 180 kcal</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dish 23 -->
+        <div class="menu-item reveal-scale delay-1" data-category="drinks">
+          <div class="menu-item-img">
+            <img src="images/gyoza_tempura.png" alt="Sapporo Draft">
+            <div class="menu-item-badges">
+              
+            </div>
+          </div>
+          <div class="menu-item-content">
+            <div class="menu-item-header">
+              <h3>Sapporo Premium Draft</h3>
+              <span class="price">₹500</span>
+            </div>
+            <span class="japanese-name">サッポロ生ビール</span>
+            <p>Japan's oldest beer brand. Crisp, perfectly balanced taste and a smooth finish. Served ice cold on tap. 500ml.</p>
+            <div class="menu-item-meta">
+              <span><i class="ph ph-beer-glass"></i> Alcohol</span>
+              <span><i class="ph ph-lightning"></i> 210 kcal</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dish 24 -->
+        <div class="menu-item reveal-scale delay-2" data-category="drinks">
+          <div class="menu-item-img">
+            <img src="images/hero_ramen.png" alt="Matcha Lemonade">
+          </div>
+          <div class="menu-item-content">
+            <div class="menu-item-header">
+              <h3>Matcha Yuzu Lemonade</h3>
+              <span class="price">₹400</span>
+            </div>
+            <span class="japanese-name">抹茶柚子レモネード</span>
+            <p>A refreshing mocktail blending ceremonial grade matcha, fresh yuzu juice, sparkling water, and a touch of honey.</p>
+            <div class="menu-item-meta">
+              <span><i class="ph ph-drop"></i> Non-Alcoholic</span>
+              <span><i class="ph ph-lightning"></i> 120 kcal</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- No Results Message (Shared) -->
+      <div class="no-results" id="noResults" style="display:none; text-align:center; padding:3rem; grid-column: 1 / -1;">
+        <i class="ph ph-magnifying-glass" style="font-size: 3rem; color: #D9C5A0; margin-bottom: 1rem; display: block;"></i>
+        <p>We couldn't find any dishes matching your search.</p>
+        <button class="btn btn-primary" onclick="resetFilters()" style="margin-top: 1rem;"><span>View All Menu</span></button>
+      </div>
+    </section>
+
+  
+    <div style="background-color: var(--clr-primary); color: #fff; text-align: center; padding: 15px 5%; font-family: var(--ff-body); font-weight: 500; letter-spacing: 1px;">
+      <i class="ph ph-info" style="vertical-align: middle; font-size: 1.2rem; margin-right: 8px;"></i>
+      SERVICE HOURS: 1:00 PM - 4:00 PM & 7:00 PM - 10:30 PM (Full Menu) | 4:00 PM - 7:00 PM (Tempura, Gyoza & Cold Ramen Only)
+    </div>
+</main>
+
+  <!-- Footer -->
+    <!-- --- NEWSLETTER --- -->
+  <section class="nl-section section-alt">
+    <div class="container reveal">
+      <div class="section-subtitle" style="justify-content:center;">Stay Connected</div>
+      <h2 class="heading-section text-center">Join Our Inner Circle</h2>
+      <p class="section-desc text-center" style="margin:0 auto 2rem;">Receive exclusive recipes, event invitations, and special offers directly in your inbox. No spam, just Japanese inspiration.</p>
+      <div class="nl-form">
+        <input type="email" placeholder="Enter your email address" aria-label="Email address">
+        <button type="button">Subscribe</button>
+      </div>
+    </div>
+  </section>
+
+  
+    <div style="background-color: var(--clr-primary); color: #fff; text-align: center; padding: 15px 5%; font-family: var(--ff-body); font-weight: 500; letter-spacing: 1px;">
+      <i class="ph ph-info" style="vertical-align: middle; font-size: 1.2rem; margin-right: 8px;"></i>
+      SERVICE HOURS: 1:00 PM - 4:00 PM & 7:00 PM - 10:30 PM (Full Menu) | 4:00 PM - 7:00 PM (Tempura, Gyoza & Cold Ramen Only)
+    </div>
+<footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-about">
+          <div class="footer-brand-container">
+            <img src="zuruzuru_logo.png" alt="Zuru Zuru" class="footer-logo">
+            <span class="brand-name">Zuru Zuru</span>
+          </div>
+          <p>A premium Japanese Izakaya experience bringing the authentic flavours of Tokyo to New Delhi. Every dish tells a story of tradition, passion, and culinary excellence.</p>
+          <div class="footer-social">
+            <a href="https://www.instagram.com/zuruzuru.in/?hl=en" aria-label="Instagram" target="_blank"><i class="ph ph-instagram-logo"></i></a>
+            <a href="#" aria-label="Facebook"><i class="ph ph-facebook-logo"></i></a>
+            <a href="#" aria-label="Twitter"><i class="ph ph-twitter-logo"></i></a>
+            <a href="#" aria-label="YouTube"><i class="ph ph-youtube-logo"></i></a>
+          </div>
+        </div>
+        <div class="footer-links">
+          <h4>Explore</h4>
+          <a href="menu.html">Our Menu</a>
+          <a href="about.html">Our Story</a>
+          <a href="chefs.html">Our Chefs</a>
+          <a href="gallery.html">Gallery</a>
+          <a href="blog.html">Blog</a>
+        </div>
+        <div class="footer-links">
+          <h4>Services</h4>
+          <a href="reservation.html">Reservations</a>
+          <a href="private-dining.html">Private Dining</a>
+          <a href="events.html">Events</a>
+          <a href="catering.html">Catering</a>
+          <a href="careers.html">Careers</a>
+        </div>
+        <div class="footer-links">
+          <h4>Information</h4>
+          <a href="locations.html">Locations</a>
+          <a href="franchise.html">Franchise</a>
+          <a href="faq.html">FAQ</a>
+          <a href="privacy-policy.html">Privacy Policy</a>
+          <a href="terms.html">Terms</a>
+        </div>
+        <div>
+          <h4>Contact</h4>
+          <ul class="footer-contact">
+            <li><i class="ph ph-map-pin"></i> Zuru Zuru, Delhi, India 110049</li>
+            <li><i class="ph ph-phone"></i> +91 11 4052 7373</li>
+            <li><i class="ph ph-envelope"></i> hello@zuruzuru.in</li>
+          </ul>
+          <h4 style="margin-top:2rem">Hours</h4>
+          <ul class="footer-hours">
+              <li style="flex-direction:column; align-items:flex-start; margin-bottom:10px;">
+                <span style="color:var(--clr-primary); font-weight:600; margin-bottom:5px;">1:00 PM - 4:00 PM & 7:00 PM - 10:30 PM</span>
+                <span style="font-size:0.85rem; color:#888;">Lunch & Dinner (Full Menu)</span>
+              </li>
+              <li style="flex-direction:column; align-items:flex-start;">
+                <span style="color:var(--clr-primary); font-weight:600; margin-bottom:5px;">4:00 PM - 7:00 PM</span>
+                <span style="font-size:0.85rem; color:#888;">Tempura, Gyoza & Cold Ramen</span>
+              </li>
+            </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Zuru Zuru Izakaya. All Rights Reserved.</p>
+        <div class="footer-bottom-links">
+          <a href="privacy-policy.html">Privacy Policy</a>
+          <a href="terms.html">Terms of Service</a>
+          <a href="faq.html">FAQ</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Back to Top -->
+  <button class="back-to-top" aria-label="Back to top">
+    <i class="ph ph-caret-up"></i>
+  </button>
+
+  <!-- JS Links -->
+  <script src="js/main.js"></script>
+  
+  <!-- Menu Filtering JS -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const searchInput = document.getElementById('searchInput');
+      const filterButtons = document.querySelectorAll('.filter-btn');
+      const menuItems = document.querySelectorAll('.menu-item');
+      const noResults = document.getElementById('noResults');
+
+      // Filter by category
+      filterButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          // Update active button
+          filterButtons.forEach(btn => btn.classList.remove('active'));
+          button.classList.add('active');
+          
+          const category = button.getAttribute('data-filter');
+          filterItems(category, searchInput.value.toLowerCase());
+        });
+      });
+
+      // Filter by search text
+      searchInput.addEventListener('input', (e) => {
+        const activeCategory = document.querySelector('.filter-btn.active').getAttribute('data-filter');
+        filterItems(activeCategory, e.target.value.toLowerCase());
+      });
+
+      
+      function filterItems(category, searchText) {
+        let visibleCount = 0;
+        const activeLocation = document.querySelector('input[name="location"]:checked').value;
+        const activeGridId = activeLocation === 'delhi' ? 'menuGrid' : 'menuGridGurugram';
+        
+        menuItems.forEach(item => {
+          const itemCategory = item.getAttribute('data-category');
+          const title = item.querySelector('h3').textContent.toLowerCase();
+          const desc = item.querySelector('p').textContent.toLowerCase();
+          const jpName = item.querySelector('.japanese-name').textContent.toLowerCase();
+          
+          const matchesCategory = category === 'all' || itemCategory === category;
+          const matchesSearch = title.includes(searchText) || desc.includes(searchText) || jpName.includes(searchText);
+          
+          if (matchesCategory && matchesSearch) {
+            item.classList.remove('hidden');
+            if (item.closest('#' + activeGridId)) {
+                visibleCount++;
+            }
+          } else {
+            item.classList.add('hidden');
+          }
+        });
+
+        if (visibleCount === 0) {
+          noResults.style.display = 'block';
+        } else {
+          noResults.style.display = 'none';
+        }
+      }
+// Global function for the reset button
+      window.resetFilters = function() {
+        searchInput.value = '';
+        document.querySelector('.filter-btn[data-filter="all"]').click();
+      };
+    });
+  
+    document.addEventListener("DOMContentLoaded", () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const loc = urlParams.get('location');
+      if (loc === 'gurugram') {
+         const rad = document.querySelector('input[value="gurugram"]');
+         if (rad) {
+            rad.checked = true;
+            if(typeof toggleLocation === 'function') toggleLocation('gurugram');
+         }
+      } else if (loc === 'delhi') {
+         const rad = document.querySelector('input[value="delhi"]');
+         if (rad) {
+            rad.checked = true;
+            if(typeof toggleLocation === 'function') toggleLocation('delhi');
+         }
+      }
+    });
+
+</script>
+</body>
+</html>
+
+
+
+
+
+
+

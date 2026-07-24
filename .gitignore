@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+
+# Next.js
+.next/
+out/
+
+# Environment files
+.env
+.env.local
+.env.*
+!.env.example
+
+# Logs
+*.log
+
+# TypeScript cache
+*.tsbuildinfo
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini

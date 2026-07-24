@@ -1,0 +1,36 @@
+{
+  "name": "payload-cms",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "payload": "payload",
+    "test:phase1": "node --experimental-strip-types --test tests/phase1-tenant-access.test.ts",
+    "test:phase2": "node --experimental-strip-types --import ./tests/register-ts-loader.mjs --test tests/phase2-relationship-integrity.test.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@payloadcms/db-postgres": "^3.86.0",
+    "@payloadcms/next": "^3.86.0",
+    "@payloadcms/richtext-lexical": "^3.86.0",
+    "@payloadcms/storage-s3": "^3.86.0",
+    "graphql": "^16.14.2",
+    "next": "^16.2.11",
+    "payload": "^3.86.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "sharp": "^0.35.3"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.1",
+    "@types/react": "^19.2.17",
+    "typescript": "6.0.3"
+  }
+}
