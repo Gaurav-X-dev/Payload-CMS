@@ -170,6 +170,7 @@ export const Users: CollectionConfig = {
       type: 'text',
       access: {
         read: ({ req: { user } }) => isSuperAdminUser(user),
+        update: ({ req: { user } }) => isSuperAdminUser(user),
       },
       hooks: {
         afterRead: [
