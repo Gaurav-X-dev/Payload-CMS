@@ -1,4 +1,4 @@
-﻿import { BasePayload } from 'payload'
+import { BasePayload } from 'payload'
 import { randomBytes } from 'node:crypto'
 
 const randomId = () => randomBytes(4).toString('hex')
@@ -100,6 +100,68 @@ export async function setupSecurityFixtures(payload: BasePayload) {
     req
   })
 
+  const tenantABlogPost = await payload.create({
+    collection: 'blog-posts',
+    data: {
+      title: `Tenant A Blog ${randomId()}`,
+      slug: `tenant-a-blog-${randomId()}`,
+      tenantId: tenantA.id,
+      status: 'published',
+      content: {
+        root: {
+          type: 'root',
+          format: '',
+          indent: 0,
+          version: 1,
+          children: [
+            {
+              type: 'paragraph',
+              format: '',
+              indent: 0,
+              version: 1,
+              children: [
+                { mode: 'normal', text: 'Mock', type: 'text', version: 1 }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    overrideAccess: true,
+    req
+  })
+
+  const tenantBBlogPost = await payload.create({
+    collection: 'blog-posts',
+    data: {
+      title: `Tenant B Blog ${randomId()}`,
+      slug: `tenant-b-blog-${randomId()}`,
+      tenantId: tenantB.id,
+      status: 'published',
+      content: {
+        root: {
+          type: 'root',
+          format: '',
+          indent: 0,
+          version: 1,
+          children: [
+            {
+              type: 'paragraph',
+              format: '',
+              indent: 0,
+              version: 1,
+              children: [
+                { mode: 'normal', text: 'Mock', type: 'text', version: 1 }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    overrideAccess: true,
+    req
+  })
+
   const inactiveTenantCPage = await payload.create({
     collection: 'pages',
     data: { title: `Tenant C Page ${randomId()}`, slug: `tenant-c-page-${randomId()}`, tenantId: tenantC.id, status: 'published' },
@@ -124,7 +186,7 @@ export async function setupSecurityFixtures(payload: BasePayload) {
   return {
     tenants: { tenantA, tenantB, tenantC },
     users: { superAdmin, tenantAAdmin, tenantAMember, tenantBAdmin, tenantBMember, inactiveTenantAdmin, noTenantUser, malformedUser },
-    documents: { tenantAPage, tenantBPage, inactiveTenantCPage, tenantAParent, tenantAChild }
+    documents: { tenantAPage, tenantBPage, inactiveTenantCPage, tenantAParent, tenantAChild, tenantABlogPost, tenantBBlogPost }
   }
 }
 
@@ -132,12 +194,21 @@ export async function cleanupSecurityFixtures(payload: BasePayload, fixtures: an
   for (const user of Object.values(fixtures.users) as any[]) {
     if (user?.id) await payload.delete({ collection: 'users', id: user.id, overrideAccess: true })
   }
-  for (const doc of Object.values(fixtures.documents) as any[]) {
-    if (doc?.id) {
+
+  if (fixtures.documents.tenantABlogPost?.id) {
+    await payload.delete({ collection: 'blog-posts', id: fixtures.documents.tenantABlogPost.id, overrideAccess: true })
+  }
+  if (fixtures.documents.tenantBBlogPost?.id) {
+    await payload.delete({ collection: 'blog-posts', id: fixtures.documents.tenantBBlogPost.id, overrideAccess: true })
+  }
+
+  for (const [key, doc] of Object.entries(fixtures.documents) as [string, any][]) {
+    if (doc?.id && key !== 'tenantABlogPost' && key !== 'tenantBBlogPost') {
       if (doc.title) await payload.delete({ collection: 'pages', id: doc.id, overrideAccess: true })
       else if (doc.name) await payload.delete({ collection: 'tenants', id: doc.id, overrideAccess: true })
     }
   }
+
   for (const tenant of Object.values(fixtures.tenants) as any[]) {
     if (tenant?.id) await payload.delete({ collection: 'tenants', id: tenant.id, overrideAccess: true })
   }

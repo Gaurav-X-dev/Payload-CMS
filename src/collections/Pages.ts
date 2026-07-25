@@ -4,6 +4,7 @@ import { tenantIsolation } from '../access/tenantIsolation'
 import { tenantContentMutations } from '../access/tenantContext'
 import { tenantPublicRead } from '../access/tenantPublicRead'
 import { tenantScopedUnique } from '../hooks/tenantScopedUnique'
+import { tenantVersionRead } from '../access/tenantVersionRead'
 import { sameTenantRelationship } from '../hooks/sameTenantRelationship'
 import {
   invalidateTenantCache,
@@ -18,6 +19,7 @@ export const Pages: CollectionConfig = {
   },
   access: {
     read: tenantPublicRead({ publishedOnly: true }),
+    readVersions: tenantVersionRead,
     ...tenantContentMutations,
   },
   versions: {
