@@ -23,11 +23,16 @@ describe('Stage 17 - Drafts and Versions Security', () => {
   })
 
   test('Unauthenticated users cannot read versions', async () => {
-    const versions = await payload.findVersions({
-      collection: 'pages',
-      overrideAccess: false,
-    })
-    assert.strictEqual(versions.docs.length, 0, 'Unauthenticated users should see 0 versions')
+    await assert.rejects(
+      async () => {
+        await payload.findVersions({
+          collection: 'pages',
+          overrideAccess: false,
+        })
+      },
+      /not allowed/,
+      'Unauthenticated users should receive a Forbidden error'
+    )
   })
 
   test('Tenant user can read own-tenant Pages versions', async () => {
