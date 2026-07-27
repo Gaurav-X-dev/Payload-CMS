@@ -1,30 +1,34 @@
 import { BasePayload } from 'payload'
-import { randomBytes } from 'node:crypto'
+import { basename } from 'node:path'
 
-const randomId = () => randomBytes(4).toString('hex')
+const fixtureNamespace = basename(process.argv[1] ?? 'security-test')
+  .replace(/\.test\.ts$/, '')
+  .replace(/[^a-z0-9-]/gi, '-')
+let fixtureIndex = 0
+const deterministicId = () => `${fixtureNamespace}-${++fixtureIndex}`
 
 export async function setupSecurityFixtures(payload: BasePayload) {
   const tenantA = await payload.create({
     collection: 'tenants',
-    data: { name: `Tenant A Active ${randomId()}`, type: 'restaurant', domains: [{ domain: `a-${randomId()}.example.com` }], isActive: true },
+    data: { name: `Tenant A Active ${deterministicId()}`, type: 'restaurant', domains: [{ domain: `a-${deterministicId()}.example.com` }], isActive: true },
     overrideAccess: true,
   })
 
   const tenantB = await payload.create({
     collection: 'tenants',
-    data: { name: `Tenant B Active ${randomId()}`, type: 'restaurant', domains: [{ domain: `b-${randomId()}.example.com` }], isActive: true },
+    data: { name: `Tenant B Active ${deterministicId()}`, type: 'restaurant', domains: [{ domain: `b-${deterministicId()}.example.com` }], isActive: true },
     overrideAccess: true,
   })
 
   const tenantC = await payload.create({
     collection: 'tenants',
-    data: { name: `Tenant C Inactive ${randomId()}`, type: 'restaurant', domains: [{ domain: `c-${randomId()}.example.com` }], isActive: false },
+    data: { name: `Tenant C Inactive ${deterministicId()}`, type: 'restaurant', domains: [{ domain: `c-${deterministicId()}.example.com` }], isActive: false },
     overrideAccess: true,
   })
 
   const superAdmin = await payload.create({
     collection: 'users',
-    data: { name: 'Super Admin', email: `superadmin-${randomId()}@example.com`, password: 'password123', roles: ['super_admin'], tenants: [] },
+    data: { name: 'Super Admin', email: `superadmin-${deterministicId()}@example.com`, password: 'password123', roles: ['super_admin'], tenants: [] },
     overrideAccess: true,
   })
 
@@ -32,55 +36,55 @@ export async function setupSecurityFixtures(payload: BasePayload) {
 
   const tenantAAdmin = await payload.create({
     collection: 'users',
-    data: { name: 'Tenant A Admin', email: `tenantA-admin-${randomId()}@example.com`, password: 'password123', roles: ['tenant_admin'], tenants: [tenantA.id] },
+    data: { name: 'Tenant A Admin', email: `tenantA-admin-${deterministicId()}@example.com`, password: 'password123', roles: ['tenant_admin'], tenants: [tenantA.id] },
     overrideAccess: true,
     req
   })
 
   const tenantAMember = await payload.create({
     collection: 'users',
-    data: { name: 'Tenant A Member', email: `tenantA-member-${randomId()}@example.com`, password: 'password123', roles: ['tenant_member'], tenants: [tenantA.id] },
+    data: { name: 'Tenant A Member', email: `tenantA-member-${deterministicId()}@example.com`, password: 'password123', roles: ['tenant_member'], tenants: [tenantA.id] },
     overrideAccess: true,
     req
   })
 
   const tenantBAdmin = await payload.create({
     collection: 'users',
-    data: { name: 'Tenant B Admin', email: `tenantB-admin-${randomId()}@example.com`, password: 'password123', roles: ['tenant_admin'], tenants: [tenantB.id] },
+    data: { name: 'Tenant B Admin', email: `tenantB-admin-${deterministicId()}@example.com`, password: 'password123', roles: ['tenant_admin'], tenants: [tenantB.id] },
     overrideAccess: true,
     req
   })
 
   const tenantBMember = await payload.create({
     collection: 'users',
-    data: { name: 'Tenant B Member', email: `tenantB-member-${randomId()}@example.com`, password: 'password123', roles: ['tenant_member'], tenants: [tenantB.id] },
+    data: { name: 'Tenant B Member', email: `tenantB-member-${deterministicId()}@example.com`, password: 'password123', roles: ['tenant_member'], tenants: [tenantB.id] },
     overrideAccess: true,
     req
   })
 
   const inactiveTenantAdmin = await payload.create({
     collection: 'users',
-    data: { name: 'Inactive Admin', email: `tenantC-inactive-admin-${randomId()}@example.com`, password: 'password123', roles: ['tenant_admin'], tenants: [tenantC.id] },
+    data: { name: 'Inactive Admin', email: `tenantC-inactive-admin-${deterministicId()}@example.com`, password: 'password123', roles: ['tenant_admin'], tenants: [tenantC.id] },
     overrideAccess: true,
     req
   })
 
   const noTenantUser = await payload.create({
     collection: 'users',
-    data: { name: 'No Tenant User', email: `no-tenant-${randomId()}@example.com`, password: 'password123', roles: ['tenant_member'], tenants: [] },
+    data: { name: 'No Tenant User', email: `no-tenant-${deterministicId()}@example.com`, password: 'password123', roles: ['tenant_member'], tenants: [] },
     overrideAccess: true,
     req
   })
   
   const tempTenant = await payload.create({
     collection: 'tenants',
-    data: { name: `Temp ${randomId()}`, type: 'restaurant', domains: [{ domain: `temp-${randomId()}.example.com` }] },
+    data: { name: `Temp ${deterministicId()}`, type: 'restaurant', domains: [{ domain: `temp-${deterministicId()}.example.com` }] },
     overrideAccess: true,
     req
   })
   const malformedUser = await payload.create({
     collection: 'users',
-    data: { name: 'Malformed User', email: `malformed-${randomId()}@example.com`, password: 'password123', roles: ['tenant_member'], tenants: [tempTenant.id] },
+    data: { name: 'Malformed User', email: `malformed-${deterministicId()}@example.com`, password: 'password123', roles: ['tenant_member'], tenants: [tempTenant.id] },
     overrideAccess: true,
     req
   })
@@ -88,14 +92,14 @@ export async function setupSecurityFixtures(payload: BasePayload) {
 
   const tenantAPage = await payload.create({
     collection: 'pages',
-    data: { title: `Tenant A Page ${randomId()}`, slug: `tenant-a-page-${randomId()}`, tenantId: tenantA.id, status: 'published' },
+    data: { title: `Tenant A Page ${deterministicId()}`, slug: `tenant-a-page-${deterministicId()}`, tenantId: tenantA.id, status: 'published' },
     overrideAccess: true,
     req
   })
 
   const tenantBPage = await payload.create({
     collection: 'pages',
-    data: { title: `Tenant B Page ${randomId()}`, slug: `tenant-b-page-${randomId()}`, tenantId: tenantB.id, status: 'draft' },
+    data: { title: `Tenant B Page ${deterministicId()}`, slug: `tenant-b-page-${deterministicId()}`, tenantId: tenantB.id, status: 'draft' },
     overrideAccess: true,
     req
   })
@@ -103,8 +107,8 @@ export async function setupSecurityFixtures(payload: BasePayload) {
   const tenantABlogPost = await payload.create({
     collection: 'blog-posts',
     data: {
-      title: `Tenant A Blog ${randomId()}`,
-      slug: `tenant-a-blog-${randomId()}`,
+      title: `Tenant A Blog ${deterministicId()}`,
+      slug: `tenant-a-blog-${deterministicId()}`,
       tenantId: tenantA.id,
       status: 'published',
       content: {
@@ -134,8 +138,8 @@ export async function setupSecurityFixtures(payload: BasePayload) {
   const tenantBBlogPost = await payload.create({
     collection: 'blog-posts',
     data: {
-      title: `Tenant B Blog ${randomId()}`,
-      slug: `tenant-b-blog-${randomId()}`,
+      title: `Tenant B Blog ${deterministicId()}`,
+      slug: `tenant-b-blog-${deterministicId()}`,
       tenantId: tenantB.id,
       status: 'published',
       content: {
@@ -164,21 +168,21 @@ export async function setupSecurityFixtures(payload: BasePayload) {
 
   const inactiveTenantCPage = await payload.create({
     collection: 'pages',
-    data: { title: `Tenant C Page ${randomId()}`, slug: `tenant-c-page-${randomId()}`, tenantId: tenantC.id, status: 'published' },
+    data: { title: `Tenant C Page ${deterministicId()}`, slug: `tenant-c-page-${deterministicId()}`, tenantId: tenantC.id, status: 'published' },
     overrideAccess: true,
     req
   })
 
   const tenantAParent = await payload.create({
     collection: 'tenants',
-    data: { name: `Tenant A Parent ${randomId()}`, type: 'hospitality', domains: [{ domain: `parent-a-${randomId()}.example.com` }] },
+    data: { name: `Tenant A Parent ${deterministicId()}`, type: 'hospitality', domains: [{ domain: `parent-a-${deterministicId()}.example.com` }] },
     overrideAccess: true,
     req
   })
 
   const tenantAChild = await payload.create({
     collection: 'tenants',
-    data: { name: `Tenant A Child ${randomId()}`, type: 'restaurant', domains: [{ domain: `child-a-${randomId()}.example.com` }], parentTenant: tenantAParent.id },
+    data: { name: `Tenant A Child ${deterministicId()}`, type: 'restaurant', domains: [{ domain: `child-a-${deterministicId()}.example.com` }], parentTenant: tenantAParent.id },
     overrideAccess: true,
     req
   })
@@ -191,25 +195,106 @@ export async function setupSecurityFixtures(payload: BasePayload) {
 }
 
 export async function cleanupSecurityFixtures(payload: BasePayload, fixtures: any) {
-  for (const user of Object.values(fixtures.users) as any[]) {
-    if (user?.id) await payload.delete({ collection: 'users', id: user.id, overrideAccess: true })
-  }
-
-  if (fixtures.documents.tenantABlogPost?.id) {
-    await payload.delete({ collection: 'blog-posts', id: fixtures.documents.tenantABlogPost.id, overrideAccess: true })
-  }
-  if (fixtures.documents.tenantBBlogPost?.id) {
-    await payload.delete({ collection: 'blog-posts', id: fixtures.documents.tenantBBlogPost.id, overrideAccess: true })
-  }
-
-  for (const [key, doc] of Object.entries(fixtures.documents) as [string, any][]) {
-    if (doc?.id && key !== 'tenantABlogPost' && key !== 'tenantBBlogPost') {
-      if (doc.title) await payload.delete({ collection: 'pages', id: doc.id, overrideAccess: true })
-      else if (doc.name) await payload.delete({ collection: 'tenants', id: doc.id, overrideAccess: true })
+  const cleanupErrors: unknown[] = []
+  const attempt = async (operation: () => Promise<unknown>) => {
+    try {
+      await operation()
+    } catch (error) {
+      cleanupErrors.push(error)
     }
   }
 
-  for (const tenant of Object.values(fixtures.tenants) as any[]) {
-    if (tenant?.id) await payload.delete({ collection: 'tenants', id: tenant.id, overrideAccess: true })
+  for (const doc of [
+    fixtures.documents.tenantABlogPost,
+    fixtures.documents.tenantBBlogPost,
+  ]) {
+    if (doc?.id) {
+      await attempt(() => payload.delete({
+        collection: 'blog-posts',
+        id: doc.id,
+        overrideAccess: true,
+      }))
+    }
+  }
+
+  for (const doc of [
+    fixtures.documents.tenantAPage,
+    fixtures.documents.tenantBPage,
+    fixtures.documents.inactiveTenantCPage,
+  ]) {
+    if (doc?.id) {
+      await attempt(() => payload.delete({
+        collection: 'pages',
+        id: doc.id,
+        overrideAccess: true,
+      }))
+    }
+  }
+
+  for (const user of Object.values(fixtures.users) as any[]) {
+    if (user?.id) {
+      await attempt(() => payload.delete({
+        collection: 'users',
+        id: user.id,
+        overrideAccess: true,
+      }))
+    }
+  }
+
+  for (const tenant of [
+    fixtures.documents.tenantAChild,
+    fixtures.documents.tenantAParent,
+    fixtures.tenants.tenantA,
+    fixtures.tenants.tenantB,
+    fixtures.tenants.tenantC,
+  ]) {
+    if (tenant?.id) {
+      await attempt(() => payload.delete({
+        collection: 'tenants',
+        id: tenant.id,
+        overrideAccess: true,
+      }))
+    }
+  }
+
+  await attempt(() => shutdownPayload(payload))
+
+  if (cleanupErrors.length) {
+    throw new AggregateError(cleanupErrors, 'Security fixture cleanup failed')
+  }
+}
+
+export async function shutdownPayload(payload: BasePayload) {
+  const shutdownErrors: unknown[] = []
+
+  try {
+    await payload.destroy()
+  } catch (error) {
+    shutdownErrors.push(error)
+  }
+
+  const pool = (payload.db as any)?.pool
+  if (pool && typeof pool.end === 'function' && !pool.ended) {
+    try {
+      // @payloadcms/db-postgres 3.86 checks out a bootstrap client in
+      // connectWithReconnect without releasing it. All test operations have
+      // completed here, so release only clients that are still checked out
+      // before asking pg to close the pool normally.
+      const idleClients = new Set(
+        (pool._idle ?? []).map((entry: any) => entry.client),
+      )
+      for (const client of pool._clients ?? []) {
+        if (!idleClients.has(client) && typeof client.release === 'function') {
+          client.release()
+        }
+      }
+      await pool.end()
+    } catch (error) {
+      shutdownErrors.push(error)
+    }
+  }
+
+  if (shutdownErrors.length) {
+    throw new AggregateError(shutdownErrors, 'Payload shutdown failed')
   }
 }

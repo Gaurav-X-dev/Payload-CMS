@@ -60,32 +60,55 @@ describe('Stage 14 & 15 - Tenant Transfer & Media Validation', () => {
       },
     })
 
+    const filename = 'stage14-tenant-b-logo.png'
+    const staleMedia = await payload.find({
+      collection: 'media',
+      depth: 0,
+      overrideAccess: true,
+      where: { filename: { equals: filename } },
+    })
+    for (const media of staleMedia.docs) {
+      await payload.db.deleteOne({
+        collection: 'media',
+        req: { payload },
+        where: { id: { equals: media.id } },
+      })
+    }
+
     const tenantBMedia = await payload.db.create({
       collection: 'media',
       data: {
         alt: 'Tenant B Logo',
         tenantId: fixtures.tenants.tenantB.id,
-        filename: 'dummy.png',
+        filename,
         mimeType: 'image/png',
         filesize: 68,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        createdAt: '2024-01-01T00:00:00.000Z',
+        updatedAt: '2024-01-01T00:00:00.000Z',
       },
       req: { payload },
     })
 
-    await assert.rejects(
-      payload.update({
-        collection: 'tenants',
-        id: fixtures.tenants.tenantA.id,
-        data: {
-          branding: {
-            logo: tenantBMedia.id // Assigning Tenant B media to Tenant A
-          }
-        },
-        req: { user },
-        overrideAccess: false, // The hook should reject this
+    try {
+      await assert.rejects(
+        payload.update({
+          collection: 'tenants',
+          id: fixtures.tenants.tenantA.id,
+          data: {
+            branding: {
+              logo: tenantBMedia.id // Assigning Tenant B media to Tenant A
+            }
+          },
+          req: { user },
+          overrideAccess: false, // The hook should reject this
+        })
+      )
+    } finally {
+      await payload.db.deleteOne({
+        collection: 'media',
+        req: { payload },
+        where: { id: { equals: tenantBMedia.id } },
       })
-    )
+    }
   })
 })

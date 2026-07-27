@@ -124,6 +124,15 @@ describe('Stage 5 - Cross-Tenant Data Isolation', () => {
       collection: 'pages',
       req,
       overrideAccess: false,
+      pagination: false,
+      where: {
+        id: {
+          in: [
+            fixtures.documents.tenantAPage.id,
+            fixtures.documents.tenantBPage.id,
+          ],
+        },
+      },
     })
     
     const foundA = result.docs.some((doc: any) => doc.id === fixtures.documents.tenantAPage.id)

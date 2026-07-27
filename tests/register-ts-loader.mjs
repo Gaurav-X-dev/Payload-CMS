@@ -1,5 +1,8 @@
 import { registerHooks } from 'node:module'
 
+process.env.NODE_ENV = 'test'
+process.env.DISABLE_PAYLOAD_HMR = 'true'
+
 registerHooks({
   resolve(specifier, context, nextResolve) {
     try {
