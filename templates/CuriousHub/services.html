@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="2">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Discover the 15 hospitality services offered by Curious Laddoos, including menu engineering, restaurant consulting, brand creation, and staff training." />
+  <title>Services — Curious Laddoos</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- NOISE OVERLAY -->
+  <div class="noise-overlay" aria-hidden="true"></div>
+
+  <!-- CUSTOM CURSOR -->
+  <div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
+  <div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
+
+  <!-- PAGE LOADER -->
+  <div id="page-loader" role="status" aria-label="Loading">
+    <div class="loader-logo">C<span>L</span></div>
+    <div class="loader-subtitle">Curious Laddoos</div>
+    <div class="loader-bar"></div>
+  </div>
+
+  <!-- NAVIGATION -->
+  <nav id="navbar" role="navigation" aria-label="Main navigation">
+    <a href="index.html" class="nav-logo" aria-label="Curious Laddoos Home">
+      <div class="nav-logo-mark">CL</div>
+      <div class="nav-logo-text">
+        <span class="brand-name">Curious Laddoos</span>
+        <span class="brand-tagline">Building Hospitality Brands</span>
+      </div>
+    </a>
+    <ul class="nav-links" role="list">
+      <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+      <li class="nav-item">
+        <a href="about.html" class="nav-link">About</a>
+        <div class="mega-menu" role="menu">
+          <div class="mega-menu-item"><a href="about.html#story" role="menuitem">Our Story</a></div>
+          <div class="mega-menu-item"><a href="about.html#journey" role="menuitem">Our Journey</a></div>
+          <div class="mega-menu-item"><a href="about.html#leadership" role="menuitem">Leadership</a></div>
+          <div class="mega-menu-item"><a href="about.html#philosophy" role="menuitem">Our Philosophy</a></div>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a href="services.html" class="nav-link">Services</a>
+        <div class="mega-menu" role="menu">
+          <div class="mega-menu-item"><a href="services.html#brands" role="menuitem">Restaurant Brands</a></div>
+          <div class="mega-menu-item"><a href="services.html#consulting" role="menuitem">Consulting</a></div>
+          <div class="mega-menu-item"><a href="services.html#menu" role="menuitem">Menu Engineering</a></div>
+          <div class="mega-menu-item"><a href="services.html#b2b" role="menuitem">B2B Solutions</a></div>
+          <div class="mega-menu-item"><a href="services.html#tech" role="menuitem">Technology</a></div>
+          <div class="mega-menu-item"><a href="services.html#training" role="menuitem">Staff Training</a></div>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a href="brands.html" class="nav-link">Brands</a>
+        <div class="mega-menu" role="menu">
+          <div class="mega-menu-item"><a href="brands.html#zuru" role="menuitem">Zuru Zuru — Japanese</a></div>
+          <div class="mega-menu-item"><a href="brands.html#ghee" role="menuitem">Ghee Roast — South Indian</a></div>
+          <div class="mega-menu-item"><a href="brands.html#quick" role="menuitem">Z-Quick — Delivery</a></div>
+          <div class="mega-menu-item"><a href="brands.html#future" role="menuitem">Future Brands</a></div>
+        </div>
+      </li>
+      <li class="nav-item"><a href="how-we-work.html" class="nav-link">How We Work</a></li>
+      <li class="nav-item"><a href="blog.html" class="nav-link">Insights</a></li>
+      <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
+    </ul>
+    <div class="nav-right">
+      <div class="theme-switcher" aria-label="Theme switcher" role="group">
+        <button class="theme-btn" data-t="1" aria-label="Bold Luxury theme" title="Bold Luxury"></button>
+        <button class="theme-btn active" data-t="2" aria-label="Japanese Editorial theme" title="Japanese Editorial"></button>
+        <button class="theme-btn" data-t="3" aria-label="Editorial Corporate theme" title="Editorial Corporate"></button>
+      </div>
+      <a href="contact.html" class="nav-cta" id="nav-collaborate-btn">Let's Talk</a>
+      <button class="hamburger" id="hamburgerBtn" aria-label="Open mobile menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile Nav -->
+  <nav class="mobile-nav" id="mobileNav" aria-label="Mobile navigation" aria-hidden="true">
+    <a href="index.html" class="mobile-nav-link" id="mob-home">Home</a>
+    <a href="about.html" class="mobile-nav-link" id="mob-about">About</a>
+    <a href="services.html" class="mobile-nav-link" id="mob-services">Services</a>
+    <a href="brands.html" class="mobile-nav-link" id="mob-brands">Our Brands</a>
+    <a href="how-we-work.html" class="mobile-nav-link" id="mob-how">How We Work</a>
+    <a href="blog.html" class="mobile-nav-link" id="mob-journal">Insights</a>
+    <a href="contact.html" class="mobile-nav-link" id="mob-contact">Contact</a>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <section class="inner-hero">
+    <div class="inner-hero-content">
+      <span class="inner-hero-eyebrow">Our Services</span>
+      <h1 class="inner-hero-title">15 Core Capabilities, One Integrated Philosophy</h1>
+      <p class="inner-hero-desc">We build restaurant brands from concept to execution. We engineer menus for profit, optimize kitchens for speed, and implement technologies that scale.</p>
+    </div>
+    <div class="inner-hero-img-wrap">
+      <img src="images/banner_services.png" alt="Hospitality kitchen operations" />
+    </div>
+  </section>
+
+  <!-- SERVICES OVERVIEW INTRO -->
+  <section class="inner-section">
+    <div class="services-overview-intro">
+      <div>
+        <h2 class="section-title">End-to-End <em class="italic">Sustenance.</em></h2>
+        <div class="brush-divider"></div>
+      </div>
+      <div>
+        <p class="section-body">A restaurant's success is governed by variables that must work in absolute harmony. Our 15 specialized F&amp;B services ensure that whether you are launching a new concept, systemizing a kitchen, or scaling globally, you are doing so with proven methodologies.</p>
+      </div>
+    </div>
+
+    <!-- Core Services Deep Dive -->
+    <div class="service-details-wrap">
+      
+      <!-- Service Block 1: Restaurant Brands -->
+      <div id="brands" class="service-detail-block">
+        <div class="service-detail-image-wrap">
+          <img src="images/zuru_zuru.png" alt="Hospitality brand design - Zuru Zuru restaurant setup" loading="lazy" />
+        </div>
+        <div class="service-detail-content">
+          <span class="section-eyebrow">01</span>
+          <h3>Restaurant Brands &amp; Incubation</h3>
+          <p class="section-body" style="margin-bottom:1.5rem;">We conceptualize, launch, and operate premium dining brands. From identifying regional demographic white spaces to crafting distinct menu structures and training culinary directors, we deliver turnkey operations.</p>
+          <div class="service-detail-features">
+            <div class="service-feature-item"><span>✓</span> Demographic mapping</div>
+            <div class="service-feature-item"><span>✓</span> Brand identity design</div>
+            <div class="service-feature-item"><span>✓</span> Turnkey launch operations</div>
+            <div class="service-feature-item"><span>✓</span> Concept feasibility tests</div>
+          </div>
+          <a href="brands.html" class="about-link">Explore Brands &rarr;</a>
+        </div>
+      </div>
+
+      <!-- Service Block 2: Consulting -->
+      <div id="consulting" class="service-detail-block reverse">
+        <div class="service-detail-image-wrap">
+          <img src="images/consulting.png" alt="Hospitality consulting services by Curious Laddoos" loading="lazy" />
+        </div>
+        <div class="service-detail-content">
+          <span class="section-eyebrow">02</span>
+          <h3>Hospitality Consulting &amp; Advisory</h3>
+          <p class="section-body" style="margin-bottom:1.5rem;">Our consulting division audits operational bottlenecks, optimizes F&amp;B operations, designs kitchen workflows, and builds standard operating procedures (SOPs) that help hotels and independent operators scale efficiently.</p>
+          <div class="service-detail-features">
+            <div class="service-feature-item"><span>✓</span> Workflow architecture</div>
+            <div class="service-feature-item"><span>✓</span> Standard operating procedures</div>
+            <div class="service-feature-item"><span>✓</span> Operations auditing</div>
+            <div class="service-feature-item"><span>✓</span> Kitchen flow design</div>
+          </div>
+          <a href="contact.html?interest=consulting" class="about-link">Get Consulted &rarr;</a>
+        </div>
+      </div>
+
+      <!-- Service Block 3: Menu Engineering -->
+      <div id="menu" class="service-detail-block">
+        <div class="service-detail-image-wrap">
+          <img src="images/journal1.png" alt="Menu engineering and dish cost optimization" loading="lazy" />
+        </div>
+        <div class="service-detail-content">
+          <span class="section-eyebrow">03</span>
+          <h3>Menu Engineering &amp; Design</h3>
+          <p class="section-body" style="margin-bottom:1.5rem;">We combine culinary artistry with mathematical analysis. We engineer recipes, optimize food cost parameters, train chefs on precise portioning, and design physical and digital menus to maximize gross profits.</p>
+          <div class="service-detail-features">
+            <div class="service-feature-item"><span>✓</span> Recipe cost engineering</div>
+            <div class="service-feature-item"><span>✓</span> Ingredient supply chains</div>
+            <div class="service-feature-item"><span>✓</span> Visual menu architecture</div>
+            <div class="service-feature-item"><span>✓</span> Portion size optimization</div>
+          </div>
+          <a href="portfolio.html" class="about-link">View Case Studies &rarr;</a>
+        </div>
+      </div>
+
+      <!-- Service Block 4: Tech & B2B -->
+      <div id="tech" class="service-detail-block reverse">
+        <div class="service-detail-image-wrap">
+          <img src="images/kitchen_ops.png" alt="Technology integrations in commercial kitchen operations" loading="lazy" />
+        </div>
+        <div class="service-detail-content">
+          <span class="section-eyebrow">04</span>
+          <h3>F&amp;B Technology &amp; Systems</h3>
+          <p class="section-body" style="margin-bottom:1.5rem;">We implement advanced technology solutions, integrating POS architectures, real-time inventory tracking, AI-based demand forecasting, and automated supply chains to reduce wastage and increase bottom lines.</p>
+          <div class="service-detail-features">
+            <div class="service-feature-item"><span>✓</span> POS system integrations</div>
+            <div class="service-feature-item"><span>✓</span> Inventory automation</div>
+            <div class="service-feature-item"><span>✓</span> Supply chain analytics</div>
+            <div class="service-feature-item"><span>✓</span> Kitchen display setups</div>
+          </div>
+          <a href="how-we-work.html" class="about-link">How We Integrate &rarr;</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- BENEFITS / TECHNOLOGY SHOWCASE -->
+  <section class="inner-section inner-section-alt">
+    <h2 class="section-title" style="text-align:center; margin-bottom:1rem;">Our Systems <em class="italic">Advantage.</em></h2>
+    <p class="section-body" style="text-align:center; margin:0 auto 4rem;">Why major hospitality names trust Curious Laddoos to build their workflows.</p>
+    
+    <div class="values-grid">
+      <div class="value-card" style="background:var(--cl-surface-2);">
+        <h4 style="font-family:'Playfair Display', serif; font-size:1.25rem; font-weight:600; margin-bottom:1rem;">PORTION CONTROL SYSTEMS</h4>
+        <p class="section-body" style="font-size:0.9rem; color:var(--cl-text);">Our digital SOP binders outline recipe portioning to the gram. This ensures taste consistency across cities while controlling food cost variance to within 1%.</p>
+      </div>
+
+      <div class="value-card" style="background:var(--cl-surface-2);">
+        <h4 style="font-family:'Playfair Display', serif; font-size:1.25rem; font-weight:600; margin-bottom:1rem;">COMMERCIAL COMPLIANCE</h4>
+        <p class="section-body" style="font-size:0.9rem; color:var(--cl-text);">We handle full regulatory audits, including food safety inspections, municipal licensing, pollution controls, and structural approvals for kitchens.</p>
+      </div>
+
+      <div class="value-card" style="background:var(--cl-surface-2);">
+        <h4 style="font-family:'Playfair Display', serif; font-size:1.25rem; font-weight:600; margin-bottom:1rem;">STAFF RETENTION MODELS</h4>
+        <p class="section-body" style="font-size:0.9rem; color:var(--cl-text);">We structure structured training programs and clear career advancement ladders that reduce standard FOH and BOH attrition levels by 30%.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES FAQs -->
+  <section class="inner-section">
+    <h2 class="section-title" style="text-align:center; margin-bottom:4rem;">Frequently Asked <em class="italic">Questions.</em></h2>
+
+    <div class="faq-wrap-container">
+      <div class="faq-tab-accordion">
+        <div class="faq-tab-header">
+          <h4>How do you charge for menu engineering?</h4>
+          <span class="faq-tab-icon">+</span>
+        </div>
+        <div class="faq-tab-content">
+          <p>We work on a fixed-fee model for recipe development, coupled with a performance incentive based on food-cost reductions achieved during the first 6 months post-implementation. This guarantees that our incentives align directly with your brand's profitability.</p>
+        </div>
+      </div>
+
+      <div class="faq-tab-accordion">
+        <div class="faq-tab-header">
+          <h4>Can you design commercial cloud kitchens?</h4>
+          <span class="faq-tab-icon">+</span>
+        </div>
+        <div class="faq-tab-content">
+          <p>Yes. We have specialized CAD planners who design multi-brand kitchen workspaces to optimize thermal exhaustion, chef movement, storage space, and order pickup areas. This design language improves order preparation times by up to 20%.</p>
+        </div>
+      </div>
+
+      <div class="faq-tab-accordion">
+        <div class="faq-tab-header">
+          <h4>What cities do you consult in?</h4>
+          <span class="faq-tab-icon">+</span>
+        </div>
+        <div class="faq-tab-content">
+          <p>Our consulting team operates pan-India, with active projects in Delhi NCR, Mumbai, Bengaluru, Goa, and Hyderabad. We also consult for selected international hospitality concepts in Dubai and Tokyo.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CALL TO ACTION -->
+  <section id="cta" aria-label="Call to action">
+    <div class="cta-bg-text" aria-hidden="true">CURIOUS</div>
+    <p class="cta-eyebrow">Partner with Us</p>
+    <h2 class="cta-title">Ready to Optimize Your<br/><em class="italic">F&amp;B Operations?</em></h2>
+    <p class="cta-body">Reach out to our brand consultants to arrange a comprehensive operational audit or concept review.</p>
+    <div class="cta-buttons">
+      <a href="contact.html?interest=consulting" class="btn-white">Book an Audit &rarr;</a>
+      <a href="how-we-work.html" class="btn-outline-white">Our Workflow ↗</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer id="footer" aria-label="Footer">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="footer-logo">Curious <span>Laddoos</span></div>
+        <div class="footer-tagline">Building Hospitality Brands</div>
+        <p class="footer-desc">
+          A premium hospitality group building restaurant brands, consulting services, cloud kitchens, and hospitality systems across India.
+        </p>
+        <div class="footer-social">
+          <a href="#" class="footer-social-link" aria-label="LinkedIn" id="footer-linkedin">in</a>
+          <a href="#" class="footer-social-link" aria-label="Instagram" id="footer-instagram">ig</a>
+          <a href="#" class="footer-social-link" aria-label="YouTube" id="footer-youtube">yt</a>
+          <a href="#" class="footer-social-link" aria-label="Twitter/X" id="footer-twitter">𝕏</a>
+        </div>
+        <div class="footer-contact">
+          <div class="footer-contact-item">
+            <span>✉</span> hello@curiousladdoos.com
+          </div>
+          <div class="footer-contact-item">
+            <span>📍</span> New Delhi, India
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <div class="footer-col-title">Company</div>
+        <ul>
+          <li><a href="about.html#story" id="footer-about">Our Story</a></li>
+          <li><a href="about.html#philosophy" id="footer-philosophy">Our Philosophy</a></li>
+          <li><a href="about.html#journey" id="footer-journey">Our Journey</a></li>
+          <li><a href="about.html#leadership" id="footer-leadership">Leadership</a></li>
+          <li><a href="careers.html" id="footer-careers">Careers</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <div class="footer-col-title">Brands</div>
+        <ul>
+          <li><a href="brands.html#zuru" id="footer-zuruzuru">Zuru Zuru</a></li>
+          <li><a href="brands.html#ghee" id="footer-ghee">Ghee Roast</a></li>
+          <li><a href="brands.html#quick" id="footer-zquick">Z-Quick</a></li>
+          <li><a href="brands.html#future" id="footer-future">Future Brands</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <div class="footer-col-title">Services</div>
+        <ul>
+          <li><a href="services.html#consulting" id="footer-consulting">Consulting</a></li>
+          <li><a href="services.html#menu" id="footer-menu">Menu Engineering</a></li>
+          <li><a href="services.html#franchise" id="footer-franchise">Franchise Dev</a></li>
+          <li><a href="services.html#tech" id="footer-tech">Technology</a></li>
+          <li><a href="services.html#training" id="footer-training">Staff Training</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <div class="footer-col-title">Partner</div>
+        <ul>
+          <li><a href="contact.html?interest=b2b" id="footer-invest">Investors</a></li>
+          <li><a href="contact.html?interest=b2b" id="footer-fran">Franchise</a></li>
+          <li><a href="contact.html?interest=b2b" id="footer-land">Landlords</a></li>
+          <li><a href="contact.html?interest=other" id="footer-sup">Suppliers</a></li>
+          <li><a href="blog.html" id="footer-insights">Insights</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2025 Curious Laddoos Pvt. Ltd. All rights reserved.</p>
+      <div class="footer-links">
+        <a href="#" id="footer-privacy">Privacy Policy</a>
+        <a href="#" id="footer-terms">Terms of Use</a>
+        <a href="#" id="footer-sitemap">Sitemap</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+  <script>
+    // Accordion Toggle for FAQs
+    document.querySelectorAll('.faq-tab-header').forEach(header => {
+      header.addEventListener('click', () => {
+        const item = header.parentElement;
+        const isActive = item.classList.contains('active');
+        
+        document.querySelectorAll('.faq-tab-accordion').forEach(acc => acc.classList.remove('active'));
+        
+        if (!isActive) {
+          item.classList.add('active');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

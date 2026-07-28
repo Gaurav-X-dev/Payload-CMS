@@ -104,20 +104,25 @@ export default buildConfig({
   ].map(withTrustedTenantAssignment),
   editor: lexicalEditor({}),
   plugins: [
-    s3Storage({
-      collections: {
-        media: true,
-      },
-      bucket: process.env.S3_BUCKET || 'payload-media',
-      config: {
-        credentials: {
-          accessKeyId: process.env.S3_ACCESS_KEY || '',
-          secretAccessKey: process.env.S3_SECRET_KEY || '',
-        },
-        region: process.env.S3_REGION || 'auto',
-        endpoint: process.env.S3_ENDPOINT || '',
-      },
-    }),
+    ...(process.env.S3_ACCESS_KEY && process.env.S3_ENDPOINT
+      ? [
+          s3Storage({
+            collections: {
+              media: true,
+            },
+            bucket: process.env.S3_BUCKET || 'payload-media',
+            config: {
+              credentials: {
+                accessKeyId: process.env.S3_ACCESS_KEY,
+                secretAccessKey: process.env.S3_SECRET_KEY || '',
+              },
+              region: process.env.S3_REGION || 'auto',
+              endpoint: process.env.S3_ENDPOINT,
+              forcePathStyle: true,
+            },
+          }),
+        ]
+      : []),
   ],
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Work in Progress - Curious Laddoos</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@300;400;500;600;700&family=Noto+Serif+JP:wght@400;700;900&family=Noto+Serif+SC:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    .wip-section {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 20px;
+    }
+    .wip-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 4rem;
+      margin-bottom: 20px;
+    }
+    .wip-text {
+      font-size: 1.2rem;
+      max-width: 600px;
+      margin-bottom: 40px;
+      opacity: 0.8;
+    }
+    .back-btn {
+      padding: 15px 30px;
+      background: var(--text-color, #111);
+      color: var(--bg-color, #fff);
+      text-decoration: none;
+      font-weight: 500;
+      border-radius: 4px;
+      transition: opacity 0.3s ease;
+    }
+    .back-btn:hover {
+      opacity: 0.8;
+    }
+  </style>
+</head>
+<body data-theme="2">
+  <!-- NAVIGATION -->
+  <nav id="navbar" role="navigation" aria-label="Main navigation">
+    <a href="index.html" class="nav-logo" aria-label="Curious Laddoos Home">
+      <div class="nav-logo-mark">CL</div>
+      <div class="nav-logo-text">
+        <span class="brand-name">Curious Laddoos</span>
+        <span class="brand-tagline">Building Hospitality Brands</span>
+      </div>
+    </a>
+    <ul class="nav-links" role="list">
+      <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+      <li class="nav-item"><a href="work-in-progress.html" class="nav-link">About</a></li>
+      <li class="nav-item"><a href="work-in-progress.html" class="nav-link">Services</a></li>
+      <li class="nav-item"><a href="work-in-progress.html" class="nav-link">Brands</a></li>
+      <li class="nav-item"><a href="work-in-progress.html" class="nav-link">How We Work</a></li>
+      <li class="nav-item"><a href="work-in-progress.html" class="nav-link">Insights</a></li>
+      <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
+    </ul>
+    <div class="nav-right">
+      <div class="theme-switcher" aria-label="Theme switcher" role="group">
+        <button class="theme-btn" data-t="1" aria-label="Bold Luxury theme" title="Bold Luxury"></button>
+        <button class="theme-btn active" data-t="2" aria-label="Japanese Editorial theme" title="Japanese Editorial"></button>
+        <button class="theme-btn" data-t="3" aria-label="Editorial Corporate theme" title="Editorial Corporate"></button>
+      </div>
+      <a href="contact.html" class="nav-cta" id="nav-collaborate-btn">Let's Talk</a>
+    </div>
+  </nav>
+
+  <section class="wip-section">
+    <h1 class="wip-title">Coming Soon</h1>
+    <p class="wip-text">We are currently crafting this page to perfection. Our team is working hard to bring you an incredible experience. Please check back later.</p>
+    <a href="index.html" class="back-btn">RETURN TO HOME</a>
+  </section>
+
+  <script src="script.js"></script>
+</body>
+</html>

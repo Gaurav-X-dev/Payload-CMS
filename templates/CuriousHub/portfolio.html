@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="2">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="View the portfolio and case studies of Curious Laddoos, showcasing restaurant designs, engineered menus, and turnaround operations." />
+  <title>Portfolio &amp; Cases — Curious Laddoos</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* Portfolio specific overrides */
+    .before-after-box {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+    .before-after-img {
+      border-radius: var(--cl-radius);
+      overflow: hidden;
+      height: 300px;
+      position: relative;
+      border: 1px solid var(--cl-border);
+    }
+    .before-after-badge {
+      position: absolute;
+      top: 1rem; left: 1rem;
+      background: var(--cl-dark);
+      color: var(--cl-text-light);
+      padding: 4px 10px;
+      font-size: 0.65rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-weight: 600;
+      border-radius: var(--cl-radius);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NOISE OVERLAY -->
+  <div class="noise-overlay" aria-hidden="true"></div>
+
+  <!-- CUSTOM CURSOR -->
+  <div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
+  <div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
+
+  <!-- PAGE LOADER -->
+  <div id="page-loader" role="status" aria-label="Loading">
+    <div class="loader-logo">C<span>L</span></div>
+    <div class="loader-subtitle">Curious Laddoos</div>
+    <div class="loader-bar"></div>
+  </div>
+
+  <!-- NAVIGATION -->
+  <nav id="navbar" role="navigation" aria-label="Main navigation">
+    <a href="index.html" class="nav-logo" aria-label="Curious Laddoos Home">
+      <div class="nav-logo-mark">CL</div>
+      <div class="nav-logo-text">
+        <span class="brand-name">Curious Laddoos</span>
+        <span class="brand-tagline">Building Hospitality Brands</span>
+      </div>
+    </a>
+    <ul class="nav-links" role="list">
+      <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+      <li class="nav-item">
+        <a href="about.html" class="nav-link">About</a>
+        <div class="mega-menu" role="menu">
+          <div class="mega-menu-item"><a href="about.html#story" role="menuitem">Our Story</a></div>
+          <div class="mega-menu-item"><a href="about.html#journey" role="menuitem">Our Journey</a></div>
+          <div class="mega-menu-item"><a href="about.html#leadership" role="menuitem">Leadership</a></div>
+          <div class="mega-menu-item"><a href="about.html#philosophy" role="menuitem">Our Philosophy</a></div>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a href="services.html" class="nav-link">Services</a>
+        <div class="mega-menu" role="menu">
+          <div class="mega-menu-item"><a href="services.html#brands" role="menuitem">Restaurant Brands</a></div>
+          <div class="mega-menu-item"><a href="services.html#consulting" role="menuitem">Consulting</a></div>
+          <div class="mega-menu-item"><a href="services.html#menu" role="menuitem">Menu Engineering</a></div>
+          <div class="mega-menu-item"><a href="services.html#b2b" role="menuitem">B2B Solutions</a></div>
+          <div class="mega-menu-item"><a href="services.html#tech" role="menuitem">Technology</a></div>
+          <div class="mega-menu-item"><a href="services.html#training" role="menuitem">Staff Training</a></div>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a href="brands.html" class="nav-link">Brands</a>
+        <div class="mega-menu" role="menu">
+          <div class="mega-menu-item"><a href="brands.html#zuru" role="menuitem">Zuru Zuru — Japanese</a></div>
+          <div class="mega-menu-item"><a href="brands.html#ghee" role="menuitem">Ghee Roast — South Indian</a></div>
+          <div class="mega-menu-item"><a href="brands.html#quick" role="menuitem">Z-Quick — Delivery</a></div>
+          <div class="mega-menu-item"><a href="brands.html#future" role="menuitem">Future Brands</a></div>
+        </div>
+      </li>
+      <li class="nav-item"><a href="how-we-work.html" class="nav-link">How We Work</a></li>
+      <li class="nav-item"><a href="blog.html" class="nav-link">Insights</a></li>
+      <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
+    </ul>
+    <div class="nav-right">
+      <div class="theme-switcher" aria-label="Theme switcher" role="group">
+        <button class="theme-btn" data-t="1" aria-label="Bold Luxury theme" title="Bold Luxury"></button>
+        <button class="theme-btn active" data-t="2" aria-label="Japanese Editorial theme" title="Japanese Editorial"></button>
+        <button class="theme-btn" data-t="3" aria-label="Editorial Corporate theme" title="Editorial Corporate"></button>
+      </div>
+      <a href="contact.html" class="nav-cta" id="nav-collaborate-btn">Let's Talk</a>
+      <button class="hamburger" id="hamburgerBtn" aria-label="Open mobile menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile Nav -->
+  <nav class="mobile-nav" id="mobileNav" aria-label="Mobile navigation" aria-hidden="true">
+    <a href="index.html" class="mobile-nav-link" id="mob-home">Home</a>
+    <a href="about.html" class="mobile-nav-link" id="mob-about">About</a>
+    <a href="services.html" class="mobile-nav-link" id="mob-services">Services</a>
+    <a href="brands.html" class="mobile-nav-link" id="mob-brands">Our Brands</a>
+    <a href="how-we-work.html" class="mobile-nav-link" id="mob-how">How We Work</a>
+    <a href="blog.html" class="mobile-nav-link" id="mob-journal">Insights</a>
+    <a href="contact.html" class="mobile-nav-link" id="mob-contact">Contact</a>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <section class="inner-hero">
+    <div class="inner-hero-content">
+      <span class="inner-hero-eyebrow">Our Archives</span>
+      <h1 class="inner-hero-title">Case Studies &amp; Turnkey Launches</h1>
+      <p class="inner-hero-desc">Explore how we combine menu cost modeling, sensory spatial design, and airtight operations to launch enduring F&amp;B businesses.</p>
+    </div>
+    <div class="inner-hero-img-wrap">
+      <img src="images/t2_interior.png" alt="Culinary plated creation" />
+    </div>
+  </section>
+
+  <!-- PORTFOLIO FILTER & GRID -->
+  <section class="inner-section">
+    
+    <div class="portfolio-filter-container">
+      <button class="portfolio-filter-btn active" data-filter="all">All Projects</button>
+      <button class="portfolio-filter-btn" data-filter="design">Restaurant Design</button>
+      <button class="portfolio-filter-btn" data-filter="menu">Menu Engineering</button>
+      <button class="portfolio-filter-btn" data-filter="ops">Turnkey Operations</button>
+    </div>
+
+    <div class="portfolio-grid-custom" id="portfolioGrid">
+      
+      <!-- Project 1: Zuru Zuru BKC -->
+      <div class="portfolio-item-card" data-cat="ops">
+        <div class="portfolio-item-img">
+          <img src="images/zuru_zuru.png" alt="Zuru Zuru BKC Mumbai restaurant design" loading="lazy" />
+        </div>
+        <div class="portfolio-item-body">
+          <span class="portfolio-item-cat">Turnkey Operations</span>
+          <h3 class="portfolio-item-title">Zuru Zuru BKC, Mumbai</h3>
+          <p class="portfolio-item-desc">Turnkey launch of a 1,800 sq ft Japanese Izakaya. We executed demographic white space research, kitchen ventilation engineering, and full staff recruitment.</p>
+          <a href="contact.html" class="portfolio-item-link">Inquire on case &rarr;</a>
+        </div>
+      </div>
+
+      <!-- Project 2: Ghee Roast CP -->
+      <div class="portfolio-item-card" data-cat="design">
+        <div class="portfolio-item-img">
+          <img src="images/ghee_roast.png" alt="Ghee Roast Connaught Place Delhi interior design" loading="lazy" />
+        </div>
+        <div class="portfolio-item-body">
+          <span class="portfolio-item-cat">Restaurant Design</span>
+          <h3 class="portfolio-item-title">Ghee Roast CP, New Delhi</h3>
+          <p class="portfolio-item-desc">Visual and spatial design celebrating South Indian architectural heritage. Custom carved wooden pillars, warm lighting arrays, and 80-cover layout optimization.</p>
+          <a href="contact.html" class="portfolio-item-link">Inquire on case &rarr;</a>
+        </div>
+      </div>
+
+      <!-- Project 3: Menu Re-engineering -->
+      <div class="portfolio-item-card" data-cat="menu">
+        <div class="portfolio-item-img">
+          <img src="images/culinary_art.png" alt="Plated modern Indian dish - menu engineering project" loading="lazy" />
+        </div>
+        <div class="portfolio-item-body">
+          <span class="portfolio-item-cat">Menu Engineering</span>
+          <h3 class="portfolio-item-title">Modern Indian Fine Dining Audit</h3>
+          <p class="portfolio-item-desc">Data-driven menu cost analysis for a leading Goa boutique resort. Portion size standardization and ingredient supply re-routing reduced food cost by 6.2%.</p>
+          <a href="contact.html" class="portfolio-item-link">Inquire on case &rarr;</a>
+        </div>
+      </div>
+
+      <!-- Project 4: Z-Quick Delivery -->
+      <div class="portfolio-item-card" data-cat="ops">
+        <div class="portfolio-item-img">
+          <img src="images/zquick.png" alt="Z-Quick cloud kitchen deployment" loading="lazy" />
+        </div>
+        <div class="portfolio-item-body">
+          <span class="portfolio-item-cat">Turnkey Operations</span>
+          <h3 class="portfolio-item-title">Z-Quick Hub, Gurugram</h3>
+          <p class="portfolio-item-desc">Launch of a multi-brand cloud kitchen system. Custom order dispatch monitors and temperature controlled packaging reduced preparation delays by 22%.</p>
+          <a href="contact.html" class="portfolio-item-link">Inquire on case &rarr;</a>
+        </div>
+      </div>
+
+      <!-- Project 5: The Coastal Table -->
+      <div class="portfolio-item-card" data-cat="menu">
+        <div class="portfolio-item-img">
+          <img src="images/consulting.png" alt="Coastal Table restaurant menu auditing" loading="lazy" />
+        </div>
+        <div class="portfolio-item-body">
+          <span class="portfolio-item-cat">Menu Engineering</span>
+          <h3 class="portfolio-item-title">The Coastal Table Redesign</h3>
+          <p class="portfolio-item-desc">Full brand architecture turnaround. Analyzed menu item popularity parameters to design a streamlined menu sheet, boosting dinner beverage sales by 35%.</p>
+          <a href="contact.html" class="portfolio-item-link">Inquire on case &rarr;</a>
+        </div>
+      </div>
+
+      <!-- Project 6: Roastery Concept mock -->
+      <div class="portfolio-item-card" data-cat="design">
+        <div class="portfolio-item-img">
+          <img src="images/visual_story.png" alt="Mockup of modern minimalistic coffee roastery interior" loading="lazy" />
+        </div>
+        <div class="portfolio-item-body">
+          <span class="portfolio-item-cat">Restaurant Design</span>
+          <h3 class="portfolio-item-title">Minimalist Roastery Mockup</h3>
+          <p class="portfolio-item-desc">Spatial blueprints and material selection lists for a luxury corporate lobby roastery, emphasizing natural woods, light concrete, and open bar counters.</p>
+          <a href="contact.html" class="portfolio-item-link">Inquire on case &rarr;</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- BEFORE / AFTER DEMONSTRATION SECTION -->
+  <section class="inner-section inner-section-alt">
+    <div class="services-header" style="margin-bottom: 2rem;">
+      <div>
+        <p class="section-eyebrow">Transformation Showcase</p>
+        <h2 class="section-title">Before &amp; <em class="italic">After.</em></h2>
+      </div>
+    </div>
+    <p class="section-body">A visual example of how we re-design un-optimized spaces into functional, premium dining layouts.</p>
+
+    <div class="before-after-box">
+      <div class="before-after-img">
+        <div class="before-after-badge">Before (Raw Structure)</div>
+        <div style="width:100%; height:100%; background:#8A8680; display:flex; align-items:center; justify-content:center; color:#fff; font-size:1.2rem; font-family:'Courier Prime', monospace;">Unfinished Concrete Column Shell</div>
+      </div>
+      <div class="before-after-img">
+        <div class="before-after-badge" style="background:var(--cl-accent); color:var(--cl-dark-2);">After (Ghee Roast CP)</div>
+        <img src="images/ghee_roast.png" alt="Renovated restaurant interior with wood carving details" />
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section id="cta" aria-label="Call to action">
+    <div class="cta-bg-text" aria-hidden="true">CURIOUS</div>
+    <p class="cta-eyebrow">Work with Us</p>
+    <h2 class="cta-title">Want to Turnaround Your<br/><em class="italic">Restaurant Business?</em></h2>
+    <p class="cta-body">We audit menu metrics, interior systems, and staff pipelines to rebuild underperforming F&amp;B properties.</p>
+    <div class="cta-buttons">
+      <a href="contact.html?interest=consulting" class="btn-white">Book a Brand Audit &rarr;</a>
+      <a href="services.html" class="btn-outline-white">Our 15 Services ↗</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer id="footer" aria-label="Footer">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="footer-logo">Curious <span>Laddoos</span></div>
+        <div class="footer-tagline">Building Hospitality Brands</div>
+        <p class="footer-desc">
+          A premium hospitality group building restaurant brands, consulting services, cloud kitchens, and hospitality systems across India.
+        </p>
+        <div class="footer-social">
+          <a href="#" class="footer-social-link" aria-label="LinkedIn" id="footer-linkedin">in</a>
+          <a href="#" class="footer-social-link" aria-label="Instagram" id="footer-instagram">ig</a>
+          <a href="#" class="footer-social-link" aria-label="YouTube" id="footer-youtube">yt</a>
+          <a href="#" class="footer-social-link" aria-label="Twitter/X" id="footer-twitter">𝕏</a>
+        </div>
+        <div class="footer-contact">
+          <div class="footer-contact-item">
+            <span>✉</span> hello@curiousladdoos.com
+          </div>
+          <div class="footer-contact-item">
+            <span>📍</span> New Delhi, India
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <div class="footer-col-title">Company</div>
+        <ul>
+          <li><a href="about.html#story" id="footer-about">Our Story</a></li>
+          <li><a href="about.html#philosophy" id="footer-philosophy">Our Philosophy</a></li>
+          <li><a href="about.html#journey" id="footer-journey">Our Journey</a></li>
+          <li><a href="about.html#leadership" id="footer-leadership">Leadership</a></li>
+          <li><a href="careers.html" id="footer-careers">Careers</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <div class="footer-col-title">Brands</div>
+        <ul>
+          <li><a href="brands.html#zuru" id="footer-zuruzuru">Zuru Zuru</a></li>
+          <li><a href="brands.html#ghee" id="footer-ghee">Ghee Roast</a></li>
+          <li><a href="brands.html#quick" id="footer-zquick">Z-Quick</a></li>
+          <li><a href="brands.html#future" id="footer-future">Future Brands</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <div class="footer-col-title">Services</div>
+        <ul>
+          <li><a href="services.html#consulting" id="footer-consulting">Consulting</a></li>
+          <li><a href="services.html#menu" id="footer-menu">Menu Engineering</a></li>
+          <li><a href="services.html#franchise" id="footer-franchise">Franchise Dev</a></li>
+          <li><a href="services.html#tech" id="footer-tech">Technology</a></li>
+          <li><a href="services.html#training" id="footer-training">Staff Training</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <div class="footer-col-title">Partner</div>
+        <ul>
+          <li><a href="contact.html?interest=b2b" id="footer-invest">Investors</a></li>
+          <li><a href="contact.html?interest=b2b" id="footer-fran">Franchise</a></li>
+          <li><a href="contact.html?interest=b2b" id="footer-land">Landlords</a></li>
+          <li><a href="contact.html?interest=other" id="footer-sup">Suppliers</a></li>
+          <li><a href="blog.html" id="footer-insights">Insights</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2025 Curious Laddoos Pvt. Ltd. All rights reserved.</p>
+      <div class="footer-links">
+        <a href="#" id="footer-privacy">Privacy Policy</a>
+        <a href="#" id="footer-terms">Terms of Use</a>
+        <a href="#" id="footer-sitemap">Sitemap</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+  <script>
+    // Portfolio JavaScript Filter
+    const filterBtns = document.querySelectorAll('.portfolio-filter-btn');
+    const items = document.querySelectorAll('.portfolio-item-card');
+
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        // Toggle active button
+        filterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const filterValue = btn.getAttribute('data-filter');
+
+        items.forEach(item => {
+          if (filterValue === 'all' || item.getAttribute('data-cat') === filterValue) {
+            item.style.display = 'flex';
+          } else {
+            item.style.display = 'none';
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>

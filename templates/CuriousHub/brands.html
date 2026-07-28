@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="2">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Explore restaurant brands by Curious Laddoos, including Zuru Zuru Japanese Izakaya, Ghee Roast South Indian Cuisine, and Z-Quick premium delivery." />
+  <title>Our Brands — Curious Laddoos</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- NOISE OVERLAY -->
+  <div class="noise-overlay" aria-hidden="true"></div>
+
+  <!-- CUSTOM CURSOR -->
+  <div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
+  <div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
+
+  <!-- PAGE LOADER -->
+  <div id="page-loader" role="status" aria-label="Loading">
+    <div class="loader-logo">C<span>L</span></div>
+    <div class="loader-subtitle">Curious Laddoos</div>
+    <div class="loader-bar"></div>
+  </div>
+
+  <!-- NAVIGATION -->
+  <nav id="navbar" role="navigation" aria-label="Main navigation">
+    <a href="index.html" class="nav-logo" aria-label="Curious Laddoos Home">
+      <div class="nav-logo-mark">CL</div>
+      <div class="nav-logo-text">
+        <span class="brand-name">Curious Laddoos</span>
+        <span class="brand-tagline">Building Hospitality Brands</span>
+      </div>
+    </a>
+    <ul class="nav-links" role="list">
+      <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+      <li class="nav-item">
+        <a href="about.html" class="nav-link">About</a>
+        <div class="mega-menu" role="menu">
+          <div class="mega-menu-item"><a href="about.html#story" role="menuitem">Our Story</a></div>
+          <div class="mega-menu-item"><a href="about.html#journey" role="menuitem">Our Journey</a></div>
+          <div class="mega-menu-item"><a href="about.html#leadership" role="menuitem">Leadership</a></div>
+          <div class="mega-menu-item"><a href="about.html#philosophy" role="menuitem">Our Philosophy</a></div>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a href="services.html" class="nav-link">Services</a>
+        <div class="mega-menu" role="menu">
+          <div class="mega-menu-item"><a href="services.html#brands" role="menuitem">Restaurant Brands</a></div>
+          <div class="mega-menu-item"><a href="services.html#consulting" role="menuitem">Consulting</a></div>
+          <div class="mega-menu-item"><a href="services.html#menu" role="menuitem">Menu Engineering</a></div>
+          <div class="mega-menu-item"><a href="services.html#b2b" role="menuitem">B2B Solutions</a></div>
+          <div class="mega-menu-item"><a href="services.html#tech" role="menuitem">Technology</a></div>
+          <div class="mega-menu-item"><a href="services.html#training" role="menuitem">Staff Training</a></div>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a href="brands.html" class="nav-link">Brands</a>
+        <div class="mega-menu" role="menu">
+          <div class="mega-menu-item"><a href="brands.html#zuru" role="menuitem">Zuru Zuru — Japanese</a></div>
+          <div class="mega-menu-item"><a href="brands.html#ghee" role="menuitem">Ghee Roast — South Indian</a></div>
+          <div class="mega-menu-item"><a href="brands.html#quick" role="menuitem">Z-Quick — Delivery</a></div>
+          <div class="mega-menu-item"><a href="brands.html#future" role="menuitem">Future Brands</a></div>
+        </div>
+      </li>
+      <li class="nav-item"><a href="how-we-work.html" class="nav-link">How We Work</a></li>
+      <li class="nav-item"><a href="blog.html" class="nav-link">Insights</a></li>
+      <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
+    </ul>
+    <div class="nav-right">
+      <div class="theme-switcher" aria-label="Theme switcher" role="group">
+        <button class="theme-btn" data-t="1" aria-label="Bold Luxury theme" title="Bold Luxury"></button>
+        <button class="theme-btn active" data-t="2" aria-label="Japanese Editorial theme" title="Japanese Editorial"></button>
+        <button class="theme-btn" data-t="3" aria-label="Editorial Corporate theme" title="Editorial Corporate"></button>
+      </div>
+      <a href="contact.html" class="nav-cta" id="nav-collaborate-btn">Let's Talk</a>
+      <button class="hamburger" id="hamburgerBtn" aria-label="Open mobile menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile Nav -->
+  <nav class="mobile-nav" id="mobileNav" aria-label="Mobile navigation" aria-hidden="true">
+    <a href="index.html" class="mobile-nav-link" id="mob-home">Home</a>
+    <a href="about.html" class="mobile-nav-link" id="mob-about">About</a>
+    <a href="services.html" class="mobile-nav-link" id="mob-services">Services</a>
+    <a href="brands.html" class="mobile-nav-link" id="mob-brands">Our Brands</a>
+    <a href="how-we-work.html" class="mobile-nav-link" id="mob-how">How We Work</a>
+    <a href="blog.html" class="mobile-nav-link" id="mob-journal">Insights</a>
+    <a href="contact.html" class="mobile-nav-link" id="mob-contact">Contact</a>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <section class="inner-hero">
+    <div class="inner-hero-content">
+      <span class="inner-hero-eyebrow">Our Portfolio</span>
+      <h1 class="inner-hero-title">Distinct Identities, Unified Excellence</h1>
+      <p class="inner-hero-desc">We build dining concepts that celebrate heritage and convenience, each running on customized operational systems designed for consistency and scale.</p>
+    </div>
+    <div class="inner-hero-img-wrap">
+      <img src="images/visual_story.png" alt="Visual narrative and brands showcase" />
+    </div>
+  </section>
+
+  <!-- BRANDS SPOTLIGHT SECTION -->
+  <section class="inner-section">
+    <div class="brand-spotlight-section">
+      
+      <!-- Brand 1: Zuru Zuru -->
+      <div id="zuru" class="brand-spotlight-item">
+        <div class="brand-spotlight-img">
+          <img src="images/zuru_zuru.png" alt="Zuru Zuru Japanese Izakaya interior concept" loading="lazy" />
+          <div class="brand-spotlight-accent-box">
+            <div class="stat">3 Cities</div>
+            <div style="font-size:0.75rem; letter-spacing:1px; text-transform:uppercase; color:var(--cl-accent);">Active Rollout</div>
+          </div>
+        </div>
+        <div class="brand-spotlight-content">
+          <span class="brand-badge">Japanese Izakaya</span>
+          <h3>Zuru Zuru</h3>
+          <p class="section-body">Comfort food. Reliably good times. Zuru Zuru is our interpretation of a traditional Japanese izakaya. We celebrate artisanal ramens, charcoal robata skewers, and highball culture, re-engineered carefully for the urban Indian consumer.</p>
+          <p class="brand-testimonial-quote">"The detail in Zuru Zuru's branding — from the custom ceramics to the lighting flow — creates an immersive dining pocket that immediately builds repeat guests."</p>
+          <div class="footer-social" style="margin-top:1.5rem; justify-content:flex-start;">
+            <a href="#" class="footer-social-link">ig</a>
+            <a href="#" class="footer-social-link">web</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Brand 2: Ghee Roast -->
+      <div id="ghee" class="brand-spotlight-item reverse">
+        <div class="brand-spotlight-content">
+          <span class="brand-badge">South Indian Coastal</span>
+          <h3>Ghee Roast</h3>
+          <p class="section-body">Coastal flavours. Bold and soulful. Ghee Roast brings the heritage cuisines of Mangalore, Kerala, and Tamil Nadu into a contemporary editorial dining environment. We pair traditional clay-pot slow cooking with modern beverage systems.</p>
+          <p class="brand-testimonial-quote">"We saw a 45% increase in lunch table turnovers after implementing the menu engineering SOPs crafted for Ghee Roast by the CL group."</p>
+          <div class="footer-social" style="margin-top:1.5rem; justify-content:flex-start;">
+            <a href="#" class="footer-social-link">ig</a>
+            <a href="#" class="footer-social-link">web</a>
+          </div>
+        </div>
+        <div class="brand-spotlight-img">
+          <img src="images/ghee_roast.png" alt="Ghee Roast South Indian coastal restaurant design" loading="lazy" />
+          <div class="brand-spotlight-accent-box">
+            <div class="stat">4.8 ★</div>
+            <div style="font-size:0.75rem; letter-spacing:1px; text-transform:uppercase; color:var(--cl-accent);">Customer Rating</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Brand 3: Z-Quick -->
+      <div id="quick" class="brand-spotlight-item">
+        <div class="brand-spotlight-img">
+          <img src="images/zquick.png" alt="Z-Quick premium delivery and QSR packaging design" loading="lazy" />
+          <div class="brand-spotlight-accent-box">
+            <div class="stat">18 Min</div>
+            <div style="font-size:0.75rem; letter-spacing:1px; text-transform:uppercase; color:var(--cl-accent);">Avg Delivery Time</div>
+          </div>
+        </div>
+        <div class="brand-spotlight-content">
+          <span class="brand-badge">Quick Service &amp; Delivery</span>
+          <h3>Z-Quick</h3>
+          <p class="section-body">Great taste, engineered fast. Z-Quick is our high-efficiency cloud kitchen concept, serving premium wraps, rice bowls, and sides. Designed for high density urban sectors, it runs on custom dispatch algorithms that ensure food arrives hot and crisp.</p>
+          <p class="brand-testimonial-quote">"Z-Quick is a masterclass in packaging engineering. The heat-vented containers ensure delivery food stays restaurant-grade."</p>
+          <div class="footer-social" style="margin-top:1.5rem; justify-content:flex-start;">
+            <a href="#" class="footer-social-link">ig</a>
+            <a href="#" class="footer-social-link">web</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- COLLABORATIONS & FUTURE PROJECTS -->
+  <section id="future" class="inner-section inner-section-alt">
+    <div class="about-story-grid">
+      <div>
+        <span class="section-eyebrow">Pipelines</span>
+        <h2 class="section-title">What We Are <em class="italic">Incubating.</em></h2>
+        <div class="brush-divider"></div>
+        <p class="section-body" style="margin-bottom:1.5rem;">Curious Laddoos is constantly researching new F&amp;B segments. In the coming year, we are launching two new concepts:</p>
+        <ul style="list-style:none; padding-left:0; margin-bottom:2rem;">
+          <li style="margin-bottom:1rem; font-size:1rem; color:var(--cl-text);"><strong>✦ Project Roastery (Q1 2026):</strong> An artisanal coffee roastery concept combined with sourdough bakery operations, systemized for business complexes.</li>
+          <li style="font-size:1rem; color:var(--cl-text);"><strong>✦ Project Botanical (Q3 2026):</strong> A high-end cocktail lounge emphasizing native Indian botanicals, local distillates, and cold-pressed infusion bars.</li>
+        </ul>
+        <a href="contact.html?interest=brand" class="about-link">Partner on Concepts &rarr;</a>
+      </div>
+      <div class="about-story-image" style="background:var(--cl-surface-2); display:flex; align-items:center; justify-content:center; flex-direction:column; border:1px solid var(--cl-border);">
+        <span style="font-size:4rem; margin-bottom:1rem;">☕</span>
+        <h4 style="font-family:'Playfair Display', serif; font-size:1.5rem; margin-bottom:0.5rem; font-weight:600;">Project Roastery</h4>
+        <p class="section-body" style="text-align:center; font-size:0.9rem; padding:0 2rem;">Minimal styling, high-efficiency pour-overs, and custom sourdough profiles launching in corporate high-streets.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section id="cta" aria-label="Call to action">
+    <div class="cta-bg-text" aria-hidden="true">CURIOUS</div>
+    <p class="cta-eyebrow">Licensing &amp; Franchising</p>
+    <h2 class="cta-title">Bring Our Brands to<br/><em class="italic">Your Market.</em></h2>
+    <p class="cta-body">We provide complete operational manual binders, supply agreements, visual templates, and tech licensing for our brands.</p>
+    <div class="cta-buttons">
+      <a href="contact.html?interest=b2b" class="btn-white">Franchise Inquiry &rarr;</a>
+      <a href="services.html" class="btn-outline-white">Explore Services ↗</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer id="footer" aria-label="Footer">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="footer-logo">Curious <span>Laddoos</span></div>
+        <div class="footer-tagline">Building Hospitality Brands</div>
+        <p class="footer-desc">
+          A premium hospitality group building restaurant brands, consulting services, cloud kitchens, and hospitality systems across India.
+        </p>
+        <div class="footer-social">
+          <a href="#" class="footer-social-link" aria-label="LinkedIn" id="footer-linkedin">in</a>
+          <a href="#" class="footer-social-link" aria-label="Instagram" id="footer-instagram">ig</a>
+          <a href="#" class="footer-social-link" aria-label="YouTube" id="footer-youtube">yt</a>
+          <a href="#" class="footer-social-link" aria-label="Twitter/X" id="footer-twitter">𝕏</a>
+        </div>
+        <div class="footer-contact">
+          <div class="footer-contact-item">
+            <span>✉</span> hello@curiousladdoos.com
+          </div>
+          <div class="footer-contact-item">
+            <span>📍</span> New Delhi, India
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <div class="footer-col-title">Company</div>
+        <ul>
+          <li><a href="about.html#story" id="footer-about">Our Story</a></li>
+          <li><a href="about.html#philosophy" id="footer-philosophy">Our Philosophy</a></li>
+          <li><a href="about.html#journey" id="footer-journey">Our Journey</a></li>
+          <li><a href="about.html#leadership" id="footer-leadership">Leadership</a></li>
+          <li><a href="careers.html" id="footer-careers">Careers</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <div class="footer-col-title">Brands</div>
+        <ul>
+          <li><a href="brands.html#zuru" id="footer-zuruzuru">Zuru Zuru</a></li>
+          <li><a href="brands.html#ghee" id="footer-ghee">Ghee Roast</a></li>
+          <li><a href="brands.html#quick" id="footer-zquick">Z-Quick</a></li>
+          <li><a href="brands.html#future" id="footer-future">Future Brands</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <div class="footer-col-title">Services</div>
+        <ul>
+          <li><a href="services.html#consulting" id="footer-consulting">Consulting</a></li>
+          <li><a href="services.html#menu" id="footer-menu">Menu Engineering</a></li>
+          <li><a href="services.html#franchise" id="footer-franchise">Franchise Dev</a></li>
+          <li><a href="services.html#tech" id="footer-tech">Technology</a></li>
+          <li><a href="services.html#training" id="footer-training">Staff Training</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <div class="footer-col-title">Partner</div>
+        <ul>
+          <li><a href="contact.html?interest=b2b" id="footer-invest">Investors</a></li>
+          <li><a href="contact.html?interest=b2b" id="footer-fran">Franchise</a></li>
+          <li><a href="contact.html?interest=b2b" id="footer-land">Landlords</a></li>
+          <li><a href="contact.html?interest=other" id="footer-sup">Suppliers</a></li>
+          <li><a href="blog.html" id="footer-insights">Insights</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2025 Curious Laddoos Pvt. Ltd. All rights reserved.</p>
+      <div class="footer-links">
+        <a href="#" id="footer-privacy">Privacy Policy</a>
+        <a href="#" id="footer-terms">Terms of Use</a>
+        <a href="#" id="footer-sitemap">Sitemap</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

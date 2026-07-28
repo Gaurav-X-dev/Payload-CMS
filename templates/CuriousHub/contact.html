@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="2">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Get in touch with Curious Laddoos. Partner with us for restaurant brands, hospitality consulting, franchise development, and systems scaling." />
+  <title>Contact Us — Curious Laddoos</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* Page specific local adjustments */
+    .contact-split-custom {
+      display: grid;
+      grid-template-columns: 1fr 1.1fr;
+      gap: clamp(40px, 6vw, 100px);
+      align-items: start;
+    }
+    .contact-card-box {
+      background: var(--cl-surface);
+      border: 1px solid var(--cl-border);
+      padding: 2.5rem;
+      border-radius: var(--cl-radius-lg);
+      margin-bottom: 2rem;
+      transition: transform 0.3s;
+    }
+    .contact-card-box:hover {
+      transform: translateY(-4px);
+    }
+    .contact-card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      color: var(--cl-dark);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .contact-card-link {
+      font-family: 'Inter', sans-serif;
+      font-size: 1.1rem;
+      color: var(--cl-primary);
+      text-decoration: none;
+      display: block;
+      margin-bottom: 0.5rem;
+      transition: opacity 0.2s;
+    }
+    .contact-card-link:hover {
+      opacity: 0.8;
+    }
+    .contact-hours-item {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.88rem;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--cl-border);
+      color: var(--cl-text-muted);
+    }
+    .contact-hours-item:last-child {
+      border-bottom: none;
+    }
+    /* Map illustration styling */
+    .map-container {
+      position: relative;
+      height: 380px;
+      background: var(--cl-surface-2);
+      border: 1px solid var(--cl-border);
+      border-radius: var(--cl-radius-lg);
+      overflow: hidden;
+      margin: 4rem 0;
+    }
+    .map-canvas {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--cl-surface-2);
+    }
+    .map-marker {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      background: var(--cl-accent);
+      border: 2px solid #fff;
+      border-radius: 50%;
+      cursor: pointer;
+      z-index: 5;
+    }
+    .map-marker::after {
+      content: '';
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      border: 1px solid var(--cl-accent);
+      border-radius: 50%;
+      top: -11px;
+      left: -11px;
+      animation: pulseMarker 2s infinite ease-out;
+    }
+    @keyframes pulseMarker {
+      0% { transform: scale(0.5); opacity: 1; }
+      100% { transform: scale(1.5); opacity: 0; }
+    }
+    .map-marker-label {
+      position: absolute;
+      background: var(--cl-dark);
+      color: var(--cl-text-light);
+      padding: 6px 12px;
+      font-size: 0.72rem;
+      border-radius: var(--cl-radius);
+      white-space: nowrap;
+      pointer-events: none;
+      transform: translate(-50%, -100%);
+      margin-top: -15px;
+      opacity: 0;
+      transition: opacity 0.3s;
+      z-index: 6;
+      box-shadow: var(--cl-shadow);
+    }
+    .map-marker:hover .map-marker-label {
+      opacity: 1;
+    }
+    /* Existing form styling overrides to match branding exactly */
+    .premium-form-container {
+      background: var(--cl-dark);
+      color: var(--cl-text-light);
+      padding: clamp(30px, 5vw, 60px);
+      border-radius: var(--cl-radius-lg);
+      box-shadow: var(--cl-shadow-lg);
+      border: 1px solid var(--cl-border-dark);
+    }
+    .form-group-custom {
+      margin-bottom: 2rem;
+    }
+    .form-group-custom label {
+      display: block;
+      font-size: 0.75rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--cl-accent);
+      margin-bottom: 0.6rem;
+      font-weight: 500;
+    }
+    .form-group-custom input,
+    .form-group-custom select,
+    .form-group-custom textarea {
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-bottom: 1.5px solid rgba(255, 255, 255, 0.15);
+      color: var(--cl-text-light);
+      font-family: inherit;
+      font-size: 1.05rem;
+      padding: 10px 0;
+      transition: border-color 0.3s;
+    }
+    .form-group-custom input:focus,
+    .form-group-custom select:focus,
+    .form-group-custom textarea:focus {
+      outline: none;
+      border-bottom-color: var(--cl-accent);
+    }
+    .form-group-custom select option {
+      background: var(--cl-dark-2);
+      color: var(--cl-text-light);
+    }
+    .submit-btn-custom {
+      width: 100%;
+      padding: 18px 30px;
+      background: var(--cl-accent);
+      color: var(--cl-dark-2);
+      border: none;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      border-radius: var(--cl-radius);
+      transition: background 0.3s, transform 0.2s;
+    }
+    .submit-btn-custom:hover {
+      background: var(--cl-accent-lt);
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NOISE OVERLAY -->
+  <div class="noise-overlay" aria-hidden="true"></div>
+
+  <!-- CUSTOM CURSOR -->
+  <div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
+  <div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
+
+  <!-- PAGE LOADER -->
+  <div id="page-loader" role="status" aria-label="Loading">
+    <div class="loader-logo">C<span>L</span></div>
+    <div class="loader-subtitle">Curious Laddoos</div>
+    <div class="loader-bar"></div>
+  </div>
+
+  <!-- NAVIGATION -->
+  <nav id="navbar" role="navigation" aria-label="Main navigation">
+    <a href="index.html" class="nav-logo" aria-label="Curious Laddoos Home">
+      <div class="nav-logo-mark">CL</div>
+      <div class="nav-logo-text">
+        <span class="brand-name">Curious Laddoos</span>
+        <span class="brand-tagline">Building Hospitality Brands</span>
+      </div>
+    </a>
+
+    <!-- Desktop Nav Links -->
+    <ul class="nav-links" role="list">
+      <li class="nav-item">
+        <a href="index.html" class="nav-link">Home</a>
+      </li>
+      <li class="nav-item">
+        <a href="about.html" class="nav-link">About</a>
+        <div class="mega-menu" role="menu">
+          <div class="mega-menu-item"><a href="about.html#story" role="menuitem">Our Story</a></div>
+          <div class="mega-menu-item"><a href="about.html#journey" role="menuitem">Our Journey</a></div>
+          <div class="mega-menu-item"><a href="about.html#leadership" role="menuitem">Leadership</a></div>
+          <div class="mega-menu-item"><a href="about.html#philosophy" role="menuitem">Our Philosophy</a></div>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a href="services.html" class="nav-link">Services</a>
+        <div class="mega-menu" role="menu">
+          <div class="mega-menu-item"><a href="services.html#brands" role="menuitem">Restaurant Restaurant</a></div>
+          <div class="mega-menu-item"><a href="services.html#consulting" role="menuitem">Consulting</a></div>
+          <div class="mega-menu-item"><a href="services.html#menu" role="menuitem">Menu Engineering</a></div>
+          <div class="mega-menu-item"><a href="services.html#b2b" role="menuitem">B2B Solutions</a></div>
+          <div class="mega-menu-item"><a href="services.html#tech" role="menuitem">Technology</a></div>
+          <div class="mega-menu-item"><a href="services.html#training" role="menuitem">Staff Training</a></div>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a href="brands.html" class="nav-link">Brands</a>
+        <div class="mega-menu" role="menu">
+          <div class="mega-menu-item"><a href="brands.html#zuru" role="menuitem">Zuru Zuru — Japanese</a></div>
+          <div class="mega-menu-item"><a href="brands.html#ghee" role="menuitem">Ghee Roast — South Indian</a></div>
+          <div class="mega-menu-item"><a href="brands.html#quick" role="menuitem">Z-Quick — Delivery</a></div>
+          <div class="mega-menu-item"><a href="brands.html#future" role="menuitem">Future Brands</a></div>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a href="how-we-work.html" class="nav-link">How We Work</a>
+      </li>
+      <li class="nav-item">
+        <a href="blog.html" class="nav-link">Insights</a>
+      </li>
+      <li class="nav-item">
+        <a href="contact.html" class="nav-link">Contact</a>
+      </li>
+    </ul>
+
+    <!-- Nav Right -->
+    <div class="nav-right">
+      <div class="theme-switcher" aria-label="Theme switcher" role="group">
+        <button class="theme-btn" data-t="1" aria-label="Bold Luxury theme" title="Bold Luxury"></button>
+        <button class="theme-btn active" data-t="2" aria-label="Japanese Editorial theme" title="Japanese Editorial"></button>
+        <button class="theme-btn" data-t="3" aria-label="Editorial Corporate theme" title="Editorial Corporate"></button>
+      </div>
+      <a href="contact.html" class="nav-cta" id="nav-collaborate-btn">Let's Talk</a>
+      <!-- Hamburger -->
+      <button class="hamburger" id="hamburgerBtn" aria-label="Open mobile menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile Nav -->
+  <nav class="mobile-nav" id="mobileNav" aria-label="Mobile navigation" aria-hidden="true">
+    <a href="index.html" class="mobile-nav-link" id="mob-home">Home</a>
+    <a href="about.html" class="mobile-nav-link" id="mob-about">About</a>
+    <a href="services.html" class="mobile-nav-link" id="mob-services">Services</a>
+    <a href="brands.html" class="mobile-nav-link" id="mob-brands">Our Brands</a>
+    <a href="how-we-work.html" class="mobile-nav-link" id="mob-how">How We Work</a>
+    <a href="blog.html" class="mobile-nav-link" id="mob-journal">Insights</a>
+    <a href="contact.html" class="mobile-nav-link" id="mob-contact">Contact</a>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <section class="inner-hero">
+    <div class="inner-hero-content">
+      <span class="inner-hero-eyebrow">Connect</span>
+      <h1 class="inner-hero-title">Let's Build Hospitality That Endures</h1>
+      <p class="inner-hero-desc">Whether you have a retail space, a franchise inquiry, want to invest, or need menu engineering, our doors are open.</p>
+    </div>
+    <div class="inner-hero-img-wrap">
+      <img src="images/t3_interior.png" alt="Hospitality interior space setup" />
+    </div>
+  </section>
+
+  <!-- MAIN CONTACT CONTENT -->
+  <section class="inner-section">
+    <div class="contact-split-custom">
+      <!-- Left side: Contact Cards & Info -->
+      <div class="contact-info-cards">
+        
+        <div class="contact-card-box">
+          <h2 class="contact-card-title"><span>✉</span> General Inquiries</h2>
+          <p class="section-body" style="margin-bottom:1.5rem;">For general partnerships, media requests, or job queries, write to us.</p>
+          <a href="mailto:hello@curiousladdoos.com" class="contact-card-link">hello@curiousladdoos.com</a>
+          <a href="tel:+919876543210" class="contact-card-link">+91 98765 43210</a>
+        </div>
+
+        <div class="contact-card-box">
+          <h2 class="contact-card-title"><span>⏰</span> Operating Hours</h2>
+          <div class="contact-hours-item">
+            <span>Monday — Friday</span>
+            <span>09:00 AM — 06:00 PM</span>
+          </div>
+          <div class="contact-hours-item">
+            <span>Saturday</span>
+            <span>10:00 AM — 04:00 PM</span>
+          </div>
+          <div class="contact-hours-item">
+            <span>Sunday</span>
+            <span>Closed</span>
+          </div>
+        </div>
+
+        <div class="contact-card-box">
+          <h2 class="contact-card-title"><span>📍</span> Global Locations</h2>
+          <div class="location-item" style="margin-bottom:1.5rem;">
+            <h4 style="font-family:'Playfair Display', serif; font-size:1.15rem; margin-bottom:0.5rem; font-weight: 600;">New Delhi (HQ)</h4>
+            <p class="section-body" style="font-size:0.9rem;">First Floor, E-Block, Connaught Place, New Delhi, Delhi 110001</p>
+          </div>
+          <div class="location-item" style="margin-bottom:1.5rem;">
+            <h4 style="font-family:'Playfair Display', serif; font-size:1.15rem; margin-bottom:0.5rem; font-weight: 600;">Mumbai</h4>
+            <p class="section-body" style="font-size:0.9rem;">Level 4, The Capital, BKC, Mumbai, Maharashtra 400051</p>
+          </div>
+          <div class="location-item">
+            <h4 style="font-family:'Playfair Display', serif; font-size:1.15rem; margin-bottom:0.5rem; font-weight: 600;">Tokyo</h4>
+            <p class="section-body" style="font-size:0.9rem;">Roppongi Hills Mori Tower, Minato City, Tokyo 106-6108</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right side: Contact Form -->
+      <div class="premium-form-container">
+        <h2 class="section-title" style="color:var(--cl-text-light); font-size:2rem; margin-bottom:2rem; font-family:'Playfair Display', serif;">Start a Conversation</h2>
+        <form class="premium-form" action="#" method="POST" onsubmit="event.preventDefault(); alert('Thank you for reaching out! We will get back to you shortly.');">
+          <div class="form-group-custom">
+            <label for="name">Your Name</label>
+            <input type="text" id="name" name="name" placeholder="John Doe" required />
+          </div>
+          
+          <div class="form-group-custom">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" placeholder="john@example.com" required />
+          </div>
+
+          <div class="form-group-custom">
+            <label for="interest">Area of Interest</label>
+            <select id="interest" name="interest">
+              <option value="brand">New Brand Creation</option>
+              <option value="consulting">Restaurant Consulting</option>
+              <option value="b2b">B2B Solutions</option>
+              <option value="other">General Inquiry</option>
+            </select>
+          </div>
+
+          <div class="form-group-custom">
+            <label for="message">Tell us about your project</label>
+            <textarea id="message" name="message" rows="5" placeholder="Share a few details..." required></textarea>
+          </div>
+
+          <button type="submit" class="submit-btn-custom">Send Message &rarr;</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- INTERACTIVE OFFICE MAP SECTION -->
+  <section class="inner-section inner-section-alt">
+    <div class="services-header" style="margin-bottom: 2rem;">
+      <div>
+        <p class="section-eyebrow">Interactive Directory</p>
+        <h2 class="section-title">Where We <em class="italic">Operate.</em></h2>
+      </div>
+    </div>
+    <p class="section-body" style="margin-bottom:2rem;">Click on a marker to view details about our global administrative and consulting workspaces.</p>
+    
+    <div class="map-container">
+      <div class="map-canvas">
+        <!-- SVG Vector Map Background -->
+        <svg viewBox="0 0 1000 400" width="100%" height="100%" fill="var(--cl-border)" opacity="0.3" xmlns="http://www.w3.org/2000/svg">
+          <path d="M150,150 Q160,140 180,160 T220,150 T280,180" stroke="var(--cl-accent)" stroke-width="1.5" fill="none" stroke-dasharray="4 4" />
+          <path d="M400,220 Q500,180 650,210 T780,120" stroke="var(--cl-accent)" stroke-width="1.5" fill="none" stroke-dasharray="4 4" />
+          <circle cx="200" cy="180" r="100" fill="var(--cl-border)" opacity="0.05" />
+          <circle cx="700" cy="200" r="150" fill="var(--cl-border)" opacity="0.05" />
+        </svg>
+        
+        <!-- Markers -->
+        <div class="map-marker" style="left: 65%; top: 52%;">
+          <div class="map-marker-label">HQ — New Delhi Office</div>
+        </div>
+        <div class="map-marker" style="left: 62%; top: 58%;">
+          <div class="map-marker-label">Mumbai Office</div>
+        </div>
+        <div class="map-marker" style="left: 78%; top: 38%;">
+          <div class="map-marker-label">Tokyo Office</div>
+        </div>
+        <div class="map-marker" style="left: 54%; top: 56%;">
+          <div class="map-marker-label">Dubai Office</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ SECTION -->
+  <section class="inner-section">
+    <div class="services-header" style="margin-bottom: clamp(40px, 6vw, 80px);">
+      <div>
+        <p class="section-eyebrow">FAQs</p>
+        <h2 class="section-title">Common <em class="italic">Queries.</em></h2>
+      </div>
+    </div>
+
+    <div class="faq-wrap-container">
+      <div class="faq-tab-accordion">
+        <div class="faq-tab-header">
+          <h4>How do I partner with Curious Laddoos as a franchisee?</h4>
+          <span class="faq-tab-icon">+</span>
+        </div>
+        <div class="faq-tab-content">
+          <p>We look for franchise partners with operational experience and strong alignment with our brand values. We provide comprehensive operational SOPs, supply chain pipelines, staff training programs, and regional marketing support. Fill out the contact form with the area of interest set to "B2B Solutions" to start.</p>
+        </div>
+      </div>
+
+      <div class="faq-tab-accordion">
+        <div class="faq-tab-header">
+          <h4>What consulting services do you offer?</h4>
+          <span class="faq-tab-icon">+</span>
+        </div>
+        <div class="faq-tab-content">
+          <p>Our consulting division covers menu engineering, commercial kitchen layouts, F&B brand concept creation, staff recruitment/training, operations auditing, and technology integration (POS/analytics). We work with individual restaurants as well as luxury hotel groups.</p>
+        </div>
+      </div>
+
+      <div class="faq-tab-accordion">
+        <div class="faq-tab-header">
+          <h4>Are you looking for new retail spaces?</h4>
+          <span class="faq-tab-icon">+</span>
+        </div>
+        <div class="faq-tab-content">
+          <p>Yes, we are actively looking for commercial spaces, high streets, and premium mall spots of 1,200 to 4,000 sq ft across tier-1 cities in India for our brands Zuru Zuru and Ghee Roast. Real estate partners are welcome to write to us directly at hello@curiousladdoos.com.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer id="footer" aria-label="Footer">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="footer-logo">Curious <span>Laddoos</span></div>
+        <div class="footer-tagline">Building Hospitality Brands</div>
+        <p class="footer-desc">
+          A premium hospitality group building restaurant brands, consulting services, cloud kitchens, and hospitality systems across India.
+        </p>
+        <div class="footer-social">
+          <a href="#" class="footer-social-link" aria-label="LinkedIn" id="footer-linkedin">in</a>
+          <a href="#" class="footer-social-link" aria-label="Instagram" id="footer-instagram">ig</a>
+          <a href="#" class="footer-social-link" aria-label="YouTube" id="footer-youtube">yt</a>
+          <a href="#" class="footer-social-link" aria-label="Twitter/X" id="footer-twitter">𝕏</a>
+        </div>
+        <div class="footer-contact">
+          <div class="footer-contact-item">
+            <span>✉</span> hello@curiousladdoos.com
+          </div>
+          <div class="footer-contact-item">
+            <span>📍</span> New Delhi, India
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <div class="footer-col-title">Company</div>
+        <ul>
+          <li><a href="about.html#story" id="footer-about">Our Story</a></li>
+          <li><a href="about.html#philosophy" id="footer-philosophy">Our Philosophy</a></li>
+          <li><a href="about.html#journey" id="footer-journey">Our Journey</a></li>
+          <li><a href="about.html#leadership" id="footer-leadership">Leadership</a></li>
+          <li><a href="careers.html" id="footer-careers">Careers</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <div class="footer-col-title">Brands</div>
+        <ul>
+          <li><a href="brands.html#zuru" id="footer-zuruzuru">Zuru Zuru</a></li>
+          <li><a href="brands.html#ghee" id="footer-ghee">Ghee Roast</a></li>
+          <li><a href="brands.html#quick" id="footer-zquick">Z-Quick</a></li>
+          <li><a href="brands.html#future" id="footer-future">Future Brands</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <div class="footer-col-title">Services</div>
+        <ul>
+          <li><a href="services.html#consulting" id="footer-consulting">Consulting</a></li>
+          <li><a href="services.html#menu" id="footer-menu">Menu Engineering</a></li>
+          <li><a href="services.html#franchise" id="footer-franchise">Franchise Dev</a></li>
+          <li><a href="services.html#tech" id="footer-tech">Technology</a></li>
+          <li><a href="services.html#training" id="footer-training">Staff Training</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <div class="footer-col-title">Partner</div>
+        <ul>
+          <li><a href="contact.html?interest=b2b" id="footer-invest">Investors</a></li>
+          <li><a href="contact.html?interest=b2b" id="footer-fran">Franchise</a></li>
+          <li><a href="contact.html?interest=b2b" id="footer-land">Landlords</a></li>
+          <li><a href="contact.html?interest=other" id="footer-sup">Suppliers</a></li>
+          <li><a href="blog.html" id="footer-insights">Insights</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2025 Curious Laddoos Pvt. Ltd. All rights reserved.</p>
+      <div class="footer-links">
+        <a href="#" id="footer-privacy">Privacy Policy</a>
+        <a href="#" id="footer-terms">Terms of Use</a>
+        <a href="#" id="footer-sitemap">Sitemap</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+  <script>
+    // Local Page Interactive FAQ Accordion Accordion Toggle
+    document.querySelectorAll('.faq-tab-header').forEach(header => {
+      header.addEventListener('click', () => {
+        const item = header.parentElement;
+        const isActive = item.classList.contains('active');
+        
+        // Close all items
+        document.querySelectorAll('.faq-tab-accordion').forEach(acc => acc.classList.remove('active'));
+        
+        // If not already active, open it
+        if (!isActive) {
+          item.classList.add('active');
+        }
+      });
+    });
+
+    // Handle incoming Area of Interest query param
+    const urlParams = new URLSearchParams(window.location.search);
+    const interest = urlParams.get('interest');
+    if (interest) {
+      const selectEl = document.getElementById('interest');
+      if (selectEl) {
+        selectEl.value = interest;
+      }
+    }
+  </script>
+</body>
+</html>

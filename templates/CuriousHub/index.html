@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="3">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Curious Laddoos is a premium hospitality group building restaurant brands, consulting services, cloud kitchens, and hospitality systems across India." />
+  <meta name="keywords" content="hospitality group, restaurant brands, consulting, cloud kitchen, franchise, menu engineering, New Delhi" />
+  <meta property="og:title" content="Curious Laddoos — We Build Hospitality That Lasts" />
+  <meta property="og:description" content="A premium hospitality holding company. We don't just run restaurants. We build hospitality businesses." />
+  <meta property="og:type" content="website" />
+  <title>Curious Laddoos — We Build Hospitality That Lasts</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- NOISE TEXTURE -->
+  <div class="noise-overlay" aria-hidden="true"></div>
+
+  <!-- CUSTOM CURSOR -->
+  <div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
+  <div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
+
+  <!-- PAGE LOADER -->
+  <div id="page-loader" role="status" aria-label="Loading">
+    <div class="loader-logo">C<span>L</span></div>
+    <div class="loader-subtitle">Curious Laddoos</div>
+    <div class="loader-bar"></div>
+  </div>
+
+  <!-- ============================================================
+       NAVIGATION
+       ============================================================ -->
+  <nav id="navbar" role="navigation" aria-label="Main navigation">
+    <!-- Logo -->
+    <a href="index.html" class="nav-logo" aria-label="Curious Laddoos Home">
+      <div class="nav-logo-mark">CL</div>
+      <div class="nav-logo-text">
+        <span class="brand-name">Curious Laddoos</span>
+        <span class="brand-tagline">Building Hospitality Brands</span>
+      </div>
+    </a>
+
+    <!-- Desktop Nav Links -->
+    <ul class="nav-links" role="list">
+      <li class="nav-item">
+        <a href="index.html" class="nav-link">Home</a>
+      </li>
+      <li class="nav-item">
+        <a href="about.html" class="nav-link">About</a>
+        <div class="mega-menu" role="menu">
+          <div class="mega-menu-item"><a href="about.html#story" role="menuitem">Our Story</a></div>
+          <div class="mega-menu-item"><a href="about.html#journey" role="menuitem">Our Journey</a></div>
+          <div class="mega-menu-item"><a href="about.html#leadership" role="menuitem">Leadership</a></div>
+          <div class="mega-menu-item"><a href="about.html#philosophy" role="menuitem">Our Philosophy</a></div>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a href="services.html" class="nav-link">Services</a>
+        <div class="mega-menu" role="menu">
+          <div class="mega-menu-item"><a href="services.html#brands" role="menuitem">Restaurant Brands</a></div>
+          <div class="mega-menu-item"><a href="services.html#consulting" role="menuitem">Consulting</a></div>
+          <div class="mega-menu-item"><a href="services.html#menu" role="menuitem">Menu Engineering</a></div>
+          <div class="mega-menu-item"><a href="services.html#b2b" role="menuitem">B2B Solutions</a></div>
+          <div class="mega-menu-item"><a href="services.html#tech" role="menuitem">Technology</a></div>
+          <div class="mega-menu-item"><a href="services.html#training" role="menuitem">Staff Training</a></div>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a href="brands.html" class="nav-link">Brands</a>
+        <div class="mega-menu" role="menu">
+          <div class="mega-menu-item"><a href="brands.html#zuru" role="menuitem">Zuru Zuru — Japanese</a></div>
+          <div class="mega-menu-item"><a href="brands.html#ghee" role="menuitem">Ghee Roast — South Indian</a></div>
+          <div class="mega-menu-item"><a href="brands.html#quick" role="menuitem">Z-Quick — Delivery</a></div>
+          <div class="mega-menu-item"><a href="brands.html#future" role="menuitem">Future Brands</a></div>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a href="how-we-work.html" class="nav-link">How We Work</a>
+      </li>
+      <li class="nav-item">
+        <a href="blog.html" class="nav-link">Insights</a>
+      </li>
+      <li class="nav-item">
+        <a href="contact.html" class="nav-link">Contact</a>
+      </li>
+    </ul>
+
+    <!-- Nav Right -->
+    <div class="nav-right">
+
+      <a href="contact.html" class="nav-cta" id="nav-collaborate-btn">Let's Talk</a>
+      <!-- Hamburger -->
+      <button class="hamburger" id="hamburgerBtn" aria-label="Open mobile menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile Nav -->
+  <nav class="mobile-nav" id="mobileNav" aria-label="Mobile navigation" aria-hidden="true">
+    <a href="index.html" class="mobile-nav-link" id="mob-home">Home</a>
+    <a href="about.html" class="mobile-nav-link" id="mob-about">About</a>
+    <a href="services.html" class="mobile-nav-link" id="mob-services">Services</a>
+    <a href="brands.html" class="mobile-nav-link" id="mob-brands">Our Brands</a>
+    <a href="how-we-work.html" class="mobile-nav-link" id="mob-how">How We Work</a>
+    <a href="blog.html" class="mobile-nav-link" id="mob-journal">Insights</a>
+    <a href="contact.html" class="mobile-nav-link" id="mob-contact">Contact</a>
+  </nav>
+
+
+  <!-- ============================================================
+       HERO SECTION (Editorial Corporate)
+       ============================================================ -->
+  <section id="hero-theme-3" class="hero-section" aria-label="Hero">
+
+    <!-- Left: Headline content -->
+    <div class="t3-content">
+      <h1 class="t3-headline">We question. We design.<br/><span class="t3-accent">We build what's next.</span></h1>
+      <svg class="t3-underline-svg" viewBox="0 0 220 14" xmlns="http://www.w3.org/2000/svg">
+        <path d="M2,10 C25,6 55,12 85,8 C115,4 148,11 180,7 C195,5 210,9 218,7" fill="none" stroke="#111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <p class="t3-body">A hospitality company for a different kind of future. We build restaurant brands with curiosity, systems and soul.</p>
+      <div class="t3-actions">
+        <a href="#services" class="t3-btn-dark">EXPLORE OUR WORK &rarr;</a>
+        <a href="#cta" class="t3-btn-ghost">LET'S COLLABORATE &rarr;</a>
+      </div>
+    </div>
+
+    <!-- Right: Visual panel — single composite image with Japanese text HTML overlay -->
+    <div class="t3-visuals">
+
+      <!-- ONE combined image: restaurant photo (with bottom space) + editorial graphic panel (full height) -->
+      <img
+        src="images/t3_composite.jpg"
+        alt="Restaurant Interior with Editorial Design Elements"
+        class="t3-composite-img"
+        id="heroBg-t3"
+      />
+
+      <!-- Japanese text overlay — HTML element (editable from backend, renders over image) -->
+      <div class="t3-japanese-text" aria-label="Japanese brand text">
+        <span>本物の体験</span>
+        <span>長く残るブランド</span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================================
+       BRANDS TICKER
+       ============================================================ -->
+  <section id="brands-ticker" aria-label="Our brands overview">
+    <div style="display:flex; height:72px; overflow:hidden;">
+      <div class="ticker-label">Our Brands</div>
+      <div class="ticker-wrap" style="flex:1; overflow:hidden;">
+        <div class="brands-ticker-inner" id="tickerInner">
+          <!-- First set -->
+          <div class="ticker-brand">
+            <span class="ticker-brand-icon">九小</span>
+            <div class="ticker-brand-info">
+              <div class="name">Zuru Zuru</div>
+              <div class="desc">Japanese Izakaya · Comfort food. Good times.</div>
+            </div>
+          </div>
+          <div class="ticker-brand">
+            <span class="ticker-brand-icon" style="font-size:1.5rem;">✦</span>
+            <div class="ticker-brand-info">
+              <div class="name">Ghee Roast</div>
+              <div class="desc">South Indian Cuisine · Coastal flavours. Bold &amp; soulful.</div>
+            </div>
+          </div>
+          <div class="ticker-brand">
+            <span class="ticker-brand-icon">⬡⬡</span>
+            <div class="ticker-brand-info">
+              <div class="name">Z-Quick</div>
+              <div class="desc">Quick service · Great taste. Made for now.</div>
+            </div>
+          </div>
+          <div class="ticker-brand">
+            <span class="ticker-brand-icon">+</span>
+            <div class="ticker-brand-info">
+              <div class="name">Future Brands</div>
+              <div class="desc">What's next · More experiences coming soon.</div>
+            </div>
+          </div>
+          <div class="ticker-brand">
+            <span class="ticker-brand-icon" style="font-size:1rem; letter-spacing:0">CL</span>
+            <div class="ticker-brand-info">
+              <div class="name">Consulting</div>
+              <div class="desc">Strategy · Brand · Operations</div>
+            </div>
+          </div>
+          <div class="ticker-brand">
+            <span class="ticker-brand-icon">◈</span>
+            <div class="ticker-brand-info">
+              <div class="name">Cloud Kitchen</div>
+              <div class="desc">Delivery-first · Systems that scale.</div>
+            </div>
+          </div>
+          <!-- Duplicate for seamless loop -->
+          <div class="ticker-brand">
+            <span class="ticker-brand-icon">九小</span>
+            <div class="ticker-brand-info">
+              <div class="name">Zuru Zuru</div>
+              <div class="desc">Japanese Izakaya · Comfort food. Good times.</div>
+            </div>
+          </div>
+          <div class="ticker-brand">
+            <span class="ticker-brand-icon" style="font-size:1.5rem;">✦</span>
+            <div class="ticker-brand-info">
+              <div class="name">Ghee Roast</div>
+              <div class="desc">South Indian Cuisine · Coastal flavours. Bold &amp; soulful.</div>
+            </div>
+          </div>
+          <div class="ticker-brand">
+            <span class="ticker-brand-icon">⬡⬡</span>
+            <div class="ticker-brand-info">
+              <div class="name">Z-Quick</div>
+              <div class="desc">Quick service · Great taste. Made for now.</div>
+            </div>
+          </div>
+          <div class="ticker-brand">
+            <span class="ticker-brand-icon">+</span>
+            <div class="ticker-brand-info">
+              <div class="name">Future Brands</div>
+              <div class="desc">What's next · More experiences coming soon.</div>
+            </div>
+          </div>
+          <div class="ticker-brand">
+            <span class="ticker-brand-icon" style="font-size:1rem; letter-spacing:0">CL</span>
+            <div class="ticker-brand-info">
+              <div class="name">Consulting</div>
+              <div class="desc">Strategy · Brand · Operations</div>
+            </div>
+          </div>
+          <div class="ticker-brand">
+            <span class="ticker-brand-icon">◈</span>
+            <div class="ticker-brand-info">
+              <div class="name">Cloud Kitchen</div>
+              <div class="desc">Delivery-first · Systems that scale.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       ABOUT / COMPANY SECTION
+       ============================================================ -->
+  <section id="about" aria-label="About Curious Laddoos">
+    <div class="about-text">
+      <p class="section-eyebrow reveal">Hospitality Reimagined</p>
+      <h2 class="section-title reveal reveal-delay-1">
+        We don't just<br/>open restaurants.<br/>
+        We <span class="italic">build systems.</span>
+      </h2>
+      <div class="brush-divider reveal reveal-delay-2"></div>
+      <blockquote class="about-quote reveal reveal-delay-2">
+        "Curious by nature. Deliberate by design. Enduring by systems."
+      </blockquote>
+      <p class="section-body reveal reveal-delay-3">
+        Curious Laddoos is a multi-service hospitality group based in New Delhi. We own and operate restaurant brands, provide B2B consulting, design menus, build cloud kitchens, and help other hospitality businesses scale through systems, technology, and training.
+      </p>
+      <a href="#services" class="about-link reveal reveal-delay-4">
+        Explore All Services <span>→</span>
+      </a>
+    </div>
+
+    <div class="about-image-stack reveal reveal-delay-2">
+      <div class="about-img-main">
+        <img src="images/hero.png" alt="Premium restaurant interior by Curious Laddoos" loading="lazy" />
+      </div>
+      <div class="about-img-accent">
+        <img src="images/journal1.png" alt="Kitchen systems and operations" loading="lazy" />
+      </div>
+      <div class="about-tag">
+        <span class="big">15+</span>
+        Hospitality<br/>Services
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       PHILOSOPHY SECTION
+       ============================================================ -->
+  <section id="philosophy" aria-label="Our philosophy">
+    <div class="philosophy-bg-text" aria-hidden="true">PHILOSOPHY</div>
+
+    <div class="philosophy-header">
+      <div>
+        <p class="section-eyebrow reveal" style="color:rgba(184,168,120,0.8);">Our Philosophy</p>
+        <h2 class="section-title section-title-light reveal reveal-delay-1">
+          How We<br/><em style="color:var(--cl-accent);">Think.</em>
+        </h2>
+      </div>
+      <div class="philosophy-header-right">
+        <p class="section-body section-body-light reveal reveal-delay-2">
+          We build at the intersection of curiosity, creativity, and conviction. Thoughtful systems. Human experiences. Enduring brands.
+        </p>
+        <div class="brush-divider reveal reveal-delay-3" style="background:rgba(184,168,120,0.4);"></div>
+      </div>
+    </div>
+
+    <div class="philosophy-pillars">
+      <div class="pillar reveal">
+        <div class="pillar-num">01</div>
+        <svg class="pillar-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <circle cx="24" cy="24" r="20"/>
+          <path d="M24 14v20M14 24h20"/>
+        </svg>
+        <div class="pillar-title">Question</div>
+        <p class="pillar-desc">Curiosity drives better ideas. We question assumptions before we design solutions.</p>
+      </div>
+      <div class="pillar reveal reveal-delay-1">
+        <div class="pillar-num">02</div>
+        <svg class="pillar-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <rect x="8" y="8" width="32" height="32" rx="2"/>
+          <path d="M8 20h32M20 8v32"/>
+        </svg>
+        <div class="pillar-title">Design</div>
+        <p class="pillar-desc">Intentional design creates meaning. Experience first — always. Spaces that shape behaviour.</p>
+      </div>
+      <div class="pillar reveal reveal-delay-2">
+        <div class="pillar-num">03</div>
+        <svg class="pillar-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path d="M8 40l10-16 8 8 8-24 6 32"/>
+        </svg>
+        <div class="pillar-title">Build</div>
+        <p class="pillar-desc">Systems bring clarity. People bring life. We build processes that create consistency at scale.</p>
+      </div>
+      <div class="pillar reveal reveal-delay-3">
+        <div class="pillar-num">04</div>
+        <svg class="pillar-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <circle cx="24" cy="20" r="8"/>
+          <path d="M8 40c0-8.84 7.16-16 16-16s16 7.16 16 16"/>
+        </svg>
+        <div class="pillar-title">People</div>
+        <p class="pillar-desc">Culture builds what strategy can't. We invest in people at every level of the hospitality ecosystem.</p>
+      </div>
+      <div class="pillar reveal reveal-delay-4">
+        <div class="pillar-num">05</div>
+        <svg class="pillar-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path d="M24 4l4 12h12l-10 8 4 12-10-8-10 8 4-12L8 16h12z"/>
+        </svg>
+        <div class="pillar-title">Care</div>
+        <p class="pillar-desc">Hospitality is at our core — always. Every brand we build is rooted in genuine human care.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SERVICES SECTION
+       ============================================================ -->
+  <section id="services" aria-label="Our services">
+    <div class="services-header">
+      <div>
+        <p class="section-eyebrow reveal">What We Offer</p>
+        <h2 class="section-title reveal reveal-delay-1">
+          15 Services.<br/><em class="italic">One Vision.</em>
+        </h2>
+      </div>
+      <div class="services-header-right">
+        <p class="section-body reveal">
+          From concept to operations, from brand strategy to kitchen planning — our services are built for the future of hospitality in India and beyond.
+        </p>
+        <a href="#cta" class="about-link reveal reveal-delay-1">Partner With Us →</a>
+      </div>
+    </div>
+
+    <div class="services-grid">
+      <!-- 1 -->
+      <div class="service-card reveal">
+        <div class="service-card-num">01</div>
+        <svg class="service-card-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path d="M4 36V10l16-6 16 6v26"/><rect x="14" y="20" width="12" height="16" rx="1"/>
+        </svg>
+        <div class="service-card-title">Restaurant Brands</div>
+        <p class="service-card-desc">We create and operate distinct restaurant brands with unique identities, menus, and guest experiences.</p>
+        <a href="#brands" class="service-card-link">Explore →</a>
+      </div>
+      <!-- 2 -->
+      <div class="service-card reveal reveal-delay-1">
+        <div class="service-card-num">02</div>
+        <svg class="service-card-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <circle cx="20" cy="20" r="16"/><path d="M20 4v16l10 6"/>
+        </svg>
+        <div class="service-card-title">Delivery Services</div>
+        <p class="service-card-desc">Premium delivery operations with efficient cloud kitchen infrastructure and logistics management.</p>
+        <a href="#brands" class="service-card-link">Explore →</a>
+      </div>
+      <!-- 3 -->
+      <div class="service-card reveal reveal-delay-2">
+        <div class="service-card-num">03</div>
+        <svg class="service-card-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <rect x="4" y="8" width="32" height="24" rx="2"/>
+          <path d="M4 16h32M14 8v24"/>
+        </svg>
+        <div class="service-card-title">Cloud Kitchen</div>
+        <p class="service-card-desc">Delivery-first kitchen models designed for maximum efficiency, scalability, and brand consistency.</p>
+        <a href="#b2b" class="service-card-link">Explore →</a>
+      </div>
+      <!-- 4 -->
+      <div class="service-card reveal reveal-delay-3">
+        <div class="service-card-num">04</div>
+        <svg class="service-card-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path d="M8 32l6-6 6 6 12-16"/><circle cx="32" cy="12" r="4"/>
+        </svg>
+        <div class="service-card-title">Hospitality Consulting</div>
+        <p class="service-card-desc">Strategic consulting for restaurant launches, turnarounds, SOP development, and growth planning.</p>
+        <a href="#b2b" class="service-card-link">Explore →</a>
+      </div>
+      <!-- 5 -->
+      <div class="service-card reveal">
+        <div class="service-card-num">05</div>
+        <svg class="service-card-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <rect x="6" y="6" width="28" height="28" rx="2"/>
+          <path d="M6 18h28M18 6v28"/>
+        </svg>
+        <div class="service-card-title">Menu Engineering</div>
+        <p class="service-card-desc">Data-driven menu design that balances profitability, guest preference, and culinary excellence.</p>
+        <a href="#b2b" class="service-card-link">Explore →</a>
+      </div>
+      <!-- 6 -->
+      <div class="service-card reveal reveal-delay-1">
+        <div class="service-card-num">06</div>
+        <svg class="service-card-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path d="M4 20h32M20 4l10 16-10 16-10-16z"/>
+        </svg>
+        <div class="service-card-title">Restaurant Design</div>
+        <p class="service-card-desc">Interior concepts and spatial planning that create environments guests return to again and again.</p>
+        <a href="#b2b" class="service-card-link">Explore →</a>
+      </div>
+      <!-- 7 -->
+      <div class="service-card reveal reveal-delay-2">
+        <div class="service-card-num">07</div>
+        <svg class="service-card-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <circle cx="20" cy="20" r="16"/>
+          <path d="M12 20l6 6 10-12"/>
+        </svg>
+        <div class="service-card-title">Brand Strategy</div>
+        <p class="service-card-desc">Full brand architecture — from naming and identity to positioning, tone of voice, and visual language.</p>
+        <a href="#b2b" class="service-card-link">Explore →</a>
+      </div>
+      <!-- 8 -->
+      <div class="service-card reveal reveal-delay-3">
+        <div class="service-card-num">08</div>
+        <svg class="service-card-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path d="M8 8h24v24H8z"/><path d="M14 16h12M14 20h8M14 24h10"/>
+        </svg>
+        <div class="service-card-title">Operations Management</div>
+        <p class="service-card-desc">SOPs, training frameworks, quality control systems, and ongoing operational support for teams.</p>
+        <a href="#b2b" class="service-card-link">Explore →</a>
+      </div>
+      <!-- 9 -->
+      <div class="service-card reveal">
+        <div class="service-card-num">09</div>
+        <svg class="service-card-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path d="M20 4C11.16 4 4 11.16 4 20s7.16 16 16 16 16-7.16 16-16"/>
+          <path d="M28 4l8 8-8 8"/>
+        </svg>
+        <div class="service-card-title">Franchise Development</div>
+        <p class="service-card-desc">Complete franchise systems — model development, documentation, partner selection, and launch support.</p>
+        <a href="#b2b" class="service-card-link">Explore →</a>
+      </div>
+      <!-- 10 -->
+      <div class="service-card reveal reveal-delay-1">
+        <div class="service-card-num">10</div>
+        <svg class="service-card-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <rect x="4" y="4" width="14" height="14" rx="1"/>
+          <rect x="22" y="4" width="14" height="14" rx="1"/>
+          <rect x="4" y="22" width="14" height="14" rx="1"/>
+          <rect x="22" y="22" width="14" height="14" rx="1"/>
+        </svg>
+        <div class="service-card-title">Kitchen Planning</div>
+        <p class="service-card-desc">Commercial kitchen design, equipment planning, workflow optimization, and compliance guidance.</p>
+        <a href="#b2b" class="service-card-link">Explore →</a>
+      </div>
+      <!-- 11 -->
+      <div class="service-card reveal reveal-delay-2">
+        <div class="service-card-num">11</div>
+        <svg class="service-card-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <rect x="4" y="8" width="32" height="24" rx="2"/>
+          <path d="M16 20l-6 4V16l6 4zm4 0h8"/>
+        </svg>
+        <div class="service-card-title">Technology Solutions</div>
+        <p class="service-card-desc">POS systems, inventory management, analytics dashboards, and digital ordering integrations.</p>
+        <a href="#b2b" class="service-card-link">Explore →</a>
+      </div>
+      <!-- 12 -->
+      <div class="service-card reveal reveal-delay-3">
+        <div class="service-card-num">12</div>
+        <svg class="service-card-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <circle cx="14" cy="20" r="8"/><circle cx="28" cy="14" r="6"/><circle cx="28" cy="28" r="5"/>
+          <path d="M21 16l5-2M21 24l5 2"/>
+        </svg>
+        <div class="service-card-title">Staff Training</div>
+        <p class="service-card-desc">Comprehensive training programs for FOH, BOH, management, and hospitality service standards.</p>
+        <a href="#b2b" class="service-card-link">Explore →</a>
+      </div>
+      <!-- 13 -->
+      <div class="service-card reveal">
+        <div class="service-card-num">13</div>
+        <svg class="service-card-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path d="M20 4l4 8 8 2-6 6 2 8-8-4-8 4 2-8-6-6 8-2z"/>
+        </svg>
+        <div class="service-card-title">Investment Partnerships</div>
+        <p class="service-card-desc">Strategic investment in promising hospitality concepts — from seed to scale with full operational support.</p>
+        <a href="#cta" class="service-card-link">Explore →</a>
+      </div>
+      <!-- 14 -->
+      <div class="service-card reveal reveal-delay-1">
+        <div class="service-card-num">14</div>
+        <svg class="service-card-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path d="M8 12h24v16H8z"/>
+          <path d="M12 28l4 4M28 28l-4 4"/>
+        </svg>
+        <div class="service-card-title">Managed Services</div>
+        <p class="service-card-desc">End-to-end restaurant management for operators who want professional systems without the overhead.</p>
+        <a href="#b2b" class="service-card-link">Explore →</a>
+      </div>
+      <!-- 15 -->
+      <div class="service-card reveal reveal-delay-2">
+        <div class="service-card-num">15</div>
+        <svg class="service-card-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path d="M20 4v32M4 20h32"/>
+          <circle cx="20" cy="20" r="8"/>
+        </svg>
+        <div class="service-card-title">New Brand Development</div>
+        <p class="service-card-desc">Full-cycle concept creation — market research, naming, identity, menu, design, and launch strategy.</p>
+        <a href="#cta" class="service-card-link">Explore →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       RESTAURANT BRANDS SECTION
+       ============================================================ -->
+  <section id="brands" aria-label="Our restaurant brands">
+    <div class="brands-header">
+      <div>
+        <p class="section-eyebrow reveal">Restaurant Brands</p>
+        <h2 class="section-title reveal reveal-delay-1">
+          Distinct Identities.<br/><em class="italic">Shared Principles.</em>
+        </h2>
+      </div>
+      <a href="#cta" class="about-link reveal">View All Brands →</a>
+    </div>
+
+    <div class="brands-grid">
+      <!-- Zuru Zuru -->
+      <div class="brand-card reveal">
+        <div class="brand-card-bg">
+          <img src="images/zuru_zuru.png" alt="Zuru Zuru — Japanese Izakaya restaurant" loading="lazy" />
+        </div>
+        <div class="brand-card-overlay"></div>
+        <div class="brand-card-content">
+          <span class="brand-card-mark">九小</span>
+          <div class="brand-card-name">Zuru Zuru</div>
+          <div class="brand-card-type">Japanese Izakaya</div>
+          <p class="brand-card-desc">Comfort food. Reliably good times. A Japanese izakaya experience built for the Indian palate.</p>
+          <a href="#cta" class="brand-card-explore" id="brand-zuruzuru-link">Explore Brand →</a>
+        </div>
+      </div>
+
+      <!-- Ghee Roast -->
+      <div class="brand-card reveal reveal-delay-1">
+        <div class="brand-card-bg">
+          <img src="images/ghee_roast.png" alt="Ghee Roast — South Indian coastal restaurant" loading="lazy" />
+        </div>
+        <div class="brand-card-overlay"></div>
+        <div class="brand-card-content">
+          <span class="brand-card-mark" style="font-size:1.5rem;">✦</span>
+          <div class="brand-card-name">Ghee Roast</div>
+          <div class="brand-card-type">South Indian Cuisine</div>
+          <p class="brand-card-desc">Coastal flavours. Bold and soulful. South Indian cuisine celebrated with modern design and pride.</p>
+          <a href="#cta" class="brand-card-explore" id="brand-ghee-link">Explore Brand →</a>
+        </div>
+      </div>
+
+      <!-- Z-Quick -->
+      <div class="brand-card reveal reveal-delay-2">
+        <div class="brand-card-bg">
+          <img src="images/zquick.png" alt="Z-Quick — Premium delivery brand" loading="lazy" />
+        </div>
+        <div class="brand-card-overlay"></div>
+        <div class="brand-card-content">
+          <span class="brand-card-mark">⬡⬡</span>
+          <div class="brand-card-name">Z-Quick</div>
+          <div class="brand-card-type">Quick Service &amp; Delivery</div>
+          <p class="brand-card-desc">Great taste. Made fast. Made for now. Premium delivery-first brand built for the modern urban consumer.</p>
+          <a href="#cta" class="brand-card-explore" id="brand-zquick-link">Explore Brand →</a>
+        </div>
+      </div>
+
+      <!-- Future Brand -->
+      <div class="brand-card future reveal reveal-delay-3">
+        <div class="brand-future-icon">+</div>
+        <div class="brand-card-name">Future Brands</div>
+        <div class="brand-card-type" style="color:var(--cl-text-muted)">What's Next</div>
+        <p style="font-size:0.8rem; color:var(--cl-text-muted); text-align:center; padding:0 1.5rem; line-height:1.6;">
+          More experiences coming soon. We're always building what's next in hospitality.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       B2B SOLUTIONS
+       ============================================================ -->
+  <section id="b2b" aria-label="B2B solutions and partnerships">
+    <div class="b2b-bg-accent" aria-hidden="true"></div>
+
+    <div class="b2b-layout">
+      <div class="b2b-left">
+        <p class="section-eyebrow reveal" style="color:rgba(184,168,120,0.8);">Partner With Us</p>
+        <h2 class="section-title section-title-light reveal reveal-delay-1">
+          B2B<br/><em style="color:var(--cl-accent);">Solutions.</em>
+        </h2>
+        <div class="brush-divider reveal reveal-delay-2" style="background:rgba(184,168,120,0.3);"></div>
+        <p class="section-body section-body-light reveal reveal-delay-2">
+          We're always open to conversations with investors, franchise partners, landlords, and suppliers who share our vision for the future of hospitality.
+        </p>
+        <a href="mailto:hello@curiousladdoos.com" class="about-link reveal reveal-delay-3" style="color:var(--cl-accent);">
+          hello@curiousladdoos.com →
+        </a>
+      </div>
+
+      <div class="b2b-cards">
+        <div class="b2b-card reveal">
+          <svg class="b2b-card-icon" viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path d="M22 4l5 10 11 2.5-8 8 2 11-10-5.5-10 5.5 2-11-8-8 11-2.5z"/>
+          </svg>
+          <div class="b2b-card-title">Investors</div>
+          <p class="b2b-card-desc">Strategic investment in our brands and new concepts. We co-create with partners who bring capital and conviction.</p>
+          <a href="mailto:hello@curiousladdoos.com" class="b2b-card-link" id="b2b-investors-link">Build With Us →</a>
+        </div>
+
+        <div class="b2b-card reveal reveal-delay-1">
+          <svg class="b2b-card-icon" viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <circle cx="22" cy="22" r="18"/>
+            <path d="M14 22l6 6 10-12"/>
+          </svg>
+          <div class="b2b-card-title">Franchise Partners</div>
+          <p class="b2b-card-desc">Grow with proven brands. Our franchise model comes with full systems, training, and ongoing operational support.</p>
+          <a href="mailto:hello@curiousladdoos.com" class="b2b-card-link" id="b2b-franchise-link">Grow With Us →</a>
+        </div>
+
+        <div class="b2b-card reveal reveal-delay-2">
+          <svg class="b2b-card-icon" viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <rect x="4" y="8" width="36" height="28" rx="2"/>
+            <path d="M4 18h36M16 8v28"/>
+          </svg>
+          <div class="b2b-card-title">Landlords &amp; Spaces</div>
+          <p class="b2b-card-desc">We're looking for premium locations across India. Retail spaces, high streets, and mixed-use developments.</p>
+          <a href="mailto:hello@curiousladdoos.com" class="b2b-card-link" id="b2b-landlords-link">Partner With Us →</a>
+        </div>
+
+        <div class="b2b-card reveal reveal-delay-3">
+          <svg class="b2b-card-icon" viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path d="M6 36V16L22 6l16 10v20"/>
+            <rect x="14" y="22" width="16" height="14" rx="1"/>
+          </svg>
+          <div class="b2b-card-title">Suppliers &amp; Vendors</div>
+          <p class="b2b-card-desc">Quality ingredients, equipment, and services — we work with suppliers who share our commitment to excellence.</p>
+          <a href="mailto:hello@curiousladdoos.com" class="b2b-card-link" id="b2b-suppliers-link">Work With Us →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       HOW WE WORK
+       ============================================================ -->
+  <section id="how-we-work" aria-label="Our process">
+    <div class="how-header">
+      <p class="section-eyebrow reveal" style="justify-content:center;">Our Process</p>
+      <h2 class="section-title reveal reveal-delay-1">How We Build</h2>
+      <p class="section-body reveal reveal-delay-2" style="text-align:center; margin:1rem auto 0;">
+        Every successful hospitality brand is built on a repeatable, intentional process. Here's ours.
+      </p>
+    </div>
+
+    <div class="process-timeline">
+      <div class="process-step reveal">
+        <div class="process-step-num">1</div>
+        <div class="process-step-title">Discover</div>
+        <p class="process-step-desc">Deep dive into market, location, competition, and consumer insight. Curiosity first.</p>
+      </div>
+      <div class="process-step reveal reveal-delay-1">
+        <div class="process-step-num">2</div>
+        <div class="process-step-title">Concept</div>
+        <p class="process-step-desc">Brand identity, menu direction, interior language, and guest experience story.</p>
+      </div>
+      <div class="process-step reveal reveal-delay-2">
+        <div class="process-step-num">3</div>
+        <div class="process-step-title">Build</div>
+        <p class="process-step-desc">Kitchen planning, team recruitment, SOP development, technology setup, and design execution.</p>
+      </div>
+      <div class="process-step reveal reveal-delay-3">
+        <div class="process-step-num">4</div>
+        <div class="process-step-title">Launch</div>
+        <p class="process-step-desc">Soft launch, feedback integration, team training, media strategy, and community building.</p>
+      </div>
+      <div class="process-step reveal reveal-delay-4">
+        <div class="process-step-num">5</div>
+        <div class="process-step-title">Scale</div>
+        <p class="process-step-desc">Franchise development, multi-city expansion, brand licensing, and investor partnerships.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       OUR EDGE
+       ============================================================ -->
+  <section id="our-edge" aria-label="Our competitive edge">
+    <div class="edge-image reveal">
+      <div class="edge-image-inner">
+        <img src="images/consulting.png" alt="Curious Laddoos team in strategic consulting" loading="lazy" />
+      </div>
+    </div>
+
+    <div>
+      <p class="section-eyebrow reveal">Why Choose Us</p>
+      <div class="edge-bg-text reveal" aria-hidden="true">EDGE</div>
+      <h2 class="section-title reveal reveal-delay-1">
+        Our<br/><em class="italic">Difference.</em>
+      </h2>
+
+      <div class="edge-points">
+        <div class="edge-point reveal reveal-delay-1">
+          <div class="edge-point-icon">◈</div>
+          <div>
+            <div class="edge-point-title">Systems-First Thinking</div>
+            <p class="edge-point-desc">We build processes before aesthetics. Every brand is backed by SOPs, training, and technology.</p>
+          </div>
+        </div>
+        <div class="edge-point reveal reveal-delay-2">
+          <div class="edge-point-icon">✦</div>
+          <div>
+            <div class="edge-point-title">Design-Led Experience</div>
+            <p class="edge-point-desc">Every touchpoint is intentionally designed — from signage to staff uniforms to plate presentation.</p>
+          </div>
+        </div>
+        <div class="edge-point reveal reveal-delay-3">
+          <div class="edge-point-icon">∞</div>
+          <div>
+            <div class="edge-point-title">Future-Ready Infrastructure</div>
+            <p class="edge-point-desc">Our technology and systems are built to scale across cities, formats, and new service categories.</p>
+          </div>
+        </div>
+        <div class="edge-point reveal reveal-delay-4">
+          <div class="edge-point-icon">◯</div>
+          <div>
+            <div class="edge-point-title">Human at the Core</div>
+            <p class="edge-point-desc">Behind every system is a culture of care. Our people are our most important brand asset.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SUCCESS METRICS
+       ============================================================ -->
+  <section id="metrics" aria-label="Our achievements">
+    <div class="metrics-grid">
+      <div class="metric-item reveal">
+        <span class="metric-number">
+          <span class="counter" data-target="15">0</span>
+          <span class="metric-suffix">+</span>
+        </span>
+        <div class="metric-label">Hospitality Services</div>
+      </div>
+      <div class="metric-item reveal reveal-delay-1">
+        <span class="metric-number">
+          <span class="counter" data-target="3">0</span>
+          <span class="metric-suffix"></span>
+        </span>
+        <div class="metric-label">Restaurant Brands</div>
+      </div>
+      <div class="metric-item reveal reveal-delay-2">
+        <span class="metric-number">
+          <span class="counter" data-target="50">0</span>
+          <span class="metric-suffix">+</span>
+        </span>
+        <div class="metric-label">B2B Partners</div>
+      </div>
+      <div class="metric-item reveal reveal-delay-3">
+        <span class="metric-number">
+          <span class="counter" data-target="5">0</span>
+          <span class="metric-suffix">+</span>
+        </span>
+        <div class="metric-label">Cities Active</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       VISUAL STORY (full bleed)
+       ============================================================ -->
+  <section id="visual-story" aria-label="Visual story">
+    <div class="visual-story-bg" id="visualStoryBg">
+      <img src="images/visual_story.png" alt="Cinematic restaurant atmosphere — Curious Laddoos" loading="lazy" />
+    </div>
+    <div class="visual-story-overlay"></div>
+    <div class="visual-story-content">
+      <div class="visual-story-text">
+        <blockquote class="visual-story-quote reveal">
+          "We don't just run restaurants.<br/>We build hospitality businesses."
+        </blockquote>
+        <p class="visual-story-attr reveal reveal-delay-1">— CL Philosophy</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       INDUSTRIES WE SERVE
+       ============================================================ -->
+  <section id="industries" aria-label="Industries we serve">
+    <div class="industries-header">
+      <p class="section-eyebrow reveal" style="justify-content:center;">Scope of Work</p>
+      <h2 class="section-title reveal reveal-delay-1" style="text-align:center;">Industries We <em class="italic">Serve.</em></h2>
+    </div>
+
+    <div class="industries-grid">
+      <div class="industry-item reveal">
+        <span class="industry-icon">🍜</span>
+        <div class="industry-name">Full Service Restaurants</div>
+        <p class="industry-desc">Dine-in experiences with rich brand identities</p>
+      </div>
+      <div class="industry-item reveal reveal-delay-1">
+        <span class="industry-icon">📦</span>
+        <div class="industry-name">Cloud Kitchens</div>
+        <p class="industry-desc">Delivery-first, multi-brand ghost kitchens</p>
+      </div>
+      <div class="industry-item reveal reveal-delay-2">
+        <span class="industry-icon">🏨</span>
+        <div class="industry-name">Hotels &amp; Resorts</div>
+        <p class="industry-desc">F&amp;B consulting for hospitality properties</p>
+      </div>
+      <div class="industry-item reveal reveal-delay-3">
+        <span class="industry-icon">🏢</span>
+        <div class="industry-name">Corporate Catering</div>
+        <p class="industry-desc">Office and institutional dining solutions</p>
+      </div>
+      <div class="industry-item reveal">
+        <span class="industry-icon">🚀</span>
+        <div class="industry-name">QSR &amp; Fast Casual</div>
+        <p class="industry-desc">Quick service formats with brand premium</p>
+      </div>
+      <div class="industry-item reveal reveal-delay-1">
+        <span class="industry-icon">🎪</span>
+        <div class="industry-name">Events &amp; Pop-ups</div>
+        <p class="industry-desc">Temporary hospitality experiences and venues</p>
+      </div>
+      <div class="industry-item reveal reveal-delay-2">
+        <span class="industry-icon">📊</span>
+        <div class="industry-name">F&amp;B Investors</div>
+        <p class="industry-desc">Strategic advisory for F&amp;B investment portfolios</p>
+      </div>
+      <div class="industry-item reveal reveal-delay-3">
+        <span class="industry-icon">🏗️</span>
+        <div class="industry-name">Real Estate &amp; Malls</div>
+        <p class="industry-desc">F&amp;B zone planning for commercial properties</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       CLIENT STORIES / TESTIMONIALS
+       ============================================================ -->
+  <section id="testimonials" aria-label="Client stories">
+    <div class="testimonials-header">
+      <p class="section-eyebrow reveal" style="color:rgba(184,168,120,0.8);">Client Stories</p>
+      <h2 class="section-title section-title-light reveal reveal-delay-1">
+        Voices That<br/><em style="color:var(--cl-accent); font-style:italic;">Trust Us.</em>
+      </h2>
+    </div>
+
+    <div class="testimonials-grid">
+      <div class="testimonial-card reveal">
+        <span class="testimonial-quote-mark">"</span>
+        <p class="testimonial-text">Curious Laddoos didn't just design our restaurant — they built us a business. The systems they put in place made scaling to three locations feel effortless.</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">RK</div>
+          <div>
+            <div class="testimonial-name">Rajiv Kumar</div>
+            <div class="testimonial-role">Founder, Makhani House</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card reveal reveal-delay-1">
+        <span class="testimonial-quote-mark">"</span>
+        <p class="testimonial-text">Their menu engineering approach transformed our profitability without compromising what guests loved. Revenue up 40% in six months post-redesign.</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">SP</div>
+          <div>
+            <div class="testimonial-name">Sunita Patel</div>
+            <div class="testimonial-role">Director, The Coastal Table</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card reveal reveal-delay-2">
+        <span class="testimonial-quote-mark">"</span>
+        <p class="testimonial-text">As a franchise partner, the support from CL has been exceptional. Their systems are airtight, and their team genuinely cares about your success.</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">AM</div>
+          <div>
+            <div class="testimonial-name">Arjun Mehta</div>
+            <div class="testimonial-role">Franchise Partner, Zuru Zuru</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       JOURNAL / INSIGHTS
+       ============================================================ -->
+  <section id="journal" aria-label="Insights and journal">
+    <div class="journal-header">
+      <div>
+        <p class="section-eyebrow reveal">From Our Journal</p>
+        <h2 class="section-title reveal reveal-delay-1">Ideas &amp; <em class="italic">Insights.</em></h2>
+      </div>
+      <a href="#cta" class="about-link reveal">Explore All Articles →</a>
+    </div>
+
+    <div class="journal-grid">
+      <div class="journal-card reveal">
+        <div class="journal-card-image">
+          <img src="images/journal1.png" alt="Why Systems Beat Talent Every Time — article cover" loading="lazy" />
+        </div>
+        <div class="journal-card-body">
+          <div class="journal-card-tag">Operations · 8 min read</div>
+          <h3 class="journal-card-title">Why Systems Beat Talent Every Time in Restaurants</h3>
+          <p class="journal-card-excerpt">Most restaurants fail not because of bad food, but because of bad processes. Here's how systemizing your operations builds a business that outlasts any one chef.</p>
+          <div class="journal-card-meta">June 2025</div>
+        </div>
+      </div>
+
+      <div class="journal-card reveal reveal-delay-1">
+        <div class="journal-card-image">
+          <img src="images/journal2.png" alt="The Future of Dining in India — article cover" loading="lazy" />
+        </div>
+        <div class="journal-card-body">
+          <div class="journal-card-tag">Culture · 6 min read</div>
+          <h3 class="journal-card-title">The Future of Dining in India</h3>
+          <p class="journal-card-excerpt">Indian cuisine is having a global moment. How domestic hospitality brands can position themselves to lead the next decade.</p>
+          <div class="journal-card-meta">May 2025</div>
+        </div>
+      </div>
+
+      <div class="journal-card reveal reveal-delay-2">
+        <div class="journal-card-image">
+          <img src="images/journal3.png" alt="Designing Places People Remember — article cover" loading="lazy" />
+        </div>
+        <div class="journal-card-body">
+          <div class="journal-card-tag">Design · 5 min read</div>
+          <h3 class="journal-card-title">Designing Places People Remember</h3>
+          <p class="journal-card-excerpt">Great restaurant design isn't about aesthetics alone. It's about engineering emotion, memory, and the desire to return.</p>
+          <div class="journal-card-meta">April 2025</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       LEADERSHIP
+       ============================================================ -->
+  <section id="leadership" aria-label="Our leadership team">
+    <div class="leadership-header">
+      <p class="section-eyebrow reveal" style="justify-content:center;">The People</p>
+      <h2 class="section-title reveal reveal-delay-1" style="text-align:center;">Meet Our <em class="italic">Leaders.</em></h2>
+      <p class="section-body reveal reveal-delay-2" style="text-align:center; margin-top:1rem;">
+        Curious minds. Deliberate builders. Hospitality obsessives.
+      </p>
+    </div>
+
+    <div class="leadership-grid">
+      <div class="leader-card reveal">
+        <div class="leader-photo">
+          <img src="images/leader_arjun.png" alt="Arjun Rao, Founder & CEO" loading="lazy" />
+        </div>
+        <div class="leader-name">Arjun Rao</div>
+        <div class="leader-role">Founder &amp; CEO</div>
+        <p class="leader-bio">15 years in hospitality across India and Southeast Asia. Serial brand builder. Passionate about systems that outlast founders.</p>
+      </div>
+
+      <div class="leader-card reveal reveal-delay-1">
+        <div class="leader-photo">
+          <img src="images/leader_priya.png" alt="Priya Malhotra, Chief Brand Officer" loading="lazy" />
+        </div>
+        <div class="leader-name">Priya Malhotra</div>
+        <div class="leader-role">Chief Brand Officer</div>
+        <p class="leader-bio">Brand strategist with deep roots in luxury hospitality. Led identity projects for over 30 F&amp;B brands across South Asia.</p>
+      </div>
+
+      <div class="leader-card reveal reveal-delay-2">
+        <div class="leader-photo">
+          <img src="images/leader_siddharth.png" alt="Siddharth Kumar, Head of Operations" loading="lazy" />
+        </div>
+        <div class="leader-name">Siddharth Kumar</div>
+        <div class="leader-role">Head of Operations</div>
+        <p class="leader-bio">Operations specialist with a systems-first mindset. Built SOPs used by 20+ restaurant brands across 8 cities.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       OUR JOURNEY / TIMELINE
+       ============================================================ -->
+  <section id="journey" aria-label="Our journey timeline">
+    <div class="journey-header">
+      <p class="section-eyebrow reveal" style="justify-content:center; color:rgba(184,168,120,0.8);">Our Journey</p>
+      <h2 class="section-title section-title-light reveal reveal-delay-1" style="text-align:center;">
+        From Curious<br/>to <em style="color:var(--cl-accent); font-style:italic;">Category-Defining.</em>
+      </h2>
+    </div>
+
+    <div class="journey-timeline">
+      <div class="journey-milestone reveal">
+        <div class="journey-year">2020</div>
+        <div class="journey-event">Founded</div>
+        <p class="journey-desc">Curious Laddoos established with a single restaurant consulting project and a big vision.</p>
+      </div>
+      <div class="journey-milestone reveal reveal-delay-1">
+        <div class="journey-year">2021</div>
+        <div class="journey-event">Zuru Zuru Launched</div>
+        <p class="journey-desc">Our first restaurant brand opens in New Delhi to immediate critical acclaim.</p>
+      </div>
+      <div class="journey-milestone reveal reveal-delay-2">
+        <div class="journey-year">2022</div>
+        <div class="journey-event">Ghee Roast Opens</div>
+        <p class="journey-desc">South Indian brand launches; franchise enquiries begin within 60 days of opening.</p>
+      </div>
+      <div class="journey-milestone reveal reveal-delay-3">
+        <div class="journey-year">2023</div>
+        <div class="journey-event">B2B Division</div>
+        <p class="journey-desc">CL Consulting officially launched. 20+ clients in Year 1. Z-Quick delivery brand goes live.</p>
+      </div>
+      <div class="journey-milestone reveal reveal-delay-4">
+        <div class="journey-year">2025+</div>
+        <div class="journey-event">Scale &amp; Expand</div>
+        <p class="journey-desc">Multi-city franchise rollout, 5+ new brands in development, technology platform launch.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       PARTNERS
+       ============================================================ -->
+  <section id="partners" aria-label="Our partners">
+    <div class="partners-header">
+      <p class="section-eyebrow reveal" style="justify-content:center;">Partners &amp; Collaborators</p>
+      <h2 class="section-title reveal reveal-delay-1">Built With <em class="italic">Great People.</em></h2>
+    </div>
+
+    <div class="partners-grid reveal">
+      <div class="partner-item">Zuru Zuru</div>
+      <div class="partner-item">Ghee Roast</div>
+      <div class="partner-item">Z-Quick</div>
+      <div class="partner-item">NRAI</div>
+      <div class="partner-item">India Food Forum</div>
+      <div class="partner-item">Swiggy</div>
+      <div class="partner-item">Zomato</div>
+      <div class="partner-item">Future Brands</div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       CTA SECTION
+       ============================================================ -->
+  <section id="cta" aria-label="Call to action">
+    <div class="cta-bg-text" aria-hidden="true">CURIOUS</div>
+    <p class="cta-eyebrow reveal">Let's Build Together</p>
+    <h2 class="cta-title reveal reveal-delay-1">
+      Ready to Build<br/>Something <em class="italic">Remarkable?</em>
+    </h2>
+    <p class="cta-body reveal reveal-delay-2">
+      Whether you're an investor, franchise partner, aspiring restaurateur, or a hospitality brand looking to scale — we'd love to hear from you.
+    </p>
+    <div class="cta-buttons reveal reveal-delay-3">
+      <a href="mailto:hello@curiousladdoos.com" class="btn-white" id="cta-email-btn">
+        hello@curiousladdoos.com →
+      </a>
+      <a href="#how-we-work" class="btn-outline-white" id="cta-process-btn">
+        Our Process ↗
+      </a>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       FOOTER
+       ============================================================ -->
+  <footer id="footer" aria-label="Footer">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="footer-logo">Curious <span>Laddoos</span></div>
+        <div class="footer-tagline">Building Hospitality Brands</div>
+        <p class="footer-desc">
+          A premium hospitality group building restaurant brands, consulting services, cloud kitchens, and hospitality systems across India.
+        </p>
+        <div class="footer-social">
+          <a href="#" class="footer-social-link" aria-label="LinkedIn" id="footer-linkedin">in</a>
+          <a href="#" class="footer-social-link" aria-label="Instagram" id="footer-instagram">ig</a>
+          <a href="#" class="footer-social-link" aria-label="YouTube" id="footer-youtube">yt</a>
+          <a href="#" class="footer-social-link" aria-label="Twitter/X" id="footer-twitter">𝕏</a>
+        </div>
+        <div class="footer-contact">
+          <div class="footer-contact-item">
+            <span>✉</span> hello@curiousladdoos.com
+          </div>
+          <div class="footer-contact-item">
+            <span>📍</span> New Delhi, India
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <div class="footer-col-title">Company</div>
+        <ul>
+          <li><a href="about.html#story" id="footer-about">Our Story</a></li>
+          <li><a href="about.html#philosophy" id="footer-philosophy">Our Philosophy</a></li>
+          <li><a href="about.html#journey" id="footer-journey">Our Journey</a></li>
+          <li><a href="about.html#leadership" id="footer-leadership">Leadership</a></li>
+          <li><a href="careers.html" id="footer-careers">Careers</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <div class="footer-col-title">Brands</div>
+        <ul>
+          <li><a href="brands.html#zuru" id="footer-zuruzuru">Zuru Zuru</a></li>
+          <li><a href="brands.html#ghee" id="footer-ghee">Ghee Roast</a></li>
+          <li><a href="brands.html#quick" id="footer-zquick">Z-Quick</a></li>
+          <li><a href="brands.html#future" id="footer-future">Future Brands</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <div class="footer-col-title">Services</div>
+        <ul>
+          <li><a href="services.html#consulting" id="footer-consulting">Consulting</a></li>
+          <li><a href="services.html#menu" id="footer-menu">Menu Engineering</a></li>
+          <li><a href="services.html#franchise" id="footer-franchise">Franchise Dev</a></li>
+          <li><a href="services.html#tech" id="footer-tech">Technology</a></li>
+          <li><a href="services.html#training" id="footer-training">Staff Training</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <div class="footer-col-title">Partner</div>
+        <ul>
+          <li><a href="contact.html?interest=b2b" id="footer-invest">Investors</a></li>
+          <li><a href="contact.html?interest=b2b" id="footer-fran">Franchise</a></li>
+          <li><a href="contact.html?interest=b2b" id="footer-land">Landlords</a></li>
+          <li><a href="contact.html?interest=other" id="footer-sup">Suppliers</a></li>
+          <li><a href="blog.html" id="footer-insights">Insights</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2025 Curious Laddoos Pvt. Ltd. All rights reserved.</p>
+      <div class="footer-links">
+        <a href="#" id="footer-privacy">Privacy Policy</a>
+        <a href="#" id="footer-terms">Terms of Use</a>
+        <a href="#" id="footer-sitemap">Sitemap</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
