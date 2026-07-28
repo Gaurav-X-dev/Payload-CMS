@@ -1,0 +1,552 @@
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.dashboard {
+  display: flex;
+  width: 100%;
+  max-width: 112rem;
+  margin-inline: auto;
+  padding: var(--admin-space-10) var(--gutter-h) var(--admin-space-12);
+  flex-direction: column;
+  gap: var(--admin-space-12);
+}
+
+.workspace {
+  display: flex;
+  min-width: 0;
+  padding: var(--admin-space-5) var(--admin-space-6);
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--admin-space-5);
+  background:
+    linear-gradient(
+      115deg,
+      color-mix(in srgb, var(--admin-primary) 16%, transparent),
+      transparent 58%
+    ),
+    var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-lg);
+  box-shadow: var(--admin-shadow-sm);
+}
+
+.workspaceCopy,
+.roleList,
+.entityHeader,
+.chartHeader,
+.systemStatus {
+  display: flex;
+  align-items: center;
+}
+
+.workspaceCopy {
+  min-width: 0;
+  gap: var(--admin-space-4);
+}
+
+.workspaceMark,
+.entityIcon {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  color: var(--admin-text);
+  background: color-mix(in srgb, var(--admin-primary) 22%, var(--admin-surface));
+  border: 1px solid color-mix(in srgb, var(--admin-primary) 48%, var(--admin-border));
+  font-weight: 750;
+  letter-spacing: -0.03em;
+}
+
+.workspaceMark {
+  width: 3rem;
+  height: 3rem;
+  border-radius: var(--admin-radius-lg);
+}
+
+.workspaceTitle,
+.workspaceMeta,
+.sectionTitle,
+.sectionDescription,
+.cardTitle,
+.cardDescription,
+.entityTitle,
+.entitySlug {
+  margin: 0;
+}
+
+.workspaceTitle {
+  overflow: hidden;
+  font-size: 1rem;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.workspaceMeta,
+.sectionDescription,
+.cardDescription,
+.entitySlug {
+  color: var(--admin-muted);
+}
+
+.workspaceMeta {
+  margin-block-start: var(--admin-space-1);
+  font-size: 0.8125rem;
+}
+
+.roleList {
+  flex: 0 1 auto;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--admin-space-2);
+}
+
+.sectionHeading {
+  display: flex;
+  margin-block-end: var(--admin-space-5);
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--admin-space-4);
+}
+
+.sectionTitle {
+  color: var(--admin-text);
+  font-size: 1.0625rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.35;
+}
+
+.sectionDescription {
+  max-width: 48rem;
+  margin-block-start: var(--admin-space-1);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.statsGrid,
+.entityGrid,
+.chartGrid,
+.systemGrid {
+  display: grid;
+  gap: var(--admin-space-4);
+}
+
+.statsGrid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.quickActions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--admin-space-3);
+}
+
+.quickAction,
+.globalItem {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  color: var(--admin-text);
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-lg);
+  text-decoration: none;
+  transition:
+    background-color var(--admin-transition),
+    border-color var(--admin-transition),
+    box-shadow var(--admin-transition),
+    transform var(--admin-transition-fast);
+}
+
+.quickAction {
+  min-height: 5rem;
+  padding: var(--admin-space-4);
+  gap: var(--admin-space-3);
+}
+
+.quickAction:hover,
+.quickAction:focus-visible,
+.globalItem:hover,
+.globalItem:focus-visible {
+  color: var(--admin-text);
+  background: var(--admin-surface-secondary);
+  border-color: var(--admin-border-strong);
+  box-shadow: var(--admin-shadow-md);
+  text-decoration: none;
+  transform: translateY(-1px);
+}
+
+.quickAction:focus-visible,
+.globalItem:focus-visible,
+.primaryAction:focus-visible,
+.entityLink:focus-visible {
+  outline: var(--admin-focus-ring);
+  outline-offset: var(--admin-focus-offset);
+}
+
+.quickActionCopy {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--admin-space-1);
+}
+
+.quickActionCopy strong,
+.quickActionCopy span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.quickActionCopy strong {
+  font-size: 0.875rem;
+}
+
+.quickActionCopy span {
+  color: var(--admin-muted);
+  font-size: 0.75rem;
+}
+
+.entityIcon {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--admin-radius-md);
+  font-size: 0.75rem;
+}
+
+.arrowIcon {
+  width: 1rem;
+  height: 1rem;
+  flex: 0 0 auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.5;
+}
+
+.primaryAction,
+.entityLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--admin-space-2);
+  border-radius: var(--admin-radius-md);
+  font-weight: 650;
+  text-decoration: none;
+  transition:
+    background-color var(--admin-transition),
+    border-color var(--admin-transition),
+    color var(--admin-transition);
+}
+
+.primaryAction {
+  min-height: var(--admin-input-height);
+  padding-inline: var(--admin-space-4);
+  color: var(--admin-on-accent);
+  background: var(--admin-primary);
+  border: 1px solid var(--admin-primary);
+}
+
+.primaryAction:hover {
+  color: var(--admin-on-accent);
+  background: var(--admin-primary-hover);
+  border-color: var(--admin-primary-hover);
+  text-decoration: none;
+}
+
+.entityGrid {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
+}
+
+.entityCard {
+  display: flex;
+  min-width: 0;
+  min-height: 17rem;
+  flex-direction: column;
+  gap: var(--admin-space-5);
+}
+
+.entityHeader,
+.chartHeader,
+.systemStatus {
+  justify-content: space-between;
+  gap: var(--admin-space-3);
+}
+
+.entityTitle {
+  overflow-wrap: anywhere;
+  font-size: 1rem;
+  line-height: 1.35;
+}
+
+.entitySlug {
+  margin-block-start: var(--admin-space-1);
+  overflow-wrap: anywhere;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+}
+
+.entityMeta {
+  display: grid;
+  margin: 0;
+  gap: var(--admin-space-3);
+}
+
+.entityMeta div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--admin-space-3);
+}
+
+.entityMeta dt,
+.entityMeta dd {
+  margin: 0;
+  font-size: 0.75rem;
+}
+
+.entityMeta dt {
+  color: var(--admin-muted);
+}
+
+.entityMeta dd {
+  color: var(--admin-text-secondary);
+  text-align: end;
+}
+
+.entityLink {
+  width: fit-content;
+  margin-block-start: auto;
+  color: var(--admin-text-secondary);
+  font-size: 0.8125rem;
+}
+
+.entityLink:hover {
+  color: var(--admin-primary-hover);
+  text-decoration: none;
+}
+
+.globalList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
+  gap: var(--admin-space-3);
+}
+
+.globalItem {
+  min-height: 4.5rem;
+  padding: var(--admin-space-3) var(--admin-space-4);
+  gap: var(--admin-space-3);
+}
+
+.globalCopy {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--admin-space-1);
+}
+
+.globalItem strong,
+.globalItem small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.globalItem small {
+  color: var(--admin-muted);
+}
+
+.chartGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.chartCard {
+  min-width: 0;
+}
+
+.cardTitle {
+  color: var(--admin-text);
+  font-size: 0.9375rem;
+  line-height: 1.4;
+}
+
+.cardDescription {
+  margin-block-start: var(--admin-space-1);
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.chartPlaceholder {
+  position: relative;
+  height: 15rem;
+  margin-block-start: var(--admin-space-6);
+  overflow: hidden;
+  background:
+    linear-gradient(var(--admin-border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--admin-border) 1px, transparent 1px),
+    color-mix(in srgb, var(--admin-surface-secondary) 68%, transparent);
+  background-size: 100% 25%, 16.666% 100%, auto;
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-md);
+}
+
+.chartLine {
+  position: absolute;
+  inset-inline: 0;
+  height: 1px;
+  background: var(--admin-border);
+}
+
+.chartLineQuarter {
+  inset-block-start: 25%;
+}
+
+.chartLineHalf {
+  inset-block-start: 50%;
+}
+
+.chartLineThreeQuarters {
+  inset-block-start: 75%;
+}
+
+.chartLineEnd {
+  inset-block-end: 0;
+}
+
+.chartBars {
+  position: absolute;
+  inset: var(--admin-space-6);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  gap: var(--admin-space-3);
+}
+
+.chartBar {
+  width: min(8%, 2rem);
+  height: var(--chart-height);
+  background: linear-gradient(
+    180deg,
+    var(--admin-primary-hover),
+    color-mix(in srgb, var(--admin-primary) 38%, transparent)
+  );
+  border-radius: var(--admin-radius-sm) var(--admin-radius-sm) 0 0;
+  opacity: 0.72;
+}
+
+.lowerGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(18rem, 0.85fr);
+  gap: var(--admin-space-8);
+}
+
+.activityStack {
+  display: grid;
+  gap: var(--admin-space-10);
+}
+
+.systemGrid {
+  grid-template-columns: 1fr;
+}
+
+.systemCard {
+  min-height: 8.5rem;
+}
+
+.systemStatus {
+  margin-block-end: var(--admin-space-4);
+}
+
+.statusDot {
+  width: 0.5rem;
+  height: 0.5rem;
+  background: var(--admin-muted);
+  border-radius: var(--admin-radius-pill);
+  box-shadow: 0 0 0 0.25rem
+    color-mix(in srgb, var(--admin-muted) 14%, transparent);
+}
+
+@media (max-width: 72rem) {
+  .statsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .quickActions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .lowerGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 48rem) {
+  .dashboard {
+    padding-block: var(--admin-space-6) var(--admin-space-10);
+    gap: var(--admin-space-10);
+  }
+
+  .workspace {
+    padding: var(--admin-space-4);
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .workspaceTitle {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .roleList {
+    justify-content: flex-start;
+  }
+
+  .chartGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 34rem) {
+  .statsGrid,
+  .quickActions {
+    grid-template-columns: 1fr;
+  }
+
+  .chartHeader {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .chartPlaceholder {
+    height: 12rem;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .workspace,
+  .quickAction,
+  .globalItem,
+  .chartPlaceholder {
+    border-color: var(--admin-text-secondary);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quickAction,
+  .globalItem {
+    transition: none;
+  }
+}

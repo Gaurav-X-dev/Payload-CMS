@@ -1,0 +1,621 @@
+/*
+ * Stage 4 collection list presentation.
+ *
+ * Payload retains ownership of list data, permissions, controls, selection,
+ * routing, and query state. These rules target only stable native list-view
+ * classes and are loaded exclusively by the `(payload)` route layout.
+ */
+
+html.payload-admin-root .collection-list {
+  --admin-list-column-min: 9rem;
+
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
+html.payload-admin-root .collection-list__wrap {
+  min-width: 0;
+  padding-block-end: var(--admin-space-12);
+}
+
+html.payload-admin-root .collection-list .list-header {
+  min-width: 0;
+  padding-block-start: var(--admin-space-6);
+}
+
+html.payload-admin-root .collection-list .list-header__content {
+  min-width: 0;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: var(--admin-space-4) var(--admin-space-6);
+}
+
+html.payload-admin-root .collection-list .list-header__title-and-actions {
+  min-width: 0;
+  align-items: center;
+  gap: var(--admin-space-3);
+}
+
+html.payload-admin-root .collection-list .list-header__title {
+  min-width: 0;
+  color: var(--admin-text);
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 720;
+  letter-spacing: -0.035em;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+html.payload-admin-root .collection-list .list-header__title-actions,
+html.payload-admin-root .collection-list .list-header__actions {
+  min-width: 0;
+  margin: 0;
+  align-items: center;
+  gap: var(--admin-space-2);
+}
+
+html.payload-admin-root .collection-list .list-header__actions {
+  justify-content: flex-end;
+}
+
+html.payload-admin-root .collection-list .list-create-new-doc__create-new-button {
+  min-height: var(--admin-input-height-sm);
+  color: var(--admin-on-accent);
+  background: var(--admin-primary);
+  border: 1px solid var(--admin-primary);
+  border-radius: var(--admin-radius-pill);
+  box-shadow: var(--admin-shadow-sm);
+  transition:
+    background-color var(--admin-transition),
+    border-color var(--admin-transition),
+    box-shadow var(--admin-transition),
+    transform var(--admin-transition-fast);
+}
+
+html.payload-admin-root
+  .collection-list
+  .list-create-new-doc__create-new-button:hover {
+  color: var(--admin-on-accent);
+  background: var(--admin-primary-hover);
+  border-color: var(--admin-primary-hover);
+  box-shadow: var(--admin-shadow-focus);
+  transform: translateY(-1px);
+}
+
+html.payload-admin-root
+  .collection-list
+  .list-create-new-doc__create-new-button:focus-visible {
+  outline: var(--admin-focus-ring);
+  outline-offset: var(--admin-focus-offset);
+}
+
+html.payload-admin-root .collection-list__sub-header {
+  max-width: 64rem;
+  padding-block-start: var(--admin-space-3);
+  color: var(--admin-muted);
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+html.payload-admin-root .collection-list .list-controls {
+  position: relative;
+  z-index: 2;
+  min-width: 0;
+  padding: var(--admin-space-3);
+  gap: var(--admin-space-2);
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-lg);
+  box-shadow: var(--admin-shadow-sm);
+}
+
+html.payload-admin-root .collection-list .search-bar {
+  min-width: 0;
+  min-height: var(--admin-input-height);
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  color: var(--admin-text-secondary);
+  background: var(--admin-surface-secondary);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-md);
+  transition:
+    background-color var(--admin-transition),
+    border-color var(--admin-transition),
+    box-shadow var(--admin-transition);
+}
+
+html.payload-admin-root .collection-list .search-bar:focus-within {
+  background: var(--admin-surface);
+  border-color: var(--admin-primary-hover);
+  box-shadow: var(--admin-shadow-focus);
+}
+
+html.payload-admin-root .collection-list .search-filter {
+  min-width: 0;
+}
+
+html.payload-admin-root .collection-list .search-filter input {
+  min-width: 0;
+  min-height: var(--admin-input-height);
+  color: var(--admin-text);
+}
+
+html.payload-admin-root .collection-list .search-filter input::placeholder {
+  color: var(--admin-muted);
+  opacity: 1;
+}
+
+html.payload-admin-root .collection-list .search-bar__actions {
+  min-width: 0;
+  padding: var(--admin-space-2);
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--admin-space-2);
+}
+
+html.payload-admin-root .collection-list .list-controls .pill {
+  min-height: var(--admin-input-height-sm);
+  color: var(--admin-text-secondary);
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-pill);
+  transition:
+    color var(--admin-transition),
+    background-color var(--admin-transition),
+    border-color var(--admin-transition),
+    box-shadow var(--admin-transition);
+}
+
+html.payload-admin-root .collection-list .list-controls .pill:hover,
+html.payload-admin-root .collection-list .list-controls .pill:focus-visible,
+html.payload-admin-root
+  .collection-list
+  .list-controls
+  .pill[aria-expanded='true'] {
+  color: var(--admin-text);
+  background: var(--admin-surface-hover);
+  border-color: var(--admin-border-strong);
+}
+
+html.payload-admin-root .collection-list .list-controls .pill:focus-visible {
+  outline: var(--admin-focus-ring);
+  outline-offset: var(--admin-focus-offset);
+  box-shadow: var(--admin-shadow-focus);
+}
+
+html.payload-admin-root .collection-list .list-controls__columns,
+html.payload-admin-root .collection-list .list-controls__where,
+html.payload-admin-root .collection-list .list-controls__sort,
+html.payload-admin-root .collection-list .list-controls__group-by {
+  min-width: 0;
+  color: var(--admin-text-secondary);
+  background: var(--admin-surface-secondary);
+  border-radius: var(--admin-radius-md);
+}
+
+html.payload-admin-root .collection-list__tables {
+  min-width: 0;
+  max-width: 100%;
+}
+
+html.payload-admin-root .collection-list .table {
+  max-width: 100%;
+  margin-block-end: var(--admin-space-5);
+  overflow: auto;
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-lg);
+  box-shadow: var(--admin-shadow-sm);
+  overscroll-behavior-inline: contain;
+  scrollbar-color: var(--admin-border-strong) var(--admin-surface);
+  scrollbar-gutter: stable;
+}
+
+html.payload-admin-root .collection-list .table::-webkit-scrollbar {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+html.payload-admin-root .collection-list .table::-webkit-scrollbar-track {
+  background: var(--admin-surface);
+  border-radius: 0 0 var(--admin-radius-lg) var(--admin-radius-lg);
+}
+
+html.payload-admin-root .collection-list .table::-webkit-scrollbar-thumb {
+  background: var(--admin-border-strong);
+  background-clip: padding-box;
+  border: 0.1875rem solid transparent;
+  border-radius: var(--admin-radius-pill);
+}
+
+html.payload-admin-root .collection-list .table::-webkit-scrollbar-thumb:hover {
+  background-color: var(--admin-muted);
+}
+
+html.payload-admin-root .collection-list .table table {
+  width: max-content;
+  min-width: 100%;
+  border-spacing: 0;
+}
+
+html.payload-admin-root .collection-list .table thead {
+  color: var(--admin-muted);
+  background: var(--admin-surface-secondary);
+}
+
+html.payload-admin-root .collection-list .table th {
+  position: sticky;
+  z-index: 2;
+  inset-block-start: 0;
+  min-width: var(--admin-list-column-min);
+  padding: var(--admin-space-3) var(--admin-space-4);
+  color: var(--admin-muted);
+  background: var(--admin-surface-secondary);
+  border-block-end: 1px solid var(--admin-border-strong);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.055em;
+  line-height: 1.3;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+html.payload-admin-root .collection-list .table td {
+  min-width: var(--admin-list-column-min);
+  max-width: min(28rem, 62vw);
+  padding: var(--admin-space-4);
+  color: var(--admin-text-secondary);
+  border-block-end: 1px solid var(--admin-border);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  vertical-align: middle;
+  white-space: normal;
+}
+
+html.payload-admin-root .collection-list .table tbody tr {
+  background: var(--admin-surface);
+  transition:
+    background-color var(--admin-transition-fast),
+    box-shadow var(--admin-transition-fast);
+}
+
+html.payload-admin-root .collection-list .table tbody tr:hover,
+html.payload-admin-root .collection-list .table tbody tr:focus-within {
+  background: var(--admin-surface-hover);
+  box-shadow: inset 0.1875rem 0 var(--admin-primary-hover);
+}
+
+html.payload-admin-root .collection-list .table tbody tr:focus-within {
+  outline: var(--admin-focus-ring);
+  outline-offset: calc(var(--admin-focus-offset) * -1);
+}
+
+html.payload-admin-root .collection-list .table a {
+  color: var(--admin-text);
+  text-decoration-color: color-mix(
+    in srgb,
+    var(--admin-primary-hover) 55%,
+    transparent
+  );
+  text-underline-offset: 0.18em;
+}
+
+html.payload-admin-root .collection-list .table a:hover {
+  color: var(--admin-primary-hover);
+}
+
+html.payload-admin-root .collection-list .table a:focus-visible {
+  border-radius: var(--admin-radius-sm);
+  outline: var(--admin-focus-ring);
+  outline-offset: var(--admin-focus-offset);
+}
+
+html.payload-admin-root .collection-list .table .thumbnail {
+  overflow: hidden;
+  background: var(--admin-surface-secondary);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-md);
+}
+
+html.payload-admin-root .collection-list .table .checkbox-input__input {
+  width: 1.25rem;
+  height: 1.25rem;
+  background: var(--admin-surface-secondary);
+  border: 1px solid var(--admin-border-strong);
+  border-radius: var(--admin-radius-sm);
+}
+
+html.payload-admin-root
+  .collection-list
+  .table
+  .checkbox-input--checked
+  .checkbox-input__input {
+  color: var(--admin-on-accent);
+  background: var(--admin-primary);
+  border-color: var(--admin-primary-hover);
+  box-shadow: 0 0 0 0.1875rem
+    color-mix(in srgb, var(--admin-primary) 24%, transparent);
+}
+
+html.payload-admin-root .collection-list .list-selection {
+  min-width: 0;
+  color: var(--admin-muted);
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+html.payload-admin-root .collection-list .list-selection__button {
+  min-height: var(--admin-input-height-sm);
+  padding-inline: var(--admin-space-2);
+  color: var(--admin-text-secondary);
+  border-radius: var(--admin-radius-sm);
+}
+
+html.payload-admin-root .collection-list .list-selection__button:hover,
+html.payload-admin-root .collection-list .list-selection__button:focus-visible {
+  color: var(--admin-text);
+  background: var(--admin-surface-secondary);
+}
+
+html.payload-admin-root .collection-list .list-selection__button:focus-visible {
+  outline: var(--admin-focus-ring);
+  outline-offset: var(--admin-focus-offset);
+}
+
+html.payload-admin-root .collection-list__list-selection {
+  max-width: 100%;
+  padding: var(--admin-space-3) var(--gutter-h);
+  flex-wrap: wrap;
+  gap: var(--admin-space-3);
+  background: color-mix(in srgb, var(--admin-sidebar-bg) 94%, transparent);
+  border-block-start: 1px solid var(--admin-border-strong);
+  box-shadow: 0 -0.75rem 2rem
+    color-mix(in srgb, var(--admin-bg) 64%, transparent);
+  backdrop-filter: blur(16px);
+}
+
+html.payload-admin-root .collection-list__list-selection-actions {
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+html.payload-admin-root .collection-list .page-controls {
+  min-width: 0;
+  min-height: var(--admin-input-height-lg);
+  padding: var(--admin-space-3) var(--admin-space-4);
+  flex-wrap: wrap;
+  gap: var(--admin-space-3);
+  color: var(--admin-muted);
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-lg);
+}
+
+html.payload-admin-root .collection-list .page-controls__page-info {
+  color: var(--admin-text-secondary);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+html.payload-admin-root .collection-list .paginator {
+  min-width: 0;
+  flex-wrap: wrap;
+  gap: var(--admin-space-1);
+}
+
+html.payload-admin-root .collection-list .paginator__page {
+  min-width: var(--admin-input-height-sm);
+  min-height: var(--admin-input-height-sm);
+  margin: 0;
+  align-items: center;
+  color: var(--admin-text-secondary);
+  border: 1px solid transparent;
+  border-radius: var(--admin-radius-md);
+  font-variant-numeric: tabular-nums;
+}
+
+html.payload-admin-root .collection-list .paginator__page:hover:not(:disabled),
+html.payload-admin-root .collection-list .paginator__page:focus-visible {
+  color: var(--admin-text);
+  background: var(--admin-surface-hover);
+  border-color: var(--admin-border-strong);
+}
+
+html.payload-admin-root .collection-list .paginator__page:focus-visible {
+  outline: var(--admin-focus-ring);
+  outline-offset: var(--admin-focus-offset);
+}
+
+html.payload-admin-root .collection-list .paginator__page--is-current {
+  color: var(--admin-on-accent);
+  background: var(--admin-primary);
+  border-color: var(--admin-primary-hover);
+  box-shadow: inset 0 -0.125rem
+    color-mix(in srgb, var(--admin-primary-active) 72%, transparent);
+}
+
+html.payload-admin-root .collection-list .paginator__page:disabled {
+  color: var(--admin-muted);
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
+html.payload-admin-root .collection-list .per-page__base-button {
+  min-height: var(--admin-input-height-sm);
+  padding-inline: var(--admin-space-2);
+  color: var(--admin-text-secondary);
+  border-radius: var(--admin-radius-sm);
+}
+
+html.payload-admin-root .collection-list .per-page__base-button:hover,
+html.payload-admin-root .collection-list .per-page__base-button:focus-visible {
+  color: var(--admin-text);
+  background: var(--admin-surface-hover);
+}
+
+html.payload-admin-root .collection-list .per-page__base-button:focus-visible {
+  outline: var(--admin-focus-ring);
+  outline-offset: var(--admin-focus-offset);
+}
+
+html.payload-admin-root .collection-list .no-results {
+  min-height: 15rem;
+  padding: var(--admin-space-8);
+  align-items: center;
+  text-align: center;
+  color: var(--admin-text);
+  background:
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--admin-primary) 7%, transparent),
+      transparent 55%
+    ),
+    var(--admin-surface);
+  border: 1px dashed var(--admin-border-strong);
+  border-radius: var(--admin-radius-lg);
+}
+
+html.payload-admin-root .collection-list .no-results p {
+  max-width: 36rem;
+  color: var(--admin-muted);
+  line-height: 1.6;
+}
+
+html.payload-admin-root .collection-list .no-results__actions {
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+html.payload-admin-root .collection-list__shimmer {
+  min-width: 0;
+  overflow: hidden;
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-lg);
+}
+
+@media (max-width: 64rem) {
+  html.payload-admin-root .collection-list .list-header__content {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  html.payload-admin-root .collection-list .list-header__actions {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 48rem) {
+  html.payload-admin-root .collection-list .list-header {
+    padding-block-start: var(--admin-space-4);
+  }
+
+  html.payload-admin-root .collection-list .list-header__title-and-actions,
+  html.payload-admin-root .collection-list .list-header__actions {
+    width: 100%;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  html.payload-admin-root .collection-list .list-header__title-actions {
+    width: 100%;
+    align-items: stretch;
+  }
+
+  html.payload-admin-root
+    .collection-list
+    .list-create-new-doc__create-new-button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  html.payload-admin-root .collection-list .list-controls {
+    padding: var(--admin-space-2);
+  }
+
+  html.payload-admin-root .collection-list .search-bar {
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    row-gap: var(--admin-space-2);
+    background: transparent;
+    border: 0;
+  }
+
+  html.payload-admin-root .collection-list .search-bar:focus-within {
+    box-shadow: none;
+  }
+
+  html.payload-admin-root .collection-list .search-filter {
+    background: var(--admin-surface-secondary);
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius-md);
+  }
+
+  html.payload-admin-root .collection-list .search-filter:focus-within {
+    border-color: var(--admin-primary-hover);
+    box-shadow: var(--admin-shadow-focus);
+  }
+
+  html.payload-admin-root .collection-list .search-bar__actions {
+    width: 100%;
+    padding: 0;
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-content: stretch;
+  }
+
+  html.payload-admin-root .collection-list .list-controls .pill {
+    min-height: var(--admin-input-height);
+    flex: 1 1 8rem;
+    justify-content: space-between;
+  }
+
+  html.payload-admin-root .collection-list .table {
+    width: 100%;
+    left: auto;
+    padding: 0;
+    border-radius: var(--admin-radius-md);
+  }
+
+  html.payload-admin-root .collection-list .table th,
+  html.payload-admin-root .collection-list .table td {
+    min-width: 8rem;
+    max-width: 78vw;
+  }
+
+  html.payload-admin-root .collection-list .page-controls {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  html.payload-admin-root .collection-list .paginator {
+    width: 100%;
+  }
+}
+
+@media (prefers-contrast: more) {
+  html.payload-admin-root .collection-list .list-controls,
+  html.payload-admin-root .collection-list .table,
+  html.payload-admin-root .collection-list .page-controls,
+  html.payload-admin-root .collection-list .no-results {
+    border-color: var(--admin-text-secondary);
+  }
+
+  html.payload-admin-root .collection-list .table th,
+  html.payload-admin-root .collection-list .table td {
+    border-block-end-color: var(--admin-text-secondary);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.payload-admin-root
+    .collection-list
+    .list-create-new-doc__create-new-button,
+  html.payload-admin-root .collection-list .search-bar,
+  html.payload-admin-root .collection-list .list-controls .pill,
+  html.payload-admin-root .collection-list .table tbody tr {
+    transition: none;
+  }
+}

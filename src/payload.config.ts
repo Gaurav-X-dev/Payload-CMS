@@ -1,4 +1,7 @@
-import { buildConfig, type CollectionConfig } from 'payload'
+import {
+  buildConfig,
+  type CollectionConfig,
+} from 'payload'
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { s3Storage } from '@payloadcms/storage-s3'
@@ -62,6 +65,16 @@ export default buildConfig({
     user: 'users',
     importMap: {
       baseDir: path.resolve(dirname),
+    },
+    components: {
+      views: {
+        dashboard: {
+          Component: {
+            exportName: 'EnterpriseDashboard',
+            path: './components/admin/EnterpriseDashboard',
+          },
+        },
+      },
     },
   },
   collections: [

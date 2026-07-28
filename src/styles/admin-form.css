@@ -1,0 +1,685 @@
+/*
+ * Stage 5 native create/edit presentation.
+ *
+ * Payload retains ownership of form state, validation, permissions, document
+ * actions, uploads, drawers, and editor behavior. These rules use stable native
+ * classes and are scoped to the Payload route layout.
+ */
+
+html.payload-admin-root .collection-edit {
+  width: 100%;
+  min-width: 0;
+}
+
+html.payload-admin-root .collection-edit__main-wrapper,
+html.payload-admin-root .collection-edit__main,
+html.payload-admin-root .collection-edit__form,
+html.payload-admin-root .document-fields,
+html.payload-admin-root .document-fields__main,
+html.payload-admin-root .document-fields__edit,
+html.payload-admin-root .document-fields__fields,
+html.payload-admin-root .document-fields__sidebar-wrap,
+html.payload-admin-root .document-fields__sidebar,
+html.payload-admin-root .document-fields__sidebar-fields {
+  min-width: 0;
+}
+
+html.payload-admin-root .collection-edit__main {
+  padding-block-end: var(--admin-space-12);
+}
+
+html.payload-admin-root .document-fields__edit {
+  background: transparent;
+}
+
+html.payload-admin-root .document-fields__sidebar {
+  background:
+    linear-gradient(180deg, var(--admin-surface-glow), transparent 14rem),
+    var(--admin-surface);
+  border-inline-start: 1px solid var(--admin-border);
+  box-shadow: var(--admin-shadow-md);
+}
+
+html.payload-admin-root .document-fields__label {
+  color: var(--admin-muted);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.075em;
+  text-transform: uppercase;
+}
+
+html.payload-admin-root .doc-controls {
+  color: var(--admin-text-secondary);
+  background: var(--admin-header-bg);
+  border-block-end: 1px solid var(--admin-border);
+  box-shadow: var(--admin-shadow-md);
+  backdrop-filter: blur(16px);
+}
+
+html.payload-admin-root .doc-controls__wrapper,
+html.payload-admin-root .doc-controls__content,
+html.payload-admin-root .doc-controls__controls-wrapper,
+html.payload-admin-root .doc-controls__controls {
+  min-width: 0;
+}
+
+html.payload-admin-root .doc-controls__content,
+html.payload-admin-root .doc-controls__controls {
+  gap: var(--admin-space-2);
+}
+
+html.payload-admin-root .doc-controls__meta {
+  color: var(--admin-muted);
+}
+
+html.payload-admin-root .doc-controls__label {
+  color: var(--admin-muted);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+html.payload-admin-root .doc-controls__value {
+  color: var(--admin-text-secondary);
+  overflow-wrap: anywhere;
+}
+
+html.payload-admin-root .doc-controls__divider {
+  background: var(--admin-border);
+}
+
+html.payload-admin-root .doc-controls .btn {
+  min-height: var(--admin-input-height-sm);
+  margin: 0;
+  border-radius: var(--admin-radius-pill);
+}
+
+html.payload-admin-root .doc-controls .btn--style-primary {
+  color: var(--admin-on-accent);
+  background: var(--admin-primary);
+  border-color: var(--admin-primary);
+  box-shadow: var(--admin-shadow-sm);
+}
+
+html.payload-admin-root .doc-controls .btn--style-primary:hover,
+html.payload-admin-root .doc-controls .btn--style-primary:focus-visible {
+  color: var(--admin-on-accent);
+  background: var(--admin-primary-hover);
+  border-color: var(--admin-primary-hover);
+  box-shadow: var(--admin-shadow-focus);
+}
+
+html.payload-admin-root .doc-controls__dots {
+  min-width: var(--admin-input-height-sm);
+  min-height: var(--admin-input-height-sm);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-pill);
+  transition:
+    color var(--admin-transition),
+    background-color var(--admin-transition),
+    border-color var(--admin-transition);
+}
+
+html.payload-admin-root .doc-controls__dots:hover,
+html.payload-admin-root .doc-controls__dots:focus-visible,
+html.payload-admin-root .doc-controls__dots[aria-expanded='true'] {
+  color: var(--admin-text);
+  background: var(--admin-surface-hover);
+  border-color: var(--admin-border-strong);
+}
+
+html.payload-admin-root .doc-controls__popup {
+  overflow: hidden;
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-md);
+  box-shadow: var(--admin-shadow-lg);
+}
+
+html.payload-admin-root .field-type {
+  min-width: 0;
+}
+
+html.payload-admin-root .field-label {
+  color: var(--admin-text-secondary);
+  font-size: 0.8125rem;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+}
+
+html.payload-admin-root .field-description {
+  max-width: 52rem;
+  color: var(--admin-muted);
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+html.payload-admin-root .field-error,
+html.payload-admin-root .error-message {
+  color: var(--admin-danger);
+  font-weight: 600;
+}
+
+html.payload-admin-root .field-type.text input,
+html.payload-admin-root .field-type.email input,
+html.payload-admin-root .field-type.number input,
+html.payload-admin-root .field-type.password input,
+html.payload-admin-root .field-type.textarea textarea,
+html.payload-admin-root .date-time-field input,
+html.payload-admin-root .file-field__filename,
+html.payload-admin-root .file-field__remote-file,
+html.payload-admin-root .react-select .rs__control,
+html.payload-admin-root .code-editor {
+  min-height: var(--admin-input-height);
+  color: var(--admin-text);
+  background: var(--admin-surface);
+  border-color: var(--admin-border);
+  border-radius: var(--admin-radius-md);
+  box-shadow: var(--admin-shadow-sm);
+  transition:
+    background-color var(--admin-transition),
+    border-color var(--admin-transition),
+    box-shadow var(--admin-transition);
+}
+
+html.payload-admin-root .field-type.text input:hover,
+html.payload-admin-root .field-type.email input:hover,
+html.payload-admin-root .field-type.number input:hover,
+html.payload-admin-root .field-type.password input:hover,
+html.payload-admin-root .field-type.textarea textarea:hover,
+html.payload-admin-root .date-time-field input:hover,
+html.payload-admin-root .react-select .rs__control:hover,
+html.payload-admin-root .code-editor:hover {
+  border-color: var(--admin-border-strong);
+}
+
+html.payload-admin-root .field-type.text input:focus,
+html.payload-admin-root .field-type.email input:focus,
+html.payload-admin-root .field-type.number input:focus,
+html.payload-admin-root .field-type.password input:focus,
+html.payload-admin-root .field-type.textarea textarea:focus,
+html.payload-admin-root .date-time-field input:focus,
+html.payload-admin-root .react-select .rs__control:focus-within,
+html.payload-admin-root .code-editor:focus-within {
+  background: var(--admin-surface-secondary);
+  border-color: var(--admin-primary-hover);
+  box-shadow: var(--admin-shadow-focus);
+  outline: 0;
+}
+
+html.payload-admin-root .date-time-picker .react-datepicker {
+  overflow: hidden;
+  color: var(--admin-text-secondary);
+  background: var(--admin-surface);
+  border-color: var(--admin-border);
+  border-radius: var(--admin-radius-lg);
+  box-shadow: var(--admin-shadow-lg);
+}
+
+html.payload-admin-root .date-time-picker .react-datepicker__header {
+  background: var(--admin-surface-secondary);
+  border-block-end: 1px solid var(--admin-border);
+}
+
+html.payload-admin-root .date-time-picker .react-datepicker__day,
+html.payload-admin-root .date-time-picker .react-datepicker__month-text,
+html.payload-admin-root .date-time-picker .react-datepicker__time-list-item {
+  border-radius: var(--admin-radius-sm);
+  transition:
+    color var(--admin-transition-fast),
+    background-color var(--admin-transition-fast);
+}
+
+html.payload-admin-root .date-time-picker .react-datepicker__day:hover,
+html.payload-admin-root .date-time-picker .react-datepicker__day:focus,
+html.payload-admin-root .date-time-picker .react-datepicker__month-text:hover,
+html.payload-admin-root .date-time-picker .react-datepicker__time-list-item:hover {
+  color: var(--admin-text);
+  background: var(--admin-surface-hover);
+}
+
+html.payload-admin-root .date-time-picker .react-datepicker__day--selected,
+html.payload-admin-root .date-time-picker .react-datepicker__day--keyboard-selected,
+html.payload-admin-root .date-time-picker .react-datepicker__month-text--selected,
+html.payload-admin-root .date-time-picker .react-datepicker__time-list-item--selected {
+  color: var(--admin-on-accent);
+  background: var(--admin-primary);
+}
+
+html.payload-admin-root .date-time-picker .react-datepicker__day--disabled,
+html.payload-admin-root .date-time-picker .react-datepicker__time-list-item--disabled {
+  color: var(--admin-muted);
+  opacity: 0.45;
+}
+
+html.payload-admin-root .field-type input::placeholder,
+html.payload-admin-root .field-type textarea::placeholder {
+  color: var(--admin-muted);
+  opacity: 0.75;
+}
+
+html.payload-admin-root .field-type.textarea textarea {
+  min-height: 7rem;
+  line-height: 1.55;
+}
+
+html.payload-admin-root .react-select .rs__value-container,
+html.payload-admin-root .react-select .rs__single-value,
+html.payload-admin-root .react-select .rs__input-container {
+  min-width: 0;
+  color: var(--admin-text);
+}
+
+html.payload-admin-root .react-select .rs__placeholder {
+  color: var(--admin-muted);
+}
+
+html.payload-admin-root .react-select .rs__menu {
+  overflow: hidden;
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-md);
+  box-shadow: var(--admin-shadow-lg);
+}
+
+html.payload-admin-root .react-select .rs__option {
+  color: var(--admin-text-secondary);
+}
+
+html.payload-admin-root .react-select .rs__option--is-focused {
+  color: var(--admin-text);
+  background: var(--admin-surface-hover);
+}
+
+html.payload-admin-root .react-select .rs__option--is-selected {
+  color: var(--admin-text);
+  background: var(--admin-primary-active);
+}
+
+html.payload-admin-root .relationship__wrap {
+  min-width: 0;
+  gap: var(--admin-space-2);
+}
+
+html.payload-admin-root .checkbox-input__input,
+html.payload-admin-root .radio-input__styled-radio {
+  background: var(--admin-surface);
+  border-color: var(--admin-border-strong);
+  box-shadow: var(--admin-shadow-sm);
+  transition:
+    background-color var(--admin-transition),
+    border-color var(--admin-transition),
+    box-shadow var(--admin-transition);
+}
+
+html.payload-admin-root .checkbox-input:hover .checkbox-input__input,
+html.payload-admin-root .radio-input:hover .radio-input__styled-radio {
+  background: var(--admin-surface-hover);
+  border-color: var(--admin-primary-hover);
+}
+
+html.payload-admin-root .radio-input__label {
+  color: var(--admin-text-secondary);
+}
+
+html.payload-admin-root .row__fields {
+  min-width: 0;
+  gap: var(--admin-space-4);
+}
+
+html.payload-admin-root .group-field__header,
+html.payload-admin-root .array-field__header,
+html.payload-admin-root .blocks-field__header {
+  color: var(--admin-text);
+}
+
+html.payload-admin-root .group-field__title,
+html.payload-admin-root .array-field__title,
+html.payload-admin-root .blocks-field__header h3 {
+  color: var(--admin-text);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+html.payload-admin-root .group-field {
+  border-color: var(--admin-border);
+}
+
+html.payload-admin-root .group-field--gutter {
+  border-inline-start-color: var(--admin-primary);
+}
+
+html.payload-admin-root .tabs-field__tabs-wrap {
+  margin-block-end: var(--admin-space-5);
+  scrollbar-color: var(--admin-border-strong) transparent;
+}
+
+html.payload-admin-root .tabs-field__tabs {
+  gap: var(--admin-space-1);
+  border-block-end-color: var(--admin-border);
+}
+
+html.payload-admin-root .tabs-field__tab {
+  min-height: var(--admin-input-height-sm);
+  color: var(--admin-muted);
+  border-radius: var(--admin-radius-sm) var(--admin-radius-sm) 0 0;
+  transition:
+    color var(--admin-transition),
+    background-color var(--admin-transition);
+}
+
+html.payload-admin-root .tabs-field__tab:hover,
+html.payload-admin-root .tabs-field__tab:focus-visible {
+  color: var(--admin-text);
+  background: var(--admin-surface-hover);
+}
+
+html.payload-admin-root .tabs-field__tab--active {
+  color: var(--admin-text);
+}
+
+html.payload-admin-root .array-field,
+html.payload-admin-root .blocks-field {
+  min-width: 0;
+}
+
+html.payload-admin-root .array-field__draggable-rows,
+html.payload-admin-root .blocks-field__rows {
+  gap: var(--admin-space-3);
+}
+
+html.payload-admin-root .array-field__header-action,
+html.payload-admin-root .blocks-field__header-action {
+  color: var(--admin-muted);
+}
+
+html.payload-admin-root .array-field__header-action:hover,
+html.payload-admin-root .array-field__header-action:focus-visible,
+html.payload-admin-root .blocks-field__header-action:hover,
+html.payload-admin-root .blocks-field__header-action:focus-visible {
+  color: var(--admin-text);
+}
+
+html.payload-admin-root .array-field__add-row,
+html.payload-admin-root .blocks-field__drawer-toggler .btn {
+  min-height: var(--admin-input-height-sm);
+  border-radius: var(--admin-radius-pill);
+}
+
+html.payload-admin-root .collapsible {
+  overflow: hidden;
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-lg);
+  box-shadow: var(--admin-shadow-sm);
+}
+
+html.payload-admin-root .collapsible__toggle {
+  min-height: var(--admin-input-height);
+  color: var(--admin-text-secondary);
+  background: var(--admin-surface-secondary);
+  transition:
+    color var(--admin-transition),
+    background-color var(--admin-transition);
+}
+
+html.payload-admin-root .collapsible__toggle:hover,
+html.payload-admin-root .collapsible__toggle:focus-visible {
+  color: var(--admin-text);
+  background: var(--admin-surface-hover);
+}
+
+html.payload-admin-root .collapsible__content {
+  border-block-start: 1px solid var(--admin-border);
+}
+
+html.payload-admin-root .file-field {
+  overflow: hidden;
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-lg);
+  box-shadow: var(--admin-shadow-sm);
+}
+
+html.payload-admin-root .file-field .dropzone {
+  background:
+    linear-gradient(135deg, var(--admin-surface-glow), transparent),
+    var(--admin-surface-secondary);
+  border: 1px dashed var(--admin-border-strong);
+  border-radius: var(--admin-radius-md);
+}
+
+html.payload-admin-root .file-field__thumbnail-wrap .thumbnail {
+  background: var(--admin-bg);
+}
+
+html.payload-admin-root .file-field__dragAndDropText,
+html.payload-admin-root .upload__dragAndDropText,
+html.payload-admin-root .upload__dropzoneContent__orText {
+  color: var(--admin-muted);
+}
+
+html.payload-admin-root .code-editor {
+  overflow: hidden;
+}
+
+html.payload-admin-root .code-field,
+html.payload-admin-root .json-field {
+  min-width: 0;
+}
+
+html.payload-admin-root .rich-text-lexical__wrap {
+  overflow: hidden;
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-lg);
+  box-shadow: var(--admin-shadow-sm);
+  transition:
+    border-color var(--admin-transition),
+    box-shadow var(--admin-transition);
+}
+
+html.payload-admin-root .rich-text-lexical__wrap:focus-within {
+  border-color: var(--admin-primary-hover);
+  box-shadow: var(--admin-shadow-focus);
+}
+
+html.payload-admin-root .rich-text-lexical__label-row {
+  min-width: 0;
+}
+
+html.payload-admin-root .toolbar-popup__button,
+html.payload-admin-root .toolbar-popup__dropdown,
+html.payload-admin-root .slash-menu-popup {
+  color: var(--admin-text-secondary);
+  background: var(--admin-surface-secondary);
+  border-color: var(--admin-border);
+}
+
+html.payload-admin-root .toolbar-popup__button:hover,
+html.payload-admin-root .toolbar-popup__button:focus-visible,
+html.payload-admin-root .toolbar-popup__dropdown-item:hover,
+html.payload-admin-root .toolbar-popup__dropdown-item:focus-visible {
+  color: var(--admin-text);
+  background: var(--admin-surface-hover);
+}
+
+html.payload-admin-root .toolbar-popup__dropdown,
+html.payload-admin-root .slash-menu-popup {
+  overflow: auto;
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-md);
+  box-shadow: var(--admin-shadow-lg);
+}
+
+html.payload-admin-root .payload-richtext-code-block {
+  overflow: auto;
+  background: var(--admin-bg);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-md);
+}
+
+html.payload-admin-root .LexicalEditorTheme__block {
+  border-color: var(--admin-border);
+  border-radius: var(--admin-radius-md);
+}
+
+html.payload-admin-root .confirmation-modal__wrapper {
+  width: min(34rem, calc(100vw - 2rem));
+  color: var(--admin-text);
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-xl);
+  box-shadow: var(--admin-shadow-lg);
+}
+
+html.payload-admin-root .confirmation-modal__content {
+  color: var(--admin-text-secondary);
+}
+
+html.payload-admin-root .confirmation-modal__controls {
+  flex-wrap: wrap;
+}
+
+html.payload-admin-root .drawer__content {
+  color: var(--admin-text);
+  background:
+    linear-gradient(180deg, var(--admin-surface-glow), transparent 14rem),
+    var(--admin-bg);
+  border-inline-start: 1px solid var(--admin-border);
+  box-shadow: var(--admin-shadow-lg);
+}
+
+html.payload-admin-root .drawer__header {
+  gap: var(--admin-space-4);
+}
+
+html.payload-admin-root .drawer__header__title {
+  min-width: 0;
+  color: var(--admin-text);
+  overflow-wrap: anywhere;
+}
+
+html.payload-admin-root .shimmer-effect {
+  border-color: var(--admin-border);
+  border-radius: var(--admin-radius-md);
+}
+
+html.payload-admin-root .loading-overlay {
+  color: var(--admin-primary-hover);
+}
+
+html.payload-admin-root .loading-overlay__text {
+  color: var(--admin-text-secondary);
+  font-weight: 700;
+}
+
+html.payload-admin-root .no-results {
+  min-height: 10rem;
+  padding: var(--admin-space-6);
+  color: var(--admin-text-secondary);
+  background:
+    linear-gradient(135deg, var(--admin-surface-glow), transparent),
+    var(--admin-surface);
+  border: 1px dashed var(--admin-border-strong);
+  border-radius: var(--admin-radius-lg);
+}
+
+html.payload-admin-root .no-results__actions {
+  flex-wrap: wrap;
+}
+
+html.payload-admin-root .field-type.error input,
+html.payload-admin-root .field-type.error textarea,
+html.payload-admin-root .date-time-field--has-error input,
+html.payload-admin-root .field-type.error .rs__control,
+html.payload-admin-root .code-field.error .code-editor,
+html.payload-admin-root .json-field.error .code-editor {
+  border-color: var(--admin-danger);
+  box-shadow: 0 0 0 3px var(--admin-danger-focus);
+}
+
+html.payload-admin-root .field-type.read-only,
+html.payload-admin-root .field-type input:disabled,
+html.payload-admin-root .field-type textarea:disabled,
+html.payload-admin-root .react-select.rs--is-disabled .rs__control {
+  color: var(--admin-muted);
+  opacity: 0.78;
+}
+
+@media (max-width: 1024px) {
+  html.payload-admin-root .document-fields__sidebar {
+    border-inline-start: 0;
+    border-block-start: 1px solid var(--admin-border);
+    box-shadow: var(--admin-shadow-md);
+  }
+
+  html.payload-admin-root .doc-controls__content,
+  html.payload-admin-root .doc-controls__controls {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 768px) {
+  html.payload-admin-root .collection-edit__main {
+    padding-block-end: var(--admin-space-8);
+  }
+
+  html.payload-admin-root .doc-controls {
+    backdrop-filter: blur(12px);
+  }
+
+  html.payload-admin-root .doc-controls__controls {
+    width: 100%;
+  }
+
+  html.payload-admin-root .doc-controls .btn {
+    min-height: var(--admin-input-height);
+  }
+
+  html.payload-admin-root .row__fields {
+    gap: var(--admin-space-3);
+  }
+
+  html.payload-admin-root .confirmation-modal__controls .btn {
+    flex: 1 1 10rem;
+  }
+}
+
+@media (max-width: 480px) {
+  html.payload-admin-root .doc-controls__controls .btn {
+    flex: 1 1 auto;
+  }
+
+  html.payload-admin-root .relationship__wrap,
+  html.payload-admin-root .file-field__upload-actions,
+  html.payload-admin-root .file-field__dropzoneButtons {
+    flex-wrap: wrap;
+  }
+
+  html.payload-admin-root .tabs-field__tab {
+    min-height: var(--admin-input-height);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.payload-admin-root .collection-edit *,
+  html.payload-admin-root .drawer *,
+  html.payload-admin-root .confirmation-modal * {
+    scroll-behavior: auto;
+    transition-duration: 0.01ms;
+  }
+}
+
+@media (forced-colors: active) {
+  html.payload-admin-root .field-type.error input,
+  html.payload-admin-root .field-type.error textarea,
+  html.payload-admin-root .date-time-field--has-error input,
+  html.payload-admin-root .field-type.error .rs__control,
+  html.payload-admin-root .code-field.error .code-editor,
+  html.payload-admin-root .json-field.error .code-editor {
+    border: 2px solid Mark;
+  }
+}

@@ -1,0 +1,640 @@
+/*
+ * Payload Admin design foundation.
+ *
+ * This stylesheet is imported only by the `(payload)` route layout. Every
+ * selector is rooted at the Payload layout's explicit HTML class so tenant
+ * websites and shared frontend components cannot inherit these values.
+ */
+html.payload-admin-root {
+  color-scheme: dark;
+
+  --admin-bg: #070b16;
+  --admin-sidebar-bg: #0a1020;
+  --admin-surface: #0d1526;
+  --admin-surface-secondary: #111b2e;
+  --admin-surface-hover: #17233a;
+  --admin-border: #1b2940;
+  --admin-border-strong: #2a3a55;
+  --admin-primary: #6d3df5;
+  --admin-primary-hover: #7c4dff;
+  --admin-primary-active: #5c2fe0;
+  --admin-text: #f8fafc;
+  --admin-text-secondary: #cbd5e1;
+  --admin-muted: #94a3b8;
+  --admin-success: #22c55e;
+  --admin-warning: #f59e0b;
+  --admin-info: #3b82f6;
+  --admin-danger: #ef4444;
+  --admin-on-accent: #ffffff;
+  --admin-overlay: rgb(3 7 18 / 72%);
+  --admin-page-glow: rgb(109 61 245 / 9%);
+  --admin-surface-glow: rgb(109 61 245 / 6%);
+  --admin-surface-sheen: rgb(255 255 255 / 1.5%);
+  --admin-hover-subtle: rgb(255 255 255 / 3%);
+  --admin-header-bg: rgb(7 11 22 / 88%);
+  --admin-selection-bg: rgb(109 61 245 / 42%);
+  --admin-accent-shadow: rgb(124 77 255 / 44%);
+  --admin-danger-focus: rgb(239 68 68 / 16%);
+
+  --admin-neutral-soft: rgb(148 163 184 / 10%);
+  --admin-neutral-border: rgb(148 163 184 / 24%);
+  --admin-primary-soft: rgb(109 61 245 / 14%);
+  --admin-primary-soft-border: rgb(124 77 255 / 34%);
+  --admin-primary-soft-text: #c4b5fd;
+  --admin-success-soft: rgb(34 197 94 / 12%);
+  --admin-success-soft-border: rgb(34 197 94 / 30%);
+  --admin-success-soft-text: #86efac;
+  --admin-warning-soft: rgb(245 158 11 / 12%);
+  --admin-warning-soft-border: rgb(245 158 11 / 30%);
+  --admin-warning-soft-text: #fcd34d;
+  --admin-info-soft: rgb(59 130 246 / 12%);
+  --admin-info-soft-border: rgb(59 130 246 / 30%);
+  --admin-info-soft-text: #93c5fd;
+  --admin-danger-soft: rgb(239 68 68 / 12%);
+  --admin-danger-soft-border: rgb(239 68 68 / 30%);
+  --admin-danger-soft-text: #fca5a5;
+
+  --admin-space-1: 0.25rem;
+  --admin-space-2: 0.5rem;
+  --admin-space-3: 0.75rem;
+  --admin-space-4: 1rem;
+  --admin-space-5: 1.25rem;
+  --admin-space-6: 1.5rem;
+  --admin-space-8: 2rem;
+  --admin-space-10: 2.5rem;
+  --admin-space-12: 3rem;
+
+  --admin-radius-sm: 0.375rem;
+  --admin-radius-md: 0.625rem;
+  --admin-radius-lg: 0.875rem;
+  --admin-radius-xl: 1.125rem;
+  --admin-radius-pill: 999px;
+
+  --admin-shadow-sm: 0 1px 2px rgb(0 0 0 / 24%);
+  --admin-shadow-md: 0 12px 32px rgb(0 0 0 / 24%);
+  --admin-shadow-lg: 0 24px 64px rgb(0 0 0 / 34%);
+  --admin-shadow-focus: 0 0 0 3px rgb(109 61 245 / 32%);
+
+  --admin-input-height-sm: 2.25rem;
+  --admin-input-height: 2.75rem;
+  --admin-input-height-lg: 3rem;
+  --admin-header-height: 4.5rem;
+  --admin-sidebar-width: clamp(15rem, 18vw, 18rem);
+  --admin-transition-fast: 120ms ease;
+  --admin-transition: 180ms ease;
+  --admin-transition-slow: 260ms ease;
+  --admin-focus-ring: 2px solid #a78bfa;
+  --admin-focus-offset: 2px;
+
+  /* Payload theme compatibility mappings. */
+  --theme-bg: var(--admin-bg);
+  --theme-input-bg: var(--admin-surface);
+  --theme-text: var(--admin-text);
+  --theme-border-color: var(--admin-border);
+  --theme-elevation-0: var(--admin-bg);
+  --theme-elevation-50: var(--admin-surface);
+  --theme-elevation-100: var(--admin-surface-secondary);
+  --theme-elevation-150: var(--admin-border);
+  --theme-elevation-200: var(--admin-border-strong);
+  --theme-elevation-250: #364966;
+  --theme-elevation-300: #4a5d78;
+  --theme-elevation-350: #64748b;
+  --theme-elevation-400: #7c8ba1;
+  --theme-elevation-450: var(--admin-muted);
+  --theme-elevation-500: var(--admin-muted);
+  --theme-elevation-550: #a5b4c7;
+  --theme-elevation-600: var(--admin-text-secondary);
+  --theme-elevation-650: #d7dfeb;
+  --theme-elevation-700: #e2e8f0;
+  --theme-elevation-750: #e8edf4;
+  --theme-elevation-800: #eef2f7;
+  --theme-elevation-850: #f1f5f9;
+  --theme-elevation-900: #f8fafc;
+  --theme-elevation-950: #fbfdff;
+  --theme-elevation-1000: #ffffff;
+  --theme-success-500: var(--admin-success);
+  --theme-warning-500: var(--admin-warning);
+  --theme-error-500: var(--admin-danger);
+  --accessibility-outline: var(--admin-focus-ring);
+  --accessibility-outline-offset: var(--admin-focus-offset);
+  --style-radius-s: var(--admin-radius-sm);
+  --style-radius-m: var(--admin-radius-md);
+  --style-radius-l: var(--admin-radius-lg);
+  --app-header-height: var(--admin-header-height);
+  --gutter-h: clamp(1.25rem, 3vw, 3.5rem);
+  --nav-width: var(--admin-sidebar-width);
+  --nav-trans-time: var(--admin-transition);
+
+  min-height: 100%;
+  background: var(--admin-bg);
+  color: var(--admin-text);
+}
+
+html.payload-admin-root[data-theme='light'] {
+  color-scheme: light;
+
+  --admin-bg: #f3f5fa;
+  --admin-sidebar-bg: #f8f9fc;
+  --admin-surface: #ffffff;
+  --admin-surface-secondary: #f7f8fc;
+  --admin-surface-hover: #eeebff;
+  --admin-border: #dfe4ee;
+  --admin-border-strong: #c7cfdd;
+  --admin-primary: #6435e8;
+  --admin-primary-hover: #5528d5;
+  --admin-primary-active: #4821bb;
+  --admin-text: #111827;
+  --admin-text-secondary: #334155;
+  --admin-muted: #64748b;
+  --admin-success: #15803d;
+  --admin-warning: #b45309;
+  --admin-info: #2563eb;
+  --admin-danger: #dc2626;
+  --admin-on-accent: #ffffff;
+  --admin-overlay: rgb(15 23 42 / 38%);
+  --admin-page-glow: rgb(100 53 232 / 8%);
+  --admin-surface-glow: rgb(100 53 232 / 5%);
+  --admin-surface-sheen: rgb(255 255 255 / 62%);
+  --admin-hover-subtle: rgb(100 53 232 / 5%);
+  --admin-header-bg: rgb(248 250 252 / 90%);
+  --admin-selection-bg: rgb(100 53 232 / 20%);
+  --admin-accent-shadow: rgb(100 53 232 / 24%);
+  --admin-danger-focus: rgb(220 38 38 / 14%);
+
+  --admin-neutral-soft: rgb(100 116 139 / 8%);
+  --admin-neutral-border: rgb(100 116 139 / 22%);
+  --admin-primary-soft: rgb(100 53 232 / 9%);
+  --admin-primary-soft-border: rgb(100 53 232 / 24%);
+  --admin-primary-soft-text: #5528d5;
+  --admin-success-soft: rgb(21 128 61 / 9%);
+  --admin-success-soft-border: rgb(21 128 61 / 24%);
+  --admin-success-soft-text: #166534;
+  --admin-warning-soft: rgb(180 83 9 / 9%);
+  --admin-warning-soft-border: rgb(180 83 9 / 24%);
+  --admin-warning-soft-text: #92400e;
+  --admin-info-soft: rgb(37 99 235 / 9%);
+  --admin-info-soft-border: rgb(37 99 235 / 24%);
+  --admin-info-soft-text: #1d4ed8;
+  --admin-danger-soft: rgb(220 38 38 / 8%);
+  --admin-danger-soft-border: rgb(220 38 38 / 24%);
+  --admin-danger-soft-text: #b91c1c;
+
+  --admin-shadow-sm: 0 1px 2px rgb(15 23 42 / 8%);
+  --admin-shadow-md: 0 14px 34px rgb(15 23 42 / 10%);
+  --admin-shadow-lg: 0 24px 64px rgb(15 23 42 / 16%);
+  --admin-shadow-focus: 0 0 0 3px rgb(100 53 232 / 20%);
+  --admin-focus-ring: 2px solid #6435e8;
+
+  --theme-bg: var(--admin-bg);
+  --theme-input-bg: var(--admin-surface);
+  --theme-text: var(--admin-text);
+  --theme-border-color: var(--admin-border);
+  --theme-elevation-0: var(--admin-bg);
+  --theme-elevation-50: var(--admin-surface);
+  --theme-elevation-100: var(--admin-surface-secondary);
+  --theme-elevation-150: var(--admin-border);
+  --theme-elevation-200: var(--admin-border-strong);
+  --theme-elevation-250: #aeb8c8;
+  --theme-elevation-300: #94a3b8;
+  --theme-elevation-350: #7b8ba1;
+  --theme-elevation-400: var(--admin-muted);
+  --theme-elevation-450: #526176;
+  --theme-elevation-500: var(--admin-muted);
+  --theme-elevation-550: #475569;
+  --theme-elevation-600: var(--admin-text-secondary);
+  --theme-elevation-650: #293548;
+  --theme-elevation-700: #243044;
+  --theme-elevation-750: #1e293b;
+  --theme-elevation-800: #182235;
+  --theme-elevation-850: #151e2e;
+  --theme-elevation-900: var(--admin-text);
+  --theme-elevation-950: #0f172a;
+  --theme-elevation-1000: #0b1220;
+  --theme-success-500: var(--admin-success);
+  --theme-warning-500: var(--admin-warning);
+  --theme-error-500: var(--admin-danger);
+}
+
+html.payload-admin-root :focus-visible {
+  outline: var(--admin-focus-ring);
+  outline-offset: var(--admin-focus-offset);
+}
+
+html.payload-admin-root * {
+  scrollbar-color: var(--admin-border-strong) var(--admin-bg);
+}
+
+html.payload-admin-root ::selection {
+  background: var(--admin-selection-bg);
+  color: var(--admin-text);
+}
+
+/*
+ * Stage 2 shell
+ *
+ * Payload remains responsible for rendering permission-aware navigation,
+ * breadcrumbs, active routes, account access, and drawer/collapse state.
+ */
+
+html.payload-admin-root body {
+  background:
+    radial-gradient(circle at 78% -10%, var(--admin-page-glow), transparent 30rem),
+    var(--admin-bg);
+}
+
+html.payload-admin-root .template-default {
+  min-height: 100dvh;
+  background:
+    radial-gradient(circle at 82% 0%, var(--admin-page-glow), transparent 28rem),
+    var(--admin-bg);
+}
+
+html.payload-admin-root .template-default__wrap {
+  min-width: 0;
+  background: transparent;
+}
+
+html.payload-admin-root .nav {
+  width: var(--admin-sidebar-width);
+  background:
+    linear-gradient(180deg, var(--admin-surface-glow), transparent 12rem),
+    var(--admin-sidebar-bg);
+  border-inline-end: 1px solid var(--admin-border);
+  border-block: 0;
+  box-shadow: var(--admin-shadow-md);
+}
+
+html.payload-admin-root .nav__scroll {
+  padding-block-start: calc(var(--admin-header-height) + var(--admin-space-3));
+  padding-block-end: var(--admin-space-4);
+  padding-inline: var(--admin-space-3);
+  scrollbar-width: thin;
+  scrollbar-color: var(--admin-border-strong) transparent;
+}
+
+html.payload-admin-root .nav__scroll::-webkit-scrollbar {
+  display: block;
+  width: 0.375rem;
+}
+
+html.payload-admin-root .nav__scroll::-webkit-scrollbar-thumb {
+  background: var(--admin-border-strong);
+  border-radius: var(--admin-radius-pill);
+}
+
+html.payload-admin-root .nav__wrap {
+  gap: var(--admin-space-2);
+}
+
+html.payload-admin-root .nav-group {
+  width: 100%;
+}
+
+html.payload-admin-root .nav-group + .nav-group {
+  margin-block-start: var(--admin-space-4);
+}
+
+html.payload-admin-root .nav-group__toggle {
+  min-height: 2rem;
+  margin: 0 0 var(--admin-space-1);
+  padding: var(--admin-space-2) var(--admin-space-2);
+  align-items: center;
+  color: var(--admin-muted);
+  border-radius: var(--admin-radius-sm);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.075em;
+  line-height: 1;
+  text-transform: uppercase;
+  transition:
+    color var(--admin-transition),
+    background-color var(--admin-transition);
+}
+
+html.payload-admin-root .nav-group__toggle:hover,
+html.payload-admin-root .nav-group__toggle:focus-visible {
+  color: var(--admin-text);
+  background: var(--admin-hover-subtle);
+}
+
+html.payload-admin-root .nav-group__toggle:focus-visible {
+  box-shadow: var(--admin-shadow-focus);
+}
+
+html.payload-admin-root .nav-group__toggle svg {
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
+}
+
+html.payload-admin-root .nav-group__content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1875rem;
+}
+
+html.payload-admin-root .nav__link {
+  width: 100%;
+  min-height: 2.375rem;
+  padding: 0.5rem 0.75rem;
+  color: var(--admin-text-secondary);
+  border: 1px solid transparent;
+  border-radius: var(--admin-radius-md);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.3;
+  transition:
+    color var(--admin-transition),
+    background-color var(--admin-transition),
+    border-color var(--admin-transition),
+    transform var(--admin-transition-fast);
+}
+
+html.payload-admin-root .nav a.nav__link:hover,
+html.payload-admin-root .nav a.nav__link:focus-visible {
+  color: var(--admin-text);
+  background: var(--admin-surface-secondary);
+  border-color: var(--admin-border);
+  text-decoration: none;
+  transform: translateX(2px);
+}
+
+html.payload-admin-root .nav__link:focus-visible {
+  outline: none;
+  box-shadow: var(--admin-shadow-focus);
+}
+
+html.payload-admin-root .nav__link-indicator {
+  inset-inline-start: -0.25rem;
+  width: 0.1875rem;
+  height: 1.25rem;
+  background: var(--admin-primary-hover);
+  border-radius: var(--admin-radius-pill);
+  box-shadow: 0 0 0.875rem var(--admin-accent-shadow);
+}
+
+html.payload-admin-root .nav__link-label {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+html.payload-admin-root .nav__controls {
+  width: 100%;
+  padding: var(--admin-space-4) var(--admin-space-2) 0;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--admin-space-3);
+  border-block-start: 1px solid var(--admin-border);
+}
+
+html.payload-admin-root .nav__controls button,
+html.payload-admin-root .nav__controls a {
+  color: var(--admin-muted);
+  transition:
+    color var(--admin-transition),
+    transform var(--admin-transition-fast);
+}
+
+html.payload-admin-root .nav__controls button:hover,
+html.payload-admin-root .nav__controls a:hover {
+  color: var(--admin-text);
+}
+
+html.payload-admin-root .nav__header {
+  height: var(--admin-header-height);
+}
+
+html.payload-admin-root .nav__header-content {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-inline: var(--admin-space-3);
+}
+
+html.payload-admin-root .app-header {
+  position: sticky;
+  z-index: var(--z-modal);
+  inset-block-start: 0;
+  height: var(--admin-header-height);
+  color: var(--admin-text);
+  background: var(--admin-header-bg);
+  border-block-end: 1px solid var(--admin-border);
+  box-shadow: var(--admin-shadow-sm);
+  backdrop-filter: blur(18px) saturate(130%);
+}
+
+html.payload-admin-root .app-header__bg {
+  opacity: 1;
+  background:
+    linear-gradient(90deg, transparent, var(--admin-surface-glow)),
+    transparent;
+}
+
+html.payload-admin-root .app-header__content {
+  padding-inline: var(--gutter-h);
+}
+
+html.payload-admin-root .app-header__wrapper {
+  gap: var(--admin-space-4);
+}
+
+html.payload-admin-root .app-header__controls-wrapper {
+  min-width: 0;
+}
+
+html.payload-admin-root .step-nav {
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  gap: var(--admin-space-2);
+  color: var(--admin-muted);
+  font-size: 0.8125rem;
+}
+
+html.payload-admin-root .step-nav::-webkit-scrollbar {
+  display: none;
+}
+
+html.payload-admin-root .step-nav a {
+  color: var(--admin-text-secondary);
+  border-radius: var(--admin-radius-sm);
+  text-decoration: none;
+  transition:
+    color var(--admin-transition),
+    background-color var(--admin-transition);
+}
+
+html.payload-admin-root .step-nav a:hover,
+html.payload-admin-root .step-nav a:focus-visible {
+  color: var(--admin-text);
+  background: var(--admin-surface-secondary);
+}
+
+html.payload-admin-root .step-nav__home {
+  display: inline-flex;
+  width: 1.75rem;
+  height: 1.75rem;
+  align-items: center;
+  justify-content: center;
+}
+
+html.payload-admin-root .step-nav__home svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+html.payload-admin-root .step-nav__last {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--admin-text);
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+html.payload-admin-root .app-header__account {
+  display: inline-flex;
+  width: 2.5rem;
+  height: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  color: var(--admin-text-secondary);
+  background: linear-gradient(145deg, var(--admin-surface-hover), var(--admin-surface));
+  border: 1px solid var(--admin-border-strong);
+  border-radius: var(--admin-radius-pill);
+  box-shadow: var(--admin-shadow-sm);
+  transition:
+    border-color var(--admin-transition),
+    box-shadow var(--admin-transition),
+    transform var(--admin-transition-fast);
+}
+
+html.payload-admin-root .app-header__account:hover {
+  border-color: var(--admin-primary-hover);
+  box-shadow: var(--admin-shadow-focus);
+  transform: translateY(-1px);
+}
+
+html.payload-admin-root .app-header__account svg {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+html.payload-admin-root .template-default__nav-toggler {
+  width: 2.25rem;
+  height: 2.25rem;
+  align-items: center;
+  justify-content: center;
+  color: var(--admin-muted);
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-md);
+  transition:
+    color var(--admin-transition),
+    background-color var(--admin-transition),
+    border-color var(--admin-transition);
+}
+
+html.payload-admin-root .template-default__nav-toggler:hover,
+html.payload-admin-root .template-default__nav-toggler:focus-visible {
+  color: var(--admin-text);
+  background: var(--admin-surface-hover);
+  border-color: var(--admin-border-strong);
+}
+
+html.payload-admin-root .template-default__nav-toggler:focus-visible {
+  outline: none;
+  box-shadow: var(--admin-shadow-focus);
+}
+
+@media (max-width: 48rem) {
+  html.payload-admin-root {
+    --admin-header-height: 4rem;
+    --gutter-h: 1rem;
+    --nav-width: min(88vw, 20rem);
+  }
+
+  html.payload-admin-root .app-header__content {
+    padding-inline: var(--admin-space-3);
+  }
+
+  html.payload-admin-root .app-header__wrapper {
+    gap: var(--admin-space-2);
+  }
+
+  html.payload-admin-root .app-header__mobile-nav-toggler {
+    display: inline-flex;
+    min-width: 2.25rem;
+    min-height: 2.25rem;
+    align-items: center;
+    justify-content: center;
+    color: var(--admin-text-secondary);
+    background: var(--admin-surface);
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius-md);
+  }
+
+  html.payload-admin-root .app-header__step-nav-wrapper {
+    overflow: hidden;
+  }
+
+  html.payload-admin-root .step-nav {
+    width: 100%;
+    overflow: hidden;
+  }
+
+  html.payload-admin-root .nav {
+    width: var(--nav-width);
+    box-shadow: var(--admin-shadow-lg);
+  }
+
+  html.payload-admin-root .nav__scroll {
+    padding-inline: var(--admin-space-3);
+  }
+
+  html.payload-admin-root .nav__link {
+    min-height: 2.75rem;
+    font-size: 0.9375rem;
+    line-height: 1.4;
+  }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.payload-admin-root {
+    --admin-transition-fast: 0ms;
+    --admin-transition: 0ms;
+    --admin-transition-slow: 0ms;
+  }
+
+  html.payload-admin-root .template-default,
+  html.payload-admin-root .nav,
+  html.payload-admin-root .nav__link,
+  html.payload-admin-root .app-header__account {
+    animation: none;
+    scroll-behavior: auto;
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  html.payload-admin-root {
+    --admin-shadow-sm: none;
+    --admin-shadow-md: none;
+    --admin-shadow-lg: none;
+    --admin-shadow-focus: 0 0 0 3px Highlight;
+    --admin-focus-ring: 2px solid Highlight;
+  }
+
+  html.payload-admin-root .nav,
+  html.payload-admin-root .app-header,
+  html.payload-admin-root .nav__link,
+  html.payload-admin-root .app-header__account,
+  html.payload-admin-root .template-default__nav-toggler {
+    border-color: CanvasText;
+  }
+
+  html.payload-admin-root .nav__link-indicator {
+    border: 2px solid Highlight;
+  }
+}

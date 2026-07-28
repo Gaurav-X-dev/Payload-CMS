@@ -6,6 +6,9 @@ import '@payloadcms/next/css'
 import { handleServerFunctions, RootLayout } from '@payloadcms/next/layouts'
 import React from 'react'
 
+import '../../styles/admin-theme.css'
+import '../../styles/admin-list.css'
+import '../../styles/admin-form.css'
 import { importMap } from './admin/importMap'
 
 type Args = {
@@ -24,6 +27,7 @@ const serverFunction: ServerFunctionClient = async (args) => {
 const Layout = ({ children }: Args) => (
   <RootLayout
     config={configPromise}
+    htmlProps={{ className: 'payload-admin-root' }}
     importMap={importMap}
     serverFunction={serverFunction}
   >
