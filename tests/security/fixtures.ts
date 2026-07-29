@@ -8,103 +8,119 @@ let fixtureIndex = 0
 const deterministicId = () => `${fixtureNamespace}-${++fixtureIndex}`
 
 export async function setupSecurityFixtures(payload: BasePayload) {
-  const tenantA = await payload.create({
+  type FixtureCollection = 'blog-posts' | 'pages' | 'tenants' | 'users'
+  const created: Array<{ collection: FixtureCollection; id: number }> = []
+  const track = async <T extends { id: number }>(
+    collection: FixtureCollection,
+    operation: Promise<T>,
+  ) => {
+    const document = await operation
+    created.push({ collection, id: document.id })
+    return document
+  }
+
+  try {
+  const tenantA = await track('tenants', payload.create({
     collection: 'tenants',
     data: { name: `Tenant A Active ${deterministicId()}`, type: 'restaurant', domains: [{ domain: `a-${deterministicId()}.example.com` }], isActive: true },
     overrideAccess: true,
-  })
+  }))
 
-  const tenantB = await payload.create({
+  const tenantB = await track('tenants', payload.create({
     collection: 'tenants',
     data: { name: `Tenant B Active ${deterministicId()}`, type: 'restaurant', domains: [{ domain: `b-${deterministicId()}.example.com` }], isActive: true },
     overrideAccess: true,
-  })
+  }))
 
-  const tenantC = await payload.create({
+  const tenantC = await track('tenants', payload.create({
     collection: 'tenants',
     data: { name: `Tenant C Inactive ${deterministicId()}`, type: 'restaurant', domains: [{ domain: `c-${deterministicId()}.example.com` }], isActive: false },
     overrideAccess: true,
-  })
+  }))
 
-  const superAdmin = await payload.create({
+  const superAdmin = await track('users', payload.create({
     collection: 'users',
     data: { name: 'Super Admin', email: `superadmin-${deterministicId()}@example.com`, password: 'password123', roles: ['super_admin'], tenants: [] },
     overrideAccess: true,
-  })
+  }))
 
   const req = { user: superAdmin } as any
 
-  const tenantAAdmin = await payload.create({
+  const tenantAAdmin = await track('users', payload.create({
     collection: 'users',
     data: { name: 'Tenant A Admin', email: `tenantA-admin-${deterministicId()}@example.com`, password: 'password123', roles: ['tenant_admin'], tenants: [tenantA.id] },
     overrideAccess: true,
     req
-  })
+  }))
 
-  const tenantAMember = await payload.create({
+  const tenantAMember = await track('users', payload.create({
     collection: 'users',
     data: { name: 'Tenant A Member', email: `tenantA-member-${deterministicId()}@example.com`, password: 'password123', roles: ['tenant_member'], tenants: [tenantA.id] },
     overrideAccess: true,
     req
-  })
+  }))
 
-  const tenantBAdmin = await payload.create({
+  const tenantBAdmin = await track('users', payload.create({
     collection: 'users',
     data: { name: 'Tenant B Admin', email: `tenantB-admin-${deterministicId()}@example.com`, password: 'password123', roles: ['tenant_admin'], tenants: [tenantB.id] },
     overrideAccess: true,
     req
-  })
+  }))
 
-  const tenantBMember = await payload.create({
+  const tenantBMember = await track('users', payload.create({
     collection: 'users',
     data: { name: 'Tenant B Member', email: `tenantB-member-${deterministicId()}@example.com`, password: 'password123', roles: ['tenant_member'], tenants: [tenantB.id] },
     overrideAccess: true,
     req
-  })
+  }))
 
-  const inactiveTenantAdmin = await payload.create({
+  const inactiveTenantAdmin = await track('users', payload.create({
     collection: 'users',
     data: { name: 'Inactive Admin', email: `tenantC-inactive-admin-${deterministicId()}@example.com`, password: 'password123', roles: ['tenant_admin'], tenants: [tenantC.id] },
     overrideAccess: true,
     req
-  })
+  }))
 
-  const noTenantUser = await payload.create({
+  const noTenantUser = await track('users', payload.create({
     collection: 'users',
     data: { name: 'No Tenant User', email: `no-tenant-${deterministicId()}@example.com`, password: 'password123', roles: ['tenant_member'], tenants: [] },
     overrideAccess: true,
     req
-  })
+  }))
   
-  const tempTenant = await payload.create({
+  const tempTenant = await track('tenants', payload.create({
     collection: 'tenants',
     data: { name: `Temp ${deterministicId()}`, type: 'restaurant', domains: [{ domain: `temp-${deterministicId()}.example.com` }] },
     overrideAccess: true,
     req
-  })
-  const malformedUser = await payload.create({
+  }))
+  const malformedUser = await track('users', payload.create({
     collection: 'users',
     data: { name: 'Malformed User', email: `malformed-${deterministicId()}@example.com`, password: 'password123', roles: ['tenant_member'], tenants: [tempTenant.id] },
     overrideAccess: true,
     req
-  })
+  }))
   await payload.delete({ collection: 'tenants', id: tempTenant.id, overrideAccess: true })
+  created.splice(
+    created.findIndex(({ collection, id }) => collection === 'tenants' && id === tempTenant.id),
+    1,
+  )
 
-  const tenantAPage = await payload.create({
+  const tenantAPage = await track('pages', payload.create({
     collection: 'pages',
     data: { title: `Tenant A Page ${deterministicId()}`, slug: `tenant-a-page-${deterministicId()}`, tenantId: tenantA.id, status: 'published' },
     overrideAccess: true,
     req
-  })
+  }))
 
-  const tenantBPage = await payload.create({
+  const tenantBPage = await track('pages', payload.create({
     collection: 'pages',
     data: { title: `Tenant B Page ${deterministicId()}`, slug: `tenant-b-page-${deterministicId()}`, tenantId: tenantB.id, status: 'draft' },
     overrideAccess: true,
     req
-  })
+  }))
 
-  const tenantABlogPost = await payload.create({
+  const tenantABlogPost = await track('blog-posts', payload.create({
     collection: 'blog-posts',
     data: {
       title: `Tenant A Blog ${deterministicId()}`,
@@ -116,6 +132,7 @@ export async function setupSecurityFixtures(payload: BasePayload) {
           type: 'root',
           format: '',
           indent: 0,
+          direction: null,
           version: 1,
           children: [
             {
@@ -133,9 +150,9 @@ export async function setupSecurityFixtures(payload: BasePayload) {
     },
     overrideAccess: true,
     req
-  })
+  }))
 
-  const tenantBBlogPost = await payload.create({
+  const tenantBBlogPost = await track('blog-posts', payload.create({
     collection: 'blog-posts',
     data: {
       title: `Tenant B Blog ${deterministicId()}`,
@@ -147,6 +164,7 @@ export async function setupSecurityFixtures(payload: BasePayload) {
           type: 'root',
           format: '',
           indent: 0,
+          direction: null,
           version: 1,
           children: [
             {
@@ -164,33 +182,59 @@ export async function setupSecurityFixtures(payload: BasePayload) {
     },
     overrideAccess: true,
     req
-  })
+  }))
 
-  const inactiveTenantCPage = await payload.create({
+  const inactiveTenantCPage = await track('pages', payload.create({
     collection: 'pages',
     data: { title: `Tenant C Page ${deterministicId()}`, slug: `tenant-c-page-${deterministicId()}`, tenantId: tenantC.id, status: 'published' },
     overrideAccess: true,
     req
-  })
+  }))
 
-  const tenantAParent = await payload.create({
+  const tenantAParent = await track('tenants', payload.create({
     collection: 'tenants',
     data: { name: `Tenant A Parent ${deterministicId()}`, type: 'hospitality', domains: [{ domain: `parent-a-${deterministicId()}.example.com` }] },
     overrideAccess: true,
     req
-  })
+  }))
 
-  const tenantAChild = await payload.create({
+  const tenantAChild = await track('tenants', payload.create({
     collection: 'tenants',
     data: { name: `Tenant A Child ${deterministicId()}`, type: 'restaurant', domains: [{ domain: `child-a-${deterministicId()}.example.com` }], parentTenant: tenantAParent.id },
     overrideAccess: true,
     req
-  })
+  }))
 
   return {
     tenants: { tenantA, tenantB, tenantC },
     users: { superAdmin, tenantAAdmin, tenantAMember, tenantBAdmin, tenantBMember, inactiveTenantAdmin, noTenantUser, malformedUser },
     documents: { tenantAPage, tenantBPage, inactiveTenantCPage, tenantAParent, tenantAChild, tenantABlogPost, tenantBBlogPost }
+  }
+  } catch (setupError) {
+    const cleanupErrors: unknown[] = []
+
+    for (const { collection, id } of created.reverse()) {
+      try {
+        await payload.delete({ collection, id, overrideAccess: true })
+      } catch (cleanupError) {
+        cleanupErrors.push(cleanupError)
+      }
+    }
+
+    try {
+      await shutdownPayload(payload)
+    } catch (cleanupError) {
+      cleanupErrors.push(cleanupError)
+    }
+
+    if (cleanupErrors.length) {
+      throw new AggregateError(
+        [setupError, ...cleanupErrors],
+        'Security fixture setup and rollback failed',
+      )
+    }
+
+    throw setupError
   }
 }
 

@@ -2,9 +2,17 @@ import React from 'react'
 import { headers } from 'next/headers'
 import { Header } from '../../../components/layout/Header'
 import { Footer } from '../../../components/layout/Footer'
+import { renderLocalThemePage } from '@/lib/site/renderLocalThemePage'
+import { resolveLocalSite } from '@/lib/site/resolveLocalSite'
 
 export default async function BlogListPage() {
   const headersList = await headers()
+  const localSite = resolveLocalSite(headersList.get('host'))
+
+  if (localSite) {
+    return renderLocalThemePage('/blog')
+  }
+
   const tenantConfigStr = headersList.get('x-tenant-config')
   const tenantConfig = tenantConfigStr ? JSON.parse(tenantConfigStr) : null
   

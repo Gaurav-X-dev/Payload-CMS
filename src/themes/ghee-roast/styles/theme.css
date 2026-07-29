@@ -1,0 +1,73 @@
+[data-theme-site='ghee-roast'] {
+  --gr-bg: #f4efe6;
+  --gr-bg-alt: #fbf8f2;
+  --gr-primary: #3e5237;
+  --gr-primary-dark: #263322;
+  --gr-accent: #c44d18;
+  --gr-text: #253020;
+  --gr-muted: color-mix(in srgb, var(--gr-primary), var(--gr-bg) 30%);
+  --gr-white: #fff;
+  --gr-border: rgb(62 82 55 / 14%);
+  --gr-heading: 'Oswald', sans-serif;
+  --gr-body: 'Inter', sans-serif;
+  --gr-shadow: 0 10px 30px rgb(0 0 0 / 10%);
+  --gr-shadow-lg: 0 20px 50px rgb(0 0 0 / 18%);
+  --gr-transition: all .3s cubic-bezier(.25, .8, .25, 1);
+  background: var(--gr-bg);
+  color: var(--gr-text);
+  font-family: var(--gr-body);
+  line-height: 1.65;
+  min-height: 100vh;
+  overflow: clip;
+  position: relative;
+}
+
+[data-theme-site='ghee-roast']::before {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");
+  content: '';
+  inset: 0;
+  pointer-events: none;
+  position: fixed;
+  z-index: 9999;
+}
+
+[data-theme-site='ghee-roast'] *,
+[data-theme-site='ghee-roast'] *::before,
+[data-theme-site='ghee-roast'] *::after {
+  box-sizing: border-box;
+}
+
+[data-theme-site='ghee-roast'] h1,
+[data-theme-site='ghee-roast'] h2,
+[data-theme-site='ghee-roast'] h3 {
+  font-family: var(--gr-heading);
+  line-height: 1.08;
+  text-transform: uppercase;
+}
+
+[data-theme-site='ghee-roast'] a {
+  color: inherit;
+  text-decoration: none;
+}
+
+[data-theme-site='ghee-roast'] button,
+[data-theme-site='ghee-roast'] input,
+[data-theme-site='ghee-roast'] select,
+[data-theme-site='ghee-roast'] textarea {
+  font: inherit;
+}
+
+[data-theme-site='ghee-roast'] :focus-visible {
+  outline: 3px solid var(--gr-accent);
+  outline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-theme-site='ghee-roast'],
+  [data-theme-site='ghee-roast'] *,
+  [data-theme-site='ghee-roast'] *::before,
+  [data-theme-site='ghee-roast'] *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

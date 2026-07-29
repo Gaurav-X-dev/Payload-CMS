@@ -5,12 +5,22 @@
   "main": "index.js",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npm run typecheck && next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint src tests next.config.mjs eslint.config.mjs",
+    "lint:fix": "npm run lint -- --fix",
     "payload": "payload",
+    "payload:generate-importmap": "payload generate:importmap",
+    "typecheck": "npm run typecheck:app && npm run typecheck:tests",
+    "typecheck:app": "tsc --noEmit -p tsconfig.json",
+    "typecheck:tests": "tsc --noEmit -p tsconfig.tests.json",
     "test:phase1": "node --experimental-strip-types --test tests/phase1-tenant-access.test.ts",
-    "test:phase2": "node --experimental-strip-types --import ./tests/register-ts-loader.mjs --test tests/phase2-relationship-integrity.test.ts"
+    "test:phase2": "node --experimental-strip-types --import ./tests/register-ts-loader.mjs --test tests/phase2-relationship-integrity.test.ts",
+    "test:security": "npm run test:security:serial",
+    "test:security:serial": "node --env-file=.env --experimental-strip-types --import ./tests/register-ts-loader.mjs --test --test-concurrency=1 tests/security/*.test.ts"
+  },
+  "engines": {
+    "node": ">=22"
   },
   "keywords": [],
   "author": "",
@@ -21,6 +31,7 @@
     "@payloadcms/next": "^3.86.0",
     "@payloadcms/richtext-lexical": "^3.86.0",
     "@payloadcms/storage-s3": "^3.86.0",
+    "@phosphor-icons/react": "^2.1.10",
     "graphql": "^16.14.2",
     "next": "^16.2.11",
     "payload": "^3.86.0",
@@ -31,6 +42,8 @@
   "devDependencies": {
     "@types/node": "^26.1.1",
     "@types/react": "^19.2.17",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.2.11",
     "typescript": "6.0.3"
   }
 }

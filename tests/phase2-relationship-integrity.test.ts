@@ -1,11 +1,8 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 
-// @ts-expect-error Node's built-in TypeScript runner requires the source extension.
 import { normalizeRelationshipIDs, sameTenantRelationship, validateRelationshipForTenant } from '../src/hooks/sameTenantRelationship.ts'
-// @ts-expect-error Node's built-in TypeScript runner requires the source extension.
 import { validateTenantParent } from '../src/hooks/tenantHierarchy.ts'
-// @ts-expect-error Node's built-in TypeScript runner requires the source extension.
 import { validateTenantTransfer } from '../src/hooks/tenantTransferIntegrity.ts'
 
 type Fixture = {

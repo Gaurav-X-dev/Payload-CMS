@@ -2,7 +2,6 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import test from 'node:test'
 
-// @ts-expect-error Node's built-in TypeScript runner requires the source extension.
 import { canCreateTenantContent, canDeleteTenantContent, canManageUserWithinActiveTenant, canUpdateTenantContent, getTenantReadScope, preserveTenantAdminManagedUserState, resolveActiveTenantContext } from '../src/access/tenantContext.ts'
 
 type TestRole = 'super_admin' | 'tenant_admin' | 'tenant_member'
