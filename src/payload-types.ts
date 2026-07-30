@@ -166,7 +166,7 @@ export interface UserAuthOperations {
 export interface User {
   id: number;
   name: string;
-  roles: ('super_admin' | 'tenant_admin' | 'tenant_member')[];
+  roles?: ('super_admin' | 'tenant_admin' | 'tenant_member')[] | null;
   tenants?: (number | Tenant)[] | null;
   createdBy?: (number | null) | User;
   updatedBy?: (number | null) | User;
@@ -204,6 +204,7 @@ export interface Tenant {
    */
   slug?: string | null;
   type: 'restaurant' | 'hospitality' | 'cloud_kitchen';
+  theme?: ('ghee-roast' | 'zuru-zuru') | null;
   /**
    * Assign if this is a sub-brand of another tenant.
    */
@@ -271,7 +272,7 @@ export interface Media {
   /**
    * Super Admins may select a tenant. Other users are assigned from trusted tenant context.
    */
-  tenantId: number | Tenant;
+  tenantId?: (number | null) | Tenant;
   /**
    * Important for SEO and Accessibility.
    */
@@ -344,6 +345,8 @@ export interface Media {
   };
 }
 /**
+ * Build tenant pages with reusable, CMS-driven sections. Drafts remain private until published.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "pages".
  */
@@ -355,7 +358,7 @@ export interface Page {
   tenantId: number | Tenant;
   title: string;
   /**
-   * Auto-generated if left blank. (e.g., "about-us")
+   * Auto-generated if left blank. Use a short URL-safe value, e.g. "about".
    */
   slug?: string | null;
   parent?: (number | null) | Page;
@@ -367,15 +370,36 @@ export interface Page {
   status?: ('draft' | 'published' | 'archived') | null;
   publishedAt?: string | null;
   /**
-   * Construct the page visually using dynamic blocks.
+   * Construct the page visually. When empty, the Ghee Roast theme keeps its legacy design as a compatibility fallback.
    */
   layout?:
-    | {
-        content?: string | null;
-        id?: string | null;
-        blockName?: string | null;
-        blockType: 'mockBlock';
-      }[]
+    | (
+        | HeroBlock
+        | FeatureStripBlock
+        | CardGridBlock
+        | ContentGridBlock
+        | StepsBlock
+        | TestimonialsBlock
+        | StatsBlock
+        | SplitBlock
+        | GalleryBlock
+        | FormBlock
+        | MenuShowcaseBlock
+        | TeamBlock
+        | EventsBlock
+        | FAQBlock
+        | LocationsBlock
+        | BlogPreviewBlock
+        | EmbedBlock
+        | CTABlock
+        | NewsletterBlock
+        | RichTextBlock
+        | SpacerBlock
+        | RoomsShowcaseBlock
+        | AmenitiesBlock
+        | PackagesBlock
+        | SubBrandsBlock
+      )[]
     | null;
   showInNavigation?: boolean | null;
   navigationLabel?: string | null;
@@ -385,7 +409,13 @@ export interface Page {
     redirectUrl?: string | null;
     permanent?: boolean | null;
   };
+  /**
+   * Recommended: 50–60 characters. Falls back to the page title.
+   */
   metaTitle?: string | null;
+  /**
+   * Recommended: 120–160 characters.
+   */
   metaDescription?: string | null;
   metaImage?: (number | null) | Media;
   canonicalUrl?: string | null;
@@ -395,6 +425,832 @@ export interface Page {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "HeroBlock".
+ */
+export interface HeroBlock {
+  enabled?: boolean | null;
+  eyebrow?: string | null;
+  /**
+   * Use line breaks to preserve the theme heading layout.
+   */
+  heading: string;
+  highlightedHeading?: string | null;
+  description: string;
+  /**
+   * Label shown before configured delivery platform links.
+   */
+  orderPlatformsLabel?: string | null;
+  /**
+   * Use line breaks to control the circular hero stamp.
+   */
+  stampText?: string | null;
+  primaryCTALabel?: string | null;
+  primaryCTAURL?: string | null;
+  secondaryCTALabel?: string | null;
+  secondaryCTAURL?: string | null;
+  desktopBackgroundImage?: (number | null) | Media;
+  mobileBackgroundImage?: (number | null) | Media;
+  foregroundImage?: (number | null) | Media;
+  imageAlt?: string | null;
+  overlayOpacity?: number | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'heroBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FeatureStripBlock".
+ */
+export interface FeatureStripBlock {
+  /**
+   * Short trust signals or selling points displayed in a compact strip.
+   */
+  items: {
+    icon?: string | null;
+    title: string;
+    description?: string | null;
+    id?: string | null;
+  }[];
+  /**
+   * Appearance and visibility settings for this block.
+   */
+  settings?: {
+    backgroundColor?: ('transparent' | 'surface' | 'primary' | 'accent' | 'dark') | null;
+    containerWidth?: ('standard' | 'wide' | 'full') | null;
+    /**
+     * Optional image to place behind the block.
+     */
+    backgroundImage?: (number | null) | Media;
+    /**
+     * 0-100 opacity for the background overlay.
+     */
+    overlayOpacity?: number | null;
+    paddingTop?: ('none' | 'small' | 'medium' | 'large') | null;
+    paddingBottom?: ('none' | 'small' | 'medium' | 'large') | null;
+    visibility?: ('desktop' | 'tablet' | 'mobile')[] | null;
+    animation?: ('none' | 'fade-in' | 'slide-up' | 'zoom-in' | 'stagger') | null;
+    /**
+     * Inject custom CSS classes for developer overrides.
+     */
+    customClasses?: string | null;
+    /**
+     * Used for #anchor links. Must be unique.
+     */
+    htmlId?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'featurestripBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CardGridBlock".
+ */
+export interface CardGridBlock {
+  /**
+   * Standardized section title and description.
+   */
+  sectionHeader: {
+    /**
+     * Small accented text above the title.
+     */
+    eyebrow?: string | null;
+    title: string;
+    headingTag?: ('h1' | 'h2' | 'h3' | 'h4') | null;
+    subtitle?: string | null;
+    description?: string | null;
+    alignment?: ('left' | 'center' | 'right') | null;
+    maxWidth?: ('standard' | 'narrow' | 'wide') | null;
+  };
+  cards: {
+    /**
+     * Card featured image
+     */
+    image: {
+      item: number | Media;
+      /**
+       * Overrides the default Alt text.
+       */
+      altOverride?: string | null;
+      /**
+       * Displays a visible figcaption.
+       */
+      caption?: string | null;
+      aspectRatio?: ('auto' | '16:9' | '4:3' | '1:1' | '9:16') | null;
+      objectFit?: ('cover' | 'contain') | null;
+      /**
+       * Load immediately (prevents lazy-loading). Use only for above-the-fold media.
+       */
+      priority?: boolean | null;
+      /**
+       * Precise cropping point for mobile views.
+       */
+      focalPoint?: {
+        x?: number | null;
+        y?: number | null;
+      };
+    };
+    title: string;
+    description?: string | null;
+    enableLink?: boolean | null;
+    link?: {
+      type?: ('reference' | 'custom' | 'anchor' | 'email' | 'phone') | null;
+      label: string;
+      reference?: (number | null) | Page;
+      url?: string | null;
+      newTab?: boolean | null;
+      /**
+       * SEO override.
+       */
+      nofollow?: boolean | null;
+      disabled?: boolean | null;
+      buttonStyle?: ('primary' | 'secondary' | 'outline' | 'ghost' | 'text') | null;
+      buttonSize?: ('small' | 'medium' | 'large') | null;
+      icon?: (number | null) | Media;
+      iconPosition?: ('left' | 'right') | null;
+      /**
+       * E.g., GTM ID.
+       */
+      analyticsTrackingId?: string | null;
+      /**
+       * Screen reader override.
+       */
+      ariaLabel?: string | null;
+    };
+    id?: string | null;
+  }[];
+  columns?: ('2' | '3' | '4') | null;
+  /**
+   * Appearance and visibility settings for this block.
+   */
+  settings?: {
+    backgroundColor?: ('transparent' | 'surface' | 'primary' | 'accent' | 'dark') | null;
+    containerWidth?: ('standard' | 'wide' | 'full') | null;
+    /**
+     * Optional image to place behind the block.
+     */
+    backgroundImage?: (number | null) | Media;
+    /**
+     * 0-100 opacity for the background overlay.
+     */
+    overlayOpacity?: number | null;
+    paddingTop?: ('none' | 'small' | 'medium' | 'large') | null;
+    paddingBottom?: ('none' | 'small' | 'medium' | 'large') | null;
+    visibility?: ('desktop' | 'tablet' | 'mobile')[] | null;
+    animation?: ('none' | 'fade-in' | 'slide-up' | 'zoom-in' | 'stagger') | null;
+    /**
+     * Inject custom CSS classes for developer overrides.
+     */
+    customClasses?: string | null;
+    /**
+     * Used for #anchor links. Must be unique.
+     */
+    htmlId?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'cardgridBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ContentGridBlock".
+ */
+export interface ContentGridBlock {
+  /**
+   * Standardized section title and description.
+   */
+  sectionHeader: {
+    /**
+     * Small accented text above the title.
+     */
+    eyebrow?: string | null;
+    title: string;
+    headingTag?: ('h1' | 'h2' | 'h3' | 'h4') | null;
+    subtitle?: string | null;
+    description?: string | null;
+    alignment?: ('left' | 'center' | 'right') | null;
+    maxWidth?: ('standard' | 'narrow' | 'wide') | null;
+  };
+  items: {
+    icon?: string | null;
+    title: string;
+    description?: string | null;
+    id?: string | null;
+  }[];
+  /**
+   * Appearance and visibility settings for this block.
+   */
+  settings?: {
+    backgroundColor?: ('transparent' | 'surface' | 'primary' | 'accent' | 'dark') | null;
+    containerWidth?: ('standard' | 'wide' | 'full') | null;
+    /**
+     * Optional image to place behind the block.
+     */
+    backgroundImage?: (number | null) | Media;
+    /**
+     * 0-100 opacity for the background overlay.
+     */
+    overlayOpacity?: number | null;
+    paddingTop?: ('none' | 'small' | 'medium' | 'large') | null;
+    paddingBottom?: ('none' | 'small' | 'medium' | 'large') | null;
+    visibility?: ('desktop' | 'tablet' | 'mobile')[] | null;
+    animation?: ('none' | 'fade-in' | 'slide-up' | 'zoom-in' | 'stagger') | null;
+    /**
+     * Inject custom CSS classes for developer overrides.
+     */
+    customClasses?: string | null;
+    /**
+     * Used for #anchor links. Must be unique.
+     */
+    htmlId?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'contentgridBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "StepsBlock".
+ */
+export interface StepsBlock {
+  /**
+   * Standardized section title and description.
+   */
+  sectionHeader: {
+    /**
+     * Small accented text above the title.
+     */
+    eyebrow?: string | null;
+    title: string;
+    headingTag?: ('h1' | 'h2' | 'h3' | 'h4') | null;
+    subtitle?: string | null;
+    description?: string | null;
+    alignment?: ('left' | 'center' | 'right') | null;
+    maxWidth?: ('standard' | 'narrow' | 'wide') | null;
+  };
+  steps: {
+    label?: string | null;
+    icon?: string | null;
+    title: string;
+    description: string;
+    id?: string | null;
+  }[];
+  /**
+   * Appearance and visibility settings for this block.
+   */
+  settings?: {
+    backgroundColor?: ('transparent' | 'surface' | 'primary' | 'accent' | 'dark') | null;
+    containerWidth?: ('standard' | 'wide' | 'full') | null;
+    /**
+     * Optional image to place behind the block.
+     */
+    backgroundImage?: (number | null) | Media;
+    /**
+     * 0-100 opacity for the background overlay.
+     */
+    overlayOpacity?: number | null;
+    paddingTop?: ('none' | 'small' | 'medium' | 'large') | null;
+    paddingBottom?: ('none' | 'small' | 'medium' | 'large') | null;
+    visibility?: ('desktop' | 'tablet' | 'mobile')[] | null;
+    animation?: ('none' | 'fade-in' | 'slide-up' | 'zoom-in' | 'stagger') | null;
+    /**
+     * Inject custom CSS classes for developer overrides.
+     */
+    customClasses?: string | null;
+    /**
+     * Used for #anchor links. Must be unique.
+     */
+    htmlId?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'stepsBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TestimonialsBlock".
+ */
+export interface TestimonialsBlock {
+  /**
+   * Standardized section title and description.
+   */
+  sectionHeader: {
+    /**
+     * Small accented text above the title.
+     */
+    eyebrow?: string | null;
+    title: string;
+    headingTag?: ('h1' | 'h2' | 'h3' | 'h4') | null;
+    subtitle?: string | null;
+    description?: string | null;
+    alignment?: ('left' | 'center' | 'right') | null;
+    maxWidth?: ('standard' | 'narrow' | 'wide') | null;
+  };
+  source?: ('collection' | 'manual') | null;
+  testimonials?: (number | Testimonial)[] | null;
+  featuredOnly?: boolean | null;
+  limit?: number | null;
+  /**
+   * Appearance and visibility settings for this block.
+   */
+  settings?: {
+    backgroundColor?: ('transparent' | 'surface' | 'primary' | 'accent' | 'dark') | null;
+    containerWidth?: ('standard' | 'wide' | 'full') | null;
+    /**
+     * Optional image to place behind the block.
+     */
+    backgroundImage?: (number | null) | Media;
+    /**
+     * 0-100 opacity for the background overlay.
+     */
+    overlayOpacity?: number | null;
+    paddingTop?: ('none' | 'small' | 'medium' | 'large') | null;
+    paddingBottom?: ('none' | 'small' | 'medium' | 'large') | null;
+    visibility?: ('desktop' | 'tablet' | 'mobile')[] | null;
+    animation?: ('none' | 'fade-in' | 'slide-up' | 'zoom-in' | 'stagger') | null;
+    /**
+     * Inject custom CSS classes for developer overrides.
+     */
+    customClasses?: string | null;
+    /**
+     * Used for #anchor links. Must be unique.
+     */
+    htmlId?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'testimonialsBlock';
+}
+/**
+ * Manage approved customer reviews. Featured reviews can be highlighted on the home page.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "testimonials".
+ */
+export interface Testimonial {
+  id: number;
+  /**
+   * Super Admins may select a tenant. Other users are assigned from trusted tenant context.
+   */
+  tenantId: number | Tenant;
+  customerName: string;
+  /**
+   * Attribution shown below the review.
+   */
+  customerRole?: string | null;
+  rating: number;
+  review: string;
+  photo?: (number | null) | Media;
+  isFeatured?: boolean | null;
+  sortOrder?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "StatsBlock".
+ */
+export interface StatsBlock {
+  /**
+   * Optional heading displayed above the statistics.
+   */
+  sectionHeader: {
+    /**
+     * Small accented text above the title.
+     */
+    eyebrow?: string | null;
+    title: string;
+    headingTag?: ('h1' | 'h2' | 'h3' | 'h4') | null;
+    subtitle?: string | null;
+    description?: string | null;
+    alignment?: ('left' | 'center' | 'right') | null;
+    maxWidth?: ('standard' | 'narrow' | 'wide') | null;
+  };
+  stats: {
+    value: string;
+    label: string;
+    id?: string | null;
+  }[];
+  /**
+   * Appearance and visibility settings for this block.
+   */
+  settings?: {
+    backgroundColor?: ('transparent' | 'surface' | 'primary' | 'accent' | 'dark') | null;
+    containerWidth?: ('standard' | 'wide' | 'full') | null;
+    /**
+     * Optional image to place behind the block.
+     */
+    backgroundImage?: (number | null) | Media;
+    /**
+     * 0-100 opacity for the background overlay.
+     */
+    overlayOpacity?: number | null;
+    paddingTop?: ('none' | 'small' | 'medium' | 'large') | null;
+    paddingBottom?: ('none' | 'small' | 'medium' | 'large') | null;
+    visibility?: ('desktop' | 'tablet' | 'mobile')[] | null;
+    animation?: ('none' | 'fade-in' | 'slide-up' | 'zoom-in' | 'stagger') | null;
+    /**
+     * Inject custom CSS classes for developer overrides.
+     */
+    customClasses?: string | null;
+    /**
+     * Used for #anchor links. Must be unique.
+     */
+    htmlId?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'statsBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SplitBlock".
+ */
+export interface SplitBlock {
+  /**
+   * Standardized section title and description.
+   */
+  sectionHeader: {
+    /**
+     * Small accented text above the title.
+     */
+    eyebrow?: string | null;
+    title: string;
+    headingTag?: ('h1' | 'h2' | 'h3' | 'h4') | null;
+    subtitle?: string | null;
+    description?: string | null;
+    alignment?: ('left' | 'center' | 'right') | null;
+    maxWidth?: ('standard' | 'narrow' | 'wide') | null;
+  };
+  body: string;
+  points?:
+    | {
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Image shown beside the copy.
+   */
+  image: {
+    item: number | Media;
+    /**
+     * Overrides the default Alt text.
+     */
+    altOverride?: string | null;
+    /**
+     * Displays a visible figcaption.
+     */
+    caption?: string | null;
+    aspectRatio?: ('auto' | '16:9' | '4:3' | '1:1' | '9:16') | null;
+    objectFit?: ('cover' | 'contain') | null;
+    /**
+     * Load immediately (prevents lazy-loading). Use only for above-the-fold media.
+     */
+    priority?: boolean | null;
+    /**
+     * Precise cropping point for mobile views.
+     */
+    focalPoint?: {
+      x?: number | null;
+      y?: number | null;
+    };
+  };
+  imagePosition?: ('left' | 'right') | null;
+  /**
+   * Call to Action links.
+   */
+  ctaGroup?: {
+    alignment?: ('left' | 'center' | 'right') | null;
+    enablePrimary?: boolean | null;
+    enableSecondary?: boolean | null;
+    primaryCTA?: {
+      type?: ('reference' | 'custom' | 'anchor' | 'email' | 'phone') | null;
+      label: string;
+      reference?: (number | null) | Page;
+      url?: string | null;
+      newTab?: boolean | null;
+      /**
+       * SEO override.
+       */
+      nofollow?: boolean | null;
+      disabled?: boolean | null;
+      buttonStyle?: ('primary' | 'secondary' | 'outline' | 'ghost' | 'text') | null;
+      buttonSize?: ('small' | 'medium' | 'large') | null;
+      icon?: (number | null) | Media;
+      iconPosition?: ('left' | 'right') | null;
+      /**
+       * E.g., GTM ID.
+       */
+      analyticsTrackingId?: string | null;
+      /**
+       * Screen reader override.
+       */
+      ariaLabel?: string | null;
+    };
+    secondaryCTA?: {
+      type?: ('reference' | 'custom' | 'anchor' | 'email' | 'phone') | null;
+      label: string;
+      reference?: (number | null) | Page;
+      url?: string | null;
+      newTab?: boolean | null;
+      /**
+       * SEO override.
+       */
+      nofollow?: boolean | null;
+      disabled?: boolean | null;
+      buttonStyle?: ('primary' | 'secondary' | 'outline' | 'ghost' | 'text') | null;
+      buttonSize?: ('small' | 'medium' | 'large') | null;
+      icon?: (number | null) | Media;
+      iconPosition?: ('left' | 'right') | null;
+      /**
+       * E.g., GTM ID.
+       */
+      analyticsTrackingId?: string | null;
+      /**
+       * Screen reader override.
+       */
+      ariaLabel?: string | null;
+    };
+  };
+  /**
+   * Appearance and visibility settings for this block.
+   */
+  settings?: {
+    backgroundColor?: ('transparent' | 'surface' | 'primary' | 'accent' | 'dark') | null;
+    containerWidth?: ('standard' | 'wide' | 'full') | null;
+    /**
+     * Optional image to place behind the block.
+     */
+    backgroundImage?: (number | null) | Media;
+    /**
+     * 0-100 opacity for the background overlay.
+     */
+    overlayOpacity?: number | null;
+    paddingTop?: ('none' | 'small' | 'medium' | 'large') | null;
+    paddingBottom?: ('none' | 'small' | 'medium' | 'large') | null;
+    visibility?: ('desktop' | 'tablet' | 'mobile')[] | null;
+    animation?: ('none' | 'fade-in' | 'slide-up' | 'zoom-in' | 'stagger') | null;
+    /**
+     * Inject custom CSS classes for developer overrides.
+     */
+    customClasses?: string | null;
+    /**
+     * Used for #anchor links. Must be unique.
+     */
+    htmlId?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'splitBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "GalleryBlock".
+ */
+export interface GalleryBlock {
+  /**
+   * Standardized section title and description.
+   */
+  sectionHeader: {
+    /**
+     * Small accented text above the title.
+     */
+    eyebrow?: string | null;
+    title: string;
+    headingTag?: ('h1' | 'h2' | 'h3' | 'h4') | null;
+    subtitle?: string | null;
+    description?: string | null;
+    alignment?: ('left' | 'center' | 'right') | null;
+    maxWidth?: ('standard' | 'narrow' | 'wide') | null;
+  };
+  source?: ('collection' | 'manual') | null;
+  items?: (number | Gallery)[] | null;
+  category?: ('all' | 'food' | 'ambiance' | 'events' | 'kitchen' | 'exterior') | null;
+  featuredOnly?: boolean | null;
+  limit?: number | null;
+  /**
+   * Appearance and visibility settings for this block.
+   */
+  settings?: {
+    backgroundColor?: ('transparent' | 'surface' | 'primary' | 'accent' | 'dark') | null;
+    containerWidth?: ('standard' | 'wide' | 'full') | null;
+    /**
+     * Optional image to place behind the block.
+     */
+    backgroundImage?: (number | null) | Media;
+    /**
+     * 0-100 opacity for the background overlay.
+     */
+    overlayOpacity?: number | null;
+    paddingTop?: ('none' | 'small' | 'medium' | 'large') | null;
+    paddingBottom?: ('none' | 'small' | 'medium' | 'large') | null;
+    visibility?: ('desktop' | 'tablet' | 'mobile')[] | null;
+    animation?: ('none' | 'fade-in' | 'slide-up' | 'zoom-in' | 'stagger') | null;
+    /**
+     * Inject custom CSS classes for developer overrides.
+     */
+    customClasses?: string | null;
+    /**
+     * Used for #anchor links. Must be unique.
+     */
+    htmlId?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'galleryBlock';
+}
+/**
+ * Curate reusable imagery for galleries and collection-backed page blocks.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "gallery".
+ */
+export interface Gallery {
+  id: number;
+  /**
+   * Super Admins may select a tenant. Other users are assigned from trusted tenant context.
+   */
+  tenantId: number | Tenant;
+  title: string;
+  category?: ('food' | 'ambiance' | 'events' | 'kitchen' | 'exterior') | null;
+  media: number | Media;
+  isFeatured?: boolean | null;
+  sortOrder?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FormBlock".
+ */
+export interface FormBlock {
+  /**
+   * Standardized section title and description.
+   */
+  sectionHeader: {
+    /**
+     * Small accented text above the title.
+     */
+    eyebrow?: string | null;
+    title: string;
+    headingTag?: ('h1' | 'h2' | 'h3' | 'h4') | null;
+    subtitle?: string | null;
+    description?: string | null;
+    alignment?: ('left' | 'center' | 'right') | null;
+    maxWidth?: ('standard' | 'narrow' | 'wide') | null;
+  };
+  formType: 'contact' | 'reservation' | 'catering';
+  submitLabel?: string | null;
+  successMessage?: string | null;
+  /**
+   * Appearance and visibility settings for this block.
+   */
+  settings?: {
+    backgroundColor?: ('transparent' | 'surface' | 'primary' | 'accent' | 'dark') | null;
+    containerWidth?: ('standard' | 'wide' | 'full') | null;
+    /**
+     * Optional image to place behind the block.
+     */
+    backgroundImage?: (number | null) | Media;
+    /**
+     * 0-100 opacity for the background overlay.
+     */
+    overlayOpacity?: number | null;
+    paddingTop?: ('none' | 'small' | 'medium' | 'large') | null;
+    paddingBottom?: ('none' | 'small' | 'medium' | 'large') | null;
+    visibility?: ('desktop' | 'tablet' | 'mobile')[] | null;
+    animation?: ('none' | 'fade-in' | 'slide-up' | 'zoom-in' | 'stagger') | null;
+    /**
+     * Inject custom CSS classes for developer overrides.
+     */
+    customClasses?: string | null;
+    /**
+     * Used for #anchor links. Must be unique.
+     */
+    htmlId?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'formBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MenuShowcaseBlock".
+ */
+export interface MenuShowcaseBlock {
+  /**
+   * Standardized section title and description.
+   */
+  sectionHeader: {
+    /**
+     * Small accented text above the title.
+     */
+    eyebrow?: string | null;
+    title: string;
+    headingTag?: ('h1' | 'h2' | 'h3' | 'h4') | null;
+    subtitle?: string | null;
+    description?: string | null;
+    alignment?: ('left' | 'center' | 'right') | null;
+    maxWidth?: ('standard' | 'narrow' | 'wide') | null;
+  };
+  /**
+   * Leave empty to show all active categories.
+   */
+  categories?: (number | MenuCategory)[] | null;
+  featuredOnly?: boolean | null;
+  limit?: number | null;
+  /**
+   * Call to Action links.
+   */
+  ctaGroup?: {
+    alignment?: ('left' | 'center' | 'right') | null;
+    enablePrimary?: boolean | null;
+    enableSecondary?: boolean | null;
+    primaryCTA?: {
+      type?: ('reference' | 'custom' | 'anchor' | 'email' | 'phone') | null;
+      label: string;
+      reference?: (number | null) | Page;
+      url?: string | null;
+      newTab?: boolean | null;
+      /**
+       * SEO override.
+       */
+      nofollow?: boolean | null;
+      disabled?: boolean | null;
+      buttonStyle?: ('primary' | 'secondary' | 'outline' | 'ghost' | 'text') | null;
+      buttonSize?: ('small' | 'medium' | 'large') | null;
+      icon?: (number | null) | Media;
+      iconPosition?: ('left' | 'right') | null;
+      /**
+       * E.g., GTM ID.
+       */
+      analyticsTrackingId?: string | null;
+      /**
+       * Screen reader override.
+       */
+      ariaLabel?: string | null;
+    };
+    secondaryCTA?: {
+      type?: ('reference' | 'custom' | 'anchor' | 'email' | 'phone') | null;
+      label: string;
+      reference?: (number | null) | Page;
+      url?: string | null;
+      newTab?: boolean | null;
+      /**
+       * SEO override.
+       */
+      nofollow?: boolean | null;
+      disabled?: boolean | null;
+      buttonStyle?: ('primary' | 'secondary' | 'outline' | 'ghost' | 'text') | null;
+      buttonSize?: ('small' | 'medium' | 'large') | null;
+      icon?: (number | null) | Media;
+      iconPosition?: ('left' | 'right') | null;
+      /**
+       * E.g., GTM ID.
+       */
+      analyticsTrackingId?: string | null;
+      /**
+       * Screen reader override.
+       */
+      ariaLabel?: string | null;
+    };
+  };
+  /**
+   * Appearance and visibility settings for this block.
+   */
+  settings?: {
+    backgroundColor?: ('transparent' | 'surface' | 'primary' | 'accent' | 'dark') | null;
+    containerWidth?: ('standard' | 'wide' | 'full') | null;
+    /**
+     * Optional image to place behind the block.
+     */
+    backgroundImage?: (number | null) | Media;
+    /**
+     * 0-100 opacity for the background overlay.
+     */
+    overlayOpacity?: number | null;
+    paddingTop?: ('none' | 'small' | 'medium' | 'large') | null;
+    paddingBottom?: ('none' | 'small' | 'medium' | 'large') | null;
+    visibility?: ('desktop' | 'tablet' | 'mobile')[] | null;
+    animation?: ('none' | 'fade-in' | 'slide-up' | 'zoom-in' | 'stagger') | null;
+    /**
+     * Inject custom CSS classes for developer overrides.
+     */
+    customClasses?: string | null;
+    /**
+     * Used for #anchor links. Must be unique.
+     */
+    htmlId?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'menushowcaseBlock';
+}
+/**
+ * Organize the public menu. Only active categories appear on the Ghee Roast site.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "menu-categories".
  */
@@ -406,7 +1262,7 @@ export interface MenuCategory {
   tenantId: number | Tenant;
   title: string;
   /**
-   * Auto-generated if left blank.
+   * Auto-generated if left blank. Used by menu filters and URLs.
    */
   slug?: string | null;
   isActive?: boolean | null;
@@ -417,6 +1273,620 @@ export interface MenuCategory {
   createdAt: string;
 }
 /**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TeamBlock".
+ */
+export interface TeamBlock {
+  /**
+   * Standardized section title and description.
+   */
+  sectionHeader: {
+    /**
+     * Small accented text above the title.
+     */
+    eyebrow?: string | null;
+    title: string;
+    headingTag?: ('h1' | 'h2' | 'h3' | 'h4') | null;
+    subtitle?: string | null;
+    description?: string | null;
+    alignment?: ('left' | 'center' | 'right') | null;
+    maxWidth?: ('standard' | 'narrow' | 'wide') | null;
+  };
+  /**
+   * Leave empty to show every active team member.
+   */
+  members?: (number | Teammember)[] | null;
+  limit?: number | null;
+  /**
+   * Appearance and visibility settings for this block.
+   */
+  settings?: {
+    backgroundColor?: ('transparent' | 'surface' | 'primary' | 'accent' | 'dark') | null;
+    containerWidth?: ('standard' | 'wide' | 'full') | null;
+    /**
+     * Optional image to place behind the block.
+     */
+    backgroundImage?: (number | null) | Media;
+    /**
+     * 0-100 opacity for the background overlay.
+     */
+    overlayOpacity?: number | null;
+    paddingTop?: ('none' | 'small' | 'medium' | 'large') | null;
+    paddingBottom?: ('none' | 'small' | 'medium' | 'large') | null;
+    visibility?: ('desktop' | 'tablet' | 'mobile')[] | null;
+    animation?: ('none' | 'fade-in' | 'slide-up' | 'zoom-in' | 'stagger') | null;
+    /**
+     * Inject custom CSS classes for developer overrides.
+     */
+    customClasses?: string | null;
+    /**
+     * Used for #anchor links. Must be unique.
+     */
+    htmlId?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'teamBlock';
+}
+/**
+ * Manage chefs, founders, and team profiles shown on tenant pages.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "teammembers".
+ */
+export interface Teammember {
+  id: number;
+  /**
+   * Super Admins may select a tenant. Other users are assigned from trusted tenant context.
+   */
+  tenantId: number | Tenant;
+  title: string;
+  role: string;
+  photo?: (number | null) | Media;
+  bio?: string | null;
+  quote?: string | null;
+  isActive?: boolean | null;
+  sortOrder?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "EventsBlock".
+ */
+export interface EventsBlock {
+  /**
+   * Standardized section title and description.
+   */
+  sectionHeader: {
+    /**
+     * Small accented text above the title.
+     */
+    eyebrow?: string | null;
+    title: string;
+    headingTag?: ('h1' | 'h2' | 'h3' | 'h4') | null;
+    subtitle?: string | null;
+    description?: string | null;
+    alignment?: ('left' | 'center' | 'right') | null;
+    maxWidth?: ('standard' | 'narrow' | 'wide') | null;
+  };
+  /**
+   * Leave empty to show all published events.
+   */
+  events?: (number | Event)[] | null;
+  featuredOnly?: boolean | null;
+  limit?: number | null;
+  /**
+   * Appearance and visibility settings for this block.
+   */
+  settings?: {
+    backgroundColor?: ('transparent' | 'surface' | 'primary' | 'accent' | 'dark') | null;
+    containerWidth?: ('standard' | 'wide' | 'full') | null;
+    /**
+     * Optional image to place behind the block.
+     */
+    backgroundImage?: (number | null) | Media;
+    /**
+     * 0-100 opacity for the background overlay.
+     */
+    overlayOpacity?: number | null;
+    paddingTop?: ('none' | 'small' | 'medium' | 'large') | null;
+    paddingBottom?: ('none' | 'small' | 'medium' | 'large') | null;
+    visibility?: ('desktop' | 'tablet' | 'mobile')[] | null;
+    animation?: ('none' | 'fade-in' | 'slide-up' | 'zoom-in' | 'stagger') | null;
+    /**
+     * Inject custom CSS classes for developer overrides.
+     */
+    customClasses?: string | null;
+    /**
+     * Used for #anchor links. Must be unique.
+     */
+    htmlId?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'eventsBlock';
+}
+/**
+ * Manage public events, pop-ups, catering showcases, and reservation links.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "events".
+ */
+export interface Event {
+  id: number;
+  /**
+   * Super Admins may select a tenant. Other users are assigned from trusted tenant context.
+   */
+  tenantId: number | Tenant;
+  title: string;
+  summary: string;
+  description?: string | null;
+  startsAt: string;
+  endsAt?: string | null;
+  locationName?: string | null;
+  image?: (number | null) | Media;
+  bookingUrl?: string | null;
+  status: 'draft' | 'published' | 'cancelled';
+  isFeatured?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FAQBlock".
+ */
+export interface FAQBlock {
+  /**
+   * Standardized section title and description.
+   */
+  sectionHeader: {
+    /**
+     * Small accented text above the title.
+     */
+    eyebrow?: string | null;
+    title: string;
+    headingTag?: ('h1' | 'h2' | 'h3' | 'h4') | null;
+    subtitle?: string | null;
+    description?: string | null;
+    alignment?: ('left' | 'center' | 'right') | null;
+    maxWidth?: ('standard' | 'narrow' | 'wide') | null;
+  };
+  /**
+   * Leave empty to show all published FAQs.
+   */
+  items?: (number | Faq)[] | null;
+  limit?: number | null;
+  /**
+   * Appearance and visibility settings for this block.
+   */
+  settings?: {
+    backgroundColor?: ('transparent' | 'surface' | 'primary' | 'accent' | 'dark') | null;
+    containerWidth?: ('standard' | 'wide' | 'full') | null;
+    /**
+     * Optional image to place behind the block.
+     */
+    backgroundImage?: (number | null) | Media;
+    /**
+     * 0-100 opacity for the background overlay.
+     */
+    overlayOpacity?: number | null;
+    paddingTop?: ('none' | 'small' | 'medium' | 'large') | null;
+    paddingBottom?: ('none' | 'small' | 'medium' | 'large') | null;
+    visibility?: ('desktop' | 'tablet' | 'mobile')[] | null;
+    animation?: ('none' | 'fade-in' | 'slide-up' | 'zoom-in' | 'stagger') | null;
+    /**
+     * Inject custom CSS classes for developer overrides.
+     */
+    customClasses?: string | null;
+    /**
+     * Used for #anchor links. Must be unique.
+     */
+    htmlId?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'faqBlock';
+}
+/**
+ * Reusable questions and answers for delivery, reservations, catering, and general pages.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "faqs".
+ */
+export interface Faq {
+  id: number;
+  /**
+   * Super Admins may select a tenant. Other users are assigned from trusted tenant context.
+   */
+  tenantId: number | Tenant;
+  title: string;
+  answer: string;
+  category?: string | null;
+  isActive?: boolean | null;
+  sortOrder?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LocationsBlock".
+ */
+export interface LocationsBlock {
+  /**
+   * Standardized section title and description.
+   */
+  sectionHeader: {
+    /**
+     * Small accented text above the title.
+     */
+    eyebrow?: string | null;
+    title: string;
+    headingTag?: ('h1' | 'h2' | 'h3' | 'h4') | null;
+    subtitle?: string | null;
+    description?: string | null;
+    alignment?: ('left' | 'center' | 'right') | null;
+    maxWidth?: ('standard' | 'narrow' | 'wide') | null;
+  };
+  /**
+   * Leave empty to show every active location.
+   */
+  locations?: (number | Location)[] | null;
+  showMap?: boolean | null;
+  /**
+   * Appearance and visibility settings for this block.
+   */
+  settings?: {
+    backgroundColor?: ('transparent' | 'surface' | 'primary' | 'accent' | 'dark') | null;
+    containerWidth?: ('standard' | 'wide' | 'full') | null;
+    /**
+     * Optional image to place behind the block.
+     */
+    backgroundImage?: (number | null) | Media;
+    /**
+     * 0-100 opacity for the background overlay.
+     */
+    overlayOpacity?: number | null;
+    paddingTop?: ('none' | 'small' | 'medium' | 'large') | null;
+    paddingBottom?: ('none' | 'small' | 'medium' | 'large') | null;
+    visibility?: ('desktop' | 'tablet' | 'mobile')[] | null;
+    animation?: ('none' | 'fade-in' | 'slide-up' | 'zoom-in' | 'stagger') | null;
+    /**
+     * Inject custom CSS classes for developer overrides.
+     */
+    customClasses?: string | null;
+    /**
+     * Used for #anchor links. Must be unique.
+     */
+    htmlId?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'locationsBlock';
+}
+/**
+ * Manage public kitchens, service areas, addresses, contacts, maps, and ordering links.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "locations".
+ */
+export interface Location {
+  id: number;
+  /**
+   * Super Admins may select a tenant. Other users are assigned from trusted tenant context.
+   */
+  tenantId: number | Tenant;
+  title: string;
+  city: string;
+  address: string;
+  description?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  mapsUrl?: string | null;
+  mapsEmbedUrl?: string | null;
+  orderLinks?:
+    | {
+        platform: string;
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
+  isActive?: boolean | null;
+  sortOrder?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BlogPreviewBlock".
+ */
+export interface BlogPreviewBlock {
+  title?: string | null;
+  subtitle?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'blogpreviewBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "EmbedBlock".
+ */
+export interface EmbedBlock {
+  title?: string | null;
+  subtitle?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'embedBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CTABlock".
+ */
+export interface CTABlock {
+  /**
+   * Standardized section title and description.
+   */
+  sectionHeader: {
+    /**
+     * Small accented text above the title.
+     */
+    eyebrow?: string | null;
+    title: string;
+    headingTag?: ('h1' | 'h2' | 'h3' | 'h4') | null;
+    subtitle?: string | null;
+    description?: string | null;
+    alignment?: ('left' | 'center' | 'right') | null;
+    maxWidth?: ('standard' | 'narrow' | 'wide') | null;
+  };
+  /**
+   * Primary and optional secondary CTA.
+   */
+  ctaGroup?: {
+    alignment?: ('left' | 'center' | 'right') | null;
+    enablePrimary?: boolean | null;
+    enableSecondary?: boolean | null;
+    primaryCTA?: {
+      type?: ('reference' | 'custom' | 'anchor' | 'email' | 'phone') | null;
+      label: string;
+      reference?: (number | null) | Page;
+      url?: string | null;
+      newTab?: boolean | null;
+      /**
+       * SEO override.
+       */
+      nofollow?: boolean | null;
+      disabled?: boolean | null;
+      buttonStyle?: ('primary' | 'secondary' | 'outline' | 'ghost' | 'text') | null;
+      buttonSize?: ('small' | 'medium' | 'large') | null;
+      icon?: (number | null) | Media;
+      iconPosition?: ('left' | 'right') | null;
+      /**
+       * E.g., GTM ID.
+       */
+      analyticsTrackingId?: string | null;
+      /**
+       * Screen reader override.
+       */
+      ariaLabel?: string | null;
+    };
+    secondaryCTA?: {
+      type?: ('reference' | 'custom' | 'anchor' | 'email' | 'phone') | null;
+      label: string;
+      reference?: (number | null) | Page;
+      url?: string | null;
+      newTab?: boolean | null;
+      /**
+       * SEO override.
+       */
+      nofollow?: boolean | null;
+      disabled?: boolean | null;
+      buttonStyle?: ('primary' | 'secondary' | 'outline' | 'ghost' | 'text') | null;
+      buttonSize?: ('small' | 'medium' | 'large') | null;
+      icon?: (number | null) | Media;
+      iconPosition?: ('left' | 'right') | null;
+      /**
+       * E.g., GTM ID.
+       */
+      analyticsTrackingId?: string | null;
+      /**
+       * Screen reader override.
+       */
+      ariaLabel?: string | null;
+    };
+  };
+  /**
+   * Appearance and visibility settings for this block.
+   */
+  settings?: {
+    backgroundColor?: ('transparent' | 'surface' | 'primary' | 'accent' | 'dark') | null;
+    containerWidth?: ('standard' | 'wide' | 'full') | null;
+    /**
+     * Optional image to place behind the block.
+     */
+    backgroundImage?: (number | null) | Media;
+    /**
+     * 0-100 opacity for the background overlay.
+     */
+    overlayOpacity?: number | null;
+    paddingTop?: ('none' | 'small' | 'medium' | 'large') | null;
+    paddingBottom?: ('none' | 'small' | 'medium' | 'large') | null;
+    visibility?: ('desktop' | 'tablet' | 'mobile')[] | null;
+    animation?: ('none' | 'fade-in' | 'slide-up' | 'zoom-in' | 'stagger') | null;
+    /**
+     * Inject custom CSS classes for developer overrides.
+     */
+    customClasses?: string | null;
+    /**
+     * Used for #anchor links. Must be unique.
+     */
+    htmlId?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'ctaBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "NewsletterBlock".
+ */
+export interface NewsletterBlock {
+  /**
+   * Standardized section title and description.
+   */
+  sectionHeader: {
+    /**
+     * Small accented text above the title.
+     */
+    eyebrow?: string | null;
+    title: string;
+    headingTag?: ('h1' | 'h2' | 'h3' | 'h4') | null;
+    subtitle?: string | null;
+    description?: string | null;
+    alignment?: ('left' | 'center' | 'right') | null;
+    maxWidth?: ('standard' | 'narrow' | 'wide') | null;
+  };
+  placeholder?: string | null;
+  buttonLabel?: string | null;
+  privacyText?: string | null;
+  /**
+   * Appearance and visibility settings for this block.
+   */
+  settings?: {
+    backgroundColor?: ('transparent' | 'surface' | 'primary' | 'accent' | 'dark') | null;
+    containerWidth?: ('standard' | 'wide' | 'full') | null;
+    /**
+     * Optional image to place behind the block.
+     */
+    backgroundImage?: (number | null) | Media;
+    /**
+     * 0-100 opacity for the background overlay.
+     */
+    overlayOpacity?: number | null;
+    paddingTop?: ('none' | 'small' | 'medium' | 'large') | null;
+    paddingBottom?: ('none' | 'small' | 'medium' | 'large') | null;
+    visibility?: ('desktop' | 'tablet' | 'mobile')[] | null;
+    animation?: ('none' | 'fade-in' | 'slide-up' | 'zoom-in' | 'stagger') | null;
+    /**
+     * Inject custom CSS classes for developer overrides.
+     */
+    customClasses?: string | null;
+    /**
+     * Used for #anchor links. Must be unique.
+     */
+    htmlId?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'newsletterBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "RichTextBlock".
+ */
+export interface RichTextBlock {
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  /**
+   * Appearance and visibility settings for this block.
+   */
+  settings?: {
+    backgroundColor?: ('transparent' | 'surface' | 'primary' | 'accent' | 'dark') | null;
+    containerWidth?: ('standard' | 'wide' | 'full') | null;
+    /**
+     * Optional image to place behind the block.
+     */
+    backgroundImage?: (number | null) | Media;
+    /**
+     * 0-100 opacity for the background overlay.
+     */
+    overlayOpacity?: number | null;
+    paddingTop?: ('none' | 'small' | 'medium' | 'large') | null;
+    paddingBottom?: ('none' | 'small' | 'medium' | 'large') | null;
+    visibility?: ('desktop' | 'tablet' | 'mobile')[] | null;
+    animation?: ('none' | 'fade-in' | 'slide-up' | 'zoom-in' | 'stagger') | null;
+    /**
+     * Inject custom CSS classes for developer overrides.
+     */
+    customClasses?: string | null;
+    /**
+     * Used for #anchor links. Must be unique.
+     */
+    htmlId?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'richtextBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SpacerBlock".
+ */
+export interface SpacerBlock {
+  size: 'small' | 'medium' | 'large' | 'xlarge';
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'spacerBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "RoomsShowcaseBlock".
+ */
+export interface RoomsShowcaseBlock {
+  title?: string | null;
+  subtitle?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'roomsshowcaseBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AmenitiesBlock".
+ */
+export interface AmenitiesBlock {
+  title?: string | null;
+  subtitle?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'amenitiesBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PackagesBlock".
+ */
+export interface PackagesBlock {
+  title?: string | null;
+  subtitle?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'packagesBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SubBrandsBlock".
+ */
+export interface SubBrandsBlock {
+  title?: string | null;
+  subtitle?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'subbrandsBlock';
+}
+/**
+ * Manage dishes, pricing, dietary details, availability, imagery, and featured placement.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "menu-items".
  */
@@ -435,7 +1905,10 @@ export interface MenuItem {
    * Optional ID for POS integration.
    */
   sku?: string | null;
-  description?: string | null;
+  /**
+   * Customer-facing menu description.
+   */
+  description: string;
   category: number | MenuCategory;
   displayOrder?: number | null;
   price: number;
@@ -470,57 +1943,6 @@ export interface MenuItem {
   availabilityTime?: string | null;
   recommendedItems?: (number | MenuItem)[] | null;
   upsellItems?: (number | MenuItem)[] | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "testimonials".
- */
-export interface Testimonial {
-  id: number;
-  /**
-   * Super Admins may select a tenant. Other users are assigned from trusted tenant context.
-   */
-  tenantId: number | Tenant;
-  customerName: string;
-  /**
-   * e.g. Local Food Critic, Regular Guest
-   */
-  customerRole?: string | null;
-  rating: number;
-  review: string;
-  photo?: (number | null) | Media;
-  isFeatured?: boolean | null;
-  sortOrder?: number | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "teammembers".
- */
-export interface Teammember {
-  id: number;
-  /**
-   * Super Admins may select a tenant. Other users are assigned from trusted tenant context.
-   */
-  tenantId: number | Tenant;
-  title: string;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "events".
- */
-export interface Event {
-  id: number;
-  /**
-   * Super Admins may select a tenant. Other users are assigned from trusted tenant context.
-   */
-  tenantId: number | Tenant;
-  title: string;
   updatedAt: string;
   createdAt: string;
 }
@@ -627,34 +2049,6 @@ export interface BlogPost {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "locations".
- */
-export interface Location {
-  id: number;
-  /**
-   * Super Admins may select a tenant. Other users are assigned from trusted tenant context.
-   */
-  tenantId: number | Tenant;
-  title: string;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "faqs".
- */
-export interface Faq {
-  id: number;
-  /**
-   * Super Admins may select a tenant. Other users are assigned from trusted tenant context.
-   */
-  tenantId: number | Tenant;
-  title: string;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "contact-submissions".
  */
 export interface ContactSubmission {
@@ -673,24 +2067,6 @@ export interface ContactSubmission {
   createdAt: string;
 }
 /**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "gallery".
- */
-export interface Gallery {
-  id: number;
-  /**
-   * Super Admins may select a tenant. Other users are assigned from trusted tenant context.
-   */
-  tenantId: number | Tenant;
-  title: string;
-  category?: ('food' | 'ambiance' | 'events' | 'kitchen' | 'exterior') | null;
-  media: number | Media;
-  isFeatured?: boolean | null;
-  sortOrder?: number | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
  * Manage core operational settings for this tenant. Limited to one document per tenant.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -705,13 +2081,25 @@ export interface SiteSetting {
   businessName: string;
   legalName?: string | null;
   taxId?: string | null;
+  /**
+   * Short brand line used in the header and footer.
+   */
+  tagline?: string | null;
+  /**
+   * Brand summary used in the footer and as a metadata fallback.
+   */
+  siteDescription?: string | null;
+  /**
+   * Public address or service-area description.
+   */
+  contactAddress?: string | null;
   cuisineType?: string | null;
   priceRange?: ('$' | '$$' | '$$$' | '$$$$') | null;
   mapsUrl?: string | null;
   mapsEmbedCode?: string | null;
   hours?:
     | {
-        day?: ('Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday') | null;
+        day: 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday';
         openTime?: string | null;
         closeTime?: string | null;
         isClosed?: boolean | null;
@@ -721,10 +2109,13 @@ export interface SiteSetting {
   whatsappNumber?: string | null;
   deliverySettings?: {
     enableDelivery?: boolean | null;
+    /**
+     * Public ordering platforms shown across the site.
+     */
     deliveryUrls?:
       | {
-          platform?: string | null;
-          url?: string | null;
+          platform: string;
+          url: string;
           id?: string | null;
         }[]
       | null;
@@ -747,6 +2138,15 @@ export interface SiteSetting {
   maintenanceMode?: boolean | null;
   showAnnouncementBar?: boolean | null;
   announcementText?: string | null;
+  newsletter?: {
+    enabled?: boolean | null;
+    title?: string | null;
+    highlightedWord?: string | null;
+    description?: string | null;
+    placeholder?: string | null;
+    buttonLabel?: string | null;
+    privacyText?: string | null;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -762,13 +2162,30 @@ export interface Nav {
    * Super Admins may select a tenant. Other users are assigned from trusted tenant context.
    */
   tenantId: number | Tenant;
+  internalName: string;
+  location: 'header';
+  brandName?: string | null;
+  logo?: (number | null) | Media;
   links?:
     | (
         | {
             label: string;
             type?: ('page' | 'internal' | 'external' | 'anchor') | null;
+            enabled?: boolean | null;
+            sortOrder?: number | null;
             page?: (number | null) | Page;
             url?: string | null;
+            /**
+             * Optional dropdown links. On mobile these follow the parent item.
+             */
+            children?:
+              | {
+                  label: string;
+                  url: string;
+                  newTab?: boolean | null;
+                  id?: string | null;
+                }[]
+              | null;
             /**
              * Icon class name (e.g., fas fa-home)
              */
@@ -796,6 +2213,11 @@ export interface Nav {
           }
       )[]
     | null;
+  cta?: {
+    enabled?: boolean | null;
+    label?: string | null;
+    url?: string | null;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -811,6 +2233,13 @@ export interface Footer {
    * Super Admins may select a tenant. Other users are assigned from trusted tenant context.
    */
   tenantId: number | Tenant;
+  /**
+   * Heading above the business contact details column.
+   */
+  contactHeading?: string | null;
+  /**
+   * Organize footer navigation into up to four editor-managed columns.
+   */
   columns?:
     | {
         title: string;
@@ -826,12 +2255,13 @@ export interface Footer {
       }[]
     | null;
   /**
-   * Links below the main footer (e.g., Privacy Policy, Terms of Service).
+   * Legal and utility links below the main footer.
    */
   bottomLinks?:
     | {
         label: string;
         url: string;
+        newTab?: boolean | null;
         id?: string | null;
       }[]
     | null;
@@ -1139,6 +2569,7 @@ export interface TenantsSelect<T extends boolean = true> {
   name?: T;
   slug?: T;
   type?: T;
+  theme?: T;
   parentTenant?: T;
   isActive?: T;
   isPrimary?: T;
@@ -1296,13 +2727,31 @@ export interface PagesSelect<T extends boolean = true> {
   layout?:
     | T
     | {
-        mockBlock?:
-          | T
-          | {
-              content?: T;
-              id?: T;
-              blockName?: T;
-            };
+        heroBlock?: T | HeroBlockSelect<T>;
+        featurestripBlock?: T | FeatureStripBlockSelect<T>;
+        cardgridBlock?: T | CardGridBlockSelect<T>;
+        contentgridBlock?: T | ContentGridBlockSelect<T>;
+        stepsBlock?: T | StepsBlockSelect<T>;
+        testimonialsBlock?: T | TestimonialsBlockSelect<T>;
+        statsBlock?: T | StatsBlockSelect<T>;
+        splitBlock?: T | SplitBlockSelect<T>;
+        galleryBlock?: T | GalleryBlockSelect<T>;
+        formBlock?: T | FormBlockSelect<T>;
+        menushowcaseBlock?: T | MenuShowcaseBlockSelect<T>;
+        teamBlock?: T | TeamBlockSelect<T>;
+        eventsBlock?: T | EventsBlockSelect<T>;
+        faqBlock?: T | FAQBlockSelect<T>;
+        locationsBlock?: T | LocationsBlockSelect<T>;
+        blogpreviewBlock?: T | BlogPreviewBlockSelect<T>;
+        embedBlock?: T | EmbedBlockSelect<T>;
+        ctaBlock?: T | CTABlockSelect<T>;
+        newsletterBlock?: T | NewsletterBlockSelect<T>;
+        richtextBlock?: T | RichTextBlockSelect<T>;
+        spacerBlock?: T | SpacerBlockSelect<T>;
+        roomsshowcaseBlock?: T | RoomsShowcaseBlockSelect<T>;
+        amenitiesBlock?: T | AmenitiesBlockSelect<T>;
+        packagesBlock?: T | PackagesBlockSelect<T>;
+        subbrandsBlock?: T | SubBrandsBlockSelect<T>;
       };
   showInNavigation?: T;
   navigationLabel?: T;
@@ -1322,6 +2771,887 @@ export interface PagesSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "HeroBlock_select".
+ */
+export interface HeroBlockSelect<T extends boolean = true> {
+  enabled?: T;
+  eyebrow?: T;
+  heading?: T;
+  highlightedHeading?: T;
+  description?: T;
+  orderPlatformsLabel?: T;
+  stampText?: T;
+  primaryCTALabel?: T;
+  primaryCTAURL?: T;
+  secondaryCTALabel?: T;
+  secondaryCTAURL?: T;
+  desktopBackgroundImage?: T;
+  mobileBackgroundImage?: T;
+  foregroundImage?: T;
+  imageAlt?: T;
+  overlayOpacity?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FeatureStripBlock_select".
+ */
+export interface FeatureStripBlockSelect<T extends boolean = true> {
+  items?:
+    | T
+    | {
+        icon?: T;
+        title?: T;
+        description?: T;
+        id?: T;
+      };
+  settings?:
+    | T
+    | {
+        backgroundColor?: T;
+        containerWidth?: T;
+        backgroundImage?: T;
+        overlayOpacity?: T;
+        paddingTop?: T;
+        paddingBottom?: T;
+        visibility?: T;
+        animation?: T;
+        customClasses?: T;
+        htmlId?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CardGridBlock_select".
+ */
+export interface CardGridBlockSelect<T extends boolean = true> {
+  sectionHeader?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        headingTag?: T;
+        subtitle?: T;
+        description?: T;
+        alignment?: T;
+        maxWidth?: T;
+      };
+  cards?:
+    | T
+    | {
+        image?:
+          | T
+          | {
+              item?: T;
+              altOverride?: T;
+              caption?: T;
+              aspectRatio?: T;
+              objectFit?: T;
+              priority?: T;
+              focalPoint?:
+                | T
+                | {
+                    x?: T;
+                    y?: T;
+                  };
+            };
+        title?: T;
+        description?: T;
+        enableLink?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              label?: T;
+              reference?: T;
+              url?: T;
+              newTab?: T;
+              nofollow?: T;
+              disabled?: T;
+              buttonStyle?: T;
+              buttonSize?: T;
+              icon?: T;
+              iconPosition?: T;
+              analyticsTrackingId?: T;
+              ariaLabel?: T;
+            };
+        id?: T;
+      };
+  columns?: T;
+  settings?:
+    | T
+    | {
+        backgroundColor?: T;
+        containerWidth?: T;
+        backgroundImage?: T;
+        overlayOpacity?: T;
+        paddingTop?: T;
+        paddingBottom?: T;
+        visibility?: T;
+        animation?: T;
+        customClasses?: T;
+        htmlId?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ContentGridBlock_select".
+ */
+export interface ContentGridBlockSelect<T extends boolean = true> {
+  sectionHeader?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        headingTag?: T;
+        subtitle?: T;
+        description?: T;
+        alignment?: T;
+        maxWidth?: T;
+      };
+  items?:
+    | T
+    | {
+        icon?: T;
+        title?: T;
+        description?: T;
+        id?: T;
+      };
+  settings?:
+    | T
+    | {
+        backgroundColor?: T;
+        containerWidth?: T;
+        backgroundImage?: T;
+        overlayOpacity?: T;
+        paddingTop?: T;
+        paddingBottom?: T;
+        visibility?: T;
+        animation?: T;
+        customClasses?: T;
+        htmlId?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "StepsBlock_select".
+ */
+export interface StepsBlockSelect<T extends boolean = true> {
+  sectionHeader?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        headingTag?: T;
+        subtitle?: T;
+        description?: T;
+        alignment?: T;
+        maxWidth?: T;
+      };
+  steps?:
+    | T
+    | {
+        label?: T;
+        icon?: T;
+        title?: T;
+        description?: T;
+        id?: T;
+      };
+  settings?:
+    | T
+    | {
+        backgroundColor?: T;
+        containerWidth?: T;
+        backgroundImage?: T;
+        overlayOpacity?: T;
+        paddingTop?: T;
+        paddingBottom?: T;
+        visibility?: T;
+        animation?: T;
+        customClasses?: T;
+        htmlId?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TestimonialsBlock_select".
+ */
+export interface TestimonialsBlockSelect<T extends boolean = true> {
+  sectionHeader?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        headingTag?: T;
+        subtitle?: T;
+        description?: T;
+        alignment?: T;
+        maxWidth?: T;
+      };
+  source?: T;
+  testimonials?: T;
+  featuredOnly?: T;
+  limit?: T;
+  settings?:
+    | T
+    | {
+        backgroundColor?: T;
+        containerWidth?: T;
+        backgroundImage?: T;
+        overlayOpacity?: T;
+        paddingTop?: T;
+        paddingBottom?: T;
+        visibility?: T;
+        animation?: T;
+        customClasses?: T;
+        htmlId?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "StatsBlock_select".
+ */
+export interface StatsBlockSelect<T extends boolean = true> {
+  sectionHeader?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        headingTag?: T;
+        subtitle?: T;
+        description?: T;
+        alignment?: T;
+        maxWidth?: T;
+      };
+  stats?:
+    | T
+    | {
+        value?: T;
+        label?: T;
+        id?: T;
+      };
+  settings?:
+    | T
+    | {
+        backgroundColor?: T;
+        containerWidth?: T;
+        backgroundImage?: T;
+        overlayOpacity?: T;
+        paddingTop?: T;
+        paddingBottom?: T;
+        visibility?: T;
+        animation?: T;
+        customClasses?: T;
+        htmlId?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SplitBlock_select".
+ */
+export interface SplitBlockSelect<T extends boolean = true> {
+  sectionHeader?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        headingTag?: T;
+        subtitle?: T;
+        description?: T;
+        alignment?: T;
+        maxWidth?: T;
+      };
+  body?: T;
+  points?:
+    | T
+    | {
+        text?: T;
+        id?: T;
+      };
+  image?:
+    | T
+    | {
+        item?: T;
+        altOverride?: T;
+        caption?: T;
+        aspectRatio?: T;
+        objectFit?: T;
+        priority?: T;
+        focalPoint?:
+          | T
+          | {
+              x?: T;
+              y?: T;
+            };
+      };
+  imagePosition?: T;
+  ctaGroup?:
+    | T
+    | {
+        alignment?: T;
+        enablePrimary?: T;
+        enableSecondary?: T;
+        primaryCTA?:
+          | T
+          | {
+              type?: T;
+              label?: T;
+              reference?: T;
+              url?: T;
+              newTab?: T;
+              nofollow?: T;
+              disabled?: T;
+              buttonStyle?: T;
+              buttonSize?: T;
+              icon?: T;
+              iconPosition?: T;
+              analyticsTrackingId?: T;
+              ariaLabel?: T;
+            };
+        secondaryCTA?:
+          | T
+          | {
+              type?: T;
+              label?: T;
+              reference?: T;
+              url?: T;
+              newTab?: T;
+              nofollow?: T;
+              disabled?: T;
+              buttonStyle?: T;
+              buttonSize?: T;
+              icon?: T;
+              iconPosition?: T;
+              analyticsTrackingId?: T;
+              ariaLabel?: T;
+            };
+      };
+  settings?:
+    | T
+    | {
+        backgroundColor?: T;
+        containerWidth?: T;
+        backgroundImage?: T;
+        overlayOpacity?: T;
+        paddingTop?: T;
+        paddingBottom?: T;
+        visibility?: T;
+        animation?: T;
+        customClasses?: T;
+        htmlId?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "GalleryBlock_select".
+ */
+export interface GalleryBlockSelect<T extends boolean = true> {
+  sectionHeader?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        headingTag?: T;
+        subtitle?: T;
+        description?: T;
+        alignment?: T;
+        maxWidth?: T;
+      };
+  source?: T;
+  items?: T;
+  category?: T;
+  featuredOnly?: T;
+  limit?: T;
+  settings?:
+    | T
+    | {
+        backgroundColor?: T;
+        containerWidth?: T;
+        backgroundImage?: T;
+        overlayOpacity?: T;
+        paddingTop?: T;
+        paddingBottom?: T;
+        visibility?: T;
+        animation?: T;
+        customClasses?: T;
+        htmlId?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FormBlock_select".
+ */
+export interface FormBlockSelect<T extends boolean = true> {
+  sectionHeader?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        headingTag?: T;
+        subtitle?: T;
+        description?: T;
+        alignment?: T;
+        maxWidth?: T;
+      };
+  formType?: T;
+  submitLabel?: T;
+  successMessage?: T;
+  settings?:
+    | T
+    | {
+        backgroundColor?: T;
+        containerWidth?: T;
+        backgroundImage?: T;
+        overlayOpacity?: T;
+        paddingTop?: T;
+        paddingBottom?: T;
+        visibility?: T;
+        animation?: T;
+        customClasses?: T;
+        htmlId?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MenuShowcaseBlock_select".
+ */
+export interface MenuShowcaseBlockSelect<T extends boolean = true> {
+  sectionHeader?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        headingTag?: T;
+        subtitle?: T;
+        description?: T;
+        alignment?: T;
+        maxWidth?: T;
+      };
+  categories?: T;
+  featuredOnly?: T;
+  limit?: T;
+  ctaGroup?:
+    | T
+    | {
+        alignment?: T;
+        enablePrimary?: T;
+        enableSecondary?: T;
+        primaryCTA?:
+          | T
+          | {
+              type?: T;
+              label?: T;
+              reference?: T;
+              url?: T;
+              newTab?: T;
+              nofollow?: T;
+              disabled?: T;
+              buttonStyle?: T;
+              buttonSize?: T;
+              icon?: T;
+              iconPosition?: T;
+              analyticsTrackingId?: T;
+              ariaLabel?: T;
+            };
+        secondaryCTA?:
+          | T
+          | {
+              type?: T;
+              label?: T;
+              reference?: T;
+              url?: T;
+              newTab?: T;
+              nofollow?: T;
+              disabled?: T;
+              buttonStyle?: T;
+              buttonSize?: T;
+              icon?: T;
+              iconPosition?: T;
+              analyticsTrackingId?: T;
+              ariaLabel?: T;
+            };
+      };
+  settings?:
+    | T
+    | {
+        backgroundColor?: T;
+        containerWidth?: T;
+        backgroundImage?: T;
+        overlayOpacity?: T;
+        paddingTop?: T;
+        paddingBottom?: T;
+        visibility?: T;
+        animation?: T;
+        customClasses?: T;
+        htmlId?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TeamBlock_select".
+ */
+export interface TeamBlockSelect<T extends boolean = true> {
+  sectionHeader?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        headingTag?: T;
+        subtitle?: T;
+        description?: T;
+        alignment?: T;
+        maxWidth?: T;
+      };
+  members?: T;
+  limit?: T;
+  settings?:
+    | T
+    | {
+        backgroundColor?: T;
+        containerWidth?: T;
+        backgroundImage?: T;
+        overlayOpacity?: T;
+        paddingTop?: T;
+        paddingBottom?: T;
+        visibility?: T;
+        animation?: T;
+        customClasses?: T;
+        htmlId?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "EventsBlock_select".
+ */
+export interface EventsBlockSelect<T extends boolean = true> {
+  sectionHeader?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        headingTag?: T;
+        subtitle?: T;
+        description?: T;
+        alignment?: T;
+        maxWidth?: T;
+      };
+  events?: T;
+  featuredOnly?: T;
+  limit?: T;
+  settings?:
+    | T
+    | {
+        backgroundColor?: T;
+        containerWidth?: T;
+        backgroundImage?: T;
+        overlayOpacity?: T;
+        paddingTop?: T;
+        paddingBottom?: T;
+        visibility?: T;
+        animation?: T;
+        customClasses?: T;
+        htmlId?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FAQBlock_select".
+ */
+export interface FAQBlockSelect<T extends boolean = true> {
+  sectionHeader?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        headingTag?: T;
+        subtitle?: T;
+        description?: T;
+        alignment?: T;
+        maxWidth?: T;
+      };
+  items?: T;
+  limit?: T;
+  settings?:
+    | T
+    | {
+        backgroundColor?: T;
+        containerWidth?: T;
+        backgroundImage?: T;
+        overlayOpacity?: T;
+        paddingTop?: T;
+        paddingBottom?: T;
+        visibility?: T;
+        animation?: T;
+        customClasses?: T;
+        htmlId?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LocationsBlock_select".
+ */
+export interface LocationsBlockSelect<T extends boolean = true> {
+  sectionHeader?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        headingTag?: T;
+        subtitle?: T;
+        description?: T;
+        alignment?: T;
+        maxWidth?: T;
+      };
+  locations?: T;
+  showMap?: T;
+  settings?:
+    | T
+    | {
+        backgroundColor?: T;
+        containerWidth?: T;
+        backgroundImage?: T;
+        overlayOpacity?: T;
+        paddingTop?: T;
+        paddingBottom?: T;
+        visibility?: T;
+        animation?: T;
+        customClasses?: T;
+        htmlId?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BlogPreviewBlock_select".
+ */
+export interface BlogPreviewBlockSelect<T extends boolean = true> {
+  title?: T;
+  subtitle?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "EmbedBlock_select".
+ */
+export interface EmbedBlockSelect<T extends boolean = true> {
+  title?: T;
+  subtitle?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CTABlock_select".
+ */
+export interface CTABlockSelect<T extends boolean = true> {
+  sectionHeader?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        headingTag?: T;
+        subtitle?: T;
+        description?: T;
+        alignment?: T;
+        maxWidth?: T;
+      };
+  ctaGroup?:
+    | T
+    | {
+        alignment?: T;
+        enablePrimary?: T;
+        enableSecondary?: T;
+        primaryCTA?:
+          | T
+          | {
+              type?: T;
+              label?: T;
+              reference?: T;
+              url?: T;
+              newTab?: T;
+              nofollow?: T;
+              disabled?: T;
+              buttonStyle?: T;
+              buttonSize?: T;
+              icon?: T;
+              iconPosition?: T;
+              analyticsTrackingId?: T;
+              ariaLabel?: T;
+            };
+        secondaryCTA?:
+          | T
+          | {
+              type?: T;
+              label?: T;
+              reference?: T;
+              url?: T;
+              newTab?: T;
+              nofollow?: T;
+              disabled?: T;
+              buttonStyle?: T;
+              buttonSize?: T;
+              icon?: T;
+              iconPosition?: T;
+              analyticsTrackingId?: T;
+              ariaLabel?: T;
+            };
+      };
+  settings?:
+    | T
+    | {
+        backgroundColor?: T;
+        containerWidth?: T;
+        backgroundImage?: T;
+        overlayOpacity?: T;
+        paddingTop?: T;
+        paddingBottom?: T;
+        visibility?: T;
+        animation?: T;
+        customClasses?: T;
+        htmlId?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "NewsletterBlock_select".
+ */
+export interface NewsletterBlockSelect<T extends boolean = true> {
+  sectionHeader?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        headingTag?: T;
+        subtitle?: T;
+        description?: T;
+        alignment?: T;
+        maxWidth?: T;
+      };
+  placeholder?: T;
+  buttonLabel?: T;
+  privacyText?: T;
+  settings?:
+    | T
+    | {
+        backgroundColor?: T;
+        containerWidth?: T;
+        backgroundImage?: T;
+        overlayOpacity?: T;
+        paddingTop?: T;
+        paddingBottom?: T;
+        visibility?: T;
+        animation?: T;
+        customClasses?: T;
+        htmlId?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "RichTextBlock_select".
+ */
+export interface RichTextBlockSelect<T extends boolean = true> {
+  content?: T;
+  settings?:
+    | T
+    | {
+        backgroundColor?: T;
+        containerWidth?: T;
+        backgroundImage?: T;
+        overlayOpacity?: T;
+        paddingTop?: T;
+        paddingBottom?: T;
+        visibility?: T;
+        animation?: T;
+        customClasses?: T;
+        htmlId?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SpacerBlock_select".
+ */
+export interface SpacerBlockSelect<T extends boolean = true> {
+  size?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "RoomsShowcaseBlock_select".
+ */
+export interface RoomsShowcaseBlockSelect<T extends boolean = true> {
+  title?: T;
+  subtitle?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AmenitiesBlock_select".
+ */
+export interface AmenitiesBlockSelect<T extends boolean = true> {
+  title?: T;
+  subtitle?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PackagesBlock_select".
+ */
+export interface PackagesBlockSelect<T extends boolean = true> {
+  title?: T;
+  subtitle?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SubBrandsBlock_select".
+ */
+export interface SubBrandsBlockSelect<T extends boolean = true> {
+  title?: T;
+  subtitle?: T;
+  id?: T;
+  blockName?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1399,6 +3729,12 @@ export interface TestimonialsSelect<T extends boolean = true> {
 export interface TeammembersSelect<T extends boolean = true> {
   tenantId?: T;
   title?: T;
+  role?: T;
+  photo?: T;
+  bio?: T;
+  quote?: T;
+  isActive?: T;
+  sortOrder?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1409,6 +3745,15 @@ export interface TeammembersSelect<T extends boolean = true> {
 export interface EventsSelect<T extends boolean = true> {
   tenantId?: T;
   title?: T;
+  summary?: T;
+  description?: T;
+  startsAt?: T;
+  endsAt?: T;
+  locationName?: T;
+  image?: T;
+  bookingUrl?: T;
+  status?: T;
+  isFeatured?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1474,6 +3819,22 @@ export interface BlogPostsSelect<T extends boolean = true> {
 export interface LocationsSelect<T extends boolean = true> {
   tenantId?: T;
   title?: T;
+  city?: T;
+  address?: T;
+  description?: T;
+  phone?: T;
+  email?: T;
+  mapsUrl?: T;
+  mapsEmbedUrl?: T;
+  orderLinks?:
+    | T
+    | {
+        platform?: T;
+        url?: T;
+        id?: T;
+      };
+  isActive?: T;
+  sortOrder?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1484,6 +3845,10 @@ export interface LocationsSelect<T extends boolean = true> {
 export interface FaqsSelect<T extends boolean = true> {
   tenantId?: T;
   title?: T;
+  answer?: T;
+  category?: T;
+  isActive?: T;
+  sortOrder?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1525,6 +3890,9 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   businessName?: T;
   legalName?: T;
   taxId?: T;
+  tagline?: T;
+  siteDescription?: T;
+  contactAddress?: T;
   cuisineType?: T;
   priceRange?: T;
   mapsUrl?: T;
@@ -1571,6 +3939,17 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   maintenanceMode?: T;
   showAnnouncementBar?: T;
   announcementText?: T;
+  newsletter?:
+    | T
+    | {
+        enabled?: T;
+        title?: T;
+        highlightedWord?: T;
+        description?: T;
+        placeholder?: T;
+        buttonLabel?: T;
+        privacyText?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1580,6 +3959,10 @@ export interface SiteSettingsSelect<T extends boolean = true> {
  */
 export interface NavSelect<T extends boolean = true> {
   tenantId?: T;
+  internalName?: T;
+  location?: T;
+  brandName?: T;
+  logo?: T;
   links?:
     | T
     | {
@@ -1588,8 +3971,18 @@ export interface NavSelect<T extends boolean = true> {
           | {
               label?: T;
               type?: T;
+              enabled?: T;
+              sortOrder?: T;
               page?: T;
               url?: T;
+              children?:
+                | T
+                | {
+                    label?: T;
+                    url?: T;
+                    newTab?: T;
+                    id?: T;
+                  };
               icon?: T;
               badge?: T;
               newTab?: T;
@@ -1613,6 +4006,13 @@ export interface NavSelect<T extends boolean = true> {
               blockName?: T;
             };
       };
+  cta?:
+    | T
+    | {
+        enabled?: T;
+        label?: T;
+        url?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1622,6 +4022,7 @@ export interface NavSelect<T extends boolean = true> {
  */
 export interface FooterSelect<T extends boolean = true> {
   tenantId?: T;
+  contactHeading?: T;
   columns?:
     | T
     | {
@@ -1641,6 +4042,7 @@ export interface FooterSelect<T extends boolean = true> {
     | {
         label?: T;
         url?: T;
+        newTab?: T;
         id?: T;
       };
   copyright?: T;

@@ -1,10 +1,23 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionConfig, FieldAccess } from 'payload'
 import { tenantField } from '../fields/tenantField'
 import { tenantIsolation } from '../access/tenantIsolation'
 import {
   canDeleteTenantContent,
   canUpdateTenantContent,
+  isSuperAdminUser,
+  isTenantAdminUser,
 } from '../access/tenantContext'
+import {
+  normalizeEmail,
+  normalizeIndianMobile,
+  normalizeName,
+  validateEmail,
+  validateIndianMobile,
+  validateName,
+} from '../validation/shared'
+
+const canManageSubmissionFields: FieldAccess = ({ req }) =>
+  isSuperAdminUser(req.user) || isTenantAdminUser(req.user)
 
 export const ContactSubmissions: CollectionConfig = {
   slug: 'contact-submissions',
@@ -23,9 +36,28 @@ export const ContactSubmissions: CollectionConfig = {
     {
       type: 'row',
       fields: [
-        { name: 'name', type: 'text', required: true },
-        { name: 'email', type: 'email', required: true },
-        { name: 'phone', type: 'text' },
+        {
+          name: 'name',
+          type: 'text',
+          required: true,
+          maxLength: 100,
+          validate: validateName,
+          hooks: { beforeValidate: [({ value }) => normalizeName(value)] },
+        },
+        {
+          name: 'email',
+          type: 'email',
+          required: true,
+          validate: validateEmail,
+          hooks: { beforeValidate: [({ value }) => normalizeEmail(value)] },
+        },
+        {
+          name: 'phone',
+          type: 'text',
+          maxLength: 10,
+          validate: (value: unknown) => validateIndianMobile(value, { required: false }),
+          hooks: { beforeValidate: [({ value }) => normalizeIndianMobile(value)] },
+        },
       ]
     },
     {
@@ -43,11 +75,15 @@ export const ContactSubmissions: CollectionConfig = {
           type: 'select', 
           defaultValue: 'new',
           index: true,
-          options: ['new', 'read', 'resolved']
+          options: ['new', 'read', 'resolved'],
+          access: {
+            create: canManageSubmissionFields,
+            update: canManageSubmissionFields,
+          },
         },
       ]
     },
-    { name: 'message', type: 'textarea', required: true },
+    { name: 'message', type: 'textarea', required: true, maxLength: 5000 },
   ],
   hooks: {
     afterChange: [

@@ -23,6 +23,7 @@ export const sectionHeader = (overrides?: Partial<GroupField>): GroupField => ({
         },
         {
           name: 'headingTag',
+          enumName: 'cms_section_tag',
           type: 'select',
           defaultValue: 'h2',
           options: [
@@ -47,6 +48,7 @@ export const sectionHeader = (overrides?: Partial<GroupField>): GroupField => ({
       fields: [
         {
           name: 'alignment',
+          enumName: 'cms_section_align',
           type: 'select',
           defaultValue: 'left',
           options: [
@@ -57,6 +59,7 @@ export const sectionHeader = (overrides?: Partial<GroupField>): GroupField => ({
         },
         {
           name: 'maxWidth',
+          enumName: 'cms_section_width',
           type: 'select',
           defaultValue: 'standard',
           options: [

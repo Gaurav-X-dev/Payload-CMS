@@ -4,6 +4,7 @@ import {
   normalizeTenantID,
   resolveTrustedTenantID,
 } from '../access/tenantContext'
+import { validateSlug } from '../validation/shared'
 
 /**
  * Ensures a field (usually a slug) is unique per-tenant rather than globally.
@@ -36,6 +37,13 @@ export const tenantScopedUnique = (fallbackField: string = 'title'): FieldHook =
       .toLowerCase()
       .replace(/[^a-z0-9\-]+/g, '-')
       .replace(/(^-|-$)+/g, '')
+
+    const slugValidation = validateSlug(finalValue)
+    if (slugValidation !== true) {
+      throw new ValidationError({
+        errors: [{ path: 'slug', message: slugValidation }],
+      })
+    }
 
     // 3. Check for tenant-scoped uniqueness
     const tenantId =

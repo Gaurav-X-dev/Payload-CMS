@@ -14,10 +14,11 @@ import { HomePage } from '../pages/HomePage'
 import { MenuPage } from '../pages/MenuPage'
 import { QualityPage } from '../pages/QualityPage'
 import type { PageMetadataData } from '../types'
+import type { GheeRoastPageProps } from '../dynamicTypes'
 import { normalizePathname } from './normalizePathname'
 
 type PageRegistration = {
-  Component: ComponentType
+  Component: ComponentType<GheeRoastPageProps>
   metadata: PageMetadataData
 }
 

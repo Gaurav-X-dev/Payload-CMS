@@ -63,7 +63,7 @@ export function FoodCard({ item, compact = false }: { compact?: boolean; item: F
   return (
     <article className={`${styles.foodCard} ${compact ? styles.foodCardCompact : ''}`}>
       <div className={styles.foodImage}>
-        <Image alt={item.image.alt} fill sizes={compact ? '(max-width: 768px) 100vw, 180px' : '(max-width: 768px) 100vw, 33vw'} src={item.image.src} />
+        {item.image && <Image alt={item.image.alt} fill sizes={compact ? '(max-width: 768px) 100vw, 180px' : '(max-width: 768px) 100vw, 33vw'} src={item.image.src} />}
         {item.badge && <span>{item.badge}</span>}
       </div>
       <div className={styles.foodBody}>
@@ -76,9 +76,10 @@ export function FoodCard({ item, compact = false }: { compact?: boolean; item: F
 }
 
 export function TestimonialCard({ testimonial }: { testimonial: TestimonialData }) {
+  const rating = Math.min(5, Math.max(1, Math.round(testimonial.rating ?? 5)))
   return (
     <figure className={styles.testimonial}>
-      <div aria-label="5 out of 5 stars">{Array.from({ length: 5 }, (_, index) => <Icon key={index} name="star" weight="fill" />)}</div>
+      <div aria-label={`${rating} out of 5 stars`}>{Array.from({ length: rating }, (_, index) => <Icon key={index} name="star" weight="fill" />)}</div>
       <blockquote>“{testimonial.quote}”</blockquote>
       <figcaption><strong>{testimonial.name}</strong><span>{testimonial.attribution}</span></figcaption>
     </figure>
@@ -89,7 +90,7 @@ export function Gallery({ images }: { images: ImageData[] }) {
   return (
     <div className={styles.gallery}>
       {images.map((image) => (
-        <div key={`${image.src}-${image.alt}`}>
+        <div key={image.id ?? `${image.src}-${image.alt}`}>
           <Image alt={image.alt} fill sizes="(max-width: 768px) 50vw, 25vw" src={image.src} />
         </div>
       ))}

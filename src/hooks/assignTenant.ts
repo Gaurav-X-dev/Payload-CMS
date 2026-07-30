@@ -21,6 +21,7 @@ export const assignTenant: CollectionBeforeValidateHook = async ({
   req,
 }) => {
   if (!data) return data
+  if (req.context?.developmentReset === true) return data
 
   const originalTenantID = normalizeTenantID(originalDoc?.tenantId)
 
@@ -34,6 +35,12 @@ export const assignTenant: CollectionBeforeValidateHook = async ({
   }
 
   if (operation === 'update' && originalTenantID) {
+    if (data.tenantId !== undefined) {
+      const requestedTenantID = normalizeTenantID(data.tenantId)
+      if (!requestedTenantID || requestedTenantID !== originalTenantID) {
+        return tenantError('Changing the tenant is not permitted.')
+      }
+    }
     data.tenantId = originalTenantID
     return data
   }
@@ -60,6 +67,12 @@ export const assignTenant: CollectionBeforeValidateHook = async ({
   const publicTenantID = await resolvePublicTenantID(req)
   if (!publicTenantID) {
     return tenantError('A valid tenant context is required.')
+  }
+  if (data.tenantId !== undefined) {
+    const requestedTenantID = normalizeTenantID(data.tenantId)
+    if (!requestedTenantID || requestedTenantID !== publicTenantID) {
+      return tenantError('The submitted tenant does not match the public site.')
+    }
   }
 
   data.tenantId = publicTenantID

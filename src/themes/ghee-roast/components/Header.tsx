@@ -2,13 +2,20 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
-import { gheeRoastNavigation } from '../data/navigation'
-import { gheeRoastSiteData } from '../data/site'
+import { Fragment, useEffect, useState } from 'react'
+import type { GheeRoastNavigationData } from '../dynamicTypes'
 import { Icon } from './Icon'
 import styles from './Theme.module.css'
 
-export function Header({ pathname }: { pathname: string }) {
+export function Header({
+  hasAnnouncement = false,
+  navigation,
+  pathname,
+}: {
+  hasAnnouncement?: boolean
+  navigation: GheeRoastNavigationData
+  pathname: string
+}) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
 
@@ -32,30 +39,44 @@ export function Header({ pathname }: { pathname: string }) {
   }, [menuOpen])
 
   const onDark = pathname !== '/'
+  const hasIdentity = Boolean(navigation.logo || navigation.brandName)
 
   return (
     <>
-      <header className={`${styles.header} ${onDark ? styles.headerOnDark : ''} ${scrolled ? styles.headerScrolled : ''}`}>
+      <header className={`${styles.header} ${hasAnnouncement ? styles.headerBelowAnnouncement : ''} ${onDark ? styles.headerOnDark : ''} ${scrolled ? styles.headerScrolled : ''}`}>
         <div className={styles.headerInner}>
-          <Link className={styles.logo} href="/" aria-label="Very Good Ghee Roast home">
-            <Image
-              alt={gheeRoastSiteData.logo.alt}
-              height={52}
-              priority
-              src={gheeRoastSiteData.logo.src}
-              width={52}
-            />
-            <span><strong>Very Good</strong><small>Flavours that stay</small></span>
-          </Link>
+          {hasIdentity ? (
+            <Link className={styles.logo} href="/" aria-label={`${navigation.brandName || 'Ghee Roast'} home`}>
+              {navigation.logo && (
+                <Image
+                  alt={navigation.logo.alt}
+                  height={52}
+                  priority
+                  src={navigation.logo.src}
+                  unoptimized
+                  width={52}
+                />
+              )}
+              {navigation.brandName && (
+                <span>
+                  <strong>{navigation.brandName}</strong>
+                  {navigation.tagline && <small>{navigation.tagline}</small>}
+                </span>
+              )}
+            </Link>
+          ) : <span aria-hidden className={styles.logo} />}
           <nav aria-label="Primary navigation" className={styles.desktopNav}>
-            {gheeRoastNavigation.map((item) => item.href === '/menu' ? (
+            {navigation.items.map((item) => item.children?.length ? (
               <div className={styles.navDropdown} key={item.href}>
-                <Link aria-current={pathname === item.href ? 'page' : undefined} className={pathname === item.href ? styles.activeNav : undefined} href={item.href}>
+                <Link aria-current={pathname === item.href ? 'page' : undefined} className={pathname === item.href ? styles.activeNav : undefined} href={item.href} rel={item.newTab ? 'noreferrer' : undefined} target={item.newTab ? '_blank' : undefined}>
                   {item.label}<Icon className={styles.dropdownCaret} name="caretDown" weight="bold" />
                 </Link>
                 <div className={styles.dropdownMenu}>
-                  <Link href="/menu"><Icon name="map" weight="fill" />Delhi Menu</Link>
-                  <Link href="/menu"><Icon name="map" weight="fill" />Gurugram Menu</Link>
+                  {item.children.map((child) => (
+                    <Link href={child.href} key={`${child.href}-${child.label}`} rel={child.newTab ? 'noreferrer' : undefined} target={child.newTab ? '_blank' : undefined}>
+                      <Icon name="map" weight="fill" />{child.label}
+                    </Link>
+                  ))}
                 </div>
               </div>
             ) : (
@@ -64,15 +85,15 @@ export function Header({ pathname }: { pathname: string }) {
                 className={pathname === item.href ? styles.activeNav : undefined}
                 href={item.href}
                 key={item.href}
+                rel={item.newTab ? 'noreferrer' : undefined}
+                target={item.newTab ? '_blank' : undefined}
               >
                 {item.label}
               </Link>
             ))}
           </nav>
-          <Link className={styles.orderButton} href="/menu">
-            Order online
-          </Link>
-          <button
+          {navigation.cta.enabled && <Link className={styles.orderButton} href={navigation.cta.href}>{navigation.cta.label}</Link>}
+          {navigation.items.length > 0 && <button
             aria-controls="ghee-roast-mobile-menu"
             aria-expanded={menuOpen}
             aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'}
@@ -81,23 +102,37 @@ export function Header({ pathname }: { pathname: string }) {
             type="button"
           >
             <span /><span /><span />
-          </button>
+          </button>}
         </div>
       </header>
-      <div className={`${styles.mobileMenu} ${menuOpen ? styles.mobileMenuOpen : ''}`} id="ghee-roast-mobile-menu">
+      {navigation.items.length > 0 && <div className={`${styles.mobileMenu} ${menuOpen ? styles.mobileMenuOpen : ''}`} id="ghee-roast-mobile-menu">
         <nav aria-label="Mobile navigation">
-          {gheeRoastNavigation.map((item) => (
-            <Link
-              aria-current={pathname === item.href ? 'page' : undefined}
-              href={item.href}
-              key={item.href}
-              onClick={() => setMenuOpen(false)}
-            >
-              {item.label}
-            </Link>
+          {navigation.items.map((item) => (
+            <Fragment key={`${item.href}-${item.label}`}>
+              <Link
+                aria-current={pathname === item.href ? 'page' : undefined}
+                href={item.href}
+                onClick={() => setMenuOpen(false)}
+                rel={item.newTab ? 'noreferrer' : undefined}
+                target={item.newTab ? '_blank' : undefined}
+              >
+                {item.label}
+              </Link>
+              {item.children?.map((child) => (
+                <Link
+                  href={child.href}
+                  key={`${child.href}-${child.label}`}
+                  onClick={() => setMenuOpen(false)}
+                  rel={child.newTab ? 'noreferrer' : undefined}
+                  target={child.newTab ? '_blank' : undefined}
+                >
+                  {child.label}
+                </Link>
+              ))}
+            </Fragment>
           ))}
         </nav>
-      </div>
+      </div>}
     </>
   )
 }

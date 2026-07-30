@@ -1,5 +1,9 @@
 import type { Access } from 'payload'
-import { getUserTenantIDs, isSuperAdminUser } from './tenantContext'
+import {
+  getUserTenantIDs,
+  isSuperAdminUser,
+  normalizeTenantID,
+} from './tenantContext'
 
 export const tenantVersionRead: Access = async ({ req }) => {
   if (isSuperAdminUser(req.user)) return true
@@ -11,8 +15,15 @@ export const tenantVersionRead: Access = async ({ req }) => {
     let activeTenantIDs = tenantIDs
     if (req.user.tenants && req.user.tenants.length > 0 && typeof req.user.tenants[0] === 'object') {
       activeTenantIDs = req.user.tenants
-        .filter((t: any) => t && t.isActive === true)
-        .map((t: any) => t.id)
+        .filter(
+          (tenant) =>
+            typeof tenant === 'object' &&
+            tenant !== null &&
+            'isActive' in tenant &&
+            tenant.isActive === true,
+        )
+        .map(normalizeTenantID)
+        .filter((tenantID): tenantID is number => tenantID !== null)
     } else if (tenantIDs.length > 0) {
       const activeTenants = await req.payload.find({
         collection: 'tenants',

@@ -1,20 +1,27 @@
 import type { CollectionConfig } from 'payload'
 import { tenantField } from '../fields/tenantField'
-import { tenantIsolation } from '../access/tenantIsolation'
 import { tenantContentMutations } from '../access/tenantContext'
 import { tenantPublicRead } from '../access/tenantPublicRead'
 import { tenantScopedUnique } from '../hooks/tenantScopedUnique'
-import { sameTenantRelationship } from '../hooks/sameTenantRelationship'
+import {
+  sameTenantRelationship,
+  tenantRelationshipFilter,
+} from '../hooks/sameTenantRelationship'
 import {
   invalidateTenantCache,
   invalidateTenantCacheAfterDelete,
 } from '../hooks/invalidateTenantCache'
+import {
+  validateFiniteInteger,
+  validateFiniteNumber,
+} from '../validation/shared'
 
 export const MenuItems: CollectionConfig = {
   slug: 'menu-items',
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'category', 'price', 'isAvailable'],
+    description: 'Manage dishes, pricing, dietary details, availability, imagery, and featured placement.',
   },
   access: {
     read: tenantPublicRead(),
@@ -31,7 +38,7 @@ export const MenuItems: CollectionConfig = {
             {
               type: 'row',
               fields: [
-                { name: 'title', type: 'text', required: true },
+                { name: 'title', type: 'text', required: true, maxLength: 160, admin: { placeholder: 'Signature Chicken Ghee Roast' } },
                 { 
                   name: 'slug', 
                   type: 'text',
@@ -39,10 +46,10 @@ export const MenuItems: CollectionConfig = {
                   hooks: { beforeValidate: [tenantScopedUnique('title')] },
                   admin: { description: 'Auto-generated if left blank.' }
                 },
-                { name: 'sku', type: 'text', admin: { description: 'Optional ID for POS integration.' } },
+                { name: 'sku', type: 'text', maxLength: 100, admin: { description: 'Optional ID for POS integration.' } },
               ]
             },
-            { name: 'description', type: 'textarea' },
+            { name: 'description', type: 'textarea', required: true, maxLength: 1_000, admin: { description: 'Customer-facing menu description.' } },
             {
               type: 'row',
               fields: [
@@ -52,18 +59,37 @@ export const MenuItems: CollectionConfig = {
                   relationTo: 'menu-categories',
                   required: true,
                   index: true,
+                  filterOptions: tenantRelationshipFilter('menu-categories'),
                   hooks: {
                     beforeValidate: [sameTenantRelationship('menu-categories')],
                   },
                 },
-                { name: 'displayOrder', type: 'number', defaultValue: 0 },
+                {
+                  name: 'displayOrder',
+                  type: 'number',
+                  defaultValue: 0,
+                  min: 0,
+                  validate: (value: unknown) =>
+                    validateFiniteInteger(value, { min: 0, max: 1_000_000 }),
+                },
               ]
             },
             {
               type: 'row',
               fields: [
-                { name: 'price', type: 'number', min: 0, required: true },
-                { name: 'taxCategory', type: 'text', defaultValue: 'standard' },
+                {
+                  name: 'price',
+                  type: 'number',
+                  min: 0,
+                  required: true,
+                  validate: (value: unknown) =>
+                    validateFiniteNumber(value, {
+                      decimalPlaces: 2,
+                      min: 0,
+                      max: 1_000_000,
+                    }),
+                },
+                { name: 'taxCategory', type: 'text', defaultValue: 'standard', maxLength: 80 },
               ]
             },
             {
@@ -72,7 +98,18 @@ export const MenuItems: CollectionConfig = {
               admin: { description: 'e.g. Regular vs Large, or add-ons.' },
               fields: [
                 { name: 'label', type: 'text', required: true },
-                { name: 'price', type: 'number', required: true },
+                {
+                  name: 'price',
+                  type: 'number',
+                  min: 0,
+                  required: true,
+                  validate: (value: unknown) =>
+                    validateFiniteNumber(value, {
+                      decimalPlaces: 2,
+                      min: 0,
+                      max: 1_000_000,
+                    }),
+                },
               ]
             }
           ]
@@ -102,9 +139,27 @@ export const MenuItems: CollectionConfig = {
             {
               type: 'row',
               fields: [
-                { name: 'calories', type: 'number' },
-                { name: 'servingSize', type: 'text' },
-                { name: 'prepTime', type: 'number', admin: { description: 'Preparation time in minutes.' } },
+                {
+                  name: 'calories',
+                  type: 'number',
+                  min: 0,
+                  validate: (value: unknown) =>
+                    value == null
+                      ? true
+                      : validateFiniteInteger(value, { min: 0, max: 100_000 }),
+                },
+                { name: 'servingSize', type: 'text', maxLength: 100 },
+                {
+                  name: 'prepTime',
+                  type: 'number',
+                  min: 0,
+                  max: 1440,
+                  validate: (value: unknown) =>
+                    value == null
+                      ? true
+                      : validateFiniteInteger(value, { min: 0, max: 1440 }),
+                  admin: { description: 'Preparation time in minutes.' },
+                },
               ]
             }
           ]
@@ -116,6 +171,7 @@ export const MenuItems: CollectionConfig = {
               name: 'image',
               type: 'relationship',
               relationTo: 'media',
+              filterOptions: tenantRelationshipFilter('media'),
               hooks: { beforeValidate: [sameTenantRelationship('media')] },
             },
             {
@@ -123,6 +179,7 @@ export const MenuItems: CollectionConfig = {
               type: 'relationship',
               relationTo: 'media',
               hasMany: true,
+              filterOptions: tenantRelationshipFilter('media'),
               hooks: { beforeValidate: [sameTenantRelationship('media')] },
             },
           ]
@@ -144,6 +201,7 @@ export const MenuItems: CollectionConfig = {
               type: 'relationship',
               relationTo: 'menu-items',
               hasMany: true,
+              filterOptions: tenantRelationshipFilter('menu-items'),
               hooks: { beforeValidate: [sameTenantRelationship('menu-items')] },
             },
             {
@@ -151,6 +209,7 @@ export const MenuItems: CollectionConfig = {
               type: 'relationship',
               relationTo: 'menu-items',
               hasMany: true,
+              filterOptions: tenantRelationshipFilter('menu-items'),
               hooks: { beforeValidate: [sameTenantRelationship('menu-items')] },
             },
           ]

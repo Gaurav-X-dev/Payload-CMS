@@ -5,12 +5,16 @@ export const SpacerBlock: Block = {
   interfaceName: 'SpacerBlock',
   fields: [
     {
-      name: 'title',
-      type: 'text',
-    },
-    {
-      name: 'subtitle',
-      type: 'text',
+      name: 'size',
+      type: 'select',
+      required: true,
+      defaultValue: 'medium',
+      options: [
+        { label: 'Small', value: 'small' },
+        { label: 'Medium', value: 'medium' },
+        { label: 'Large', value: 'large' },
+        { label: 'Extra large', value: 'xlarge' },
+      ],
     },
   ],
 }

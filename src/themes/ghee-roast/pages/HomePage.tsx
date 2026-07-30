@@ -12,30 +12,45 @@ import {
 } from '../components/Shared'
 import styles from '../components/Theme.module.css'
 import { Icon } from '../components/Icon'
+import { fallbackGheeRoastHero } from '../mappers/cmsContent'
+import type { GheeRoastHeroData } from '../dynamicTypes'
+import type { GheeRoastPageProps } from '../dynamicTypes'
+import { CMSPage } from '../components/CMSPage'
 
-export function HomePage() {
+export function HomePage({ content, hero = fallbackGheeRoastHero() }: GheeRoastPageProps & { hero?: GheeRoastHeroData }) {
+  const orderLinks = content.site.orderLinks.length ? content.site.orderLinks : gheeRoastSiteData.orderLinks
+  const specials = content.collections.menu.items.filter((item) => item.badge).slice(0, 3)
+  const testimonials = content.collections.testimonials.length ? content.collections.testimonials : homeData.testimonials
+  const gallery = content.collections.gallery.length ? content.collections.gallery : homeData.gallery
+  const hasCMSBody = Boolean(content.page?.layout.some((block) => block.blockType !== 'heroBlock'))
+  const heroSection = hero.enabled && <section className={styles.homeHero}>
+    <div className={styles.heroCopy}>
+      <h1>{hero.heading.split('\n').map((line, index) => <span key={`${line}-${index}`}>{line}<br /></span>)}<em>{hero.highlightedHeading}</em></h1>
+      <p>{hero.description}</p>
+      {(hero.primaryCTA || hero.secondaryCTA) && <div className={styles.actions}>
+        {hero.primaryCTA && <ActionLink href={hero.primaryCTA.href} label={hero.primaryCTA.label} />}
+        {hero.secondaryCTA && <ActionLink href={hero.secondaryCTA.href} icon="moped" label={hero.secondaryCTA.label} variant="outline" />}
+      </div>}
+      {orderLinks.length > 0 && <div className={styles.heroApps}>
+        {hero.orderPlatformsLabel && <span>{hero.orderPlatformsLabel}</span>}
+        {orderLinks.map((item) => <a href={item.href} key={`${item.label}-${item.href}`}>{item.label}</a>)}
+      </div>}
+    </div>
+    {hero.image && <div className={styles.heroDish}>
+      <span className={styles.heroGlow} />
+      <Image alt={hero.image.alt} fill priority sizes="(max-width: 900px) 80vw, 45vw" src={hero.image.src} unoptimized />
+      {hero.stampText && <span className={styles.heroStamp}>
+        <Icon name="heart" weight="fill" />
+        <span>{hero.stampText.split('\n').map((line, index) => <span key={`${line}-${index}`}>{line}<br /></span>)}</span>
+      </span>}
+    </div>}
+  </section>
+
+  if (hasCMSBody) return <>{heroSection}<CMSPage content={content} includeHero={false} /></>
+
   return (
     <>
-      <section className={styles.homeHero}>
-        <div className={styles.heroCopy}>
-          <h1>Real Ingredients.<br />Rich Flavours.<br /><em>Pure Ghee.</em></h1>
-          <p>We slow roast every dish in ghee to bring out bold flavours and aromas that <em>stay</em> with you.</p>
-          <div className={styles.actions}>
-            <ActionLink href="/menu" label="Explore Menu" />
-            <ActionLink href="/delivery" icon="moped" label="Order Now" variant="outline" />
-          </div>
-          <div className={styles.heroApps}>
-            <span>Also available on</span>
-            <a className={styles.swiggyLink} href={gheeRoastSiteData.orderLinks[0].href}><strong>S</strong>Swiggy</a>
-            <a className={styles.zomatoLink} href={gheeRoastSiteData.orderLinks[1].href}>zomato</a>
-          </div>
-        </div>
-        <div className={styles.heroDish}>
-          <span className={styles.heroGlow} />
-          <Image alt={homeData.hero.image.alt} fill priority sizes="(max-width: 900px) 80vw, 45vw" src={homeData.hero.image.src} unoptimized />
-          <span className={styles.heroStamp}><Icon name="heart" weight="fill" /><span>Slow<br />Roasted<br />In Ghee<br />With Love</span></span>
-        </div>
-      </section>
+      {heroSection}
 
       <section className={styles.featureStrip}><FeatureGrid features={homeData.featureStrip} /></section>
 
@@ -62,7 +77,7 @@ export function HomePage() {
         <div className={styles.container}>
           <SectionHeading center eyebrow="Chef's Recommendations" text="Experience the crown jewels of our menu, slow-roasted to absolute perfection." title="Today's Signature Specials" />
           <div className={styles.foodGrid}>
-            {homeData.specials.map((item) => <FoodCard item={item} key={item.name} />)}
+            {(specials.length ? specials : homeData.specials).map((item) => <FoodCard item={item} key={String('id' in item ? item.id ?? item.name : item.name)} />)}
           </div>
           <div className={styles.centerAction}><ActionLink href="/menu" label="View Complete Menu" /></div>
         </div>
@@ -98,7 +113,7 @@ export function HomePage() {
         <div className={styles.container}>
           <SectionHeading center eyebrow="What Our Guests Say" light text="Don't just take our word for it — here's what our loyal customers say about the experience." title="Real People. Real Flavours." />
           <div className={styles.testimonialGrid}>
-            {homeData.testimonials.map((item) => <TestimonialCard key={item.name} testimonial={item} />)}
+            {testimonials.map((item) => <TestimonialCard key={String('id' in item ? item.id ?? item.name : item.name)} testimonial={item} />)}
           </div>
         </div>
       </section>
@@ -124,7 +139,7 @@ export function HomePage() {
       <section className={styles.section}>
         <div className={styles.container}>
           <SectionHeading center eyebrow="Visual Feast" title="The Restaurant Experience" />
-          <Gallery images={homeData.gallery} />
+          <Gallery images={gallery} />
         </div>
       </section>
     </>

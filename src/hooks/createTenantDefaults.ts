@@ -20,6 +20,8 @@ export const createTenantDefaults: CollectionAfterChangeHook = async ({
       await payload.create({
         collection: 'nav',
         data: {
+          internalName: 'Primary Header',
+          location: 'header',
           tenantId: doc.id,
         },
       })

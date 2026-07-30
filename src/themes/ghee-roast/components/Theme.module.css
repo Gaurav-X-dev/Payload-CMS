@@ -1,5 +1,7 @@
 .themeRoot { min-height: 100vh; }
+.themeRoot h1, .themeRoot h2, .themeRoot h3, .themeRoot h4 { text-transform: var(--gr-heading-transform, none); }
 .themeRoot p { margin: 0 0 1.35rem; }
+.announcementBar { background: var(--gr-accent); color: white; font-size: .78rem; font-weight: 700; left: 0; letter-spacing: .12em; padding: .6rem 5%; position: fixed; right: 0; text-align: center; text-transform: uppercase; top: 0; z-index: 1002; }
 .container { margin: 0 auto; max-width: 1400px; position: relative; width: 95%; z-index: 2; }
 .section { padding: 6rem 0; position: relative; }
 .sectionAlt { background: var(--gr-bg-alt); }
@@ -17,6 +19,7 @@
   transition: var(--gr-transition);
   z-index: 1000;
 }
+.headerBelowAnnouncement { top: 34px; }
 .headerOnDark { color: white; }
 .headerScrolled { background: var(--gr-primary); box-shadow: 0 6px 30px rgb(0 0 0 / 20%); color: white; padding: .7rem 0; }
 .headerInner { align-items: center; display: flex; gap: 2rem; justify-content: space-between; margin: auto; max-width: 1400px; width: 95%; }
@@ -65,6 +68,7 @@
   padding: 90px max(2.5%, calc((100vw - 1400px) / 2)) 0;
   position: relative;
 }
+.themeRoot:has(.announcementBar) .homeHero { padding-top: 124px; }
 .homeHero::before { background: radial-gradient(ellipse at 70% 50%, color-mix(in srgb, var(--gr-primary), transparent 92%) 0%, transparent 60%); content: ''; inset: 0; pointer-events: none; position: absolute; }
 .heroCopy { max-width: 760px; min-width: 0; position: relative; z-index: 2; }
 .heroCopy > span, .sectionHeading > span, .cta > span, .splitPromos article > span {
@@ -331,6 +335,7 @@
 .socialCards a:hover { transform: translateY(-5px); }
 .instagramCard { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); }
 .facebookCard { background: #1877f2; }
+.socialCard { background: linear-gradient(135deg, var(--gr-primary), var(--gr-accent)); }
 .socialCards a > span { align-items: center; display: flex; gap: 1.5rem; }
 .socialCards a > span > svg { height: 3rem; width: 3rem; }
 .socialCards a > span > span { align-items: flex-start; display: flex; flex-direction: column; gap: 0; }
@@ -389,6 +394,21 @@
 .backToTop { align-items: center; background: var(--gr-primary); border: 0; border-radius: 50%; bottom: 2.5rem; color: white; cursor: pointer; display: flex; height: 50px; justify-content: center; opacity: 0; pointer-events: none; position: fixed; right: 2.5rem; transform: translateY(20px); transition: all .35s ease; width: 50px; z-index: 9998; }
 .backToTop svg { height: 22px; transform: rotate(-90deg); width: 22px; }
 .backToTop:hover { background: var(--gr-accent); box-shadow: var(--gr-shadow-lg); }
+
+.cmsCardGrid { display: grid; gap: 1.75rem; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.cmsCard { background: var(--gr-white); border-radius: var(--gr-card-radius, 10px); box-shadow: var(--gr-shadow); overflow: hidden; padding: 1.75rem; }
+.cmsCard > img { border-radius: calc(var(--gr-card-radius, 10px) * .7); height: 260px; margin: -1.75rem -1.75rem 1.5rem; object-fit: cover; width: calc(100% + 3.5rem); }
+.cmsCard h3 { color: var(--gr-primary); margin: 0 0 .65rem; }
+.cmsCard > strong, .cmsCard > time { color: var(--gr-accent); display: block; margin-bottom: .8rem; }
+.cmsCard address { font-style: normal; margin-bottom: 1rem; }
+.cmsCard > a:not(.action) { color: var(--gr-accent); display: block; margin-top: .35rem; }
+.cmsCard blockquote { border-left: 3px solid var(--gr-accent); margin: 1rem 0 0; padding-left: 1rem; }
+.cmsEmpty { color: var(--gr-muted); padding: 2rem; text-align: center; }
+.cmsRichText { color: var(--gr-text); margin: auto; max-width: 850px; }
+.spacer_small { height: 2rem; }
+.spacer_medium { height: 4rem; }
+.spacer_large { height: 7rem; }
+.spacer_xlarge { height: 10rem; }
 .backToTopVisible { opacity: 1; pointer-events: auto; transform: none; }
 .visuallyHidden { clip: rect(0 0 0 0); clip-path: inset(50%); height: 1px; overflow: hidden; position: absolute; white-space: nowrap; width: 1px; }
 

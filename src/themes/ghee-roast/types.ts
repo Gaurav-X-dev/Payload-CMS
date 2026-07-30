@@ -1,5 +1,8 @@
 export type ImageData = {
   alt: string
+  category?: string
+  id?: number | string
+  isFeatured?: boolean
   src: string
 }
 
@@ -28,8 +31,11 @@ export type FeatureData = {
 export type FoodItemData = {
   badge?: string
   category: string
+  categoryID?: number | string
   description: string
-  image: ImageData
+  id?: number | string
+  image?: ImageData
+  isFeatured?: boolean
   meta?: string[]
   name: string
   price: string
@@ -38,8 +44,11 @@ export type FoodItemData = {
 
 export type TestimonialData = {
   attribution: string
+  id?: number | string
+  isFeatured?: boolean
   name: string
   quote: string
+  rating?: number
 }
 
 export type TimelineData = {
@@ -55,7 +64,7 @@ export type FormFieldData = {
   options?: string[]
   placeholder?: string
   required?: boolean
-  type: 'email' | 'select' | 'tel' | 'text' | 'textarea'
+  type: 'date' | 'email' | 'number' | 'select' | 'tel' | 'text' | 'textarea' | 'time'
 }
 
 export type ContentPageData = {

@@ -1,15 +1,20 @@
 import type {
   CollectionSlug,
   FieldHook,
+  FilterOptions,
   PayloadRequest,
   User,
+  Where,
 } from 'payload'
 import { ValidationError } from 'payload'
 
 import {
   getUserTenantIDs,
+  getAuthenticatedTenantID,
+  isSuperAdminUser,
   normalizeTenantID,
   resolveTrustedTenantID,
+  type AuthorizationUser,
   type TenantID,
 } from '../access/tenantContext'
 
@@ -17,6 +22,15 @@ const relationshipError = (path: string): never => {
   throw new ValidationError({
     errors: [{
       message: 'The selected related document is not available for the active tenant.',
+      path,
+    }],
+  })
+}
+
+const duplicateRelationshipError = (path: string): never => {
+  throw new ValidationError({
+    errors: [{
+      message: 'The same related document cannot be selected more than once.',
       path,
     }],
   })
@@ -64,6 +78,12 @@ export const normalizeRelationshipIDs = (value: unknown): TenantID[] => {
 
   visit(value)
   return [...ids]
+}
+
+export const hasDuplicateRelationshipIDs = (value: unknown): boolean => {
+  if (!Array.isArray(value)) return false
+  const ids = value.flatMap((entry) => normalizeRelationshipIDs(entry))
+  return ids.length !== new Set(ids).size
 }
 
 type ValidateRelationshipArgs = {
@@ -143,6 +163,52 @@ type SameTenantOptions = {
   path?: string
 }
 
+type TenantRelationshipFilterOptions = {
+  excludeCurrentDocument?: boolean
+  parentTenantIdentity?: 'documentID' | 'tenantId'
+}
+
+type TenantRelationshipFilter = Exclude<FilterOptions, null | Where>
+
+export const tenantRelationshipFilter = (
+  relationTo: CollectionSlug,
+  {
+    excludeCurrentDocument = false,
+    parentTenantIdentity = 'tenantId',
+  }: TenantRelationshipFilterOptions = {},
+): TenantRelationshipFilter => ({ data, id, req, user }) => {
+  const document = data && typeof data === 'object'
+    ? data as Record<string, unknown>
+    : {}
+  const tenantID = parentTenantIdentity === 'documentID'
+    ? normalizeTenantID(id)
+    : normalizeTenantID(document.tenantId) ?? getAuthenticatedTenantID(req)
+
+  const conditions: import('payload').Where[] = []
+  if (tenantID) {
+    conditions.push(
+      relationTo === 'users'
+        ? { tenants: { in: [tenantID] } }
+        : { tenantId: { equals: tenantID } },
+    )
+  } else if (!isSuperAdminUser(user as AuthorizationUser)) {
+    const tenantIDs = getUserTenantIDs(user as AuthorizationUser)
+    if (!tenantIDs.length) return false
+    conditions.push(
+      relationTo === 'users'
+        ? { tenants: { in: tenantIDs } }
+        : { tenantId: { in: tenantIDs } },
+    )
+  }
+
+  if (excludeCurrentDocument && id !== undefined) {
+    conditions.push({ id: { not_equals: id } })
+  }
+
+  if (!conditions.length) return true
+  return conditions.length === 1 ? conditions[0] : { and: conditions }
+}
+
 export const sameTenantRelationship = (
   relationTo: CollectionSlug,
   {
@@ -156,11 +222,15 @@ export const sameTenantRelationship = (
   req,
   value,
 }) => {
+  const validationPath = path || runtimePath?.join('.') || relationTo
+  if (hasDuplicateRelationshipIDs(value)) {
+    return duplicateRelationshipError(validationPath)
+  }
+
   const ids = normalizeRelationshipIDs(value)
   if (!ids.length) return value
-  const validationPath = path || runtimePath?.join('.') || relationTo
 
-    const tenantID = parentTenantIdentity === 'documentID'
+  const tenantID = parentTenantIdentity === 'documentID'
     ? normalizeTenantID(data?.id) ?? normalizeTenantID(originalDoc?.id)
     : normalizeTenantID(data?.tenantId) ??
       normalizeTenantID(originalDoc?.tenantId) ??

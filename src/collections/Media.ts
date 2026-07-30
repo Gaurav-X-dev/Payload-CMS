@@ -1,13 +1,35 @@
-import type { CollectionConfig } from 'payload'
+import { ValidationError } from 'payload'
+import type { CollectionBeforeOperationHook, CollectionConfig } from 'payload'
 import { tenantField } from '../fields/tenantField'
-import { tenantIsolation } from '../access/tenantIsolation'
 import { tenantContentMutations } from '../access/tenantContext'
 import { tenantPublicRead } from '../access/tenantPublicRead'
-import { isSuperAdmin } from '../access/isSuperAdmin'
 import {
   invalidateTenantCache,
   invalidateTenantCacheAfterDelete,
 } from '../hooks/invalidateTenantCache'
+
+export const MAX_MEDIA_FILE_SIZE = 10 * 1024 * 1024
+
+export const validateMediaUploadSize: CollectionBeforeOperationHook = ({
+  args,
+  operation,
+  req,
+}) => {
+  if (
+    (operation === 'create' || operation === 'update') &&
+    req.file &&
+    req.file.size > MAX_MEDIA_FILE_SIZE
+  ) {
+    throw new ValidationError({
+      errors: [{
+        message: 'Images must be 10 MB or smaller.',
+        path: 'file',
+      }],
+    })
+  }
+
+  return args
+}
 
 /**
  * Media Collection
@@ -47,11 +69,12 @@ export const Media: CollectionConfig = {
     ...tenantContentMutations,
   },
   fields: [
-    tenantField(),
+    tenantField({ required: false }),
     {
       name: 'alt',
       type: 'text',
       required: true,
+      maxLength: 250,
       admin: {
         description: 'Important for SEO and Accessibility.',
       }
@@ -59,21 +82,24 @@ export const Media: CollectionConfig = {
     {
       name: 'title',
       type: 'text',
+      maxLength: 200,
     },
     {
       name: 'caption',
       type: 'textarea',
+      maxLength: 1_000,
     },
     {
       name: 'tags',
       type: 'array',
       fields: [
-        { name: 'tag', type: 'text' }
+        { name: 'tag', type: 'text', maxLength: 50 }
       ]
     },
     {
       name: 'folder',
       type: 'text',
+      maxLength: 100,
       admin: {
         description: 'Optional categorization folder.',
         position: 'sidebar'
@@ -102,24 +128,26 @@ export const Media: CollectionConfig = {
       name: 'uploadedBy',
       type: 'relationship',
       relationTo: 'users',
-      access: { update: () => false },
+      access: { create: () => false, update: () => false },
       admin: { readOnly: true, position: 'sidebar' },
     },
     {
       name: 'updatedBy',
       type: 'relationship',
       relationTo: 'users',
-      access: { update: () => false },
+      access: { create: () => false, update: () => false },
       admin: { readOnly: true, position: 'sidebar' },
     }
   ],
   hooks: {
+    beforeOperation: [validateMediaUploadSize],
     beforeChange: [
-      ({ req, data, operation }) => {
-        if (operation === 'create') {
-          data.uploadedBy = req.user?.id
-        }
-        data.updatedBy = req.user?.id
+      ({ req, data, operation, originalDoc }) => {
+        if (req.context?.developmentReset === true) return data
+        data.uploadedBy = operation === 'create'
+          ? req.user?.id
+          : originalDoc?.uploadedBy
+        data.updatedBy = req.user?.id ?? originalDoc?.updatedBy
         return data
       }
     ],

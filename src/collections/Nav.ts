@@ -1,18 +1,24 @@
 import type { CollectionConfig } from 'payload'
 import { tenantField } from '../fields/tenantField'
-import { tenantIsolation } from '../access/tenantIsolation'
 import { tenantContentMutations } from '../access/tenantContext'
 import { tenantPublicRead } from '../access/tenantPublicRead'
-import { sameTenantRelationship } from '../hooks/sameTenantRelationship'
+import {
+  sameTenantRelationship,
+  tenantRelationshipFilter,
+} from '../hooks/sameTenantRelationship'
 import {
   invalidateTenantCache,
   invalidateTenantCacheAfterDelete,
 } from '../hooks/invalidateTenantCache'
+import {
+  validateFiniteInteger,
+  validateSafeURL,
+} from '../validation/shared'
 
 export const Nav: CollectionConfig = {
   slug: 'nav',
   admin: {
-    useAsTitle: 'id', // Because there's only one per tenant, ID is fine
+    useAsTitle: 'internalName',
     description: 'Manage the primary header navigation for this tenant. Limited to one document per tenant.',
   },
   access: {
@@ -21,6 +27,32 @@ export const Nav: CollectionConfig = {
   },
   fields: [
     tenantField({ unique: true }), // Unique constraint ensures 1:1 mapping (Tenant-Scoped Global)
+    {
+      type: 'row',
+      fields: [
+        { name: 'internalName', type: 'text', required: true, defaultValue: 'Primary Header', maxLength: 100 },
+        {
+          name: 'location',
+          type: 'select',
+          required: true,
+          defaultValue: 'header',
+          options: [{ label: 'Header', value: 'header' }],
+        },
+      ],
+    },
+    {
+      type: 'row',
+      fields: [
+        { name: 'brandName', type: 'text', maxLength: 100 },
+        {
+          name: 'logo',
+          type: 'relationship',
+          relationTo: 'media',
+          filterOptions: tenantRelationshipFilter('media'),
+          hooks: { beforeValidate: [sameTenantRelationship('media')] },
+        },
+      ],
+    },
     {
       name: 'links',
       type: 'blocks',
@@ -31,7 +63,7 @@ export const Nav: CollectionConfig = {
             {
               type: 'row',
               fields: [
-                { name: 'label', type: 'text', required: true },
+                { name: 'label', type: 'text', required: true, maxLength: 80 },
                 { 
                   name: 'type', 
                   type: 'select', 
@@ -46,13 +78,54 @@ export const Nav: CollectionConfig = {
               ]
             },
             {
+              type: 'row',
+              fields: [
+                { name: 'enabled', type: 'checkbox', defaultValue: true },
+                {
+                  name: 'sortOrder',
+                  type: 'number',
+                  defaultValue: 0,
+                  min: 0,
+                  validate: (value: unknown) =>
+                    validateFiniteInteger(value, { min: 0, max: 1_000_000 }),
+                },
+              ],
+            },
+            {
               name: 'page',
               type: 'relationship',
               relationTo: 'pages',
+              filterOptions: tenantRelationshipFilter('pages'),
               admin: { condition: (_, siblingData) => siblingData.type === 'page' },
               hooks: { beforeValidate: [sameTenantRelationship('pages')] },
             },
-            { name: 'url', type: 'text', admin: { condition: (_, siblingData) => siblingData.type !== 'page' } },
+            {
+              name: 'url',
+              type: 'text',
+              maxLength: 2048,
+              validate: (value: unknown) => validateSafeURL(value),
+              admin: { condition: (_, siblingData) => siblingData.type !== 'page' },
+            },
+            {
+              name: 'children',
+              type: 'array',
+              maxRows: 12,
+              admin: {
+                description: 'Optional dropdown links. On mobile these follow the parent item.',
+                initCollapsed: true,
+              },
+              fields: [
+                { name: 'label', type: 'text', required: true, maxLength: 80 },
+                {
+                  name: 'url',
+                  type: 'text',
+                  required: true,
+                  maxLength: 2048,
+                  validate: (value: unknown) => validateSafeURL(value, { required: true }),
+                },
+                { name: 'newTab', type: 'checkbox', defaultValue: false },
+              ],
+            },
             {
               type: 'row',
               fields: [
@@ -78,17 +151,18 @@ export const Nav: CollectionConfig = {
         {
           slug: 'megaMenu',
           fields: [
-            { name: 'label', type: 'text', required: true },
+            { name: 'label', type: 'text', required: true, maxLength: 80 },
             {
               name: 'columns',
               type: 'array',
               fields: [
-                { name: 'title', type: 'text' },
+                { name: 'title', type: 'text', maxLength: 100 },
                 {
                   name: 'links',
                   type: 'relationship',
                   relationTo: 'pages',
                   hasMany: true,
+                  filterOptions: tenantRelationshipFilter('pages'),
                   hooks: { beforeValidate: [sameTenantRelationship('pages')] },
                 },
               ],
@@ -96,7 +170,27 @@ export const Nav: CollectionConfig = {
           ]
         }
       ]
-    }
+    },
+    {
+      name: 'cta',
+      type: 'group',
+      fields: [
+        {
+          type: 'row',
+          fields: [
+            { name: 'enabled', type: 'checkbox', defaultValue: true },
+            { name: 'label', type: 'text', defaultValue: 'Order online', maxLength: 80 },
+            {
+              name: 'url',
+              type: 'text',
+              defaultValue: '/menu',
+              maxLength: 2048,
+              validate: (value: unknown) => validateSafeURL(value),
+            },
+          ],
+        },
+      ],
+    },
   ],
   hooks: {
     afterChange: [invalidateTenantCache],

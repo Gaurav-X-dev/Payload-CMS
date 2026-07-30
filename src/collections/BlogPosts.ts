@@ -1,3 +1,4 @@
+import { ValidationError } from 'payload'
 import type { CollectionConfig } from 'payload'
 import { tenantField } from '../fields/tenantField'
 import { tenantIsolation } from '../access/tenantIsolation'
@@ -5,11 +6,15 @@ import { tenantContentMutations } from '../access/tenantContext'
 import { tenantPublicRead } from '../access/tenantPublicRead'
 import { tenantScopedUnique } from '../hooks/tenantScopedUnique'
 import { tenantVersionRead } from '../access/tenantVersionRead'
-import { sameTenantRelationship } from '../hooks/sameTenantRelationship'
+import {
+  sameTenantRelationship,
+  tenantRelationshipFilter,
+} from '../hooks/sameTenantRelationship'
 import {
   invalidateTenantCache,
   invalidateTenantCacheAfterDelete,
 } from '../hooks/invalidateTenantCache'
+import { validateDateOrder } from '../validation/shared'
 
 export const BlogPosts: CollectionConfig = {
   slug: 'blog-posts',
@@ -33,7 +38,7 @@ export const BlogPosts: CollectionConfig = {
         {
           label: 'Content',
           fields: [
-            { name: 'title', type: 'text', required: true },
+            { name: 'title', type: 'text', required: true, maxLength: 200 },
             { 
               name: 'slug', 
               type: 'text', 
@@ -41,12 +46,13 @@ export const BlogPosts: CollectionConfig = {
               hooks: { beforeValidate: [tenantScopedUnique('title')] },
               admin: { description: 'Auto-generated if left blank.' } 
             },
-            { name: 'excerpt', type: 'textarea' },
+            { name: 'excerpt', type: 'textarea', maxLength: 500 },
             { name: 'content', type: 'richText', required: true },
             {
               name: 'heroImage',
               type: 'relationship',
               relationTo: 'media',
+              filterOptions: tenantRelationshipFilter('media'),
               hooks: { beforeValidate: [sameTenantRelationship('media')] },
             },
           ]
@@ -57,12 +63,19 @@ export const BlogPosts: CollectionConfig = {
             {
               type: 'row',
               fields: [
-                { name: 'status', type: 'select', defaultValue: 'draft', options: ['draft', 'published', 'archived'] },
+                {
+                  name: 'status',
+                  type: 'select',
+                  defaultValue: 'draft',
+                  enumName: 'cms_blog_status',
+                  options: ['draft', 'published', 'archived'],
+                },
                 {
                   name: 'author',
                   type: 'relationship',
                   relationTo: 'users',
                   index: true,
+                  filterOptions: tenantRelationshipFilter('users'),
                   hooks: { beforeValidate: [sameTenantRelationship('users')] },
                 },
               ]
@@ -89,12 +102,13 @@ export const BlogPosts: CollectionConfig = {
           fields: [
             { name: 'categories', type: 'text', hasMany: true },
             { name: 'tags', type: 'text', hasMany: true },
-            { name: 'metaTitle', type: 'text' },
-            { name: 'metaDescription', type: 'textarea' },
+            { name: 'metaTitle', type: 'text', maxLength: 70 },
+            { name: 'metaDescription', type: 'textarea', maxLength: 160 },
             {
               name: 'metaImage',
               type: 'relationship',
               relationTo: 'media',
+              filterOptions: tenantRelationshipFilter('media'),
               hooks: { beforeValidate: [sameTenantRelationship('media')] },
             },
           ]
@@ -107,6 +121,7 @@ export const BlogPosts: CollectionConfig = {
               type: 'relationship',
               relationTo: 'blog-posts',
               hasMany: true,
+              filterOptions: tenantRelationshipFilter('blog-posts'),
               hooks: { beforeValidate: [sameTenantRelationship('blog-posts')] },
             },
             {
@@ -114,6 +129,7 @@ export const BlogPosts: CollectionConfig = {
               type: 'relationship',
               relationTo: 'menu-items',
               hasMany: true,
+              filterOptions: tenantRelationshipFilter('menu-items'),
               hooks: { beforeValidate: [sameTenantRelationship('menu-items')] },
             },
           ]
@@ -128,6 +144,18 @@ export const BlogPosts: CollectionConfig = {
     }
   ],
   hooks: {
+    beforeValidate: [
+      ({ data }) => {
+        if (!data) return data
+        const result = validateDateOrder(data.publishedDate, data.unpublishDate)
+        if (result !== true) {
+          throw new ValidationError({
+            errors: [{ message: result, path: 'unpublishDate' }],
+          })
+        }
+        return data
+      },
+    ],
     beforeChange: [
       ({ data }) => {
         // Calculate reading time (Rough estimate: 200 words per minute)

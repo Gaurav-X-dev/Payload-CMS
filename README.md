@@ -12,6 +12,33 @@ Use Node.js 22 or newer (Node.js 24 is the currently verified version) and npm.
 
 The admin is served at `/admin`. Browser QA must use a legitimate, disposable local account created through the normal application flow. No test credentials are stored in this repository.
 
+### Controlled development reset and seed
+
+For a complete manual CMS bootstrap, set `ENABLE_THEME_STATIC_FALLBACKS=false` and follow
+[`docs/GHEE_ROAST_CLEAN_START.md`](docs/GHEE_ROAST_CLEAN_START.md).
+
+The optional automated seed requires all seven `SEED_*` variables from `.env.example`:
+
+```powershell
+npm run db:reset:dev -- --confirm
+npm run db:seed:dev
+npm run dev
+```
+
+The reset command is development-only, refuses to run without `--confirm`, and never drops tables or migrations. With no `--preserve-email` flag it removes every user, allowing Payload to show its first-user setup screen. Media records and uploaded files are preserved by default, while their deleted tenant/user relationships are detached. To explicitly delete media records and files, add `--include-media`; use `--dry-run` to print counts without changing records. Preserve an account only with `--preserve-email=user@example.com`.
+
+The seed is idempotent: it creates or updates one Ghee Roast tenant (`ghee-roast`), one environment-configured Super Admin, one tenant administrator, site identity, primary header navigation, and the published homepage Hero. Re-running it updates those stable records rather than creating duplicates. Passwords are handled by Payload Auth and are never printed.
+
+After seeding:
+
+1. Open `http://localhost:3000/admin`.
+2. Sign in using `SEED_SUPER_ADMIN_EMAIL` to manage every tenant, or `SEED_TENANT_USER_EMAIL` to manage only Ghee Roast content.
+3. Open the **Nav** collection, select **Ghee Roast Primary Header**, and edit links, ordering, logo, brand name, or the Order Online CTA.
+4. Open the **Pages** collection, select **Ghee Roast Home**, and edit its **Hero** block.
+5. Open `http://ghee-roast.localhost:3000` to verify the server-rendered result.
+
+When `ENABLE_THEME_STATIC_FALLBACKS=true`, the public theme uses its existing static navigation and Hero when CMS records are absent. With the recommended clean-start value `false`, it renders a safe empty Header/Hero state instead.
+
 ### Ghee Roast local theme
 
 The static Ghee Roast theme is selected by hostname and is available at `http://ghee-roast.localhost:3000`. Its routes are `/`, `/about`, `/menu`, `/catering`, `/contact`, `/delivery`, and `/quality`; the hostname remains visible and no tenant path prefix is used. `localhost` is a development fallback.
@@ -25,9 +52,11 @@ Modern browsers normally resolve `.localhost` automatically. If a local environm
 | `npm run typecheck` | Type-check application and tests |
 | `npm run typecheck:app` | Type-check production application sources |
 | `npm run typecheck:tests` | Type-check tests with their Node `.ts` import semantics |
-| `npm run lint` | Run ESLint over source, tests, and configuration |
+| `npm run lint` | Run ESLint over source, tests, scripts, and configuration |
 | `npm run lint:fix` | Apply reviewed ESLint autofixes |
 | `npm run build` | Run both type-checks and create the production Next.js build |
+| `npm test` | Run the complete non-destructive unit test matrix |
+| `npm run test:authorization` | Run role, authorization, validation, and privilege-escalation unit tests |
 | `npm run test:phase1` | Run tenant-access unit tests |
 | `npm run test:phase2` | Run relationship-integrity tests |
 | `npm run test:security:serial` | Run the authoritative security suite serially |

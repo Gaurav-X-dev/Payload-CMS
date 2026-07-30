@@ -3,11 +3,15 @@ import { tenantField } from '../fields/tenantField'
 import { tenantIsolation } from '../access/tenantIsolation'
 import { tenantContentMutations } from '../access/tenantContext'
 import { tenantPublicRead } from '../access/tenantPublicRead'
-import { sameTenantRelationship } from '../hooks/sameTenantRelationship'
+import {
+  sameTenantRelationship,
+  tenantRelationshipFilter,
+} from '../hooks/sameTenantRelationship'
 import {
   invalidateTenantCache,
   invalidateTenantCacheAfterDelete,
 } from '../hooks/invalidateTenantCache'
+import { validateSafeURL } from '../validation/shared'
 
 export const SEO: CollectionConfig = {
   slug: 'seo',
@@ -31,12 +35,18 @@ export const SEO: CollectionConfig = {
             { 
               name: 'metaTitlePattern', 
               type: 'text', 
+              maxLength: 100,
               defaultValue: '%s | Brand Name',
               admin: { description: 'Use %s where the specific page title should be injected.' }
             },
-            { name: 'metaDescription', type: 'textarea' },
-            { name: 'keywords', type: 'text', admin: { description: 'Comma separated keywords.' } },
-            { name: 'canonicalUrl', type: 'text' },
+            { name: 'metaDescription', type: 'textarea', maxLength: 160 },
+            { name: 'keywords', type: 'text', maxLength: 500, admin: { description: 'Comma separated keywords.' } },
+            {
+              name: 'canonicalUrl',
+              type: 'text',
+              maxLength: 2048,
+              validate: (value: unknown) => validateSafeURL(value),
+            },
             { 
               name: 'robots', 
               type: 'select', 
@@ -48,15 +58,16 @@ export const SEO: CollectionConfig = {
         {
           label: 'Open Graph (Social)',
           fields: [
-            { name: 'ogTitle', type: 'text' },
-            { name: 'ogDescription', type: 'textarea' },
+            { name: 'ogTitle', type: 'text', maxLength: 100 },
+            { name: 'ogDescription', type: 'textarea', maxLength: 200 },
             {
               name: 'defaultOGImage',
               type: 'relationship',
               relationTo: 'media',
+              filterOptions: tenantRelationshipFilter('media'),
               hooks: { beforeValidate: [sameTenantRelationship('media')] },
             },
-            { name: 'ogSiteName', type: 'text' },
+            { name: 'ogSiteName', type: 'text', maxLength: 100 },
           ]
         },
         {
@@ -68,8 +79,8 @@ export const SEO: CollectionConfig = {
               defaultValue: 'summary_large_image',
               options: ['summary', 'summary_large_image', 'app', 'player']
             },
-            { name: 'twitterSite', type: 'text', admin: { description: '@username for the website used in the card footer.' } },
-            { name: 'twitterCreator', type: 'text', admin: { description: '@username for the content creator / author.' } },
+            { name: 'twitterSite', type: 'text', maxLength: 50, admin: { description: '@username for the website used in the card footer.' } },
+            { name: 'twitterCreator', type: 'text', maxLength: 50, admin: { description: '@username for the content creator / author.' } },
           ]
         },
         {

@@ -1,5 +1,8 @@
 import type { GroupField } from 'payload'
-import { sameTenantRelationship } from '../../hooks/sameTenantRelationship'
+import {
+  sameTenantRelationship,
+  tenantRelationshipFilter,
+} from '../../hooks/sameTenantRelationship'
 
 export const mediaField = (overrides?: Partial<GroupField>): GroupField => ({
   name: 'media',
@@ -14,6 +17,7 @@ export const mediaField = (overrides?: Partial<GroupField>): GroupField => ({
       type: 'relationship',
       relationTo: 'media',
       required: true,
+      filterOptions: tenantRelationshipFilter('media'),
       hooks: { beforeValidate: [sameTenantRelationship('media')] },
     },
     {

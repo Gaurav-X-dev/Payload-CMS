@@ -1,8 +1,16 @@
 import type { CollectionConfig } from 'payload'
 import { isSuperAdmin } from '../access/isSuperAdmin'
 import { assignedTenantRead } from '../access/tenantPublicRead'
-import { sameTenantRelationship } from '../hooks/sameTenantRelationship'
+import {
+  sameTenantRelationship,
+  tenantRelationshipFilter,
+} from '../hooks/sameTenantRelationship'
 import { validateTenantParent } from '../hooks/tenantHierarchy'
+import { validateTenantIdentity } from '../hooks/validateTenantIdentity'
+import {
+  isSuperAdminUser,
+  isTenantAdminUser,
+} from '../access/tenantContext'
 
 /**
  * Tenants Collection
@@ -23,6 +31,7 @@ export const Tenants: CollectionConfig = {
   admin: {
     useAsTitle: 'name',
     defaultColumns: ['name', 'slug', 'type', 'isActive', 'isPrimary'],
+    hidden: ({ user }) => !isSuperAdminUser(user) && !isTenantAdminUser(user),
   },
   access: {
     read: assignedTenantRead,
@@ -38,12 +47,14 @@ export const Tenants: CollectionConfig = {
           name: 'name',
           type: 'text',
           required: true,
+          maxLength: 100,
         },
         {
           name: 'slug',
           type: 'text',
           unique: true,
           index: true,
+          maxLength: 100,
           admin: {
             description: 'Auto-generated if left blank. Used for internal routing and data isolation.',
           }
@@ -61,6 +72,15 @@ export const Tenants: CollectionConfig = {
             { label: 'Restaurant', value: 'restaurant' },
             { label: 'Hospitality Group', value: 'hospitality' },
             { label: 'Cloud Kitchen', value: 'cloud_kitchen' },
+          ],
+        },
+        {
+          name: 'theme',
+          type: 'select',
+          defaultValue: 'ghee-roast',
+          options: [
+            { label: 'Ghee Roast', value: 'ghee-roast' },
+            { label: 'Zuru Zuru', value: 'zuru-zuru' },
           ],
         },
         {
@@ -106,6 +126,7 @@ export const Tenants: CollectionConfig = {
           type: 'text',
           required: true,
           index: true,
+          maxLength: 253,
         },
       ],
     },
@@ -140,9 +161,9 @@ export const Tenants: CollectionConfig = {
         {
           type: 'row',
           fields: [
-            { name: 'primaryColor', type: 'text', defaultValue: '#000000' },
-            { name: 'accentColor', type: 'text', defaultValue: '#d4af37' },
-            { name: 'backgroundColor', type: 'text', defaultValue: '#ffffff' },
+            { name: 'primaryColor', type: 'text', defaultValue: '#000000', maxLength: 7 },
+            { name: 'accentColor', type: 'text', defaultValue: '#d4af37', maxLength: 7 },
+            { name: 'backgroundColor', type: 'text', defaultValue: '#ffffff', maxLength: 7 },
           ]
         },
         {
@@ -152,6 +173,9 @@ export const Tenants: CollectionConfig = {
               name: 'logo',
               type: 'relationship',
               relationTo: 'media',
+              filterOptions: tenantRelationshipFilter('media', {
+                parentTenantIdentity: 'documentID',
+              }),
               hooks: {
                 beforeValidate: [
                   sameTenantRelationship('media', {
@@ -165,6 +189,9 @@ export const Tenants: CollectionConfig = {
               name: 'favicon',
               type: 'relationship',
               relationTo: 'media',
+              filterOptions: tenantRelationshipFilter('media', {
+                parentTenantIdentity: 'documentID',
+              }),
               hooks: {
                 beforeValidate: [
                   sameTenantRelationship('media', {
@@ -251,36 +278,26 @@ export const Tenants: CollectionConfig = {
       name: 'createdBy',
       type: 'relationship',
       relationTo: 'users',
-      access: { update: () => false },
+      access: { create: () => false, update: () => false },
       admin: { readOnly: true, position: 'sidebar' },
     },
     {
       name: 'updatedBy',
       type: 'relationship',
       relationTo: 'users',
-      access: { update: () => false },
+      access: { create: () => false, update: () => false },
       admin: { readOnly: true, position: 'sidebar' },
     }
   ],
   hooks: {
-    beforeValidate: [
-      ({ data, req }) => {
-        // Auto-generate slug if not provided or override is manual but empty
-        if (data && !data.slug && data.name) {
-          data.slug = data.name
-            .toLowerCase()
-            .replace(/[^a-z0-9]+/g, '-')
-            .replace(/(^-|-$)+/g, '')
-        }
-        return data
-      }
-    ],
+    beforeValidate: [validateTenantIdentity],
     beforeChange: [
-      ({ req, data, operation }) => {
-        if (operation === 'create') {
-          data.createdBy = req.user?.id
-        }
-        data.updatedBy = req.user?.id
+      ({ req, data, operation, originalDoc }) => {
+        if (req.context?.developmentReset === true) return data
+        data.createdBy = operation === 'create'
+          ? req.user?.id
+          : originalDoc?.createdBy
+        data.updatedBy = req.user?.id ?? originalDoc?.updatedBy
         return data
       }
     ]

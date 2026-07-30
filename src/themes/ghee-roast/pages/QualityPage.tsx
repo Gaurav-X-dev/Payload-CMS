@@ -2,11 +2,12 @@ import Image from 'next/image'
 import { ActionLink, FeatureGrid, PageHero, SectionHeading } from '../components/Shared'
 import { qualityData } from '../data/quality'
 import styles from '../components/Theme.module.css'
+import type { GheeRoastPageProps } from '../dynamicTypes'
 
-export function QualityPage() {
+export function QualityPage({ content }: GheeRoastPageProps) {
   return (
     <>
-      <PageHero {...qualityData.hero} />
+      <PageHero {...(content.page?.hero ?? qualityData.hero)} />
       <section className={styles.section}>
         <div className={`${styles.container} ${styles.twoColumn}`}>
           <Image alt="Fresh hand-sourced ingredients" height={680} src="/themes/ghee-roast/images/quality_ingredients.png" width={720} />

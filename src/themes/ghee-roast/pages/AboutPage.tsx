@@ -3,11 +3,25 @@ import { aboutData } from '../data/about'
 import { ActionLink, PageHero, Stats } from '../components/Shared'
 import { Icon } from '../components/Icon'
 import styles from '../components/Theme.module.css'
+import type { GheeRoastPageProps } from '../dynamicTypes'
 
-export function AboutPage() {
+export function AboutPage({ content }: GheeRoastPageProps) {
+  const teamMember = content.collections.team[0]
+  const founder = teamMember
+    ? {
+        badge: teamMember.role,
+        citation: `— ${teamMember.name}, ${teamMember.role}`,
+        eyebrow: aboutData.founder.eyebrow,
+        image: teamMember.photo || aboutData.founder.image,
+        name: teamMember.name,
+        paragraphs: teamMember.bio ? teamMember.bio.split(/\n+/).filter(Boolean) : aboutData.founder.paragraphs,
+        quote: teamMember.quote || aboutData.founder.quote,
+        title: aboutData.founder.title,
+      }
+    : aboutData.founder
   return (
     <>
-      <PageHero {...aboutData.hero} />
+      <PageHero {...(content.page?.hero ?? aboutData.hero)} />
 
       <section className={`${styles.section} ${styles.aboutOrigin}`}>
         <div className={styles.container}>
@@ -54,19 +68,17 @@ export function AboutPage() {
         <div className={styles.container}>
           <div className={styles.founderGrid}>
             <div className={styles.founderImage}>
-              <span><Icon name="chef" weight="fill" />{aboutData.founder.badge}</span>
-              <Image alt={aboutData.founder.image.alt} fill sizes="(max-width: 800px) 90vw, 35vw" src={aboutData.founder.image.src} />
+              <span><Icon name="chef" weight="fill" />{founder.badge}</span>
+              <Image alt={founder.image.alt} fill sizes="(max-width: 800px) 90vw, 35vw" src={founder.image.src} />
             </div>
             <div className={styles.founderText}>
-              <span className={styles.eyebrow}>{aboutData.founder.eyebrow}</span>
-              <h2>{aboutData.founder.title}</h2>
-              <strong className={styles.founderName}>{aboutData.founder.name}</strong>
-              {aboutData.founder.paragraphs.map((paragraph, index) => (
-                <p key={paragraph}>{index === 2 ? <><span>His philosophy is simple: </span><strong>If you can taste the shortcut, you&apos;ve already failed.</strong><span> It&apos;s this uncompromising standard that has kept VGGR&apos;s flavour consistent from Kundapur to Connaught Place.</span></> : paragraph}</p>
-              ))}
+              <span className={styles.eyebrow}>{founder.eyebrow}</span>
+              <h2>{founder.title}</h2>
+              <strong className={styles.founderName}>{founder.name}</strong>
+              {founder.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
               <blockquote className={styles.founderQuote}>
-                <p>{aboutData.founder.quote}</p>
-                <cite>{aboutData.founder.citation}</cite>
+                <p>{founder.quote}</p>
+                <cite>{founder.citation}</cite>
               </blockquote>
               <ActionLink href="/menu" label="Experience the Flavour" variant="primary" />
             </div>

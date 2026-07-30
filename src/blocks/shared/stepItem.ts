@@ -1,5 +1,8 @@
 import type { Field } from 'payload'
-import { sameTenantRelationship } from '../../hooks/sameTenantRelationship'
+import {
+  sameTenantRelationship,
+  tenantRelationshipFilter,
+} from '../../hooks/sameTenantRelationship'
 
 export const stepItemFields: Field[] = [
   {
@@ -9,6 +12,7 @@ export const stepItemFields: Field[] = [
         name: 'icon',
         type: 'relationship',
         relationTo: 'media',
+        filterOptions: tenantRelationshipFilter('media'),
         hooks: { beforeValidate: [sameTenantRelationship('media')] },
         admin: { description: 'Optional step icon.' },
       },

@@ -20,6 +20,7 @@ export const localSiteRegistry: Readonly<Record<string, LocalSite>> = {
   'zuru-zuru.localhost': zuruZuruSite,
   localhost: gheeRoastSite,
   '127.0.0.1': gheeRoastSite,
+  '::1': gheeRoastSite,
 }
 
 export function resolveLocalSite(host: string | null | undefined): LocalSite | null {

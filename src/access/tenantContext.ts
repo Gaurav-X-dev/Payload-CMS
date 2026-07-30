@@ -1,7 +1,30 @@
 import type { Access, PayloadRequest, User, Where } from 'payload'
+import { resolveHostname } from '../lib/site/resolveHostname'
+import { resolveLocalSite } from '../lib/site/resolveLocalSite'
 
 export type TenantID = number
 export type UserRole = NonNullable<User['roles']>[number]
+export type AuthorizationUser = {
+  id?: unknown
+  roles?: unknown
+  tenants?: unknown
+}
+
+export const USER_ROLES = {
+  superAdmin: 'super_admin',
+  tenantAdmin: 'tenant_admin',
+  tenantMember: 'tenant_member',
+} as const satisfies Record<string, UserRole>
+
+export const USER_ROLE_OPTIONS = [
+  { label: 'Super Admin', value: USER_ROLES.superAdmin },
+  { label: 'Tenant Admin', value: USER_ROLES.tenantAdmin },
+  { label: 'Tenant Member', value: USER_ROLES.tenantMember },
+] as const
+
+export const TENANT_ADMIN_ASSIGNABLE_ROLES: readonly UserRole[] = [
+  USER_ROLES.tenantMember,
+]
 
 const toTenantID = (value: unknown): TenantID | null => {
   if (typeof value === 'number' && Number.isInteger(value) && value > 0) return value
@@ -12,27 +35,30 @@ const toTenantID = (value: unknown): TenantID | null => {
   return null
 }
 
-export const getUserRoles = (user: PayloadRequest['user']): UserRole[] =>
+export const getUserRoles = (user: AuthorizationUser | null | undefined): UserRole[] =>
   Array.isArray(user?.roles)
     ? user.roles.filter(
         (role): role is UserRole =>
-          role === 'super_admin' || role === 'tenant_admin' || role === 'tenant_member',
+          Object.values(USER_ROLES).includes(role),
       )
     : []
 
 export const userHasRole = (
-  user: PayloadRequest['user'],
+  user: AuthorizationUser | null | undefined,
   role: UserRole,
 ): boolean => getUserRoles(user).includes(role)
 
-export const isSuperAdminUser = (user: PayloadRequest['user']): boolean =>
-  userHasRole(user, 'super_admin')
+export const isSuperAdminUser = (user: AuthorizationUser | null | undefined): boolean =>
+  userHasRole(user, USER_ROLES.superAdmin)
 
-export const isTenantAdminUser = (user: PayloadRequest['user']): boolean =>
-  userHasRole(user, 'tenant_admin')
+export const isTenantAdminUser = (user: AuthorizationUser | null | undefined): boolean =>
+  userHasRole(user, USER_ROLES.tenantAdmin)
+
+export const isTenantMemberUser = (user: AuthorizationUser | null | undefined): boolean =>
+  userHasRole(user, USER_ROLES.tenantMember)
 
 export const getUserTenantIDs = (
-  user: { tenants?: User['tenants'] } | null | undefined,
+  user: { tenants?: unknown } | null | undefined,
 ): TenantID[] => {
   if (!Array.isArray(user?.tenants)) return []
 
@@ -47,6 +73,79 @@ export const getUserTenantIDs = (
 
 export const getExplicitTenantID = (req: PayloadRequest): TenantID | null =>
   toTenantID(req.headers.get('x-tenant-id'))
+
+export const getAllowedTenantIDs = getUserTenantIDs
+
+export const hasTenantAccess = (
+  user: Parameters<typeof getUserTenantIDs>[0],
+  tenantID: unknown,
+): boolean => {
+  const normalized = toTenantID(tenantID)
+  return Boolean(normalized && getUserTenantIDs(user).includes(normalized))
+}
+
+export const getAllowedAssignableRoles = (
+  actor: AuthorizationUser | null | undefined,
+): readonly UserRole[] => {
+  if (isSuperAdminUser(actor)) return Object.values(USER_ROLES)
+  if (isTenantAdminUser(actor)) return TENANT_ADMIN_ASSIGNABLE_ROLES
+  return []
+}
+
+export const canAssignRoles = (
+  actor: AuthorizationUser | null | undefined,
+  requestedRoles: unknown,
+): boolean => {
+  if (!Array.isArray(requestedRoles) || requestedRoles.length === 0) return false
+  const normalized = requestedRoles.filter(
+    (role): role is UserRole =>
+      typeof role === 'string' && Object.values(USER_ROLES).includes(role as UserRole),
+  )
+  if (
+    normalized.length !== requestedRoles.length ||
+    new Set(normalized).size !== normalized.length
+  ) {
+    return false
+  }
+  const allowed = getAllowedAssignableRoles(actor)
+  return normalized.every((role) => allowed.includes(role))
+}
+
+export const canAssignTenants = (
+  actor: AuthorizationUser | null | undefined,
+  requestedTenantIDs: unknown,
+): boolean => {
+  if (!Array.isArray(requestedTenantIDs)) return false
+  const normalized = requestedTenantIDs.map(toTenantID)
+  if (
+    normalized.some((tenantID) => tenantID === null) ||
+    new Set(normalized).size !== normalized.length
+  ) {
+    return false
+  }
+  if (isSuperAdminUser(actor)) return true
+  if (!isTenantAdminUser(actor) || normalized.length === 0) return false
+  const allowed = getUserTenantIDs(actor)
+  return normalized.every(
+    (tenantID) => tenantID !== null && allowed.includes(tenantID),
+  )
+}
+
+export const canManageUser = (
+  actor: AuthorizationUser | null | undefined,
+  target: AuthorizationUser | null | undefined,
+): boolean => {
+  if (isSuperAdminUser(actor)) return true
+  if (!isTenantAdminUser(actor) || !target || isSuperAdminUser(target)) {
+    return false
+  }
+  const actorTenantIDs = getUserTenantIDs(actor)
+  const targetTenantIDs = getUserTenantIDs(target)
+  return (
+    targetTenantIDs.length > 0 &&
+    targetTenantIDs.every((tenantID) => actorTenantIDs.includes(tenantID))
+  )
+}
 
 export const getAuthenticatedTenantID = (req: PayloadRequest): TenantID | null => {
   const tenantIDs = getUserTenantIDs(req.user)
@@ -63,8 +162,8 @@ export const getAuthenticatedTenantID = (req: PayloadRequest): TenantID | null =
 
   if (candidateTenantID) {
     // If the tenant is populated in req.user.tenants, check isActive
-    const selectedTenant = (req.user?.tenants || []).find((t: any) =>
-      toTenantID(typeof t === 'object' && t !== null ? t.id : t) === candidateTenantID
+    const selectedTenant = (req.user?.tenants || []).find((tenant) =>
+      toTenantID(tenant) === candidateTenantID
     )
     if (selectedTenant && typeof selectedTenant === 'object' && 'isActive' in selectedTenant) {
       if (selectedTenant.isActive === false) return null
@@ -186,21 +285,41 @@ export const getTenantReadScope = (
   }
 }
 
-const normalizeHostname = (host: string | null): string =>
-  (host || '').trim().toLowerCase().replace(/:\d+$/, '').replace(/\.$/, '')
+export const tenantScopeWhere = (
+  req: PayloadRequest,
+  field = 'tenantId',
+): true | Where | false => {
+  if (!req.user) return false
+  if (isSuperAdminUser(req.user)) return true
+  const tenantIDs = getUserTenantIDs(req.user)
+  if (!tenantIDs.length) return false
+  return {
+    [field]: {
+      in: tenantIDs,
+    },
+  }
+}
 
 export const resolvePublicTenantID = async (
   req: PayloadRequest,
 ): Promise<TenantID | null> => {
-  const hostname = normalizeHostname(req.headers.get('host'))
+  const host = req.headers.get('host')
+  const hostname = resolveHostname(host)
   const isLocalDevelopment =
     hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1'
+  const localSite = resolveLocalSite(host)
 
   let tenantWhere: import('payload').Where
   if (isLocalDevelopment) {
     tenantWhere = {
       slug: {
         equals: process.env.DEFAULT_TENANT_SLUG || '',
+      },
+    }
+  } else if (localSite) {
+    tenantWhere = {
+      slug: {
+        equals: localSite.key,
       },
     }
   } else {
@@ -211,7 +330,7 @@ export const resolvePublicTenantID = async (
     }
   }
 
-  if ((!isLocalDevelopment && !hostname) || (isLocalDevelopment && !process.env.DEFAULT_TENANT_SLUG)) {
+  if (!hostname || (isLocalDevelopment && !process.env.DEFAULT_TENANT_SLUG)) {
     return null
   }
 
@@ -245,3 +364,4 @@ export const resolveTrustedTenantID = async (
 }
 
 export const normalizeTenantID = toTenantID
+export const normalizeRelationshipID = toTenantID

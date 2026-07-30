@@ -1,5 +1,9 @@
 import type { GroupField } from 'payload'
-import { sameTenantRelationship } from '../../hooks/sameTenantRelationship'
+import {
+  sameTenantRelationship,
+  tenantRelationshipFilter,
+} from '../../hooks/sameTenantRelationship'
+import { validateConfiguredLink } from '../../validation/shared'
 
 export const linkField = (overrides?: Partial<GroupField>): GroupField => ({
   name: 'link',
@@ -14,6 +18,7 @@ export const linkField = (overrides?: Partial<GroupField>): GroupField => ({
       fields: [
         {
           name: 'type',
+          enumName: 'cms_link_kind',
           type: 'radio',
           defaultValue: 'reference',
           options: [
@@ -33,13 +38,30 @@ export const linkField = (overrides?: Partial<GroupField>): GroupField => ({
           name: 'label',
           type: 'text',
           required: true,
+          maxLength: 80,
         },
         {
           name: 'reference',
           type: 'relationship',
           relationTo: 'pages',
-          required: true,
+          filterOptions: tenantRelationshipFilter('pages'),
           hooks: { beforeValidate: [sameTenantRelationship('pages')] },
+          validate: (
+            value: unknown,
+            { siblingData }: { siblingData: unknown },
+          ) => {
+            const type = siblingData && typeof siblingData === 'object' && 'type' in siblingData
+              ? siblingData.type
+              : undefined
+            if (type !== 'reference') return true
+            return (
+              typeof value === 'number'
+              || typeof value === 'string'
+              || Boolean(value && typeof value === 'object' && 'id' in value)
+            )
+              ? true
+              : 'Select an internal page.'
+          },
           admin: {
             condition: (_, siblingData) => siblingData?.type === 'reference',
           },
@@ -47,7 +69,15 @@ export const linkField = (overrides?: Partial<GroupField>): GroupField => ({
         {
           name: 'url',
           type: 'text',
-          required: true,
+          maxLength: 2048,
+          validate: (value: unknown, { siblingData }: { siblingData: unknown }) => {
+            const type = siblingData && typeof siblingData === 'object'
+              ? (siblingData as Record<string, unknown>).type
+              : undefined
+            return type === 'reference'
+              ? true
+              : validateConfiguredLink(value, type)
+          },
           admin: {
             condition: (_, siblingData) => ['custom', 'anchor', 'email', 'phone'].includes(siblingData?.type),
           },
@@ -67,6 +97,7 @@ export const linkField = (overrides?: Partial<GroupField>): GroupField => ({
       fields: [
         {
           name: 'buttonStyle',
+          enumName: 'cms_link_style',
           type: 'select',
           defaultValue: 'primary',
           options: [
@@ -79,6 +110,7 @@ export const linkField = (overrides?: Partial<GroupField>): GroupField => ({
         },
         {
           name: 'buttonSize',
+          enumName: 'cms_link_size',
           type: 'select',
           defaultValue: 'medium',
           options: [
@@ -96,10 +128,12 @@ export const linkField = (overrides?: Partial<GroupField>): GroupField => ({
           name: 'icon',
           type: 'relationship',
           relationTo: 'media',
+          filterOptions: tenantRelationshipFilter('media'),
           hooks: { beforeValidate: [sameTenantRelationship('media')] },
         },
         {
           name: 'iconPosition',
+          enumName: 'cms_link_icon_pos',
           type: 'radio',
           defaultValue: 'left',
           options: [
@@ -115,8 +149,8 @@ export const linkField = (overrides?: Partial<GroupField>): GroupField => ({
     {
       type: 'row',
       fields: [
-        { name: 'analyticsTrackingId', type: 'text', admin: { description: 'E.g., GTM ID.' } },
-        { name: 'ariaLabel', type: 'text', admin: { description: 'Screen reader override.' } },
+        { name: 'analyticsTrackingId', type: 'text', maxLength: 100, admin: { description: 'E.g., GTM ID.' } },
+        { name: 'ariaLabel', type: 'text', maxLength: 200, admin: { description: 'Screen reader override.' } },
       ],
     },
     ...(overrides?.fields || []),

@@ -10,6 +10,7 @@ import { GalleryBlock } from './Gallery'
 import { FormBlock } from './Form'
 import { MenuShowcaseBlock } from './MenuShowcase'
 import { TeamBlock } from './Team'
+import { EventsBlock } from './Events'
 import { FAQBlock } from './FAQ'
 import { LocationsBlock } from './Locations'
 import { BlogPreviewBlock } from './BlogPreview'
@@ -36,6 +37,7 @@ export const AllBlocks = [
   FormBlock,
   MenuShowcaseBlock,
   TeamBlock,
+  EventsBlock,
   FAQBlock,
   LocationsBlock,
   BlogPreviewBlock,

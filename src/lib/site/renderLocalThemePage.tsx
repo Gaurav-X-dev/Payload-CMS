@@ -9,5 +9,5 @@ export async function renderLocalThemePage(pathname: string) {
   if (!site) notFound()
 
   const { PageRenderer } = themeRegistry[site.theme]
-  return <PageRenderer pathname={pathname} site={site} />
+  return <PageRenderer hostname={requestHeaders.get('host')} pathname={pathname} site={site} />
 }

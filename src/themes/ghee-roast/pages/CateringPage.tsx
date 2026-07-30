@@ -3,11 +3,13 @@ import { Icon } from '../components/Icon'
 import { ActionLink, FeatureGrid, Gallery, PageHero, SectionHeading, Stats } from '../components/Shared'
 import { cateringData } from '../data/catering'
 import styles from '../components/Theme.module.css'
+import type { GheeRoastPageProps } from '../dynamicTypes'
 
-export function CateringPage() {
+export function CateringPage({ content }: GheeRoastPageProps) {
+  const gallery = content.collections.gallery.length ? content.collections.gallery : cateringData.gallery
   return (
     <>
-      <PageHero {...cateringData.hero} variant="catering" />
+      <PageHero {...(content.page?.hero ?? cateringData.hero)} variant="catering" />
       <section className={`${styles.section} ${styles.overlapSection}`}>
         <div className={styles.container}><FeatureGrid features={cateringData.occasions} /></div>
       </section>
@@ -29,9 +31,23 @@ export function CateringPage() {
       <section className={styles.section}>
         <div className={styles.container}>
           <SectionHeading center title="Catering Gallery" />
-          <Gallery images={cateringData.gallery} />
+          <Gallery images={gallery} />
         </div>
       </section>
+      {content.collections.events.length > 0 && <section className={`${styles.section} ${styles.sectionAlt}`}>
+        <div className={styles.container}>
+          <SectionHeading center eyebrow="Upcoming Experiences" title="Events & Pop-ups" />
+          <div className={styles.cmsCardGrid}>
+            {content.collections.events.map((event) => <article className={styles.cmsCard} key={event.id}>
+              {event.image && <Image alt={event.image.alt} height={360} src={event.image.src} unoptimized width={560} />}
+              <h3>{event.title}</h3>
+              <p>{event.summary}</p>
+              {event.locationName && <small>{event.locationName}</small>}
+              {event.bookingUrl && <ActionLink href={event.bookingUrl} label="Book now" />}
+            </article>)}
+          </div>
+        </div>
+      </section>}
     </>
   )
 }

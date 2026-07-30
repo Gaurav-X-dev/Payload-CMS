@@ -1,5 +1,9 @@
 import type { GroupField } from 'payload'
-import { sameTenantRelationship } from '../../hooks/sameTenantRelationship'
+import {
+  sameTenantRelationship,
+  tenantRelationshipFilter,
+} from '../../hooks/sameTenantRelationship'
+import { pageBlockVisibilityDBName } from './scopedDBName'
 
 export const blockSettings = (): GroupField => ({
   name: 'settings',
@@ -13,6 +17,7 @@ export const blockSettings = (): GroupField => ({
       fields: [
         {
           name: 'backgroundColor',
+          enumName: 'cms_block_bg',
           type: 'select',
           defaultValue: 'transparent',
           options: [
@@ -25,6 +30,7 @@ export const blockSettings = (): GroupField => ({
         },
         {
           name: 'containerWidth',
+          enumName: 'cms_block_width',
           type: 'select',
           defaultValue: 'standard',
           options: [
@@ -42,6 +48,7 @@ export const blockSettings = (): GroupField => ({
           name: 'backgroundImage',
           type: 'relationship',
           relationTo: 'media',
+          filterOptions: tenantRelationshipFilter('media'),
           hooks: { beforeValidate: [sameTenantRelationship('media')] },
           admin: {
             description: 'Optional image to place behind the block.',
@@ -64,6 +71,7 @@ export const blockSettings = (): GroupField => ({
       fields: [
         {
           name: 'paddingTop',
+          enumName: 'cms_block_pt',
           type: 'select',
           defaultValue: 'medium',
           options: [
@@ -75,6 +83,7 @@ export const blockSettings = (): GroupField => ({
         },
         {
           name: 'paddingBottom',
+          enumName: 'cms_block_pb',
           type: 'select',
           defaultValue: 'medium',
           options: [
@@ -91,6 +100,8 @@ export const blockSettings = (): GroupField => ({
       fields: [
         {
           name: 'visibility',
+          dbName: pageBlockVisibilityDBName,
+          enumName: 'cms_block_visibility',
           type: 'select',
           hasMany: true,
           defaultValue: ['desktop', 'tablet', 'mobile'],
@@ -102,6 +113,7 @@ export const blockSettings = (): GroupField => ({
         },
         {
           name: 'animation',
+          enumName: 'cms_block_anim',
           type: 'select',
           defaultValue: 'none',
           options: [

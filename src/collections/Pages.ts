@@ -1,21 +1,33 @@
 import type { CollectionConfig } from 'payload'
 import { tenantField } from '../fields/tenantField'
-import { tenantIsolation } from '../access/tenantIsolation'
 import { tenantContentMutations } from '../access/tenantContext'
 import { tenantPublicRead } from '../access/tenantPublicRead'
 import { tenantScopedUnique } from '../hooks/tenantScopedUnique'
 import { tenantVersionRead } from '../access/tenantVersionRead'
-import { sameTenantRelationship } from '../hooks/sameTenantRelationship'
+import {
+  sameTenantRelationship,
+  tenantRelationshipFilter,
+} from '../hooks/sameTenantRelationship'
 import {
   invalidateTenantCache,
   invalidateTenantCacheAfterDelete,
 } from '../hooks/invalidateTenantCache'
+import { AllBlocks } from '../blocks'
+import {
+  validateFiniteInteger,
+  validateSafeURL,
+} from '../validation/shared'
 
 export const Pages: CollectionConfig = {
   slug: 'pages',
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'isHomePage', 'status', 'updatedAt'],
+    description: 'Build tenant pages with reusable, CMS-driven sections. Drafts remain private until published.',
+    livePreview: {
+      url: ({ data }) => data?.isHomePage ? '/' : `/${String(data?.slug || '').replace(/^\/+/, '')}`,
+    },
+    preview: (data) => data?.isHomePage ? '/' : `/${String(data?.slug || '').replace(/^\/+/, '')}`,
   },
   access: {
     read: tenantPublicRead({ publishedOnly: true }),
@@ -36,7 +48,13 @@ export const Pages: CollectionConfig = {
             {
               type: 'row',
               fields: [
-                { name: 'title', type: 'text', required: true },
+                {
+                  name: 'title',
+                  type: 'text',
+                  required: true,
+                  maxLength: 200,
+                  admin: { placeholder: 'About Very Good Ghee Roast' },
+                },
                 { 
                   name: 'slug', 
                   type: 'text',
@@ -44,7 +62,10 @@ export const Pages: CollectionConfig = {
                   hooks: {
                     beforeValidate: [tenantScopedUnique('title')]
                   },
-                  admin: { description: 'Auto-generated if left blank. (e.g., "about-us")' }
+                  admin: {
+                    description: 'Auto-generated if left blank. Use a short URL-safe value, e.g. "about".',
+                    placeholder: 'about',
+                  }
                 },
               ]
             },
@@ -56,7 +77,9 @@ export const Pages: CollectionConfig = {
                   type: 'relationship',
                   relationTo: 'pages',
                   index: true,
-                  filterOptions: ({ id }) => ({ id: { not_equals: id } }),
+                  filterOptions: tenantRelationshipFilter('pages', {
+                    excludeCurrentDocument: true,
+                  }),
                   hooks: { beforeValidate: [sameTenantRelationship('pages')] },
                 },
                 { name: 'isHomePage', type: 'checkbox', defaultValue: false, admin: { description: 'If checked, this page loads at the root URL (/).' } },
@@ -66,7 +89,13 @@ export const Pages: CollectionConfig = {
               type: 'row',
               fields: [
                 { name: 'template', type: 'select', defaultValue: 'default', options: ['default', 'blank', 'landing'] },
-                { name: 'status', type: 'select', defaultValue: 'draft', options: ['draft', 'published', 'archived'] },
+                {
+                  name: 'status',
+                  type: 'select',
+                  defaultValue: 'draft',
+                  enumName: 'cms_page_status',
+                  options: ['draft', 'published', 'archived'],
+                },
               ]
             },
             { name: 'publishedAt', type: 'date', admin: { position: 'sidebar' } },
@@ -78,15 +107,11 @@ export const Pages: CollectionConfig = {
             {
               name: 'layout',
               type: 'blocks',
-              admin: { description: 'Construct the page visually using dynamic blocks.' },
-              blocks: [
-                // Phase 3B Blocks will be injected here
-                // For now, we mock a simple rich text block to allow the schema to compile
-                {
-                  slug: 'mockBlock',
-                  fields: [{ name: 'content', type: 'text' }]
-                }
-              ]
+              admin: {
+                description: 'Construct the page visually. When empty, the Ghee Roast theme keeps its legacy design as a compatibility fallback.',
+                initCollapsed: true,
+              },
+              blocks: AllBlocks,
             }
           ]
         },
@@ -97,8 +122,15 @@ export const Pages: CollectionConfig = {
               type: 'row',
               fields: [
                 { name: 'showInNavigation', type: 'checkbox', defaultValue: false },
-                { name: 'navigationLabel', type: 'text' },
-                { name: 'sortOrder', type: 'number', defaultValue: 0 },
+                { name: 'navigationLabel', type: 'text', maxLength: 80 },
+                {
+                  name: 'sortOrder',
+                  type: 'number',
+                  defaultValue: 0,
+                  min: 0,
+                  validate: (value: unknown) =>
+                    validateFiniteInteger(value, { min: 0, max: 1_000_000 }),
+                },
               ]
             },
             {
@@ -106,7 +138,13 @@ export const Pages: CollectionConfig = {
               type: 'group',
               fields: [
                 { name: 'enableRedirect', type: 'checkbox', defaultValue: false },
-                { name: 'redirectUrl', type: 'text', admin: { condition: (_, siblingData) => siblingData.enableRedirect } },
+                {
+                  name: 'redirectUrl',
+                  type: 'text',
+                  maxLength: 2048,
+                  validate: (value: unknown) => validateSafeURL(value),
+                  admin: { condition: (_, siblingData) => siblingData.enableRedirect },
+                },
                 { name: 'permanent', type: 'checkbox', defaultValue: true, admin: { condition: (_, siblingData) => siblingData.enableRedirect } },
               ]
             }
@@ -115,15 +153,37 @@ export const Pages: CollectionConfig = {
         {
           label: 'SEO',
           fields: [
-            { name: 'metaTitle', type: 'text' },
-            { name: 'metaDescription', type: 'textarea' },
+            {
+              name: 'metaTitle',
+              type: 'text',
+              maxLength: 70,
+              admin: {
+                description: 'Recommended: 50–60 characters. Falls back to the page title.',
+                placeholder: 'Page title | Very Good Ghee Roast',
+              },
+            },
+            {
+              name: 'metaDescription',
+              type: 'textarea',
+              maxLength: 160,
+              admin: {
+                description: 'Recommended: 120–160 characters.',
+                placeholder: 'A concise search result description.',
+              },
+            },
             {
               name: 'metaImage',
               type: 'relationship',
               relationTo: 'media',
+              filterOptions: tenantRelationshipFilter('media'),
               hooks: { beforeValidate: [sameTenantRelationship('media')] },
             },
-            { name: 'canonicalUrl', type: 'text' },
+            {
+              name: 'canonicalUrl',
+              type: 'text',
+              maxLength: 2048,
+              validate: (value: unknown) => validateSafeURL(value),
+            },
             { name: 'noIndex', type: 'checkbox', defaultValue: false },
           ]
         }

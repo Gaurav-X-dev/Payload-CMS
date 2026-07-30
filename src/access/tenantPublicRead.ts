@@ -3,6 +3,7 @@ import type { Access, Where } from 'payload'
 import {
   getUserTenantIDs,
   isSuperAdminUser,
+  normalizeTenantID,
   resolvePublicTenantID,
 } from './tenantContext'
 
@@ -22,8 +23,15 @@ export const tenantPublicRead = ({ publishedOnly = false }: Options = {}): Acces
       // req.user.tenants is populated during auth
       if (req.user.tenants && req.user.tenants.length > 0 && typeof req.user.tenants[0] === 'object') {
         activeTenantIDs = req.user.tenants
-          .filter((t: any) => t && t.isActive === true)
-          .map((t: any) => t.id)
+          .filter(
+            (tenant) =>
+              typeof tenant === 'object' &&
+              tenant !== null &&
+              'isActive' in tenant &&
+              tenant.isActive === true,
+          )
+          .map(normalizeTenantID)
+          .filter((tenantID): tenantID is number => tenantID !== null)
       } else if (tenantIDs.length > 0) {
         // Fallback: fetch active ones
         const activeTenants = await req.payload.find({

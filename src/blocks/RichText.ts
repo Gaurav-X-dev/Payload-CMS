@@ -1,16 +1,17 @@
 import type { Block } from 'payload'
+import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { blockSettings } from './shared/blockSettings'
 
 export const RichTextBlock: Block = {
   slug: 'richtextBlock',
   interfaceName: 'RichTextBlock',
   fields: [
     {
-      name: 'title',
-      type: 'text',
+      name: 'content',
+      type: 'richText',
+      required: true,
+      editor: lexicalEditor({}),
     },
-    {
-      name: 'subtitle',
-      type: 'text',
-    },
+    blockSettings(),
   ],
 }
