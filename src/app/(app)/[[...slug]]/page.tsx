@@ -3,6 +3,7 @@ import { headers } from 'next/headers'
 import { renderLocalThemePage } from '@/lib/site/renderLocalThemePage'
 import { resolveLocalSite } from '@/lib/site/resolveLocalSite'
 import { getGheeRoastPage } from '@/themes/ghee-roast'
+import { getCuriousHubPage } from '@/themes/curious-hub/utils/getPageComponent'
 
 type DynamicRouteProps = {
   params: Promise<{ slug?: string[] }>
@@ -18,7 +19,14 @@ export async function generateMetadata({ params }: DynamicRouteProps): Promise<M
   const site = resolveLocalSite(requestHeaders.get('host'))
   if (!site) return {}
 
-  const page = getGheeRoastPage(await resolvePathname(params))
+  const pathname = await resolvePathname(params)
+
+  if (site.theme === 'curious-hub') {
+    const page = getCuriousHubPage(pathname)
+    return page?.metadata ?? {}
+  }
+
+  const page = getGheeRoastPage(pathname)
   return page?.metadata ?? {}
 }
 

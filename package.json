@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --webpack",
     "build": "npm run typecheck && next build",
     "start": "next start",
     "lint": "eslint src tests next.config.mjs eslint.config.mjs",

@@ -13,7 +13,15 @@ const zuruZuruSite = {
   theme: 'zuru-zuru',
 } as const satisfies LocalSite
 
+const curiousHubSite = {
+  hostname: 'curious-hub.localhost',
+  key: 'curious-hub',
+  theme: 'curious-hub',
+} as const satisfies LocalSite
+
 export const localSiteRegistry: Readonly<Record<string, LocalSite>> = {
+  'curious-hub.local': curiousHubSite,
+  'curious-hub.localhost': curiousHubSite,
   'ghee-roast.local': gheeRoastSite,
   'ghee-roast.localhost': gheeRoastSite,
   'zuru-zuru.local': zuruZuruSite,
