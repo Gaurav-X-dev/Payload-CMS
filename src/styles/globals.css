@@ -1,6 +1,12 @@
 @import './tokens.css';
 
-/* Modern CSS Reset */
+/* Explicit root font size — matches original HTML templates (16px base) */
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+
 *, *::before, *::after {
   box-sizing: border-box;
 }

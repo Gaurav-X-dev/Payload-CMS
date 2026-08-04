@@ -1,4 +1,4 @@
-export type LocalThemeKey = 'ghee-roast' | 'zuru-zuru'
+export type LocalThemeKey = 'curious-hub' | 'ghee-roast' | 'zuru-zuru'
 
 export type LocalSite = {
   hostname: string
