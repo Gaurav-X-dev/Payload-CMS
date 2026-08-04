@@ -40,6 +40,8 @@ export function Header({
 
   const onDark = pathname !== '/'
   const hasIdentity = Boolean(navigation.logo || navigation.brandName)
+  const itemRel = (item: { newTab?: boolean; nofollow?: boolean }): string | undefined =>
+    [item.nofollow ? 'nofollow' : '', item.newTab ? 'noreferrer' : ''].filter(Boolean).join(' ') || undefined
 
   return (
     <>
@@ -66,14 +68,14 @@ export function Header({
             </Link>
           ) : <span aria-hidden className={styles.logo} />}
           <nav aria-label="Primary navigation" className={styles.desktopNav}>
-            {navigation.items.map((item) => item.children?.length ? (
-              <div className={styles.navDropdown} key={item.href}>
-                <Link aria-current={pathname === item.href ? 'page' : undefined} className={pathname === item.href ? styles.activeNav : undefined} href={item.href} rel={item.newTab ? 'noreferrer' : undefined} target={item.newTab ? '_blank' : undefined}>
+            {navigation.items.map((item, itemIndex) => item.children?.length ? (
+              <div className={styles.navDropdown} key={item.renderKey ?? `nav-${itemIndex}-${item.href}-${item.label}`}>
+                <Link aria-current={pathname === item.href ? 'page' : undefined} className={pathname === item.href ? styles.activeNav : undefined} href={item.href} rel={itemRel(item)} target={item.newTab ? '_blank' : undefined}>
                   {item.label}<Icon className={styles.dropdownCaret} name="caretDown" weight="bold" />
                 </Link>
                 <div className={styles.dropdownMenu}>
-                  {item.children.map((child) => (
-                    <Link href={child.href} key={`${child.href}-${child.label}`} rel={child.newTab ? 'noreferrer' : undefined} target={child.newTab ? '_blank' : undefined}>
+                  {item.children.map((child, childIndex) => (
+                    <Link href={child.href} key={child.renderKey ?? `nav-${itemIndex}-child-${childIndex}-${child.href}-${child.label}`} rel={itemRel(child)} target={child.newTab ? '_blank' : undefined}>
                       <Icon name="map" weight="fill" />{child.label}
                     </Link>
                   ))}
@@ -84,8 +86,8 @@ export function Header({
                 aria-current={pathname === item.href ? 'page' : undefined}
                 className={pathname === item.href ? styles.activeNav : undefined}
                 href={item.href}
-                key={item.href}
-                rel={item.newTab ? 'noreferrer' : undefined}
+                key={item.renderKey ?? `nav-${itemIndex}-${item.href}-${item.label}`}
+                rel={itemRel(item)}
                 target={item.newTab ? '_blank' : undefined}
               >
                 {item.label}
@@ -107,23 +109,23 @@ export function Header({
       </header>
       {navigation.items.length > 0 && <div className={`${styles.mobileMenu} ${menuOpen ? styles.mobileMenuOpen : ''}`} id="ghee-roast-mobile-menu">
         <nav aria-label="Mobile navigation">
-          {navigation.items.map((item) => (
-            <Fragment key={`${item.href}-${item.label}`}>
+          {navigation.items.map((item, itemIndex) => (
+            <Fragment key={item.renderKey ?? `mobile-nav-${itemIndex}-${item.href}-${item.label}`}>
               <Link
                 aria-current={pathname === item.href ? 'page' : undefined}
                 href={item.href}
                 onClick={() => setMenuOpen(false)}
-                rel={item.newTab ? 'noreferrer' : undefined}
+                rel={itemRel(item)}
                 target={item.newTab ? '_blank' : undefined}
               >
                 {item.label}
               </Link>
-              {item.children?.map((child) => (
+              {item.children?.map((child, childIndex) => (
                 <Link
                   href={child.href}
-                  key={`${child.href}-${child.label}`}
+                  key={child.renderKey ?? `mobile-nav-${itemIndex}-child-${childIndex}-${child.href}-${child.label}`}
                   onClick={() => setMenuOpen(false)}
-                  rel={child.newTab ? 'noreferrer' : undefined}
+                  rel={itemRel(child)}
                   target={child.newTab ? '_blank' : undefined}
                 >
                   {child.label}

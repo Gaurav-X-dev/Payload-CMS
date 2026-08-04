@@ -36,7 +36,7 @@ describe('Stage 12 & 13 - Data Integrity', () => {
           slug: 'cross-tenant-page',
           tenantId: fixtures.tenants.tenantA.id,
           parent: fixtures.documents.tenantBPage.id,
-          status: 'draft',
+          _status: 'draft',
         },
         req: {
           user,

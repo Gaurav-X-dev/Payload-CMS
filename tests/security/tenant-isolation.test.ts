@@ -60,7 +60,7 @@ describe('Stage 5 - Cross-Tenant Data Isolation', () => {
           title: 'Malicious Page in B',
           slug: 'malicious-page-b',
           tenantId: fixtures.tenants.tenantB.id,
-          status: 'draft',
+          _status: 'draft',
         },
         req: {
           user,

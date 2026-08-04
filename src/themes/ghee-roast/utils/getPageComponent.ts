@@ -1,4 +1,8 @@
 import type { ComponentType } from 'react'
+
+// Deprecated compatibility registry. Normal Ghee Roast rendering never imports
+// this module. It is loaded dynamically only when the explicit development-only
+// legacy fallback flag is enabled.
 import { aboutData } from '../data/about'
 import { cateringData } from '../data/catering'
 import { contactData } from '../data/contact'

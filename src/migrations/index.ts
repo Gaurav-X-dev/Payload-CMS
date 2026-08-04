@@ -1,9 +1,45 @@
 import * as migration_20260730_054932_ghee_schema_sync from './20260730_054932_ghee_schema_sync';
+import * as migration_20260803_054620_ghee_brand_features_nav_order from './20260803_054620_ghee_brand_features_nav_order';
+import * as migration_20260803_063825_ghee_brand_feature_svg_icons from './20260803_063825_ghee_brand_feature_svg_icons';
+import * as migration_20260803_142729_ghee_page_contract from './20260803_142729_ghee_page_contract';
+import * as migration_20260803_163357_globals_versioning from './20260803_163357_globals_versioning';
+import * as migration_20260803_212125_native_page_status_stage_a from './20260803_212125_native_page_status_stage_a';
+import * as migration_20260804_062029_ghee_contact_page_experience from './20260804_062029_ghee_contact_page_experience';
 
 export const migrations = [
   {
     up: migration_20260730_054932_ghee_schema_sync.up,
     down: migration_20260730_054932_ghee_schema_sync.down,
-    name: '20260730_054932_ghee_schema_sync'
+    name: '20260730_054932_ghee_schema_sync',
+  },
+  {
+    up: migration_20260803_054620_ghee_brand_features_nav_order.up,
+    down: migration_20260803_054620_ghee_brand_features_nav_order.down,
+    name: '20260803_054620_ghee_brand_features_nav_order',
+  },
+  {
+    up: migration_20260803_063825_ghee_brand_feature_svg_icons.up,
+    down: migration_20260803_063825_ghee_brand_feature_svg_icons.down,
+    name: '20260803_063825_ghee_brand_feature_svg_icons',
+  },
+  {
+    up: migration_20260803_142729_ghee_page_contract.up,
+    down: migration_20260803_142729_ghee_page_contract.down,
+    name: '20260803_142729_ghee_page_contract',
+  },
+  {
+    up: migration_20260803_163357_globals_versioning.up,
+    down: migration_20260803_163357_globals_versioning.down,
+    name: '20260803_163357_globals_versioning',
+  },
+  {
+    up: migration_20260803_212125_native_page_status_stage_a.up,
+    down: migration_20260803_212125_native_page_status_stage_a.down,
+    name: '20260803_212125_native_page_status_stage_a',
+  },
+  {
+    up: migration_20260804_062029_ghee_contact_page_experience.up,
+    down: migration_20260804_062029_ghee_contact_page_experience.down,
+    name: '20260804_062029_ghee_contact_page_experience'
   },
 ];

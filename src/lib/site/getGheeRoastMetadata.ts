@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
-import { getGheeRoastPage } from '../../themes/ghee-roast/utils/getPageComponent'
 import { buildGheeRoastMetadata } from '../../themes/ghee-roast/utils/buildGheeRoastMetadata'
 import { getGheeRoastContent } from './getGheeRoastContent'
+import { normalizeGheeRoastPathname } from './gheeRoastContentCore'
 import type { LocalSite } from './types'
 
 export async function getGheeRoastMetadata({
@@ -14,8 +14,6 @@ export async function getGheeRoastMetadata({
   site: LocalSite
 }): Promise<Metadata> {
   const content = await getGheeRoastContent({ host, pathname, site })
-  return buildGheeRoastMetadata({
-    content,
-    registeredMetadata: getGheeRoastPage(pathname)?.metadata,
-  })
+  if (!content.page && normalizeGheeRoastPathname(pathname) !== '/') return {}
+  return buildGheeRoastMetadata({ content })
 }

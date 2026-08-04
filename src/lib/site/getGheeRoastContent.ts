@@ -8,7 +8,7 @@ import {
   type GheeRoastContentResult,
   type GheeRoastFindArgs,
 } from './gheeRoastContentCore'
-import { themeStaticFallbacksEnabled } from './themeFallbacks'
+import { gheeRoastLegacyFallbacksEnabled } from './themeFallbacks'
 import type { LocalSite, LocalThemeKey } from './types'
 
 export type { GheeRoastContentResult } from './gheeRoastContentCore'
@@ -34,7 +34,7 @@ const loadGheeRoastContent = cache(async (
     theme: siteTheme,
   }
   return loadGheeRoastContentWithPayload({
-    fallbacksEnabled: themeStaticFallbacksEnabled(),
+    fallbacksEnabled: gheeRoastLegacyFallbacksEnabled(),
     find: async (args: GheeRoastFindArgs) => {
       const result = await payload.find(args)
       return { docs: result.docs }

@@ -6,10 +6,16 @@ import type {
   PageHeroData,
   TestimonialData,
 } from './types'
+import type { CMSPageType } from '../../validation/pageLayout'
+import type { Page } from '../../payload-types'
+
+export type GheeRoastPageBlock = NonNullable<Page['layout']>[number]
 
 export type GheeRoastNavigationItem = LinkData & {
   children?: GheeRoastNavigationItem[]
   newTab?: boolean
+  renderKey?: string
+  sortOrder?: number
 }
 
 export type GheeRoastNavigationData = {
@@ -25,13 +31,16 @@ export type GheeRoastNavigationData = {
 }
 
 export type GheeRoastHeroData = {
+  backgroundImage?: ImageData
   description: string
   enabled: boolean
   eyebrow?: string
   heading: string
   highlightedHeading: string
   image?: ImageData
+  mobileBackgroundImage?: ImageData
   mobileImage?: ImageData
+  overlayOpacity?: number
   orderPlatformsLabel?: string
   primaryCTA?: LinkData
   secondaryCTA?: LinkData
@@ -55,14 +64,17 @@ export type GheeRoastSiteData = {
     buttonLabel: string
     description: string
     enabled: boolean
+    errorMessage: string
     highlightedWord?: string
     placeholder: string
     privacyText: string
+    successMessage: string
     title: string
   }
   orderLinks: LinkData[]
   siteName: string
-  socials: Array<LinkData & { platform: string }>
+  featureStrip?: FeatureData[]
+  socials: GheeRoastSocialData[]
   tagline: string
   tenantID?: number | string
   theme: {
@@ -76,12 +88,24 @@ export type GheeRoastSiteData = {
   }
 }
 
+export type GheeRoastSocialData = LinkData & {
+  ctaLabel: string
+  description?: string
+  displayLabel: string
+  handle?: string
+  icon: string
+  platform: string
+  renderKey: string
+  sortOrder: number
+}
+
 export type GheeRoastFooterData = {
   bottomLinks: GheeRoastNavigationItem[]
   columns: Array<{
     links: GheeRoastNavigationItem[]
     title: string
   }>
+  configured: boolean
   contactHeading: string
   copyright: string
 }
@@ -89,12 +113,16 @@ export type GheeRoastFooterData = {
 export type GheeRoastSEOData = {
   canonicalUrl?: string
   description?: string
+  googleSiteVerification?: string
+  jsonLd?: Record<string, unknown> | Array<Record<string, unknown>>
+  keywords?: string[]
   ogDescription?: string
   ogImage?: ImageData
   ogSiteName?: string
   ogTitle?: string
   robots?: string
   titlePattern?: string
+  bingSiteVerification?: string
   twitterCard?: 'app' | 'player' | 'summary' | 'summary_large_image'
   twitterCreator?: string
   twitterSite?: string
@@ -103,27 +131,44 @@ export type GheeRoastSEOData = {
 export type GheeRoastCMSPage = {
   canonicalUrl?: string
   hero?: PageHeroData & { image?: ImageData }
-  id: number | string
+  id: Page['id']
   isHomePage: boolean
-  layout: Array<Record<string, unknown>>
+  layout: GheeRoastPageBlock[]
   metaDescription?: string
   metaImage?: ImageData
   metaTitle?: string
   noIndex: boolean
+  pageType: CMSPageType
+  redirect?: {
+    href: string
+    permanent: boolean
+  }
   slug: string
+  template: 'blank' | 'default' | 'landing'
   title: string
 }
 
 export type GheeRoastLocationData = {
   address: string
   city: string
+  country?: string
+  businessHours: string[]
+  deliveryZones: string[]
   description?: string
   email?: string
   id: number | string
   mapsEmbedUrl?: string
   mapsUrl?: string
+  mapButtonLabel: string
+  isPrimary: boolean
+  latitude?: number
+  longitude?: number
   orderLinks: LinkData[]
   phone?: string
+  postalCode?: string
+  showOnContact: boolean
+  sortOrder: number
+  state?: string
   title: string
 }
 
@@ -161,6 +206,7 @@ export type GheeRoastCollectionContent = {
   faqs: GheeRoastFAQData[]
   gallery: ImageData[]
   locations: GheeRoastLocationData[]
+  media: ImageData[]
   menu: {
     categories: Array<[string, string]>
     items: FoodItemData[]

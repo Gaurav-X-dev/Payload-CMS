@@ -126,7 +126,7 @@ describe('Stage 20 - Local API Security Audit', () => {
       await assert.rejects(async () => {
         await payload.create({
           collection: 'pages',
-          data: { title: 'Hacked', slug: 'hacked', tenantId: fixtures.tenants.tenantB.id, status: 'published' },
+          data: { _status: 'published', title: 'Hacked', slug: 'hacked', tenantId: fixtures.tenants.tenantB.id },
           req: getTenantAReq(),
           overrideAccess: false
         })
@@ -137,7 +137,7 @@ describe('Stage 20 - Local API Security Audit', () => {
       await assert.rejects(async () => {
         await payload.create({
           collection: 'pages',
-          data: { title: 'Spoofed', slug: 'spoofed', tenantId: fixtures.tenants.tenantB.id, status: 'published' },
+          data: { _status: 'published', title: 'Spoofed', slug: 'spoofed', tenantId: fixtures.tenants.tenantB.id },
           req: getTenantAReq(),
           overrideAccess: false
         })

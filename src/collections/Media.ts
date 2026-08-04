@@ -7,6 +7,10 @@ import {
   invalidateTenantCache,
   invalidateTenantCacheAfterDelete,
 } from '../hooks/invalidateTenantCache'
+import {
+  SVGValidationError,
+  validateAndSanitizeSVGUpload,
+} from '../validation/svgSafety'
 
 export const MAX_MEDIA_FILE_SIZE = 10 * 1024 * 1024
 
@@ -23,6 +27,34 @@ export const validateMediaUploadSize: CollectionBeforeOperationHook = ({
     throw new ValidationError({
       errors: [{
         message: 'Images must be 10 MB or smaller.',
+        path: 'file',
+      }],
+    })
+  }
+
+  return args
+}
+
+export const validateSVGMediaUpload: CollectionBeforeOperationHook = async ({
+  args,
+  operation,
+  req,
+}) => {
+  if ((operation !== 'create' && operation !== 'update') || !req.file) return args
+
+  try {
+    const sanitized = await validateAndSanitizeSVGUpload(req.file)
+    req.context.svgUploadSanitized = Boolean(sanitized)
+    if (sanitized) {
+      req.file.data = sanitized
+      req.file.size = sanitized.length
+    }
+  } catch (error) {
+    throw new ValidationError({
+      errors: [{
+        message: error instanceof SVGValidationError
+          ? error.message
+          : 'The SVG upload could not be validated.',
         path: 'file',
       }],
     })
@@ -122,6 +154,13 @@ export const Media: CollectionConfig = {
         }
       ]
     },
+    {
+      name: 'svgSanitized',
+      type: 'checkbox',
+      defaultValue: false,
+      access: { create: () => false, update: () => false },
+      admin: { hidden: true, readOnly: true },
+    },
 
     // --- Audit Fields ---
     {
@@ -140,10 +179,13 @@ export const Media: CollectionConfig = {
     }
   ],
   hooks: {
-    beforeOperation: [validateMediaUploadSize],
+    beforeOperation: [validateMediaUploadSize, validateSVGMediaUpload],
     beforeChange: [
       ({ req, data, operation, originalDoc }) => {
         if (req.context?.developmentReset === true) return data
+        data.svgSanitized = req.file
+          ? req.context.svgUploadSanitized === true
+          : originalDoc?.svgSanitized === true
         data.uploadedBy = operation === 'create'
           ? req.user?.id
           : originalDoc?.uploadedBy

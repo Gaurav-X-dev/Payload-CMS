@@ -10,6 +10,10 @@ import {
 export const MenuShowcaseBlock: Block = {
   slug: 'menushowcaseBlock',
   interfaceName: 'MenuShowcaseBlock',
+  labels: { singular: 'Menu / Specials Showcase', plural: 'Menu / Specials Showcases' },
+  admin: {
+    group: 'Reusable Sections',
+  },
   fields: [
     sectionHeader(),
     {

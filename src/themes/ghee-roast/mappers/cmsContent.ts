@@ -1,7 +1,7 @@
-import { homeData } from '../data/home'
-import { menuData } from '../data/menu'
-import { gheeRoastNavigation } from '../data/navigation'
-import { gheeRoastSiteData } from '../data/site'
+import { normalizeGheeRoastIconName } from '../iconRegistry'
+import { isSanitizedSVGMedia } from '../../../validation/svgSafety'
+import { normalizeCMSPageType } from '../../../validation/pageLayout'
+import type { HeroBlock, Page } from '../../../payload-types'
 import {
   validateConfiguredLink,
   validateSafeURL,
@@ -19,9 +19,12 @@ import type {
 
 type RelationshipDocument = {
   alt?: unknown
+  filename?: unknown
   id?: unknown
   isHomePage?: unknown
+  mimeType?: unknown
   slug?: unknown
+  svgSanitized?: unknown
   tenantId?: unknown
   url?: unknown
 }
@@ -31,15 +34,21 @@ type Relationship = number | string | RelationshipDocument | null | undefined
 type CMSLink = {
   blockType?: string
   enabled?: boolean | null
+  id?: string | null
   label?: string | null
   newTab?: boolean | null
+  nofollow?: boolean | null
   page?: Relationship
   sortOrder?: number | null
   type?: string | null
   url?: string | null
+  visibility?: string | null
   children?: Array<{
+    enabled?: boolean | null
+    id?: string | null
     label?: string | null
     newTab?: boolean | null
+    sortOrder?: number | null
     url?: string | null
   }> | null
 }
@@ -56,32 +65,19 @@ type CMSNavigation = {
   tenantId?: Relationship
 }
 
-type CMSHeroBlock = {
+type CMSHeroBlock = Partial<Omit<HeroBlock, 'blockType'>> & {
   blockType?: string
-  description?: string | null
-  desktopBackgroundImage?: Relationship
-  enabled?: boolean | null
-  eyebrow?: string | null
-  foregroundImage?: Relationship
-  heading?: string | null
-  highlightedHeading?: string | null
-  imageAlt?: string | null
-  mobileBackgroundImage?: Relationship
-  orderPlatformsLabel?: string | null
-  primaryCTALabel?: string | null
-  primaryCTAURL?: string | null
-  secondaryCTALabel?: string | null
-  secondaryCTAURL?: string | null
-  stampText?: string | null
 }
 
 type CMSHomepage = {
-  _status?: string | null
-  isHomePage?: boolean | null
+  _status?: Page['_status']
+  isHomePage?: Page['isHomePage']
   layout?: Array<CMSHeroBlock | { blockType?: string }> | null
-  status?: string | null
   tenantId?: Relationship
 }
+
+export type GheeRoastPageDocument = Pick<Page, 'id' | 'tenantId' | 'title'>
+  & Partial<Omit<Page, 'id' | 'tenantId' | 'title'>>
 
 type MapperOptions = {
   fallbacksEnabled?: boolean
@@ -143,8 +139,36 @@ export const safeGheeRoastHref = (
     : null
 }
 
+export const safeGheeRoastExternalHref = (value: unknown): string | null => {
+  const href = safeGheeRoastHref(value)
+  if (!href) return null
+  try {
+    const parsed = new URL(href)
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:' ? href : null
+  } catch {
+    return null
+  }
+}
+
 const belongsToTenant = (value: Relationship, tenantID: number | string): boolean =>
   relationshipID(value) === String(tenantID)
+
+const sortableOrder = (value: unknown): number =>
+  typeof value === 'number' && Number.isFinite(value) && Number.isInteger(value) && value >= 0
+    ? value
+    : 0
+
+const optionalFiniteNumber = (value: unknown): number | undefined =>
+  typeof value === 'number' && Number.isFinite(value) ? value : undefined
+
+const normalizedOverlayOpacity = (value: unknown): number | undefined => {
+  if (typeof value !== 'number' || !Number.isFinite(value)) return undefined
+  const percentage = value > 0 && value <= 1 ? value * 100 : value
+  return Math.min(100, Math.max(0, percentage))
+}
+
+const stableRenderKey = (prefix: string, id: unknown, sourceIndex: number): string =>
+  typeof id === 'string' && id ? `${prefix}-${id}` : `${prefix}-source-${sourceIndex}`
 
 const mediaData = (
   value: Relationship,
@@ -158,44 +182,43 @@ const mediaData = (
 
   const url = typeof value.url === 'string' ? value.url : ''
   if (!url) return fallback
+  const mediaRecord = value as unknown as Record<string, unknown>
+  const focalPoint = mediaRecord.focalPoint && typeof mediaRecord.focalPoint === 'object'
+    ? mediaRecord.focalPoint as Record<string, unknown>
+    : null
 
   return {
     alt: altOverride || (typeof value.alt === 'string' ? value.alt : fallback?.alt || ''),
+    focalPoint: focalPoint
+      ? {
+          x: optionalFiniteNumber(focalPoint.x) ?? 50,
+          y: optionalFiniteNumber(focalPoint.y) ?? 50,
+        }
+      : undefined,
+    id: typeof value.id === 'number' || typeof value.id === 'string' ? value.id : undefined,
     src: url,
+    tenantID: relationshipID(value.tenantId as Relationship) ?? undefined,
   }
 }
 
-export const fallbackGheeRoastNavigation = (): GheeRoastNavigationData => ({
-  brandName: 'Very Good',
-  cta: {
-    enabled: true,
-    href: '/menu',
-    label: 'Order online',
-  },
-  items: gheeRoastNavigation.map((item) => item.href === '/menu'
-    ? {
-        ...item,
-        children: [
-          { href: '/menu?location=delhi', label: 'Delhi Menu' },
-          { href: '/menu?location=gurugram', label: 'Gurugram Menu' },
-        ],
-      }
-    : item),
-  logo: gheeRoastSiteData.logo,
-  tagline: 'Flavours that stay',
-})
+const svgMediaData = (
+  value: Relationship,
+  tenantID: number | string,
+): { alt: string; src: string } | undefined => {
+  if (
+    !value
+    || typeof value !== 'object'
+    || !belongsToTenant(value.tenantId as Relationship, tenantID)
+    || !isSanitizedSVGMedia(value, { requireURL: true })
+  ) return undefined
 
-export const fallbackGheeRoastHero = (): GheeRoastHeroData => ({
-  description: 'We slow roast every dish in ghee to bring out bold flavours and aromas that stay with you.',
-  enabled: true,
-  heading: 'Real Ingredients.\nRich Flavours.',
-  highlightedHeading: 'Pure Ghee.',
-  image: homeData.hero.image,
-  orderPlatformsLabel: 'Also available on',
-  primaryCTA: { href: '/menu', label: 'Explore Menu' },
-  secondaryCTA: { href: '/delivery', label: 'Order Now' },
-  stampText: 'Slow\nRoasted\nIn Ghee\nWith Love',
-})
+  const src = safeGheeRoastHref(value.url)
+  if (!src) return undefined
+  return {
+    alt: typeof value.alt === 'string' ? value.alt.trim() : '',
+    src,
+  }
+}
 
 export const emptyGheeRoastNavigation = (
   tenantName?: string | null,
@@ -232,23 +255,29 @@ export function mapGheeRoastNavigation(
   tenantID: number | string,
   options: MapperOptions = {},
 ): GheeRoastNavigationData {
-  const missingContent = options.fallbacksEnabled === false
-    ? emptyGheeRoastNavigation(options.tenantName)
-    : fallbackGheeRoastNavigation()
+  const missingContent = emptyGheeRoastNavigation(options.tenantName)
   if (!document || !belongsToTenant(document.tenantId, tenantID)) return missingContent
 
   const items = (document.links ?? [])
-    .filter((link): link is CMSLink => link.blockType === 'link')
-    .filter((link) => link.enabled !== false && Boolean(link.label))
-    .sort((left, right) => (left.sortOrder ?? 0) - (right.sortOrder ?? 0))
-    .map((link): GheeRoastNavigationItem | null => {
+    .map((link, sourceIndex) => ({ link, sourceIndex }))
+    .filter((entry): entry is { link: CMSLink; sourceIndex: number } => entry.link.blockType === 'link')
+    .filter(({ link }) => link.enabled !== false && link.visibility !== 'logged_in' && Boolean(link.label))
+    .sort((left, right) =>
+      sortableOrder(left.link.sortOrder) - sortableOrder(right.link.sortOrder)
+      || left.sourceIndex - right.sourceIndex)
+    .map(({ link, sourceIndex }): GheeRoastNavigationItem | null => {
       const href = link.type === 'page'
         ? pageHref(link.page, tenantID)
         : safeGheeRoastHref(link.url, link.type === 'anchor' ? 'anchor' : undefined)
       if (!href) return null
       return {
         children: (link.children ?? [])
-          .map((child) => {
+          .map((child, childSourceIndex) => ({ child, childSourceIndex }))
+          .filter(({ child }) => child.enabled !== false)
+          .sort((left, right) =>
+            sortableOrder(left.child.sortOrder) - sortableOrder(right.child.sortOrder)
+            || left.childSourceIndex - right.childSourceIndex)
+          .map(({ child, childSourceIndex }) => {
             const childHref = safeGheeRoastHref(child.url)
             const childLabel = child.label?.trim() || ''
             return childHref && childLabel
@@ -256,6 +285,8 @@ export function mapGheeRoastNavigation(
                   href: childHref,
                   label: childLabel,
                   newTab: child.newTab === true,
+                  renderKey: stableRenderKey(`nav-${sourceIndex}-child`, child.id, childSourceIndex),
+                  sortOrder: sortableOrder(child.sortOrder),
                 }
               : null
           })
@@ -263,10 +294,15 @@ export function mapGheeRoastNavigation(
             href: string
             label: string
             newTab: boolean
+            renderKey: string
+            sortOrder: number
           } => child !== null),
         href,
         label: link.label?.trim() || '',
         newTab: link.newTab === true,
+        nofollow: link.nofollow === true,
+        renderKey: stableRenderKey('nav', link.id, sourceIndex),
+        sortOrder: sortableOrder(link.sortOrder),
       }
     })
     .filter((link): link is GheeRoastNavigationItem => link !== null)
@@ -319,44 +355,13 @@ const mapMedia = (
   fallback?: { alt: string; src: string },
 ) => mediaData(value as Relationship, tenantID, fallback)
 
-const fallbackFooter = (): GheeRoastFooterData => ({
-  bottomLinks: [
-    { href: '#', label: 'Privacy Policy' },
-    { href: '#', label: 'Terms & Conditions' },
-    { href: '#', label: 'Refund Policy' },
-    { href: '#', label: 'Sitemap' },
-  ],
-  columns: [
-    {
-      title: 'Explore',
-      links: [
-        { href: '/', label: 'Home' },
-        { href: '/menu', label: 'The Menu' },
-        { href: '/about', label: 'Our Story' },
-        { href: '/quality', label: 'Quality Promise' },
-      ],
-    },
-    {
-      title: 'Services',
-      links: [
-        { href: '/delivery', label: 'Order Delivery' },
-        { href: '/catering', label: 'Luxury Catering' },
-        { href: '/menu?location=delhi', label: 'Delhi Menu' },
-        { href: '/menu?location=gurugram', label: 'Gurugram Menu' },
-        { href: '/contact', label: 'Contact Us' },
-      ],
-    },
-  ],
-  contactHeading: 'Get In Touch',
-  copyright: '© {year} VERY GOOD GHEE ROAST. All Rights Reserved.',
-})
-
 export function mapGheeRoastSite(
   tenantValue: unknown,
   settingsValue: unknown,
   tenantID: number | string,
-  options: MapperOptions = {},
+  _options: MapperOptions = {},
 ): GheeRoastSiteData {
+  void _options
   const candidateTenant = asRecord(tenantValue)
   const candidateTenantID = candidateTenant ? idOf(candidateTenant) : null
   const tenant = candidateTenant && (
@@ -374,6 +379,7 @@ export function mapGheeRoastSite(
   const deliverySettings = asRecord(settings.deliverySettings) ?? {}
   const newsletter = asRecord(settings.newsletter) ?? {}
   const socials = Array.isArray(settings.socials) ? settings.socials : []
+  const hasFeatureStrip = Object.prototype.hasOwnProperty.call(settings, 'featureStrip')
   const deliveryURLs = Array.isArray(deliverySettings.deliveryUrls)
     ? deliverySettings.deliveryUrls
     : []
@@ -386,14 +392,12 @@ export function mapGheeRoastSite(
         : `${text(entry.day)}: ${text(entry.openTime)}${text(entry.closeTime) ? ` – ${text(entry.closeTime)}` : ''}`)
       .filter(Boolean)
     : []
-  const fallbacksEnabled = options.fallbacksEnabled !== false
-  const fallback = fallbacksEnabled ? gheeRoastSiteData : {
+  const fallback = {
     announcement: '',
     contact: { address: '', hours: [], phone: '' },
     description: '',
     logo: undefined,
     newsletter: { description: '', title: '' },
-    orderLinks: [],
     siteName: text(tenant.name),
     tagline: '',
   }
@@ -414,10 +418,12 @@ export function mapGheeRoastSite(
     newsletter: {
       buttonLabel: text(newsletter.buttonLabel) || 'Subscribe',
       description: text(newsletter.description) || fallback.newsletter.description,
-      enabled: boolean(newsletter.enabled, fallbacksEnabled),
+      enabled: boolean(newsletter.enabled),
+      errorMessage: text(newsletter.errorMessage) || 'We could not save your signup. Please try again later.',
       highlightedWord: text(newsletter.highlightedWord) || undefined,
       placeholder: text(newsletter.placeholder) || 'Enter your email address',
       privacyText: text(newsletter.privacyText) || 'We respect your privacy. Unsubscribe anytime.',
+      successMessage: text(newsletter.successMessage) || 'Thank you for joining the list.',
       title: text(newsletter.title) || fallback.newsletter.title,
     },
     orderLinks: deliveryURLs
@@ -429,19 +435,81 @@ export function mapGheeRoastSite(
           ? { href, label: `Order on ${platform}` }
           : null
       })
-      .filter((entry): entry is { href: string; label: string } => entry !== null)
-      .concat(deliveryURLs.length ? [] : fallback.orderLinks),
-    siteName: text(settings.businessName) || text(tenant.name) || fallback.siteName,
-    socials: socials
-      .map((entry) => asRecord(entry))
-      .map((entry) => {
-        const href = safeGheeRoastHref(entry?.url)
-        const platform = text(entry?.platform)
-        return href && platform
-          ? { href, label: platform, platform }
+      .filter((entry): entry is { href: string; label: string } => entry !== null),
+    featureStrip: hasFeatureStrip
+      ? (Array.isArray(settings.featureStrip) ? settings.featureStrip : [])
+      .map((entry, sourceIndex) => ({ entry: asRecord(entry), sourceIndex }))
+      .filter(({ entry }) => entry?.enabled !== false)
+      .sort((left, right) =>
+        sortableOrder(left.entry?.sortOrder) - sortableOrder(right.entry?.sortOrder)
+        || left.sourceIndex - right.sourceIndex)
+      .map(({ entry, sourceIndex }) => {
+        const title = text(entry?.title)
+        const description = text(entry?.description)
+        const iconSource = text(entry?.iconSource) === 'custom-svg'
+          ? 'custom-svg' as const
+          : 'built-in' as const
+        const customIcon = iconSource === 'custom-svg'
+          ? svgMediaData(entry?.customSVG as Relationship, tenantID)
+          : undefined
+        return title && description
+          ? {
+              customIcon,
+              description,
+              icon: normalizeGheeRoastIconName(entry?.icon),
+              iconSource,
+              renderKey: stableRenderKey('brand-feature', entry?.id, sourceIndex),
+              sortOrder: sortableOrder(entry?.sortOrder),
+              title,
+            }
           : null
       })
-      .filter((entry): entry is { href: string; label: string; platform: string } => entry !== null),
+      .filter((entry): entry is {
+        customIcon: { alt: string; src: string } | undefined
+        description: string
+        icon: string
+        iconSource: 'built-in' | 'custom-svg'
+        renderKey: string
+        sortOrder: number
+        title: string
+      } => entry !== null)
+      : undefined,
+    siteName: text(settings.businessName) || text(tenant.name) || fallback.siteName,
+    socials: socials
+      .map((entry, sourceIndex) => ({ entry: asRecord(entry), sourceIndex }))
+      .filter(({ entry }) => entry?.enabled !== false)
+      .sort((left, right) =>
+        sortableOrder(left.entry?.sortOrder) - sortableOrder(right.entry?.sortOrder)
+        || left.sourceIndex - right.sourceIndex)
+      .map(({ entry, sourceIndex }) => {
+        const href = safeGheeRoastExternalHref(entry?.url)
+        const platform = text(entry?.platform)
+        const displayLabel = text(entry?.displayLabel)
+          || `${platform.charAt(0).toUpperCase()}${platform.slice(1)}`
+        const defaultCTA = platform === 'youtube'
+          ? 'Watch on YouTube'
+          : platform === 'facebook'
+            ? 'Visit Facebook'
+            : platform === 'whatsapp'
+              ? 'Chat on WhatsApp'
+              : `Follow on ${displayLabel}`
+        return href && platform
+          ? {
+              ctaLabel: text(entry?.ctaLabel) || defaultCTA,
+              description: text(entry?.description) || undefined,
+              displayLabel,
+              handle: text(entry?.handle) || undefined,
+              href,
+              icon: text(entry?.icon) && text(entry?.icon) !== 'platform' ? text(entry?.icon) : platform,
+              label: text(entry?.ctaLabel) || defaultCTA,
+              newTab: entry?.openInNewTab !== false,
+              platform,
+              renderKey: stableRenderKey('social', entry?.id, sourceIndex),
+              sortOrder: sortableOrder(entry?.sortOrder),
+            }
+          : null
+      })
+      .filter((entry): entry is NonNullable<typeof entry> => entry !== null),
     tagline: text(settings.tagline) || fallback.tagline,
     tenantID: tenantID === 0 ? undefined : tenantID,
     theme: {
@@ -459,11 +527,16 @@ export function mapGheeRoastSite(
 export function mapGheeRoastFooter(
   value: unknown,
   tenantID: number | string,
-  options: MapperOptions = {},
+  _options: MapperOptions = {},
 ): GheeRoastFooterData {
-  const fallback = options.fallbacksEnabled === false
-    ? { bottomLinks: [], columns: [], contactHeading: '', copyright: '' }
-    : fallbackFooter()
+  void _options
+  const fallback: GheeRoastFooterData = {
+    bottomLinks: [],
+    columns: [],
+    configured: false,
+    contactHeading: '',
+    copyright: '',
+  }
   if (!documentBelongsToTenant(value, tenantID)) return fallback
   const document = value
   const columns = (Array.isArray(document.columns) ? document.columns : [])
@@ -501,10 +574,11 @@ export function mapGheeRoastFooter(
       newTab: boolean
     } => entry !== null)
   return {
-    bottomLinks: bottomLinks.length ? bottomLinks : fallback.bottomLinks,
-    columns: columns.length ? columns : fallback.columns,
-    contactHeading: text(document.contactHeading) || fallback.contactHeading,
-    copyright: text(document.copyright) || fallback.copyright,
+    bottomLinks,
+    columns,
+    configured: true,
+    contactHeading: text(document.contactHeading),
+    copyright: text(document.copyright),
   }
 }
 
@@ -513,9 +587,30 @@ export function mapGheeRoastSEO(
   tenantID: number | string,
 ): GheeRoastSEOData {
   if (!documentBelongsToTenant(value, tenantID)) return {}
+  const jsonLd = (() => {
+    const source = text(value.jsonLd)
+    if (!source) return undefined
+    try {
+      const parsed: unknown = JSON.parse(source)
+      if (Array.isArray(parsed)) {
+        return parsed.every((entry) => Boolean(entry && typeof entry === 'object' && !Array.isArray(entry)))
+          ? parsed as Array<Record<string, unknown>>
+          : undefined
+      }
+      return parsed && typeof parsed === 'object'
+        ? parsed as Record<string, unknown>
+        : undefined
+    } catch {
+      return undefined
+    }
+  })()
   return {
+    bingSiteVerification: text(value.bingSiteVerification) || undefined,
     canonicalUrl: safeGheeRoastHref(value.canonicalUrl) || undefined,
     description: text(value.metaDescription) || undefined,
+    googleSiteVerification: text(value.googleSiteVerification) || undefined,
+    jsonLd,
+    keywords: text(value.keywords).split(',').map((keyword) => keyword.trim()).filter(Boolean),
     ogDescription: text(value.ogDescription) || undefined,
     ogImage: mapMedia(value.defaultOGImage, tenantID),
     ogSiteName: text(value.ogSiteName) || undefined,
@@ -531,20 +626,16 @@ export function mapGheeRoastSEO(
 }
 
 export function mapGheeRoastPage(
-  value: unknown,
+  value: GheeRoastPageDocument | null | undefined,
   tenantID: number | string,
 ): GheeRoastCMSPage | null {
-  if (!documentBelongsToTenant(value, tenantID)) return null
-  const id = idOf(value)
-  if (
-    id === null ||
-    text(value.status) !== 'published' ||
-    (text(value._status) && text(value._status) !== 'published')
-  ) return null
-  const blocks = Array.isArray(value.layout)
-    ? value.layout.filter((block): block is AnyDocument => asRecord(block) !== null)
-    : []
-  const hero = blocks.find((block) => text(block.blockType) === 'heroBlock')
+  if (!value || !belongsToTenant(value.tenantId, tenantID) || value._status !== 'published') return null
+  const blocks = value.layout ?? []
+  const hero = blocks.find((block): block is HeroBlock => block.blockType === 'heroBlock')
+  const redirectHref = value.redirect?.enableRedirect === true
+    ? safeGheeRoastHref(value.redirect.redirectUrl)
+    : null
+  const template = value.template ?? ''
   return {
     canonicalUrl: safeGheeRoastHref(value.canonicalUrl) || undefined,
     hero: hero ? {
@@ -553,14 +644,21 @@ export function mapGheeRoastPage(
       subtitle: text(hero.description),
       title: [text(hero.heading), text(hero.highlightedHeading)].filter(Boolean).join(' '),
     } : undefined,
-    id,
-    isHomePage: boolean(value.isHomePage),
+    id: value.id,
+    isHomePage: value.isHomePage === true,
     layout: blocks,
     metaDescription: text(value.metaDescription) || undefined,
     metaImage: mapMedia(value.metaImage, tenantID),
     metaTitle: text(value.metaTitle) || undefined,
-    noIndex: boolean(value.noIndex),
+    noIndex: value.noIndex === true,
+    pageType: normalizeCMSPageType(value.pageType, value.isHomePage === true),
+    redirect: redirectHref
+      ? { href: redirectHref, permanent: value.redirect?.permanent !== false }
+      : undefined,
     slug: text(value.slug),
+    template: ['blank', 'landing'].includes(template)
+      ? template as 'blank' | 'landing'
+      : 'default',
     title: text(value.title),
   }
 }
@@ -571,15 +669,16 @@ export function mapGheeRoastCollections(
     faqs?: unknown[]
     gallery?: unknown[]
     locations?: unknown[]
+    media?: unknown[]
     menuCategories?: unknown[]
     menuItems?: unknown[]
     team?: unknown[]
     testimonials?: unknown[]
   },
   tenantID: number | string,
-  options: MapperOptions = {},
+  _options: MapperOptions = {},
 ): GheeRoastCollectionContent {
-  const fallbacksEnabled = options.fallbacksEnabled !== false
+  void _options
   const activeCategoryDocuments = tenantDocuments(documents.menuCategories, tenantID)
     .filter((item) => item.isActive !== false)
     .sort((left, right) => Number(left.sortOrder || 0) - Number(right.sortOrder || 0))
@@ -611,7 +710,6 @@ export function mapGheeRoastCollections(
       const mappedImage = mapMedia(
         item.image,
         tenantID,
-        fallbacksEnabled ? homeData.hero.image : undefined,
       )
       return {
         badge: boolean(item.isFeatured) ? "Chef's Pick" : undefined,
@@ -659,12 +757,27 @@ export function mapGheeRoastCollections(
     .sort((left, right) => Number(left.sortOrder || 0) - Number(right.sortOrder || 0))
     .map((item) => ({
       address: text(item.address),
+      businessHours: (Array.isArray(item.businessHours) ? item.businessHours : [])
+        .map((entry) => asRecord(entry))
+        .filter((entry): entry is AnyDocument => entry !== null)
+        .map((entry) => entry.isClosed === true
+          ? `${text(entry.day)}: Closed`
+          : [text(entry.day), [text(entry.openTime), text(entry.closeTime)].filter(Boolean).join(' – ')].filter(Boolean).join(': '))
+        .filter(Boolean),
       city: text(item.city),
+      country: text(item.country) || undefined,
+      deliveryZones: (Array.isArray(item.deliveryZones) ? item.deliveryZones : [])
+        .map((entry) => text(asRecord(entry)?.zone))
+        .filter(Boolean),
       description: text(item.description) || undefined,
       email: text(item.email) || undefined,
       id: item.id as number | string,
-      mapsEmbedUrl: safeGheeRoastHref(item.mapsEmbedUrl) || undefined,
-      mapsUrl: safeGheeRoastHref(item.mapsUrl) || undefined,
+      isPrimary: boolean(item.isPrimary),
+      latitude: optionalFiniteNumber(item.latitude),
+      longitude: optionalFiniteNumber(item.longitude),
+      mapButtonLabel: text(item.mapButtonLabel) || 'Find on Map',
+      mapsEmbedUrl: safeGheeRoastExternalHref(item.mapsEmbedUrl) || undefined,
+      mapsUrl: safeGheeRoastExternalHref(item.mapsUrl) || undefined,
       orderLinks: (Array.isArray(item.orderLinks) ? item.orderLinks : [])
         .map((entry) => asRecord(entry))
         .map((entry) => {
@@ -676,8 +789,15 @@ export function mapGheeRoastCollections(
         })
         .filter((entry): entry is { href: string; label: string } => entry !== null),
       phone: text(item.phone) || undefined,
+      postalCode: text(item.postalCode) || undefined,
+      showOnContact: item.showOnContact !== false,
+      sortOrder: sortableOrder(item.sortOrder),
+      state: text(item.state) || undefined,
       title: text(item.title),
     }))
+  const media = tenantDocuments(documents.media, tenantID)
+    .map((item) => mapMedia(item, tenantID))
+    .filter((item): item is NonNullable<typeof item> => item !== undefined)
   const team = tenantDocuments(documents.team, tenantID)
     .filter((item) => item.isActive !== false)
     .sort((left, right) => Number(left.sortOrder || 0) - Number(right.sortOrder || 0))
@@ -717,39 +837,34 @@ export function mapGheeRoastCollections(
   return {
     events,
     faqs,
-    gallery: gallery.length ? gallery : fallbacksEnabled ? homeData.gallery : [],
+    gallery,
     locations,
+    media,
     menu: {
       categories: hasCompleteCMSMenu
         ? [['all', 'All Items'], ...categories]
-        : fallbacksEnabled
-          ? menuData.categories as Array<[string, string]>
-          : [],
+        : [],
       items: hasCompleteCMSMenu
         ? menuItems
-        : fallbacksEnabled
-          ? menuData.items as import('../types').FoodItemData[]
-          : [],
+        : [],
     },
     team,
-    testimonials: testimonials.length ? testimonials : fallbacksEnabled ? homeData.testimonials : [],
+    testimonials,
   }
 }
 
 export function mapGheeRoastHero(
   page: CMSHomepage | null | undefined,
   tenantID: number | string,
-  options: MapperOptions = {},
+  _options: MapperOptions = {},
 ): GheeRoastHeroData {
-  const missingContent = options.fallbacksEnabled === false
-    ? emptyGheeRoastHero()
-    : fallbackGheeRoastHero()
+  void _options
+  const missingContent = emptyGheeRoastHero()
   if (
     !page ||
     !belongsToTenant(page.tenantId, tenantID) ||
     page.isHomePage !== true ||
-    page.status !== 'published' ||
-    (page._status && page._status !== 'published')
+    page._status !== 'published'
   ) {
     return missingContent
   }
@@ -759,25 +874,35 @@ export function mapGheeRoastHero(
   )
   if (!hero) return missingContent
 
-  const foreground = hero.foregroundImage || hero.desktopBackgroundImage
-  const image = mediaData(foreground, tenantID, undefined, hero.imageAlt)
-  const mobileImage = hero.mobileBackgroundImage
-    ? mediaData(hero.mobileBackgroundImage, tenantID, image, hero.imageAlt)
-    : undefined
+  const foreground = mediaData(hero.foregroundImage, tenantID, undefined, hero.imageAlt)
+  const desktopBackground = mediaData(hero.desktopBackgroundImage, tenantID, undefined, hero.imageAlt)
+  const mobile = mediaData(hero.mobileBackgroundImage, tenantID, undefined, hero.imageAlt)
+  // Older Ghee Roast records used Desktop Background Image for the foreground
+  // dish. Preserve those records while allowing a separate background and
+  // foreground without rendering the same asset twice.
+  const image = foreground ?? desktopBackground
+  const hasSeparateBackground = Boolean(
+    foreground
+    && desktopBackground
+    && foreground.src !== desktopBackground.src,
+  )
   const primaryLabel = hero.primaryCTALabel?.trim() || ''
   const primaryHref = safeGheeRoastHref(hero.primaryCTAURL) || ''
   const secondaryLabel = hero.secondaryCTALabel?.trim() || ''
   const secondaryHref = safeGheeRoastHref(hero.secondaryCTAURL) || ''
 
   return {
+    backgroundImage: hasSeparateBackground ? desktopBackground : undefined,
     description: hero.description?.trim() || '',
     enabled: hero.enabled !== false,
     eyebrow: hero.eyebrow?.trim() || undefined,
     heading: hero.heading?.trim() || '',
     highlightedHeading: hero.highlightedHeading?.trim() || '',
     image,
-    mobileImage,
+    mobileBackgroundImage: hasSeparateBackground ? mobile : undefined,
+    mobileImage: !hasSeparateBackground ? mobile : undefined,
     orderPlatformsLabel: hero.orderPlatformsLabel?.trim() || undefined,
+    overlayOpacity: normalizedOverlayOpacity(hero.overlayOpacity),
     primaryCTA: primaryLabel && primaryHref
       ? { href: primaryHref, label: primaryLabel }
       : undefined,

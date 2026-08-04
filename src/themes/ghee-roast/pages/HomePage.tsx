@@ -12,47 +12,35 @@ import {
 } from '../components/Shared'
 import styles from '../components/Theme.module.css'
 import { Icon } from '../components/Icon'
-import { fallbackGheeRoastHero } from '../mappers/cmsContent'
 import type { GheeRoastHeroData } from '../dynamicTypes'
 import type { GheeRoastPageProps } from '../dynamicTypes'
-import { CMSPage } from '../components/CMSPage'
+import { HomeHero } from '../components/HomeHero'
 
-export function HomePage({ content, hero = fallbackGheeRoastHero() }: GheeRoastPageProps & { hero?: GheeRoastHeroData }) {
+const legacyHero: GheeRoastHeroData = {
+  description: 'We slow roast every dish in ghee to bring out bold flavours and aromas that stay with you.',
+  enabled: true,
+  heading: 'Real Ingredients.\nRich Flavours.',
+  highlightedHeading: 'Pure Ghee.',
+  image: homeData.hero.image,
+  orderPlatformsLabel: 'Also available on',
+  primaryCTA: { href: '/menu', label: 'Explore Menu' },
+  secondaryCTA: { href: '/delivery', label: 'Order Now' },
+  stampText: 'Slow\nRoasted\nIn Ghee\nWith Love',
+}
+
+export function HomePage({ content, hero = legacyHero }: GheeRoastPageProps & { hero?: GheeRoastHeroData }) {
   const orderLinks = content.site.orderLinks.length ? content.site.orderLinks : gheeRoastSiteData.orderLinks
   const specials = content.collections.menu.items.filter((item) => item.badge).slice(0, 3)
   const testimonials = content.collections.testimonials.length ? content.collections.testimonials : homeData.testimonials
   const gallery = content.collections.gallery.length ? content.collections.gallery : homeData.gallery
-  const hasCMSBody = Boolean(content.page?.layout.some((block) => block.blockType !== 'heroBlock'))
-  const heroSection = hero.enabled && <section className={styles.homeHero}>
-    <div className={styles.heroCopy}>
-      <h1>{hero.heading.split('\n').map((line, index) => <span key={`${line}-${index}`}>{line}<br /></span>)}<em>{hero.highlightedHeading}</em></h1>
-      <p>{hero.description}</p>
-      {(hero.primaryCTA || hero.secondaryCTA) && <div className={styles.actions}>
-        {hero.primaryCTA && <ActionLink href={hero.primaryCTA.href} label={hero.primaryCTA.label} />}
-        {hero.secondaryCTA && <ActionLink href={hero.secondaryCTA.href} icon="moped" label={hero.secondaryCTA.label} variant="outline" />}
-      </div>}
-      {orderLinks.length > 0 && <div className={styles.heroApps}>
-        {hero.orderPlatformsLabel && <span>{hero.orderPlatformsLabel}</span>}
-        {orderLinks.map((item) => <a href={item.href} key={`${item.label}-${item.href}`}>{item.label}</a>)}
-      </div>}
-    </div>
-    {hero.image && <div className={styles.heroDish}>
-      <span className={styles.heroGlow} />
-      <Image alt={hero.image.alt} fill priority sizes="(max-width: 900px) 80vw, 45vw" src={hero.image.src} unoptimized />
-      {hero.stampText && <span className={styles.heroStamp}>
-        <Icon name="heart" weight="fill" />
-        <span>{hero.stampText.split('\n').map((line, index) => <span key={`${line}-${index}`}>{line}<br /></span>)}</span>
-      </span>}
-    </div>}
-  </section>
-
-  if (hasCMSBody) return <>{heroSection}<CMSPage content={content} includeHero={false} /></>
+  const featureStrip = content.site.featureStrip ?? homeData.featureStrip
+  const heroSection = <HomeHero hero={hero} orderLinks={orderLinks} />
 
   return (
     <>
       {heroSection}
 
-      <section className={styles.featureStrip}><FeatureGrid features={homeData.featureStrip} /></section>
+      {featureStrip.length > 0 && <section className={styles.featureStrip}><FeatureGrid features={featureStrip} /></section>}
 
       <section className={styles.section}>
         <div className={`${styles.container} ${styles.storyGrid}`}>

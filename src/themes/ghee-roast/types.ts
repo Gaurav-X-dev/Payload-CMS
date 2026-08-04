@@ -3,12 +3,17 @@ export type ImageData = {
   category?: string
   id?: number | string
   isFeatured?: boolean
+  focalPoint?: { x: number; y: number }
   src: string
+  tenantID?: number | string
 }
 
 export type LinkData = {
+  ariaLabel?: string
   href: string
   label: string
+  newTab?: boolean
+  nofollow?: boolean
 }
 
 export type PageMetadataData = {
@@ -23,8 +28,12 @@ export type PageHeroData = {
 }
 
 export type FeatureData = {
+  customIcon?: ImageData
   description: string
   icon: string
+  iconSource?: 'built-in' | 'custom-svg'
+  renderKey?: string
+  sortOrder?: number
   title: string
 }
 
@@ -61,7 +70,7 @@ export type TimelineData = {
 export type FormFieldData = {
   label: string
   name: string
-  options?: string[]
+  options?: Array<string | { label: string; value: string }>
   placeholder?: string
   required?: boolean
   type: 'date' | 'email' | 'number' | 'select' | 'tel' | 'text' | 'textarea' | 'time'

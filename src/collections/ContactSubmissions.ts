@@ -15,6 +15,7 @@ import {
   validateIndianMobile,
   validateName,
 } from '../validation/shared'
+import { validateContactSubmissionSubject } from '../hooks/validateContactSubmissionSubject'
 
 const canManageSubmissionFields: FieldAccess = ({ req }) =>
   isSuperAdminUser(req.user) || isTenantAdminUser(req.user)
@@ -83,9 +84,16 @@ export const ContactSubmissions: CollectionConfig = {
         },
       ]
     },
+    {
+      name: 'subject',
+      type: 'text',
+      maxLength: 80,
+      admin: { description: 'Required for new public enquiries. Optional on historical records for backwards compatibility.' },
+    },
     { name: 'message', type: 'textarea', required: true, maxLength: 5000 },
   ],
   hooks: {
+    beforeValidate: [validateContactSubmissionSubject],
     afterChange: [
       ({ doc, operation }) => {
         if (operation === 'create') {

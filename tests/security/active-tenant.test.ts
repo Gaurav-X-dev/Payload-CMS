@@ -50,7 +50,7 @@ describe('Stage 5 - Active Tenant Enforcement', () => {
           title: 'Should fail',
           slug: 'should-fail',
           tenantId: fixtures.tenants.tenantC.id,
-          status: 'draft',
+          _status: 'draft',
         },
         req,
         overrideAccess: false,

@@ -52,7 +52,7 @@ const whereContainsTenant = (
   `"tenantId":{"equals":${JSON.stringify(expectedTenantID)}}`,
 )
 
-test('empty real-world CMS shape uses legacy content only after resolving the valid tenant', async () => {
+test('empty real-world CMS shape stays empty after resolving the valid tenant', async () => {
   const payload = fakePayload({ tenants: [tenant] })
   const content = await loadGheeRoastContentWithPayload({
     fallbacksEnabled: false,
@@ -62,24 +62,20 @@ test('empty real-world CMS shape uses legacy content only after resolving the va
     site,
   })
 
-  assert.equal(content.tenantState, 'fallback')
+  assert.equal(content.tenantState, 'empty')
   assert.equal(content.site.siteName, 'Fixture Ghee Roast')
-  assert.ok(content.navigation.items.length > 0)
-  assert.ok(content.collections.menu.items.length > 0)
+  assert.equal(content.navigation.items.length, 0)
+  assert.equal(content.collections.menu.items.length, 0)
   assert.equal(content.page, null)
 
   const queried = new Set(payload.calls.map((call) => call.collection))
   assert.deepEqual([...queried].sort(), [
     'footer',
-    'gallery',
-    'menu-categories',
-    'menu-items',
     'nav',
     'pages',
     'seo',
     'site-settings',
     'tenants',
-    'testimonials',
   ])
   assert.equal(
     payload.calls.filter((call) => call.collection !== 'tenants' && !call.select).length,
@@ -91,12 +87,7 @@ test('empty real-world CMS shape uses legacy content only after resolving the va
       .filter((call) => call.collection !== 'tenants')
       .every((call) => whereContainsTenant(call, tenantID)),
   )
-  const categoryProbe = payload.calls.find(
-    (call) => call.collection === 'menu-categories' && Boolean(call.select),
-  )
-  assert.ok(categoryProbe)
-  assert.equal(categoryProbe.sort, undefined)
-  assert.equal(JSON.stringify(categoryProbe.where).includes('isActive'), false)
+  assert.equal(payload.calls.some((call) => call.collection === 'menu-categories'), false)
 })
 
 test('unknown, missing, mismatched, and inactive tenants fail closed without fallback leakage', async () => {
@@ -148,7 +139,7 @@ test('unknown, missing, mismatched, and inactive tenants fail closed without fal
   assert.equal(inactive.navigation.items.length, 0)
 })
 
-test('populated fixtures override legacy content, reject cross-tenant rows, and load every block dependency', async () => {
+test('populated fixtures map only CMS content, reject cross-tenant rows, and load every block dependency', async () => {
   const otherTenantID = 99
   const page = {
     _status: 'published',
@@ -174,7 +165,6 @@ test('populated fixtures override legacy content, reject cross-tenant rows, and 
     metaDescription: 'Fixture page description',
     metaTitle: 'Fixture metadata',
     slug: 'fixture',
-    status: 'published',
     tenantId: tenantID,
     title: 'Fixture Page',
   }
@@ -328,7 +318,6 @@ test('unpublished pages are excluded, duplicate public pages fail deterministica
       id: 20,
       layout: [],
       slug: 'draft',
-      status: 'published',
       tenantId: tenantID,
       title: 'Draft',
     }],
@@ -347,7 +336,6 @@ test('unpublished pages are excluded, duplicate public pages fail deterministica
     _status: 'published',
     layout: [],
     slug: 'duplicate',
-    status: 'published',
     tenantId: tenantID,
     title: 'Duplicate',
   }
@@ -386,7 +374,7 @@ test('unpublished pages are excluded, duplicate public pages fail deterministica
   )
 })
 
-test('partial content follows explicit merge policy and route dependencies remain conditional', async () => {
+test('partial content never merges legacy fields and route dependencies remain conditional', async () => {
   const fixtures = {
     'site-settings': [{
       businessName: 'Only CMS Site Settings',
@@ -407,17 +395,17 @@ test('partial content follows explicit merge policy and route dependencies remai
   assert.equal(strict.navigation.items.length, 0)
   assert.equal(strict.footer.columns.length, 0)
 
-  const mergedPayload = fakePayload(fixtures)
-  const merged = await loadGheeRoastContentWithPayload({
+  const legacyFlagPayload = fakePayload(fixtures)
+  const legacyFlagResult = await loadGheeRoastContentWithPayload({
     fallbacksEnabled: true,
-    find: mergedPayload.find,
+    find: legacyFlagPayload.find,
     host: 'ghee-roast.localhost',
     pathname: '/quality',
     site,
   })
-  assert.equal(merged.site.siteName, 'Only CMS Site Settings')
-  assert.ok(merged.navigation.items.length > 0)
-  assert.ok(merged.footer.columns.length > 0)
+  assert.equal(legacyFlagResult.site.siteName, 'Only CMS Site Settings')
+  assert.equal(legacyFlagResult.navigation.items.length, 0)
+  assert.equal(legacyFlagResult.footer.columns.length, 0)
 
   const queried = new Set(strictPayload.calls.map((call) => call.collection))
   assert.ok(!queried.has('events'))

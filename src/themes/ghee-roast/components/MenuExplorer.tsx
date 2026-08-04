@@ -10,11 +10,13 @@ import styles from './Theme.module.css'
 
 export function MenuExplorer({
   categories,
+  heading = 'Signature Menu',
   items,
   locations,
   orderLinks,
 }: {
   categories: string[][]
+  heading?: string
   items: FoodItemData[]
   locations: Array<{ description: string; id: string; label: string }>
   orderLinks: LinkData[]
@@ -54,7 +56,7 @@ export function MenuExplorer({
           <div className={styles.menuLocationHeader}>
             <div>
               <span>{activeLocation.label} Location</span>
-              <h2>Signature Menu</h2>
+              <h2>{heading}</h2>
             </div>
             {orderLinks.length > 0 && <div>
               {orderLinks.map((item) => <a href={item.href} key={`${item.label}-${item.href}`}>{item.label}</a>)}

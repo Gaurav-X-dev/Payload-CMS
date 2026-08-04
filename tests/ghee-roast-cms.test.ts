@@ -5,6 +5,7 @@ import {
   mapGheeRoastFooter,
   mapGheeRoastNavigation,
   mapGheeRoastPage,
+  mapGheeRoastSEO,
   mapGheeRoastSite,
   safeGheeRoastHref,
   selectGheeRoastRelationships,
@@ -62,14 +63,13 @@ test('Ghee Roast site settings control public brand, announcement, integrations,
 })
 
 test('footer and page mappers reject cross-tenant documents and keep published page blocks', () => {
-  assert.equal(mapGheeRoastPage({ id: 1, tenantId: 999, status: 'published' }, tenantID), null)
+  assert.equal(mapGheeRoastPage({ _status: 'published', id: 1, tenantId: 999, title: 'Foreign Page' }, tenantID), null)
 
   const page = mapGheeRoastPage({
     id: 7,
     tenantId: tenantID,
     title: 'Events',
     slug: 'events',
-    status: 'published',
     _status: 'published',
     layout: [{ blockType: 'eventsBlock', sectionHeader: { title: 'Events' } }],
   }, tenantID)
@@ -140,6 +140,7 @@ test('navigation and footer mappers discard unsafe public links', () => {
     tenantId: tenantID,
     links: [
       { blockType: 'link', enabled: true, label: 'Menu', type: 'internal', url: '/menu' },
+      { blockType: 'link', enabled: true, label: 'Private', type: 'internal', url: '/private', visibility: 'logged_in' },
       { blockType: 'link', enabled: true, label: 'Unsafe', type: 'external', url: 'javascript:alert(1)' },
       {
         blockType: 'link',
@@ -292,9 +293,22 @@ test('tenant and publication mismatches cannot survive mapper boundaries', () =>
   assert.equal(mapGheeRoastPage({
     id: 71,
     tenantId: tenantID,
-    status: 'published',
     _status: 'draft',
     title: 'Draft',
     slug: 'draft',
   }, tenantID), null)
+})
+
+test('SEO mapper parses only valid JSON-LD and normalizes keywords and verification', () => {
+  const mapped = mapGheeRoastSEO({
+    tenantId: tenantID,
+    bingSiteVerification: 'bing-code',
+    googleSiteVerification: 'google-code',
+    jsonLd: '{"@type":"Restaurant","name":"Very Good Ghee Roast"}',
+    keywords: 'ghee roast, coastal food,  Delhi ',
+  }, tenantID)
+  assert.deepEqual(mapped.jsonLd, { '@type': 'Restaurant', name: 'Very Good Ghee Roast' })
+  assert.deepEqual(mapped.keywords, ['ghee roast', 'coastal food', 'Delhi'])
+  assert.equal(mapped.googleSiteVerification, 'google-code')
+  assert.equal(mapGheeRoastSEO({ tenantId: tenantID, jsonLd: '<script>' }, tenantID).jsonLd, undefined)
 })

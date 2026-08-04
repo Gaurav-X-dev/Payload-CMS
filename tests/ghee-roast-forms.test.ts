@@ -4,6 +4,10 @@ import { ContactSubmissions } from '../src/collections/ContactSubmissions.ts'
 import { Reservations } from '../src/collections/Reservations.ts'
 import { assignTenant } from '../src/hooks/assignTenant.ts'
 import {
+  configuredContactSubjects,
+  validateContactSubmissionSubject,
+} from '../src/hooks/validateContactSubmissionSubject.ts'
+import {
   buildContactSubmissionRequest,
   buildNewsletterRequest,
   buildReservationRequest,
@@ -68,6 +72,7 @@ test('contact request normalizes public fields and excludes protected input', ()
     message: 'Please call me about a partnership.',
     name: 'Asha Rao',
     phone: '9876543210',
+    subject: 'Partnership',
     type: 'franchise',
   })
   assert.equal(Object.hasOwn(result.request.body, 'tenantId'), false)
@@ -80,12 +85,15 @@ test('contact request rejects missing or malformed required values', () => {
     email: 'diner@example.com',
     message: 'Please send menu details.',
     name: 'Asha Rao',
+    subject: 'General Enquiry',
   }
   const cases = [
     [{ ...valid, name: '' }, /Enter a name/],
     [{ ...valid, email: 'not-an-email' }, /valid email address/],
     [{ ...valid, phone: '1234567890' }, /valid 10-digit Indian mobile/],
     [{ ...valid, message: '' }, /Enter a message/],
+    [{ ...valid, subject: '' }, /enquiry subject/],
+    [{ ...valid, subject: 'Not configured' }, /available enquiry subjects/],
     [{ ...valid, message: 'x'.repeat(5_001) }, /must not exceed 5000/],
   ] as const
 
@@ -199,6 +207,7 @@ test('newsletter honestly creates a general Contact Submission and rejects inval
     email: 'subscriber@example.com',
     message: 'Newsletter signup request from the website.',
     name: 'Newsletter Subscriber',
+    subject: 'Newsletter Signup',
     type: 'general',
   })
   assert.equal(Object.hasOwn(result.request.body, 'tenantId'), false)
@@ -216,15 +225,50 @@ test('submission guard blocks repeated requests until the first request finishes
   assert.equal(guard.begin(), true)
 })
 
+test('crafted Contact subjects are checked against published CMS options before storage', async () => {
+  const pages = [{
+    layout: [{
+      blockType: 'formBlock',
+      enabled: true,
+      subjectOptions: [{ value: 'Order Enquiry' }, { value: 'Feedback' }],
+    }],
+  }]
+  assert.deepEqual(configuredContactSubjects(pages), ['Order Enquiry', 'Feedback'])
+
+  const req = {
+    payload: { find: async () => ({ docs: pages }) },
+  }
+  const accepted = await validateContactSubmissionSubject({
+    data: { subject: ' Feedback ', tenantId: 41 },
+    operation: 'create',
+    req,
+  } as never)
+  assert.equal(record(accepted)?.subject, 'Feedback')
+  await assert.rejects(
+    () => validateContactSubmissionSubject({
+      data: { subject: 'Crafted Subject', tenantId: 41 },
+      operation: 'create',
+      req,
+    } as never),
+    (error: unknown) => {
+      const validationError = error as { data?: { errors?: Array<{ message?: string }> } }
+      assert.match(String(validationError.data?.errors?.[0]?.message), /configured enquiry subjects/)
+      return true
+    },
+  )
+})
+
 test('Payload form collections keep backend normalization and validation constraints', async () => {
   const contactPhone = findField(ContactSubmissions.fields, 'phone')
   const contactMessage = findField(ContactSubmissions.fields, 'message')
+  const contactSubject = findField(ContactSubmissions.fields, 'subject')
   const reservationGuests = findField(Reservations.fields, 'guests')
   const reservationPhone = findField(Reservations.fields, 'phone')
   const reservationNotes = findField(Reservations.fields, 'notes')
 
   assert.ok(contactPhone)
   assert.ok(contactMessage)
+  assert.ok(contactSubject)
   assert.ok(reservationGuests)
   assert.ok(reservationPhone)
   assert.ok(reservationNotes)
@@ -247,6 +291,7 @@ test('Payload form collections keep backend normalization and validation constra
   assert.equal(guestValidator(4), true)
   assert.match(String(guestValidator(51)), /between 1 and 50/)
   assert.equal(contactMessage.maxLength, 5_000)
+  assert.equal(contactSubject.maxLength, 80)
   assert.equal(reservationNotes.maxLength, 2_000)
 })
 

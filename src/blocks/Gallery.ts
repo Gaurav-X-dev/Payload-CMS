@@ -9,6 +9,10 @@ import {
 export const GalleryBlock: Block = {
   slug: 'galleryBlock',
   interfaceName: 'GalleryBlock',
+  labels: { singular: 'Gallery', plural: 'Gallery Sections' },
+  admin: {
+    group: 'Reusable Sections',
+  },
   fields: [
     sectionHeader(),
     {

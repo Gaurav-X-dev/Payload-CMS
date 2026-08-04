@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import { headers } from 'next/headers'
 import { renderLocalThemePage } from '@/lib/site/renderLocalThemePage'
 import { resolveLocalSite } from '@/lib/site/resolveLocalSite'
-import { getGheeRoastPage } from '@/themes/ghee-roast'
 import { getGheeRoastMetadata } from '@/lib/site/getGheeRoastMetadata'
 
 type DynamicRouteProps = {
@@ -21,8 +20,10 @@ export async function generateMetadata({ params }: DynamicRouteProps): Promise<M
   if (!site) return {}
 
   const pathname = await resolvePathname(params)
-  const registeredPage = getGheeRoastPage(pathname)
-  if (site.theme !== 'ghee-roast') return registeredPage?.metadata ?? {}
+  if (site.theme !== 'ghee-roast') {
+    const { getGheeRoastPage } = await import('@/themes/ghee-roast/utils/getPageComponent')
+    return getGheeRoastPage(pathname)?.metadata ?? {}
+  }
 
   return getGheeRoastMetadata({ host, pathname, site })
 }

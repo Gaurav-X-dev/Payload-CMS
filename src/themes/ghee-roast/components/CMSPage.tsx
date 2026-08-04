@@ -5,6 +5,7 @@ import type {
   GheeRoastEventData,
   GheeRoastFAQData,
   GheeRoastLocationData,
+  GheeRoastSocialData,
   GheeRoastTeamMemberData,
 } from '../dynamicTypes'
 import {
@@ -14,8 +15,17 @@ import {
 } from '../mappers/cmsContent'
 import type { FeatureData, ImageData, LinkData, TestimonialData } from '../types'
 import { GHEE_ROAST_SIMPLE_SECTION_BLOCK_TYPES } from '../utils/blockSupport'
+import { resolveGheeRoastBlockMedia } from '../utils/cmsBlockMedia'
+import { resolveGheeRoastHomeLayout } from '../utils/homeLayout'
+import {
+  gheeRoastLocationMapHref,
+  sortGheeRoastContactLocations,
+} from '../utils/contactPage'
 import { ContactForm } from './ContactForm'
+import { HomeHero } from './HomeHero'
+import { Icon } from './Icon'
 import { Newsletter } from './Newsletter'
+import { MenuExplorer } from './MenuExplorer'
 import {
   ActionLink,
   FeatureGrid,
@@ -50,20 +60,8 @@ const number = (value: unknown, fallback: number): number =>
 const image = (
   value: unknown,
   tenantID?: number | string,
-): ImageData | undefined => {
-  const wrapper = record(value)
-  const media = record(wrapper?.item) ?? record(wrapper?.media) ?? wrapper
-  if (
-    tenantID !== undefined &&
-    relationshipID(media?.tenantId) !== String(tenantID)
-  ) return undefined
-  const src = text(media?.url)
-  if (!src) return undefined
-  return {
-    alt: text(wrapper?.altOverride) || text(media?.alt) || text(media?.title),
-    src,
-  }
-}
+  mediaValues: unknown[] = [],
+): ImageData | undefined => resolveGheeRoastBlockMedia(value, tenantID, undefined, mediaValues)
 
 const pageHref = (
   value: unknown,
@@ -91,8 +89,23 @@ const link = (
   const href = type === 'reference'
     ? pageHref(item.reference, tenantID)
     : safeGheeRoastHref(item.url, type)
+  return label && href ? {
+    ariaLabel: text(item.ariaLabel) || undefined,
+    href,
+    label,
+    newTab: item.newTab === true,
+    nofollow: item.nofollow === true,
+  } : undefined
+}
+
+const simpleLink = (labelValue: unknown, urlValue: unknown): LinkData | undefined => {
+  const label = text(labelValue)
+  const href = safeGheeRoastHref(urlValue)
   return label && href ? { href, label } : undefined
 }
+
+const paragraphs = (value: unknown): string[] =>
+  text(value).split(/\n\s*\n/).map((paragraph) => paragraph.trim()).filter(Boolean)
 
 const heading = (block: UnknownRecord) => {
   const section = record(block.sectionHeader)
@@ -119,13 +132,45 @@ const blockStyle = (
     : {}
 }
 
-const blockClassName = (block: UnknownRecord): string => {
+const blockModifierClassName = (block: UnknownRecord): string => {
   const settings = record(block.settings)
   const background = text(settings?.backgroundColor)
+  const visibility = Array.isArray(settings?.visibility)
+    ? settings.visibility.filter((value): value is string => typeof value === 'string')
+    : []
+  const customClasses = text(settings?.customClasses)
+    .split(/\s+/)
+    .filter((value) => /^[A-Za-z_][A-Za-z0-9_-]*$/.test(value))
   return [
-    styles.section,
     background === 'surface' ? styles.sectionAlt : '',
     ['primary', 'dark'].includes(background) ? styles.darkSection : '',
+    text(settings?.paddingTop) === 'none' ? styles.blockPaddingTopNone : '',
+    text(settings?.paddingTop) === 'small' ? styles.blockPaddingTopSmall : '',
+    text(settings?.paddingTop) === 'large' ? styles.blockPaddingTopLarge : '',
+    text(settings?.paddingBottom) === 'none' ? styles.blockPaddingBottomNone : '',
+    text(settings?.paddingBottom) === 'small' ? styles.blockPaddingBottomSmall : '',
+    text(settings?.paddingBottom) === 'large' ? styles.blockPaddingBottomLarge : '',
+    visibility.length > 0 && !visibility.includes('desktop') ? styles.blockHideDesktop : '',
+    visibility.length > 0 && !visibility.includes('tablet') ? styles.blockHideTablet : '',
+    visibility.length > 0 && !visibility.includes('mobile') ? styles.blockHideMobile : '',
+    Array.isArray(settings?.visibility) && visibility.length === 0 ? styles.blockHidden : '',
+    text(settings?.animation) === 'fade-in' ? styles.blockFadeIn : '',
+    text(settings?.animation) === 'slide-up' ? styles.blockSlideUp : '',
+    text(settings?.animation) === 'zoom-in' ? styles.blockZoomIn : '',
+    text(settings?.animation) === 'stagger' ? styles.blockStagger : '',
+    ...customClasses,
+  ].filter(Boolean).join(' ')
+}
+
+const blockClassName = (block: UnknownRecord, baseClassName = styles.section): string =>
+  [baseClassName, blockModifierClassName(block)].filter(Boolean).join(' ')
+
+const blockContainerClassName = (block: UnknownRecord): string => {
+  const width = text(record(block.settings)?.containerWidth)
+  return [
+    styles.container,
+    width === 'wide' ? styles.blockContainerWide : '',
+    width === 'full' ? styles.blockContainerFull : '',
   ].filter(Boolean).join(' ')
 }
 
@@ -175,18 +220,64 @@ function FAQList({ items }: { items: GheeRoastFAQData[] }) {
   ))}</div>
 }
 
-function LocationCards({ locations }: { locations: GheeRoastLocationData[] }) {
+function LocationCards({ locations, showMap }: { locations: GheeRoastLocationData[]; showMap: boolean }) {
   if (!locations.length) return <p className={styles.cmsEmpty}>Location details are being updated.</p>
-  return <div className={styles.cmsCardGrid}>{locations.map((location) => (
-    <article className={styles.cmsCard} key={location.id}>
+  return <div className={styles.contactLocationGrid} data-location-count={locations.length}>{locations.map((location) => {
+    const mapHref = showMap ? gheeRoastLocationMapHref(location) : null
+    const locality = [location.city, location.state, location.postalCode].filter(Boolean).join(', ')
+    return <article className={styles.contactLocationCard} key={location.id}>
+      <span className={styles.locationIcon}><Icon name="map" weight="fill" /></span>
+      {location.isPrimary && <small className={styles.primaryLocation}>Primary location</small>}
       <h3>{location.title}</h3>
       {location.description && <p>{location.description}</p>}
-      <address>{location.address}{location.city && <><br />{location.city}</>}</address>
-      {location.phone && <a href={`tel:${location.phone}`}>{location.phone}</a>}
-      {location.email && <a href={`mailto:${location.email}`}>{location.email}</a>}
-      {location.mapsUrl && <ActionLink href={location.mapsUrl} label="View map" />}
+      {location.deliveryZones.length > 0 && <p className={styles.deliveryZones}><strong>Delivery zones:</strong> {location.deliveryZones.join(', ')}</p>}
+      <address>{location.address}{locality && <><br />{locality}</>}{location.country && <><br />{location.country}</>}</address>
+      <div className={styles.locationContactLinks}>
+        {location.phone && <a href={`tel:${location.phone}`}><Icon name="phone" />{location.phone}</a>}
+        {location.email && <a href={`mailto:${location.email}`}>{location.email}</a>}
+      </div>
+      {location.businessHours.length > 0 && <div className={styles.locationHours}>
+        <strong><Icon name="clock" />Business hours</strong>
+        {location.businessHours.map((hours) => <span key={hours}>{hours}</span>)}
+      </div>}
+      {mapHref && <a
+        aria-label={`Open ${location.title} in Google Maps`}
+        className={`${styles.action} ${styles.accent} ${styles.locationMapAction}`}
+        href={mapHref}
+        rel="noopener noreferrer"
+        target="_blank"
+      >{location.mapButtonLabel}<Icon className={styles.actionIcon} name="arrow" weight="bold" /></a>}
     </article>
-  ))}</div>
+  })}</div>
+}
+
+function SocialCards({
+  items,
+  showDescriptions,
+  showHandles,
+}: {
+  items: GheeRoastSocialData[]
+  showDescriptions: boolean
+  showHandles: boolean
+}) {
+  if (!items.length) return <p className={styles.cmsEmpty}>Social links are being updated.</p>
+  return <div className={styles.cmsSocialGrid} data-social-count={items.length}>
+    {items.map((item) => <article className={styles.cmsSocialCard} key={item.renderKey}>
+      <span className={styles.socialIcon}><Icon name={item.icon} weight="fill" /></span>
+      <div>
+        <h3>{item.displayLabel}</h3>
+        {showHandles && item.handle && <strong>{item.handle}</strong>}
+        {showDescriptions && item.description && <p>{item.description}</p>}
+      </div>
+      <a
+        aria-label={`${item.ctaLabel} (${item.newTab ? 'opens in a new tab' : 'external link'})`}
+        className={`${styles.action} ${styles.accent}`}
+        href={item.href}
+        rel={item.newTab ? 'noopener noreferrer' : undefined}
+        target={item.newTab ? '_blank' : undefined}
+      >{item.ctaLabel}<Icon className={styles.actionIcon} name="arrow" weight="bold" /></a>
+    </article>)}
+  </div>
 }
 
 function CMSBlock({
@@ -199,34 +290,176 @@ function CMSBlock({
   index: number
 }) {
   const type = text(block.blockType)
-  if (!type || type === 'heroBlock') return null
+  const settings = record(block.settings)
+  if (!type || block.enabled === false || settings?.enabled === false) return null
   const section = heading(block)
   const key = text(block.id) || `${type}-${index}`
-  const settings = record(block.settings)
   const htmlID = text(settings?.htmlId) || undefined
   const limit = Math.max(1, number(block.limit, 24))
   const tenantID = content.site.tenantID
   const wrapper = (children: React.ReactNode, options?: { bare?: boolean; light?: boolean }) => (
     <section className={options?.bare ? undefined : blockClassName(block)} id={htmlID} key={key} style={blockStyle(block, tenantID)}>
-      <div className={styles.container}>
+      <div className={blockContainerClassName(block)}>
         {section.title && <SectionHeading {...section} light={options?.light ?? ['primary', 'dark'].includes(text(settings?.backgroundColor))} />}
         {children}
       </div>
     </section>
   )
 
-  if (type === 'featurestripBlock' || type === 'contentgridBlock' || type === 'stepsBlock') {
-    const rawItems = Array.isArray(block.items) ? block.items : Array.isArray(block.steps) ? block.steps : []
-    const features: FeatureData[] = rawItems
+  if (type === 'heroBlock') {
+    return content.page?.isHomePage
+      ? <HomeHero hero={content.hero} key={key} orderLinks={content.site.orderLinks} />
+      : null
+  }
+
+  if (type === 'gheeHomeStoryBlock') {
+    const images = record(block.images)
+    const storyImages = [
+      { alt: images?.primaryImageAlt, key: 'primary', value: images?.primaryImage },
+      { alt: images?.secondaryImageAlt, key: 'secondary', value: images?.secondaryImage },
+      { alt: images?.tertiaryImageAlt, key: 'tertiary', value: images?.tertiaryImage },
+    ].map((entry) => ({ ...entry, image: image({ altOverride: entry.alt, item: entry.value }, tenantID) }))
+      .filter((entry): entry is typeof entry & { image: ImageData } => Boolean(entry.image))
+    const points = (Array.isArray(block.bulletPoints) ? block.bulletPoints : [])
+      .map((entry) => ({ id: text(record(entry)?.id), text: text(record(entry)?.text) }))
+      .filter((entry) => entry.text)
+    const badge = record(block.experienceBadge)
+    const badgeNumber = text(badge?.number)
+    const badgeLabel = text(badge?.label)
+    const cta = record(block.cta)
+    const storyCTA = cta?.enabled === false ? undefined : simpleLink(cta?.label, cta?.url)
+    const storyTitle = [text(block.heading), text(block.highlightedHeading)].filter(Boolean).join(' ')
+    const imageRight = text(images?.imagePosition) === 'right'
+    const collage = storyImages.length > 0 && <div className={styles.imageCollage}>
+      {storyImages.map((entry) => <Image alt={entry.image.alt || 'Ghee Roast story'} height={500} key={entry.key} src={entry.image.src} unoptimized width={600} />)}
+      {badge?.enabled !== false && (badgeNumber || badgeLabel) && <span className={styles.legacyBadge}>
+        {badgeNumber && <strong>{badgeNumber}</strong>}
+        {badgeLabel && badgeLabel.split('\n').map((line, lineIndex) => <span key={`${line}-${lineIndex}`}>{line}{lineIndex < badgeLabel.split('\n').length - 1 && <br />}</span>)}
+      </span>}
+    </div>
+    const copy = <div>
+      {storyTitle && <SectionHeading eyebrow={text(block.eyebrow) || undefined} title={storyTitle} />}
+      {paragraphs(block.description).map((paragraph, paragraphIndex) => <p key={`story-paragraph-${paragraphIndex}`}>{paragraph}</p>)}
+      {points.length > 0 && <ul className={styles.checkList}>{points.map((point, pointIndex) => <li key={point.id || `story-point-${pointIndex}`}>{point.text}</li>)}</ul>}
+      {storyCTA && <ActionLink {...storyCTA} />}
+    </div>
+    return <section className={blockClassName(block)} id={htmlID} key={key} style={blockStyle(block, tenantID)}>
+      <div className={`${blockContainerClassName(block)} ${styles.storyGrid}`}>
+        {!imageRight && collage}
+        {copy}
+        {imageRight && collage}
+      </div>
+    </section>
+  }
+
+  if (type === 'gheeHomeQualityBlock') {
+    const qualityImage = image({ altOverride: block.imageAlt, item: block.image }, tenantID)
+    const points = (Array.isArray(block.points) ? block.points : [])
+      .map((entry) => record(entry))
+      .filter((entry): entry is UnknownRecord => entry !== null && Boolean(text(entry.text)))
+    const cta = record(block.cta)
+    const qualityCTA = cta?.enabled === false ? undefined : simpleLink(cta?.label, cta?.url)
+    return <section className={blockClassName(block, `${styles.section} ${styles.darkSection}`)} id={htmlID} key={key} style={blockStyle(block, tenantID)}>
+      <div className={`${blockContainerClassName(block)} ${styles.twoColumn}`}>
+        {qualityImage && <Image alt={qualityImage.alt || 'Ghee Roast quality ingredients'} height={640} src={qualityImage.src} unoptimized width={700} />}
+        <div>
+          <h2 className={styles.whyHeading}>
+            {text(block.heading).split('\n').map((line, lineIndex) => <span key={`${line}-${lineIndex}`}>{line}<br /></span>)}
+            {text(block.highlightedHeading) && <span>{text(block.highlightedHeading)}</span>}
+          </h2>
+          {paragraphs(block.description).map((paragraph, paragraphIndex) => <p key={`quality-paragraph-${paragraphIndex}`}>{paragraph}</p>)}
+          {points.length > 0 && <ul className={`${styles.checkList} ${styles.whyList}`}>
+            {points.map((point, pointIndex) => <li key={text(point.id) || `quality-point-${pointIndex}`}>
+              <Icon name={text(point.icon) || 'check'} weight="fill" />
+              <span>{text(point.title) && <strong>{text(point.title)}: </strong>}{text(point.text)}</span>
+            </li>)}
+          </ul>}
+          {qualityCTA && <ActionLink {...qualityCTA} variant="accent" />}
+        </div>
+      </div>
+    </section>
+  }
+
+  if (type === 'gheeHomePromosBlock') {
+    const promos = (Array.isArray(block.promos) ? block.promos : [])
+      .map((entry) => record(entry))
+      .filter((entry): entry is UnknownRecord => entry !== null && entry.enabled !== false)
+    if (!promos.length) return null
+    return <section className={blockClassName(block, styles.splitPromos)} id={htmlID} key={key} style={blockStyle(block, tenantID)}>
+      {promos.map((promo, promoIndex) => {
+        const points = (Array.isArray(promo.bulletPoints) ? promo.bulletPoints : [])
+          .map((entry) => ({ id: text(record(entry)?.id), text: text(record(entry)?.text) }))
+          .filter((entry) => entry.text)
+        const cta = record(promo.cta)
+        const promoCTA = cta?.enabled === false ? undefined : simpleLink(cta?.label, cta?.url)
+        return <article key={text(promo.id) || `promo-${promoIndex}`}>
+          {text(promo.eyebrow) && <span>{text(promo.eyebrow)}</span>}
+          {text(promo.heading) && <h2>{text(promo.heading)}</h2>}
+          {paragraphs(promo.description).map((paragraph, paragraphIndex) => <p key={`promo-${promoIndex}-paragraph-${paragraphIndex}`}>{paragraph}</p>)}
+          {points.length > 0 && <ul className={styles.promoList}>{points.map((point, pointIndex) => <li key={point.id || `promo-${promoIndex}-point-${pointIndex}`}><Icon name="check" weight="fill" />{point.text}</li>)}</ul>}
+          {promoCTA && <ActionLink {...promoCTA} variant="split" />}
+        </article>
+      })}
+    </section>
+  }
+
+  if (type === 'stepsBlock') {
+    const steps = (Array.isArray(block.steps) ? block.steps : [])
       .map((entry, itemIndex) => {
         const item = record(entry)
         return {
           description: text(item?.description),
           icon: text(item?.icon) || String(itemIndex + 1),
+          id: text(item?.id) || `step-${itemIndex}`,
+          label: text(item?.label),
           title: text(item?.title),
         }
       })
       .filter((item) => item.title)
+    if (text(block.presentation) === 'ghee-home-process') {
+      return steps.length ? <section className={blockClassName(block, styles.processSection)} id={htmlID} key={key} style={blockStyle(block, tenantID)}>
+        <div className={blockContainerClassName(block)}>
+          {section.title && <SectionHeading {...section} center light />}
+          <div className={styles.processGrid}>{steps.map((step) => <article className={styles.processStep} key={step.id}>
+            <span className={styles.processIcon}>{/^\d+$/.test(step.icon) ? step.icon : <Icon name={step.icon} weight="fill" />}</span>
+            {step.label && <small>{step.label}</small>}
+            <h3>{step.title}</h3>
+            {step.description && <p>{step.description}</p>}
+          </article>)}</div>
+        </div>
+      </section> : null
+    }
+    const features: FeatureData[] = steps.map((step) => ({
+      description: step.description,
+      icon: step.icon,
+      renderKey: step.id,
+      title: step.title,
+    }))
+    return wrapper(features.length ? <FeatureGrid features={features} /> : <p className={styles.cmsEmpty}>Add at least one step in Payload.</p>)
+  }
+
+  if (type === 'featurestripBlock' || type === 'contentgridBlock') {
+    const rawItems = type === 'featurestripBlock' && text(block.source) === 'site-settings'
+      ? content.site.featureStrip ?? []
+      : Array.isArray(block.items) ? block.items : []
+    const features: FeatureData[] = rawItems
+      .map((entry, itemIndex) => {
+        const item = record(entry)
+        return {
+          customIcon: record(item?.customIcon) as ImageData | undefined,
+          description: text(item?.description),
+          icon: text(item?.icon) || String(itemIndex + 1),
+          iconSource: text(item?.iconSource) === 'custom-svg' ? 'custom-svg' as const : 'built-in' as const,
+          renderKey: text(item?.renderKey) || text(item?.id) || undefined,
+          title: text(item?.title),
+        }
+      })
+      .filter((item) => item.title)
+    if (type === 'featurestripBlock' && (text(block.presentation) === 'ghee-home-brand' || text(block.source) === 'site-settings')) {
+      return features.length
+        ? <section className={blockClassName(block, styles.featureStrip)} id={htmlID} key={key} style={blockStyle(block, tenantID)}><FeatureGrid features={features} /></section>
+        : null
+    }
     return wrapper(features.length ? <FeatureGrid features={features} /> : <p className={styles.cmsEmpty}>Add at least one item in Payload.</p>)
   }
 
@@ -264,7 +497,7 @@ function CMSBlock({
       </div>}
     </div>
     return <section className={blockClassName(block)} id={htmlID} key={key} style={blockStyle(block, tenantID)}>
-      <div className={`${styles.container} ${styles.twoColumn}`}>
+      <div className={`${blockContainerClassName(block)} ${styles.twoColumn}`}>
         {text(block.imagePosition) !== 'right' && splitImage && <Image alt={splitImage.alt} height={680} src={splitImage.src} unoptimized width={720} />}
         {copy}
         {text(block.imagePosition) === 'right' && splitImage && <Image alt={splitImage.alt} height={680} src={splitImage.src} unoptimized width={720} />}
@@ -278,6 +511,11 @@ function CMSBlock({
       .filter((entry): entry is UnknownRecord => entry !== null)
       .map((entry) => [text(entry.value), text(entry.label)])
       .filter(([value, label]) => value && label)
+    if (text(block.presentation) === 'ghee-home-strip') {
+      return stats.length
+        ? <section className={blockClassName(block, styles.statsSection)} id={htmlID} key={key} style={blockStyle(block, tenantID)}><Stats items={stats} /></section>
+        : null
+    }
     return wrapper(stats.length ? <Stats items={stats} /> : <p className={styles.cmsEmpty}>Add statistics in Payload.</p>)
   }
 
@@ -288,7 +526,16 @@ function CMSBlock({
     } else if (block.featuredOnly !== false) {
       items = items.filter((item) => item.isFeatured === true)
     }
-    return wrapper(items.length ? <div className={styles.testimonialGrid}>{items.slice(0, limit).map((item) => <TestimonialCard key={item.id ?? item.name} testimonial={item} />)}</div> : <p className={styles.cmsEmpty}>No testimonials are published.</p>, { light: true })
+    const testimonials = items.slice(0, limit)
+    if (text(block.presentation) === 'ghee-home-dark') {
+      return <section className={blockClassName(block, `${styles.section} ${styles.testimonialsSection}`)} id={htmlID} key={key} style={blockStyle(block, tenantID)}>
+        <div className={blockContainerClassName(block)}>
+          {section.title && <SectionHeading {...section} light />}
+          {testimonials.length > 0 && <div className={styles.testimonialGrid}>{testimonials.map((item) => <TestimonialCard key={item.id ?? item.name} testimonial={item} />)}</div>}
+        </div>
+      </section>
+    }
+    return wrapper(testimonials.length ? <div className={styles.testimonialGrid}>{testimonials.map((item) => <TestimonialCard key={item.id ?? item.name} testimonial={item} />)}</div> : <p className={styles.cmsEmpty}>No testimonials are published.</p>, { light: true })
   }
 
   if (type === 'galleryBlock') {
@@ -317,7 +564,38 @@ function CMSBlock({
       ))
       .filter((item) => block.featuredOnly === false || item.isFeatured === true)
       .slice(0, limit)
-    return wrapper(items.length ? <div className={styles.foodGrid}>{items.map((item) => <FoodCard item={item} key={item.id ?? item.name} />)}</div> : <p className={styles.cmsEmpty}>No available menu items are published.</p>)
+    const ctas = record(block.ctaGroup)
+    const primary = ctas?.enablePrimary !== false ? link(ctas?.primaryCTA, tenantID) : undefined
+    const secondary = ctas?.enableSecondary ? link(ctas?.secondaryCTA, tenantID) : undefined
+    if (content.page?.pageType === 'menu') {
+      const locations = content.collections.locations.map((location) => ({
+        description: location.description || location.address,
+        id: location.city.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || String(location.id),
+        label: location.city || location.title,
+      }))
+      return <section className={blockClassName(block)} id={htmlID} key={key} style={blockStyle(block, tenantID)}>
+        <MenuExplorer
+          categories={content.collections.menu.categories}
+          heading={section.title}
+          items={items}
+          locations={locations}
+          orderLinks={content.site.orderLinks}
+        />
+        {(primary || secondary) && <div className={styles.centerAction}>
+          {primary && <ActionLink {...primary} />}
+          {secondary && <ActionLink {...secondary} variant="outline" />}
+        </div>}
+      </section>
+    }
+    return wrapper(<>
+      {items.length
+        ? <div className={styles.foodGrid}>{items.map((item) => <FoodCard item={item} key={item.id ?? item.name} />)}</div>
+        : <p className={styles.cmsEmpty}>No available menu items are published.</p>}
+      {(primary || secondary) && <div className={styles.centerAction}>
+        {primary && <ActionLink {...primary} />}
+        {secondary && <ActionLink {...secondary} variant="outline" />}
+      </div>}
+    </>)
   }
 
   if (type === 'teamBlock') {
@@ -336,14 +614,25 @@ function CMSBlock({
   }
 
   if (type === 'locationsBlock') {
-    return wrapper(<LocationCards locations={selectGheeRoastRelationships(content.collections.locations, block.locations).slice(0, limit)} />)
+    const locations = sortGheeRoastContactLocations(
+      selectGheeRoastRelationships(content.collections.locations, block.locations),
+    )
+    return wrapper(<LocationCards locations={locations} showMap={block.showMap !== false} />)
+  }
+
+  if (type === 'socialLinksBlock') {
+    return wrapper(<SocialCards
+      items={content.site.socials}
+      showDescriptions={block.showDescriptions !== false}
+      showHandles={block.showHandles !== false}
+    />)
   }
 
   if (type === 'ctaBlock') {
     const ctas = record(block.ctaGroup)
     const primary = ctas?.enablePrimary !== false ? link(ctas?.primaryCTA, tenantID) : undefined
     const secondary = ctas?.enableSecondary ? link(ctas?.secondaryCTA, tenantID) : undefined
-    return <section className={styles.cta} id={htmlID} key={key} style={blockStyle(block, tenantID)}>
+    return <section className={blockClassName(block, styles.cta)} id={htmlID} key={key} style={blockStyle(block, tenantID)}>
       {section.eyebrow && <span>{section.eyebrow}</span>}
       {section.title && <h2>{section.title}</h2>}
       {section.text && <p>{section.text}</p>}
@@ -355,23 +644,85 @@ function CMSBlock({
   }
 
   if (type === 'newsletterBlock') {
-    return <Newsletter key={key} override={{
-      buttonLabel: text(block.buttonLabel) || content.site.newsletter.buttonLabel,
-      description: section.text || content.site.newsletter.description,
-      enabled: true,
-      highlightedWord: content.site.newsletter.highlightedWord,
-      placeholder: text(block.placeholder) || content.site.newsletter.placeholder,
-      privacyText: text(block.privacyText) || content.site.newsletter.privacyText,
-      title: section.title || content.site.newsletter.title,
-    }} />
+    const useSiteSettings = text(block.source) === 'site-settings'
+    return <Newsletter
+      className={blockModifierClassName(block)}
+      id={htmlID}
+      key={key}
+      override={useSiteSettings ? content.site.newsletter : {
+        buttonLabel: text(block.buttonLabel) || 'Subscribe',
+        description: section.text || '',
+        enabled: block.enabled !== false,
+        errorMessage: text(block.errorMessage) || 'We could not save your signup. Please try again later.',
+        highlightedWord: text(block.highlightedWord) || undefined,
+        placeholder: text(block.placeholder) || 'Enter your email address',
+        privacyText: text(block.privacyText),
+        successMessage: text(block.successMessage) || 'Thank you for joining the list.',
+        title: section.title,
+      }}
+      style={blockStyle(block, tenantID)}
+    />
   }
 
   if (type === 'formBlock') {
-    return wrapper(<ContactForm
-      formType={text(block.formType) || 'contact'}
-      submitLabel={text(block.submitLabel) || 'Send message'}
-      successMessage={text(block.successMessage) || 'Thank you. We will be in touch shortly.'}
-    />)
+    const sideImage = image({ altOverride: block.imageAlt, item: block.sideImage }, tenantID, content.collections.media)
+    const imagePosition = text(block.imagePosition) === 'left' ? 'left' : 'right'
+    const imageFit = text(block.imageFit) === 'contain' ? 'contain' : 'cover'
+    const cardStyle = ['bordered', 'flat'].includes(text(block.formCardStyle))
+      ? text(block.formCardStyle)
+      : 'elevated'
+    const subjectOptions = (Array.isArray(block.subjectOptions) ? block.subjectOptions : [])
+      .map((optionValue) => record(optionValue))
+      .map((option) => ({ label: text(option?.label), value: text(option?.value) }))
+      .filter((option) => option.label && option.value)
+    if (content.page?.pageType !== 'contact') {
+      return wrapper(<ContactForm
+        errorMessage={text(block.errorMessage) || 'We could not submit the form. Please try again.'}
+        formType={text(block.formType) || 'contact'}
+        heading={null}
+        subjectOptions={subjectOptions.length ? subjectOptions : undefined}
+        submitLabel={text(block.submitLabel) || 'Send message'}
+        successMessage={text(block.successMessage) || 'Thank you. We will be in touch shortly.'}
+      />)
+    }
+    return <section className={blockClassName(block)} id={htmlID} key={key} style={blockStyle(block, tenantID)}>
+      <div className={blockContainerClassName(block)}>
+        <div
+          className={`${styles.contactFormLayout} ${sideImage ? styles.contactFormWithImage : styles.contactFormWithoutImage} ${imagePosition === 'left' ? styles.contactImageLeft : styles.contactImageRight}`}
+          data-has-image={Boolean(sideImage)}
+          data-image-position={imagePosition}
+        >
+          <div className={styles.contactFormColumn}>
+            {section.title && <SectionHeading {...section} />}
+            <div className={`${styles.contactFormCard} ${styles[`contactFormCard_${cardStyle}`]}`}>
+              <ContactForm
+                errorMessage={text(block.errorMessage) || 'We could not submit the form. Please try again.'}
+                formType={text(block.formType) || 'contact'}
+                heading={null}
+                subjectOptions={subjectOptions.length ? subjectOptions : undefined}
+                submitLabel={text(block.submitLabel) || 'Send message'}
+                successMessage={text(block.successMessage) || 'Thank you. We will be in touch shortly.'}
+              />
+            </div>
+          </div>
+          {sideImage && <figure className={styles.contactSideImage}>
+            <Image
+              alt={sideImage.alt || section.title || 'Contact us'}
+              fill
+              sizes="(max-width: 800px) 95vw, 42vw"
+              src={sideImage.src}
+              style={{
+                objectFit: imageFit,
+                objectPosition: sideImage.focalPoint
+                  ? `${sideImage.focalPoint.x}% ${sideImage.focalPoint.y}%`
+                  : '50% 50%',
+              }}
+              unoptimized
+            />
+          </figure>}
+        </div>
+      </div>
+    </section>
   }
 
   if (type === 'richtextBlock') {
@@ -408,13 +759,31 @@ export function CMSPage({
 }) {
   const page = content.page
   if (!page) return null
-  const bodyBlocks = page.layout.filter((block) => text(block.blockType) !== 'heroBlock')
+  const layout = resolveGheeRoastHomeLayout({
+    hasBrandFeatures: Boolean(content.site.featureStrip?.length),
+    isHomePage: page.isHomePage,
+    layout: page.layout,
+  })
+  const bodyBlocks = page.isHomePage
+    ? layout
+    : layout.filter((block) => text(block.blockType) !== 'heroBlock')
+  const heroVariant = page.pageType === 'catering'
+    ? 'catering'
+    : page.pageType === 'contact'
+      ? 'contact'
+      : 'inner'
   return <>
     {includeHero && !page.isHomePage && <PageHero
       eyebrow={page.hero?.eyebrow}
       subtitle={page.hero?.subtitle || page.metaDescription || ''}
       title={page.hero?.title || page.title}
+      variant={heroVariant}
     />}
-    {bodyBlocks.map((block, index) => <CMSBlock block={block} content={content} index={index} key={text(block.id) || `${text(block.blockType)}-${index}`} />)}
+    {bodyBlocks.map((block, index) => {
+      const renderBlock = record(block)
+      return renderBlock
+        ? <CMSBlock block={renderBlock} content={content} index={index} key={text(renderBlock.id) || `${text(renderBlock.blockType)}-${index}`} />
+        : null
+    })}
   </>
 }

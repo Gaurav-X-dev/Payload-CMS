@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
 import test from 'node:test'
 import { AllBlocks } from '../src/blocks/index.ts'
 import { linkField } from '../src/blocks/shared/linkField.ts'
@@ -12,17 +13,22 @@ import {
   isGheeRoastSupportedBlock,
 } from '../src/themes/ghee-roast/utils/blockSupport.ts'
 import { getGheeRoastPageRenderMode } from '../src/themes/ghee-roast/utils/getPageRenderMode.ts'
+import { getGheeRoastCollectionDependencies } from '../src/lib/site/gheeRoastContentCore.ts'
+import { validatePageLayout } from '../src/validation/pageLayout.ts'
+import { mapGheeRoastPage } from '../src/themes/ghee-roast/mappers/cmsContent.ts'
+import type { GheeRoastPageDocument } from '../src/themes/ghee-roast/mappers/cmsContent.ts'
+import type { GheeRoastPageBlock } from '../src/themes/ghee-roast/dynamicTypes.ts'
 
-const fallbackContent = (): GheeRoastContentResult => emptyGheeRoastContent({
-  fallbacksEnabled: true,
+const emptyContent = (): GheeRoastContentResult => emptyGheeRoastContent({
+  fallbacksEnabled: false,
   tenantName: 'Fixture Ghee Roast',
-  tenantState: 'fallback',
+  tenantState: 'empty',
 })
 
 const cmsPage = (
   blocks: Array<Record<string, unknown>>,
 ): GheeRoastContentResult => ({
-  ...fallbackContent(),
+  ...emptyContent(),
   page: {
     canonicalUrl: 'https://ghee-roast.example/fixture',
     hero: {
@@ -32,7 +38,7 @@ const cmsPage = (
     },
     id: 7,
     isHomePage: false,
-    layout: blocks,
+    layout: blocks as unknown as GheeRoastPageBlock[],
     metaDescription: 'CMS page description',
     metaImage: {
       alt: 'CMS social image',
@@ -40,7 +46,10 @@ const cmsPage = (
     },
     metaTitle: 'CMS page title',
     noIndex: false,
+    pageType: 'generic',
+    redirect: undefined,
     slug: 'fixture',
+    template: 'default',
     title: 'Fixture',
   },
   seo: {
@@ -54,18 +63,68 @@ const cmsPage = (
   tenantState: 'active',
 })
 
-test('render decision keeps known legacy pages, applies CMS bodies, and 404s unsafe states', () => {
-  const fallback = fallbackContent()
+test('page type, not slug guessing, controls page-specific collection dependencies', () => {
+  const about = mapGheeRoastPage({
+    _status: 'published',
+    id: 9,
+    isHomePage: false,
+    layout: [],
+    pageType: 'about',
+    slug: 'our-story-any-slug',
+    tenantId: 3167,
+    title: 'Our Story',
+  }, 3167)
+  assert.equal(about?.pageType, 'about')
+  assert.equal(getGheeRoastCollectionDependencies('about', []).team, true)
+  assert.equal(getGheeRoastCollectionDependencies('generic', []).team, false)
+})
+
+test('page record maps only safe configured redirects', () => {
+  const base: GheeRoastPageDocument = {
+    _status: 'published',
+    id: 10,
+    isHomePage: false,
+    layout: [],
+    pageType: 'generic',
+    slug: 'old-page',
+    tenantId: 3167,
+    title: 'Old Page',
+  }
+  assert.deepEqual(mapGheeRoastPage({
+    ...base,
+    redirect: { enableRedirect: true, permanent: false, redirectUrl: '/new-page' },
+  }, 3167)?.redirect, { href: '/new-page', permanent: false })
+  assert.equal(mapGheeRoastPage({
+    ...base,
+    redirect: { enableRedirect: true, redirectUrl: 'javascript:alert(1)' },
+  }, 3167)?.redirect, undefined)
+})
+
+test('page layout rejects duplicate singleton blocks, misplaced Hero, and duplicate anchors', () => {
+  assert.match(String(validatePageLayout([{ blockType: 'heroBlock' }, { blockType: 'heroBlock' }])), /only once/)
+  assert.match(String(validatePageLayout([{ blockType: 'richtextBlock' }, { blockType: 'heroBlock' }])), /must be the first/)
+  assert.match(String(validatePageLayout([
+    { blockType: 'richtextBlock', settings: { htmlId: 'same' } },
+    { blockType: 'ctaBlock', settings: { htmlId: 'same' } },
+  ])), /more than one block/)
+  assert.equal(validatePageLayout([
+    { blockType: 'heroBlock' },
+    { blockType: 'statsBlock', settings: { htmlId: 'proof-1' } },
+  ]), true)
+})
+
+test('render decision applies CMS pages, keeps an empty Home shell, and 404s unknown routes', () => {
+  const empty = emptyContent()
   assert.equal(getGheeRoastPageRenderMode({
-    content: fallback,
-    hasRegisteredPage: true,
-    pathname: '/about',
-  }), 'legacy')
+    content: empty,
+    hasRegisteredPage: false,
+    pathname: '/',
+  }), 'cms')
   assert.equal(getGheeRoastPageRenderMode({
     content: cmsPage([{ blockType: 'heroBlock' }]),
     hasRegisteredPage: true,
     pathname: '/about',
-  }), 'legacy', 'a hero-only CMS page composes its CMS hero with the legacy body')
+  }), 'cms', 'a published CMS page never composes with a legacy body')
   assert.equal(getGheeRoastPageRenderMode({
     content: cmsPage([{ blockType: 'heroBlock' }, { blockType: 'ctaBlock' }]),
     hasRegisteredPage: true,
@@ -77,13 +136,18 @@ test('render decision keeps known legacy pages, applies CMS bodies, and 404s uns
     pathname: '/fixture',
   }), 'cms')
   assert.equal(getGheeRoastPageRenderMode({
-    content: fallback,
+    content: empty,
     hasRegisteredPage: false,
     pathname: '/unknown',
   }), 'not-found')
+  assert.equal(getGheeRoastPageRenderMode({
+    content: empty,
+    hasRegisteredPage: true,
+    pathname: '/about',
+  }), 'legacy', 'only the explicit development compatibility path supplies a registered legacy page')
   for (const tenantState of ['inactive', 'missing'] as const) {
     assert.equal(getGheeRoastPageRenderMode({
-      content: { ...fallback, tenantState },
+      content: { ...empty, tenantState },
       hasRegisteredPage: true,
       pathname: '/',
     }), 'not-found')
@@ -93,10 +157,6 @@ test('render decision keeps known legacy pages, applies CMS bodies, and 404s uns
 test('metadata uses the same CMS page result and fails closed for unknown tenants/routes', () => {
   const metadata = buildGheeRoastMetadata({
     content: cmsPage([{ blockType: 'heroBlock' }]),
-    registeredMetadata: {
-      description: 'Legacy description',
-      title: 'Legacy title',
-    },
   })
   assert.equal(metadata.title, 'CMS page title | CMS Ghee')
   assert.equal(metadata.description, 'CMS page description')
@@ -109,24 +169,35 @@ test('metadata uses the same CMS page result and fails closed for unknown tenant
     url: 'https://cdn.example/cms.jpg',
   }])
 
-  const fallback = fallbackContent()
-  const fallbackMetadata = buildGheeRoastMetadata({
-    content: fallback,
-    registeredMetadata: {
-      description: 'Legacy description',
-      title: 'Legacy title',
-    },
-  })
-  assert.equal(fallbackMetadata.title, 'Legacy title')
-  assert.equal(fallbackMetadata.description, 'Legacy description')
+  const empty = emptyContent()
+  const emptyMetadata = buildGheeRoastMetadata({ content: empty })
+  assert.equal(emptyMetadata.title, 'Fixture Ghee Roast')
+  assert.equal(emptyMetadata.description, undefined)
+  assert.deepEqual(emptyMetadata.robots, { follow: true, index: false })
   assert.deepEqual(buildGheeRoastMetadata({
-    content: { ...fallback, tenantState: 'missing' },
-    registeredMetadata: {
-      description: 'Must not leak',
-      title: 'Must not leak',
-    },
+    content: { ...empty, tenantState: 'missing' },
   }), {})
-  assert.deepEqual(buildGheeRoastMetadata({ content: fallback }), {})
+})
+
+test('normal Ghee Roast runtime has no static legacy data dependency', () => {
+  const normalRuntimeFiles = [
+    'src/lib/site/gheeRoastContentCore.ts',
+    'src/lib/site/getGheeRoastMetadata.ts',
+    'src/themes/ghee-roast/GheeRoastPageRenderer.tsx',
+    'src/themes/ghee-roast/index.ts',
+    'src/themes/ghee-roast/mappers/cmsContent.ts',
+    'src/themes/ghee-roast/utils/buildGheeRoastMetadata.ts',
+  ]
+  for (const file of normalRuntimeFiles) {
+    const source = readFileSync(file, 'utf8')
+    assert.doesNotMatch(source, /(?:from|import\()\s*['"][^'"]*\/data\//)
+  }
+
+  const renderer = readFileSync('src/themes/ghee-roast/GheeRoastPageRenderer.tsx', 'utf8')
+  const publicExports = readFileSync('src/themes/ghee-roast/index.ts', 'utf8')
+  assert.match(renderer, /gheeRoastLegacyFallbacksEnabled\(\)/)
+  assert.match(renderer, /await import\('\.\/utils\/getPageComponent'\)/)
+  assert.doesNotMatch(publicExports, /getPageComponent|gheeRoastPageRegistry/)
 })
 
 test('every Payload block exposed to Ghee pages has a deterministic renderer disposition', () => {

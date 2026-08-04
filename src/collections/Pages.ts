@@ -1,4 +1,5 @@
-import type { CollectionConfig } from 'payload'
+import { ValidationError } from 'payload'
+import type { CollectionBeforeValidateHook, CollectionConfig, Where } from 'payload'
 import { tenantField } from '../fields/tenantField'
 import { tenantContentMutations } from '../access/tenantContext'
 import { tenantPublicRead } from '../access/tenantPublicRead'
@@ -17,12 +18,73 @@ import {
   validateFiniteInteger,
   validateSafeURL,
 } from '../validation/shared'
+import {
+  CMS_PAGE_TYPES,
+  normalizeCMSPageType,
+  validatePageLayout,
+} from '../validation/pageLayout'
+import { normalizeTenantID, resolveTrustedTenantID } from '../access/tenantContext'
+
+const validatePageModel: CollectionBeforeValidateHook = async ({
+  data,
+  operation,
+  originalDoc,
+  req,
+}) => {
+  if (!data) return data
+
+  const isHomePage = (data.isHomePage ?? originalDoc?.isHomePage) === true
+  data.pageType = normalizeCMSPageType(data.pageType ?? originalDoc?.pageType, isHomePage)
+  if (isHomePage) data.slug = ''
+
+  if (data.pageType === 'home' && !isHomePage) {
+    throw new ValidationError({
+      errors: [{
+        message: 'Page Type "Home" requires Is Home Page to be enabled.',
+        path: 'pageType',
+      }],
+    })
+  }
+  if (!isHomePage) return data
+
+  const tenantID = normalizeTenantID(data.tenantId)
+    ?? normalizeTenantID(originalDoc?.tenantId)
+    ?? await resolveTrustedTenantID(req)
+  if (!tenantID) return data
+
+  const conditions: Where[] = [
+    { tenantId: { equals: tenantID } },
+    { isHomePage: { equals: true } },
+  ]
+  if (operation === 'update' && originalDoc?.id) {
+    conditions.push({ id: { not_equals: originalDoc.id } })
+  }
+  const existing = await req.payload.find({
+    collection: 'pages',
+    depth: 0,
+    draft: true,
+    limit: 1,
+    overrideAccess: true,
+    pagination: false,
+    where: { and: conditions },
+  })
+  if (existing.docs.length > 0) {
+    throw new ValidationError({
+      errors: [{
+        message: 'This tenant already has a Home Page. Edit the existing page instead.',
+        path: 'isHomePage',
+      }],
+    })
+  }
+
+  return data
+}
 
 export const Pages: CollectionConfig = {
   slug: 'pages',
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'slug', 'isHomePage', 'status', 'updatedAt'],
+    defaultColumns: ['title', 'slug', 'pageType', 'isHomePage', '_status', 'updatedAt'],
     description: 'Build tenant pages with reusable, CMS-driven sections. Drafts remain private until published.',
     livePreview: {
       url: ({ data }) => data?.isHomePage ? '/' : `/${String(data?.slug || '').replace(/^\/+/, '')}`,
@@ -88,14 +150,20 @@ export const Pages: CollectionConfig = {
             {
               type: 'row',
               fields: [
-                { name: 'template', type: 'select', defaultValue: 'default', options: ['default', 'blank', 'landing'] },
                 {
-                  name: 'status',
+                  name: 'pageType',
                   type: 'select',
-                  defaultValue: 'draft',
-                  enumName: 'cms_page_status',
-                  options: ['draft', 'published', 'archived'],
+                  defaultValue: 'generic',
+                  enumName: 'cms_page_type',
+                  options: CMS_PAGE_TYPES.map((value) => ({
+                    label: value.split('-').map((part) => `${part.charAt(0).toUpperCase()}${part.slice(1)}`).join(' '),
+                    value,
+                  })),
+                  admin: {
+                    description: 'Controls optional page behavior. The Slug alone never determines the page type.',
+                  },
                 },
+                { name: 'template', type: 'select', defaultValue: 'default', options: ['default', 'blank', 'landing'] },
               ]
             },
             { name: 'publishedAt', type: 'date', admin: { position: 'sidebar' } },
@@ -107,8 +175,9 @@ export const Pages: CollectionConfig = {
             {
               name: 'layout',
               type: 'blocks',
+              validate: (value: unknown) => validatePageLayout(value),
               admin: {
-                description: 'Construct the page visually. When empty, the Ghee Roast theme keeps its legacy design as a compatibility fallback.',
+                description: 'Construct the page visually. Block order here is the public frontend order. Empty layout means no page sections.',
                 initCollapsed: true,
               },
               blocks: AllBlocks,
@@ -191,15 +260,7 @@ export const Pages: CollectionConfig = {
     }
   ],
   hooks: {
-    beforeChange: [
-      ({ data }) => {
-        // If it's the home page, force the slug to be blank or 'home'
-        if (data.isHomePage) {
-          data.slug = ''
-        }
-        return data
-      }
-    ],
+    beforeValidate: [validatePageModel],
     afterChange: [invalidateTenantCache],
     afterDelete: [invalidateTenantCacheAfterDelete],
   }

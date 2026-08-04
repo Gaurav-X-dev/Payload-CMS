@@ -1,7 +1,5 @@
 import type { Where } from 'payload'
 import {
-  fallbackGheeRoastHero,
-  fallbackGheeRoastNavigation,
   mapGheeRoastCollections,
   mapGheeRoastFooter,
   mapGheeRoastHero,
@@ -10,11 +8,13 @@ import {
   mapGheeRoastSEO,
   mapGheeRoastSite,
 } from '../../themes/ghee-roast/mappers/cmsContent'
+import type { GheeRoastPageDocument } from '../../themes/ghee-roast/mappers/cmsContent'
 import type {
   GheeRoastCMSPage,
   GheeRoastDynamicContent,
 } from '../../themes/ghee-roast/dynamicTypes'
 import { normalizePathname } from '../../themes/ghee-roast/utils/normalizePathname'
+import type { CMSPageType } from '../../validation/pageLayout'
 import { resolveLocalSite } from './resolveLocalSite'
 import { tenantCanRenderGheeRoast } from './themeFallbacks'
 import type { LocalSite, LocalThemeKey } from './types'
@@ -36,6 +36,7 @@ export type GheeRoastCollectionSlug =
   | 'footer'
   | 'gallery'
   | 'locations'
+  | 'media'
   | 'menu-categories'
   | 'menu-items'
   | 'nav'
@@ -54,6 +55,7 @@ export type GheeRoastFindArgs = {
   pagination: false
   select?: Record<string, true>
   sort?: string
+  draft?: boolean
   where: Where
 }
 
@@ -68,6 +70,7 @@ const emptyDocuments = {
   faqs: [],
   gallery: [],
   locations: [],
+  media: [],
   menuCategories: [],
   menuItems: [],
   team: [],
@@ -107,17 +110,16 @@ export function emptyGheeRoastContent({
   tenantState?: Exclude<GheeRoastTenantState, 'active'>
 }): GheeRoastContentResult {
   return {
-    collections: mapGheeRoastCollections(emptyDocuments, 0, { fallbacksEnabled }),
-    footer: mapGheeRoastFooter(null, 0, { fallbacksEnabled }),
-    hero: fallbacksEnabled
-      ? fallbackGheeRoastHero()
-      : mapGheeRoastHero(null, 0, { fallbacksEnabled: false }),
-    navigation: fallbacksEnabled
-      ? fallbackGheeRoastNavigation()
-      : mapGheeRoastNavigation(null, 0, { fallbacksEnabled: false, tenantName }),
+    collections: mapGheeRoastCollections(emptyDocuments, 0, { fallbacksEnabled: false }),
+    footer: mapGheeRoastFooter(null, 0, { fallbacksEnabled: false }),
+    hero: mapGheeRoastHero(null, 0, { fallbacksEnabled: false }),
+    navigation: mapGheeRoastNavigation(null, 0, {
+      fallbacksEnabled: false,
+      tenantName,
+    }),
     page: null,
     seo: {},
-    site: mapGheeRoastSite({ name: tenantName }, null, 0, { fallbacksEnabled }),
+    site: mapGheeRoastSite({ name: tenantName }, null, 0, { fallbacksEnabled: false }),
     tenantState: tenantState ?? (fallbacksEnabled ? 'fallback' : 'empty'),
   }
 }
@@ -145,19 +147,18 @@ export function gheeRoastContentCacheArguments(
 }
 
 export function getGheeRoastCollectionDependencies(
-  pathname: string,
-  blocks: Array<Record<string, unknown>>,
+  pageType: CMSPageType,
+  blocks: Array<{ blockType?: string | null }>,
 ) {
   const blockTypes = new Set(blocks.map((block) => String(block.blockType || '')))
-  const home = pathname === '/'
   return {
-    events: pathname === '/catering' || blockTypes.has('eventsBlock'),
-    faqs: pathname === '/delivery' || blockTypes.has('faqBlock'),
-    gallery: home || pathname === '/catering' || blockTypes.has('galleryBlock'),
-    locations: pathname === '/contact' || pathname === '/menu' || blockTypes.has('locationsBlock'),
-    menu: home || pathname === '/menu' || blockTypes.has('menushowcaseBlock'),
-    team: pathname === '/about' || blockTypes.has('teamBlock'),
-    testimonials: home || blockTypes.has('testimonialsBlock'),
+    events: pageType === 'catering' || blockTypes.has('eventsBlock'),
+    faqs: pageType === 'delivery' || pageType === 'faq' || blockTypes.has('faqBlock'),
+    gallery: pageType === 'catering' || pageType === 'gallery' || blockTypes.has('galleryBlock'),
+    locations: pageType === 'locations' || pageType === 'menu' || blockTypes.has('locationsBlock'),
+    menu: pageType === 'menu' || blockTypes.has('menushowcaseBlock'),
+    team: pageType === 'about' || blockTypes.has('teamBlock'),
+    testimonials: blockTypes.has('testimonialsBlock'),
   }
 }
 
@@ -195,6 +196,7 @@ async function findDocuments(
   const probe = await find({
     collection,
     depth: 0,
+    draft: false,
     limit,
     overrideAccess: true,
     pagination: false,
@@ -209,6 +211,7 @@ async function findDocuments(
   const result = await find({
     collection,
     depth,
+    draft: false,
     limit,
     overrideAccess: true,
     pagination: false,
@@ -228,11 +231,18 @@ const onlyTenantDocuments = (
   tenantID: number | string,
 ): unknown[] => documents.filter((document) => sameID(documentTenantID(document), tenantID))
 
-const isPublishedPageDocument = (value: unknown): boolean => {
+const isPageDocument = (value: unknown): value is GheeRoastPageDocument => {
   const document = asDocument(value)
-  if (!document || document.status !== 'published') return false
-  return document._status === undefined || document._status === 'published'
+  return Boolean(
+    document
+    && typeof document.id === 'number'
+    && typeof document.title === 'string'
+    && (document._status === 'draft' || document._status === 'published'),
+  )
 }
+
+const isPublishedPageDocument = (value: unknown): value is GheeRoastPageDocument =>
+  isPageDocument(value) && value._status === 'published'
 
 const requireAtMostOne = <T>(
   label: string,
@@ -245,14 +255,11 @@ const requireAtMostOne = <T>(
 }
 
 const pageDocumentFor = (
-  documents: unknown[],
+  documents: GheeRoastPageDocument[],
   page: GheeRoastCMSPage | null,
-): unknown | undefined => {
+): GheeRoastPageDocument | undefined => {
   if (!page) return undefined
-  return documents.find((document) => {
-    const value = asDocument(document)
-    return sameID(relationshipID(value?.id), page.id)
-  })
+  return documents.find((document) => sameID(document.id, page.id))
 }
 
 export async function loadGheeRoastContentWithPayload({
@@ -325,7 +332,6 @@ export async function loadGheeRoastContentWithPayload({
     : { slug: { equals: normalizedPathname.slice(1) } }
   const publishedPageWhere = tenantWhere(tenantID, [
     pageCondition,
-    { status: { equals: 'published' } },
     { _status: { equals: 'published' } },
   ])
   const [
@@ -339,7 +345,7 @@ export async function loadGheeRoastContentWithPayload({
       collection: 'nav',
       depth: 2,
       limit: 2,
-      where: tenantWhere(tenantID, [{ location: { equals: 'header' } }]),
+      where: tenantWhere(tenantID, [{ location: { equals: 'header' } }, { _status: { equals: 'published' } }]),
     }),
     findDocuments(find, {
       collection: 'pages',
@@ -352,13 +358,13 @@ export async function loadGheeRoastContentWithPayload({
       collection: 'site-settings',
       depth: 1,
       limit: 2,
-      where: tenantWhere(tenantID),
+      where: tenantWhere(tenantID, [{ _status: { equals: 'published' } }]),
     }),
     findDocuments(find, {
       collection: 'footer',
       depth: 1,
       limit: 2,
-      where: tenantWhere(tenantID),
+      where: tenantWhere(tenantID, [{ _status: { equals: 'published' } }]),
     }),
     findDocuments(find, {
       collection: 'seo',
@@ -376,9 +382,16 @@ export async function loadGheeRoastContentWithPayload({
   const page = requireAtMostOne('published page resolution', mappedPages) ?? null
   const rawPage = pageDocumentFor(tenantPages, page)
   const dependencies = getGheeRoastCollectionDependencies(
-    normalizedPathname,
+    page?.pageType ?? 'generic',
     page?.layout ?? [],
   )
+  const rawContactMediaIDs = [...new Set((page?.layout ?? [])
+    .filter((block) => block.blockType === 'formBlock')
+    .flatMap((block) => {
+      const candidate = block as unknown as Record<string, unknown>
+      return [candidate.sideImage]
+    })
+    .filter((value): value is number | string => typeof value === 'number' || typeof value === 'string'))]
   const findTenantCollection = (
     collection: Extract<
       GheeRoastCollectionSlug,
@@ -386,6 +399,7 @@ export async function loadGheeRoastContentWithPayload({
       | 'faqs'
       | 'gallery'
       | 'locations'
+      | 'media'
       | 'menu-categories'
       | 'menu-items'
       | 'teammembers'
@@ -411,6 +425,7 @@ export async function loadGheeRoastContentWithPayload({
     testimonials,
     gallery,
     locations,
+    media,
     team,
     events,
     faqs,
@@ -426,6 +441,9 @@ export async function loadGheeRoastContentWithPayload({
     findTenantCollection('gallery', dependencies.gallery, 'sortOrder'),
     findTenantCollection('locations', dependencies.locations, 'sortOrder', [
       { isActive: { equals: true } },
+    ]),
+    findTenantCollection('media', rawContactMediaIDs.length > 0, 'id', [
+      { id: { in: rawContactMediaIDs } },
     ]),
     findTenantCollection('teammembers', dependencies.team, 'sortOrder', [
       { isActive: { equals: true } },
@@ -465,45 +483,44 @@ export async function loadGheeRoastContentWithPayload({
     || testimonials.length
     || gallery.length
     || locations.length
+    || media.length
     || team.length
     || events.length
     || faqs.length,
   )
-  // A valid tenant with no CMS rows must retain the complete legacy site.
-  // The environment flag controls partial field/section merging once any CMS
-  // content exists; it must never let an unknown tenant enter fallback mode.
-  const useFallbacks = fallbacksEnabled || !hasCMSContent
-
   return {
     collections: mapGheeRoastCollections({
       events,
       faqs,
       gallery,
       locations,
+      media,
       menuCategories,
       menuItems,
       team,
       testimonials,
-    }, tenantID, { fallbacksEnabled: useFallbacks }),
-    footer: mapGheeRoastFooter(footerDocument, tenantID, { fallbacksEnabled: useFallbacks }),
+    }, tenantID, { fallbacksEnabled: false }),
+    footer: mapGheeRoastFooter(footerDocument, tenantID, { fallbacksEnabled: false }),
     hero: mapGheeRoastHero(
-      asDocument(rawPage) as Parameters<typeof mapGheeRoastHero>[0],
+      rawPage,
       tenantID,
-      { fallbacksEnabled: useFallbacks },
+      { fallbacksEnabled: false },
     ),
     navigation: mapGheeRoastNavigation(
       asDocument(navigationDocument) as Parameters<typeof mapGheeRoastNavigation>[0],
       tenantID,
       {
-      fallbacksEnabled: useFallbacks,
+      fallbacksEnabled: false,
       tenantName: typeof tenant.name === 'string' ? tenant.name : null,
       },
     ),
     page,
     seo: mapGheeRoastSEO(seoDocument, tenantID),
-    site: mapGheeRoastSite(tenant, settingsDocument, tenantID, { fallbacksEnabled: useFallbacks }),
+    site: mapGheeRoastSite(tenant, settingsDocument, tenantID, { fallbacksEnabled: false }),
     tenantState: hasCMSContent
       ? 'active'
-      : 'fallback',
+      : fallbacksEnabled
+        ? 'fallback'
+        : 'empty',
   }
 }

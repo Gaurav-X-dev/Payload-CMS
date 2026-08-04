@@ -7,6 +7,7 @@ import {
   validateIndianMobile,
   validateName,
 } from '../../../validation/shared'
+import { DEFAULT_CONTACT_SUBJECT_OPTIONS } from '../../../validation/contactPage'
 
 export const CONTACT_SUBMISSIONS_ENDPOINT = '/api/contact-submissions'
 export const RESERVATIONS_ENDPOINT = '/api/reservations'
@@ -20,6 +21,7 @@ export type ContactSubmissionRequestBody = {
   message: string
   name: string
   phone?: string
+  subject: string
   type: ContactSubmissionType
 }
 
@@ -88,6 +90,7 @@ export const resolveContactSubmissionType = (
 export function buildContactSubmissionRequest(
   values: FormValues,
   formType = 'contact',
+  allowedSubjects: readonly string[] = DEFAULT_CONTACT_SUBJECT_OPTIONS.map((option) => option.value),
 ): FormRequestResult<{
   body: ContactSubmissionRequestBody
   endpoint: typeof CONTACT_SUBMISSIONS_ENDPOINT
@@ -97,6 +100,7 @@ export function buildContactSubmissionRequest(
   const rawPhone = value(values, 'phone')
   const phone = normalizeIndianMobile(rawPhone)
   const message = value(values, 'message')
+  const subject = value(values, 'subject')
 
   const nameValidation = validateName(name)
   if (nameValidation !== true) return failure(nameValidation)
@@ -110,6 +114,12 @@ export function buildContactSubmissionRequest(
   const messageValidation = validateRequiredText(message, 'a message', 5_000)
   if (messageValidation !== true) return failure(messageValidation)
 
+  const subjectValidation = validateRequiredText(subject, 'an enquiry subject', 80)
+  if (subjectValidation !== true) return failure(subjectValidation)
+  if (!allowedSubjects.some((allowed) => allowed.toLocaleLowerCase('en-IN') === subject.toLocaleLowerCase('en-IN'))) {
+    return failure('Choose one of the available enquiry subjects.')
+  }
+
   return {
     ok: true,
     request: {
@@ -118,6 +128,7 @@ export function buildContactSubmissionRequest(
         message,
         name,
         ...(phone ? { phone } : {}),
+        subject,
         type: resolveContactSubmissionType(formType, value(values, 'subject')),
       },
       endpoint: CONTACT_SUBMISSIONS_ENDPOINT,
@@ -183,10 +194,11 @@ export function buildReservationRequest(
 export function buildGheeRoastFormRequest(
   formType: string,
   values: FormValues,
+  allowedSubjects?: readonly string[],
 ): FormRequestResult {
   return formType === 'reservation'
     ? buildReservationRequest(values)
-    : buildContactSubmissionRequest(values, formType)
+    : buildContactSubmissionRequest(values, formType, allowedSubjects)
 }
 
 export function buildNewsletterRequest(
@@ -206,6 +218,7 @@ export function buildNewsletterRequest(
         email,
         message: 'Newsletter signup request from the website.',
         name: 'Newsletter Subscriber',
+        subject: 'Newsletter Signup',
         type: 'general',
       },
       endpoint: CONTACT_SUBMISSIONS_ENDPOINT,

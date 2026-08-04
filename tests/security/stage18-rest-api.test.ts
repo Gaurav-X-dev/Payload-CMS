@@ -45,7 +45,7 @@ describe('Stage 18 - REST API Security Audit', () => {
     test('Unauthenticated POST', async () => {
       const res = await apiFetch('/pages', {
         method: 'POST',
-        body: JSON.stringify({ title: 'Hacked', slug: 'hacked', status: 'published' })
+        body: JSON.stringify({ _status: 'published', title: 'Hacked', slug: 'hacked' })
       })
       assert.ok([403, 401].includes(res.status))
     })

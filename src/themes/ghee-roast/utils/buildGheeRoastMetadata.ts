@@ -1,18 +1,14 @@
 import type { Metadata } from 'next'
 import type { GheeRoastContentResult } from '../../../lib/site/gheeRoastContentCore'
-import type { PageMetadataData } from '../types'
 
 export function buildGheeRoastMetadata({
   content,
-  registeredMetadata,
 }: {
   content: GheeRoastContentResult
-  registeredMetadata?: PageMetadataData
 }): Metadata {
   if (
     content.tenantState === 'inactive'
     || content.tenantState === 'missing'
-    || (!content.page && !registeredMetadata)
   ) {
     return {}
   }
@@ -20,17 +16,16 @@ export function buildGheeRoastMetadata({
   const page = content.page
   const baseTitle = page?.metaTitle
     || page?.title
-    || registeredMetadata?.title
     || content.site.siteName
-  const title = content.seo.titlePattern?.includes('%s')
+  const title = content.seo.titlePattern?.includes('%s') && baseTitle
     ? content.seo.titlePattern.replace('%s', baseTitle)
     : baseTitle
   const description = page?.metaDescription
-    || registeredMetadata?.description
     || content.seo.description
     || content.site.description
   const image = page?.metaImage || content.seo.ogImage
-  const robotsValue = page?.noIndex
+  const canonical = page?.canonicalUrl || content.seo.canonicalUrl
+  const robotsValue = !page || page.noIndex
     ? 'noindex, follow'
     : content.seo.robots || 'index, follow'
   const [robotsIndex = 'index', robotsFollow = 'follow'] = robotsValue
@@ -38,29 +33,36 @@ export function buildGheeRoastMetadata({
     .map((value) => value.trim())
 
   return {
-    alternates: {
-      canonical: page?.canonicalUrl || content.seo.canonicalUrl,
-    },
-    description,
+    alternates: canonical ? { canonical } : undefined,
+    description: description || undefined,
+    keywords: content.seo.keywords?.length ? content.seo.keywords : undefined,
     openGraph: {
-      description: content.seo.ogDescription || description,
+      description: content.seo.ogDescription || description || undefined,
       images: image ? [{ alt: image.alt, url: image.src }] : undefined,
-      siteName: content.seo.ogSiteName || content.site.siteName,
-      title: content.seo.ogTitle || title,
+      siteName: content.seo.ogSiteName || content.site.siteName || undefined,
+      title: content.seo.ogTitle || title || undefined,
       type: 'website',
     },
     robots: {
       follow: robotsFollow !== 'nofollow',
       index: robotsIndex !== 'noindex',
     },
-    title,
+    title: title || undefined,
     twitter: {
       card: content.seo.twitterCard === 'summary' ? 'summary' : 'summary_large_image',
       creator: content.seo.twitterCreator,
-      description,
+      description: description || undefined,
       images: image ? [image.src] : undefined,
       site: content.seo.twitterSite,
-      title,
+      title: title || undefined,
     },
+    verification: content.seo.googleSiteVerification || content.seo.bingSiteVerification
+      ? {
+          google: content.seo.googleSiteVerification,
+          other: content.seo.bingSiteVerification
+            ? { 'msvalidate.01': content.seo.bingSiteVerification }
+            : undefined,
+        }
+      : undefined,
   }
 }

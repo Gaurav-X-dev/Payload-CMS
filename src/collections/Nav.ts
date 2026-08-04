@@ -14,15 +14,21 @@ import {
   validateFiniteInteger,
   validateSafeURL,
 } from '../validation/shared'
+import {
+  validateNavChildSortOrders,
+  validateNavTopLevelSortOrders,
+} from '../validation/orderedRows'
 
 export const Nav: CollectionConfig = {
   slug: 'nav',
   admin: {
     useAsTitle: 'internalName',
     description: 'Manage the primary header navigation for this tenant. Limited to one document per tenant.',
+    defaultColumns: ['internalName', '_status', 'updatedAt'],
   },
+  versions: { drafts: true },
   access: {
-    read: tenantPublicRead(),
+    read: tenantPublicRead({ publishedOnly: true }),
     ...tenantContentMutations,
   },
   fields: [
@@ -56,6 +62,7 @@ export const Nav: CollectionConfig = {
     {
       name: 'links',
       type: 'blocks',
+      validate: (value: unknown) => validateNavTopLevelSortOrders(value),
       blocks: [
         {
           slug: 'link',
@@ -84,10 +91,14 @@ export const Nav: CollectionConfig = {
                 {
                   name: 'sortOrder',
                   type: 'number',
+                  required: true,
                   defaultValue: 0,
                   min: 0,
                   validate: (value: unknown) =>
                     validateFiniteInteger(value, { min: 0, max: 1_000_000 }),
+                  admin: {
+                    description: 'Use a unique whole number for each navigation item. Lower values appear first.',
+                  },
                 },
               ],
             },
@@ -111,9 +122,10 @@ export const Nav: CollectionConfig = {
               type: 'array',
               maxRows: 12,
               admin: {
-                description: 'Optional dropdown links. On mobile these follow the parent item.',
+                description: 'Optional dropdown links. Sort Order must be unique within this parent. On mobile these follow the parent item.',
                 initCollapsed: true,
               },
+              validate: (value: unknown) => validateNavChildSortOrders(value),
               fields: [
                 { name: 'label', type: 'text', required: true, maxLength: 80 },
                 {
@@ -123,7 +135,25 @@ export const Nav: CollectionConfig = {
                   maxLength: 2048,
                   validate: (value: unknown) => validateSafeURL(value, { required: true }),
                 },
-                { name: 'newTab', type: 'checkbox', defaultValue: false },
+                {
+                  type: 'row',
+                  fields: [
+                    { name: 'enabled', type: 'checkbox', defaultValue: true },
+                    {
+                      name: 'sortOrder',
+                      type: 'number',
+                      required: true,
+                      defaultValue: 0,
+                      min: 0,
+                      validate: (value: unknown) =>
+                        validateFiniteInteger(value, { min: 0, max: 1_000_000 }),
+                      admin: {
+                        description: 'Use a unique whole number within this dropdown. Lower values appear first.',
+                      },
+                    },
+                    { name: 'newTab', type: 'checkbox', defaultValue: false },
+                  ],
+                },
               ],
             },
             {

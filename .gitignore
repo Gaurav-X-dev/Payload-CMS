@@ -24,3 +24,5 @@ backups/
 .DS_Store
 Thumbs.db
 desktop.ini
+payload_backup_pre_globals.sql
+*.dump

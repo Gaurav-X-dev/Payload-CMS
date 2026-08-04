@@ -10,11 +10,13 @@ export function GheeRoastLayout({
   children,
   content,
   pathname,
+  showChrome = true,
   showNewsletter = true,
 }: {
   children: ReactNode
   content: GheeRoastDynamicContent
   pathname: string
+  showChrome?: boolean
   showNewsletter?: boolean
 }) {
   const { footer, navigation, site } = content
@@ -34,15 +36,19 @@ export function GheeRoastLayout({
     logo: navigation.logo || site.logo,
     tagline: navigation.tagline || site.tagline,
   }
+  const jsonLd = content.seo.jsonLd
+    ? JSON.stringify(content.seo.jsonLd).replace(/</g, '\\u003c')
+    : null
 
   return (
     <div className={styles.themeRoot} data-theme-site="ghee-roast" style={themeStyle}>
-      {showAnnouncement && <aside className={styles.announcementBar}>{site.announcement.text}</aside>}
-      <Header hasAnnouncement={showAnnouncement} navigation={headerNavigation} pathname={pathname} />
+      {jsonLd && <script dangerouslySetInnerHTML={{ __html: jsonLd }} type="application/ld+json" />}
+      {showChrome && showAnnouncement && <aside className={styles.announcementBar}>{site.announcement.text}</aside>}
+      {showChrome && <Header hasAnnouncement={showAnnouncement} navigation={headerNavigation} pathname={pathname} />}
       <main>{children}</main>
-      {showNewsletter && <Newsletter override={site.newsletter} />}
-      <Footer footer={footer} site={site} />
-      <BackToTop />
+      {showChrome && showNewsletter && <Newsletter override={site.newsletter} />}
+      {showChrome && <Footer footer={footer} navigation={headerNavigation} site={site} />}
+      {showChrome && <BackToTop />}
     </div>
   )
 }

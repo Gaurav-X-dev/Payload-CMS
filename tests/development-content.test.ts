@@ -5,6 +5,7 @@ import type { Payload } from 'payload'
 import { resolveLocalSite } from '../src/lib/site/resolveLocalSite.ts'
 import { resolveHostname } from '../src/lib/site/resolveHostname.ts'
 import {
+  gheeRoastLegacyFallbacksEnabled,
   tenantCanRenderGheeRoast,
   themeStaticFallbacksEnabled,
 } from '../src/lib/site/themeFallbacks.ts'
@@ -19,8 +20,6 @@ import {
 import {
   emptyGheeRoastHero,
   emptyGheeRoastNavigation,
-  fallbackGheeRoastHero,
-  fallbackGheeRoastNavigation,
   mapGheeRoastHero,
   mapGheeRoastNavigation,
 } from '../src/themes/ghee-roast/mappers/cmsContent.ts'
@@ -58,16 +57,19 @@ test('inactive or mismatched tenants cannot expose the Ghee Roast theme', () => 
   assert.equal(tenantCanRenderGheeRoast({ isActive: true, theme: 'ghee-roast' }), true)
   assert.equal(tenantCanRenderGheeRoast({ isActive: false, theme: 'ghee-roast' }), false)
   assert.equal(tenantCanRenderGheeRoast({ isActive: true, theme: 'zuru-zuru' }), false)
+  assert.equal(tenantCanRenderGheeRoast({ isActive: true }), false)
 })
 
 test('static fallback configuration is explicit and disabled by default', () => {
   assert.equal(themeStaticFallbacksEnabled(undefined), false)
   assert.equal(themeStaticFallbacksEnabled('false'), false)
   assert.equal(themeStaticFallbacksEnabled('TRUE'), true)
+  assert.equal(gheeRoastLegacyFallbacksEnabled(undefined, 'development'), false)
+  assert.equal(gheeRoastLegacyFallbacksEnabled('true', 'development'), true)
+  assert.equal(gheeRoastLegacyFallbacksEnabled('true', 'production'), false)
 })
 
-test('navigation mapper is tenant scoped and has a static fallback', () => {
-  const fallback = fallbackGheeRoastNavigation()
+test('navigation mapper is tenant scoped and never injects static links', () => {
   const mapped = mapGheeRoastNavigation({
     tenantId: 10,
     brandName: 'CMS Brand',
@@ -82,8 +84,11 @@ test('navigation mapper is tenant scoped and has a static fallback', () => {
   assert.equal(mapped.brandName, 'CMS Brand')
   assert.deepEqual(mapped.items.map((item) => item.label), ['Home', 'Contact'])
   assert.equal(mapped.cta.label, 'Reserve')
-  assert.deepEqual(mapGheeRoastNavigation({ tenantId: 11, brandName: 'Foreign' }, 10), fallback)
-  assert.deepEqual(mapGheeRoastNavigation(null, 10), fallback)
+  assert.deepEqual(
+    mapGheeRoastNavigation({ tenantId: 11, brandName: 'Foreign' }, 10),
+    emptyGheeRoastNavigation(),
+  )
+  assert.deepEqual(mapGheeRoastNavigation(null, 10), emptyGheeRoastNavigation())
   assert.deepEqual(
     mapGheeRoastNavigation(null, 10, {
       fallbacksEnabled: false,
@@ -97,13 +102,19 @@ test('navigation mapper is tenant scoped and has a static fallback', () => {
     }),
     emptyGheeRoastNavigation(),
   )
+  assert.deepEqual(
+    mapGheeRoastNavigation(null, 10, {
+      fallbacksEnabled: true,
+      tenantName: 'Ghee Roast',
+    }),
+    emptyGheeRoastNavigation('Ghee Roast'),
+  )
 })
 
 test('hero mapper returns only the requested tenant published homepage', () => {
   const mapped = mapGheeRoastHero({
     _status: 'published',
     isHomePage: true,
-    status: 'published',
     tenantId: 10,
     layout: [{
       blockType: 'heroBlock',
@@ -121,10 +132,10 @@ test('hero mapper returns only the requested tenant published homepage', () => {
   assert.equal(mapped.heading, 'CMS heading')
   assert.equal(mapped.description, 'CMS description')
   assert.deepEqual(
-    mapGheeRoastHero({ tenantId: 11, isHomePage: true, status: 'published', layout: [] }, 10),
-    fallbackGheeRoastHero(),
+    mapGheeRoastHero({ _status: 'published', tenantId: 11, isHomePage: true, layout: [] }, 10),
+    emptyGheeRoastHero(),
   )
-  assert.deepEqual(mapGheeRoastHero(null, 10), fallbackGheeRoastHero())
+  assert.deepEqual(mapGheeRoastHero(null, 10), emptyGheeRoastHero())
   assert.deepEqual(
     mapGheeRoastHero(null, 10, { fallbacksEnabled: false }),
     emptyGheeRoastHero(),

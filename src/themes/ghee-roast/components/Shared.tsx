@@ -32,29 +32,49 @@ export function SectionHeading({ center = false, eyebrow, title, text, light = f
   )
 }
 
-export function ActionLink({ href, icon = 'arrow', label, variant = 'primary' }: {
+export function ActionLink({ ariaLabel, href, icon = 'arrow', label, newTab, nofollow, variant = 'primary' }: {
+  ariaLabel?: string
   href: string
   icon?: string
   label: string
+  newTab?: boolean
+  nofollow?: boolean
   variant?: 'accent' | 'outline' | 'primary' | 'split'
 }) {
   const className = `${styles.action} ${styles[variant]}`
   const content = <>{label}<Icon className={styles.actionIcon} name={icon} weight="bold" /></>
-  return href.startsWith('/') ? <Link className={className} href={href}>{content}</Link> : (
-    <a className={className} href={href}>{content}</a>
+  const rel = [nofollow ? 'nofollow' : '', newTab ? 'noreferrer' : ''].filter(Boolean).join(' ') || undefined
+  return href.startsWith('/') ? <Link aria-label={ariaLabel} className={className} href={href} rel={rel} target={newTab ? '_blank' : undefined}>{content}</Link> : (
+    <a aria-label={ariaLabel} className={className} href={href} rel={rel} target={newTab ? '_blank' : undefined}>{content}</a>
   )
 }
 
 export function FeatureGrid({ features }: { features: FeatureData[] }) {
   return (
-    <div className={styles.featureGrid}>
-      {features.map((feature) => (
-        <article className={styles.featureCard} key={feature.title}>
-          <span>{/^\d+$/.test(feature.icon) ? feature.icon : <Icon name={feature.icon} weight="fill" />}</span>
-          <h3>{feature.title}</h3>
-          <p>{feature.description}</p>
-        </article>
-      ))}
+    <div className={styles.featureGrid} data-feature-count={features.length}>
+      {features.map((feature, index) => {
+        const customSVGMask = feature.iconSource === 'custom-svg' && feature.customIcon
+          ? `url(${JSON.stringify(feature.customIcon.src)})`
+          : undefined
+
+        return (
+          <article className={styles.featureCard} key={feature.renderKey ?? `feature-${index}-${feature.title}`}>
+            <span>
+              {customSVGMask
+                ? <span
+                    aria-hidden="true"
+                    className={styles.featureSvgMask}
+                    style={{ maskImage: customSVGMask, WebkitMaskImage: customSVGMask }}
+                  />
+                : /^\d+$/.test(feature.icon)
+                  ? feature.icon
+                  : <Icon name={feature.icon} weight="fill" />}
+            </span>
+            <h3>{feature.title}</h3>
+            <p>{feature.description}</p>
+          </article>
+        )
+      })}
     </div>
   )
 }

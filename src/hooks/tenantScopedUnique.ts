@@ -25,9 +25,9 @@ export const tenantScopedUnique = (fallbackField: string = 'title'): FieldHook =
     }
 
     // If it's a page and is the homepage, the slug might be empty deliberately.
-    // We handle that specific case inside the Pages beforeChange hook.
+    // Pages validates that only one Home Page exists for the tenant.
     if (collection && collection.slug === 'pages' && data?.isHomePage) {
-      return finalValue
+      return ''
     }
 
     if (!finalValue) return finalValue

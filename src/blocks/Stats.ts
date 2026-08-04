@@ -5,8 +5,21 @@ import { sectionHeader } from './shared/sectionHeader'
 export const StatsBlock: Block = {
   slug: 'statsBlock',
   interfaceName: 'StatsBlock',
+  labels: { singular: 'Statistics', plural: 'Statistics Sections' },
+  admin: {
+    group: 'Reusable Sections',
+  },
   fields: [
     sectionHeader({ admin: { description: 'Optional heading displayed above the statistics.' } }),
+    {
+      name: 'presentation',
+      type: 'select',
+      defaultValue: 'cards',
+      options: [
+        { label: 'Reusable Cards', value: 'cards' },
+        { label: 'Ghee Roast Home Strip', value: 'ghee-home-strip' },
+      ],
+    },
     {
       name: 'stats',
       type: 'array',

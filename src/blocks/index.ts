@@ -17,16 +17,23 @@ import { BlogPreviewBlock } from './BlogPreview'
 import { EmbedBlock } from './Embed'
 import { CTABlock } from './CTA'
 import { NewsletterBlock } from './Newsletter'
+import { SocialLinksBlock } from './SocialLinks'
 import { RichTextBlock } from './RichText'
 import { SpacerBlock } from './Spacer'
 import { RoomsShowcaseBlock } from './RoomsShowcase'
 import { AmenitiesBlock } from './Amenities'
 import { PackagesBlock } from './Packages'
 import { SubBrandsBlock } from './SubBrands'
+import { GheeRoastHomePromosBlock } from './GheeRoastHomePromos'
+import { GheeRoastHomeQualityBlock } from './GheeRoastHomeQuality'
+import { GheeRoastHomeStoryBlock } from './GheeRoastHomeStory'
 
 export const AllBlocks = [
   HeroBlock,
   FeatureStripBlock,
+  GheeRoastHomeStoryBlock,
+  GheeRoastHomeQualityBlock,
+  GheeRoastHomePromosBlock,
   CardGridBlock,
   ContentGridBlock,
   StepsBlock,
@@ -44,6 +51,7 @@ export const AllBlocks = [
   EmbedBlock,
   CTABlock,
   NewsletterBlock,
+  SocialLinksBlock,
   RichTextBlock,
   SpacerBlock,
   RoomsShowcaseBlock,

@@ -1,6 +1,7 @@
 'use client'
 
 import { FormEvent, useRef, useState } from 'react'
+import type { CSSProperties } from 'react'
 import type { GheeRoastSiteData } from '../dynamicTypes'
 import {
   buildNewsletterRequest,
@@ -11,11 +12,18 @@ import styles from './Theme.module.css'
 type NewsletterContent = GheeRoastSiteData['newsletter']
 
 export function Newsletter({
+  className,
+  id,
   override,
+  style,
 }: {
+  className?: string
+  id?: string
   override: NewsletterContent
+  style?: CSSProperties
 }) {
   const [message, setMessage] = useState('')
+  const [messageTone, setMessageTone] = useState<'error' | 'success' | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const submissionGuard = useRef(createSubmissionGuard())
 
@@ -29,11 +37,13 @@ export function Newsletter({
     )
     if (!requestResult.ok) {
       submissionGuard.current.finish()
+      setMessageTone('error')
       setMessage(requestResult.error)
       return
     }
 
     setSubmitting(true)
+    setMessageTone(null)
     setMessage('')
     try {
       const response = await fetch(requestResult.request.endpoint, {
@@ -43,9 +53,11 @@ export function Newsletter({
       })
       if (!response.ok) throw new Error('Subscription rejected')
       form.reset()
-      setMessage('Thank you for joining the list.')
+      setMessageTone('success')
+      setMessage(override.successMessage)
     } catch {
-      setMessage('We could not save your signup. Please try again later.')
+      setMessageTone('error')
+      setMessage(override.errorMessage)
     } finally {
       submissionGuard.current.finish()
       setSubmitting(false)
@@ -59,7 +71,7 @@ export function Newsletter({
     : null
 
   return (
-    <section className={styles.newsletter} aria-labelledby="newsletter-heading">
+    <section className={[styles.newsletter, className].filter(Boolean).join(' ')} id={id} style={style} aria-labelledby="newsletter-heading">
       <div className={styles.newsletterInner}>
         <div className={styles.newsletterLeft}>
           <h2 id="newsletter-heading">
@@ -71,9 +83,9 @@ export function Newsletter({
           <form onSubmit={submit}>
             <label className={styles.visuallyHidden} htmlFor="newsletter-email">Email address</label>
             <input id="newsletter-email" maxLength={254} name="email" placeholder={override.placeholder} required type="email" />
-            <button disabled={submitting} type="submit">{submitting ? 'Submitting…' : override.buttonLabel}</button>
+            <button aria-disabled={submitting} disabled={submitting} type="submit">{submitting ? 'Submitting…' : override.buttonLabel}</button>
           </form>
-          <small aria-live="polite">{message || override.privacyText}</small>
+          <small aria-live="polite" data-tone={messageTone}>{message || override.privacyText}</small>
         </div>
       </div>
     </section>

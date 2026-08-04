@@ -9,8 +9,21 @@ import {
 export const TestimonialsBlock: Block = {
   slug: 'testimonialsBlock',
   interfaceName: 'TestimonialsBlock',
+  labels: { singular: 'Testimonials', plural: 'Testimonials Sections' },
+  admin: {
+    group: 'Reusable Sections',
+  },
   fields: [
     sectionHeader(),
+    {
+      name: 'presentation',
+      type: 'select',
+      defaultValue: 'cards',
+      options: [
+        { label: 'Reusable Cards', value: 'cards' },
+        { label: 'Ghee Roast Dark Home Section', value: 'ghee-home-dark' },
+      ],
+    },
     {
       name: 'source',
       type: 'radio',

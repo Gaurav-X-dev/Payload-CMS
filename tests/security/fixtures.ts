@@ -108,14 +108,14 @@ export async function setupSecurityFixtures(payload: BasePayload) {
 
   const tenantAPage = await track('pages', payload.create({
     collection: 'pages',
-    data: { title: `Tenant A Page ${deterministicId()}`, slug: `tenant-a-page-${deterministicId()}`, tenantId: tenantA.id, status: 'published' },
+    data: { _status: 'published', title: `Tenant A Page ${deterministicId()}`, slug: `tenant-a-page-${deterministicId()}`, tenantId: tenantA.id },
     overrideAccess: true,
     req
   }))
 
   const tenantBPage = await track('pages', payload.create({
     collection: 'pages',
-    data: { title: `Tenant B Page ${deterministicId()}`, slug: `tenant-b-page-${deterministicId()}`, tenantId: tenantB.id, status: 'draft' },
+    data: { _status: 'draft', title: `Tenant B Page ${deterministicId()}`, slug: `tenant-b-page-${deterministicId()}`, tenantId: tenantB.id },
     overrideAccess: true,
     req
   }))
@@ -186,7 +186,7 @@ export async function setupSecurityFixtures(payload: BasePayload) {
 
   const inactiveTenantCPage = await track('pages', payload.create({
     collection: 'pages',
-    data: { title: `Tenant C Page ${deterministicId()}`, slug: `tenant-c-page-${deterministicId()}`, tenantId: tenantC.id, status: 'published' },
+    data: { _status: 'published', title: `Tenant C Page ${deterministicId()}`, slug: `tenant-c-page-${deterministicId()}`, tenantId: tenantC.id },
     overrideAccess: true,
     req
   }))

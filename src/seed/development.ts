@@ -272,7 +272,6 @@ export async function seedDevelopmentContent(
     ],
     publishedAt: new Date('2026-01-01T00:00:00.000Z').toISOString(),
     slug: '',
-    status: 'published' as const,
     tenantId: tenant.id,
     title: 'Ghee Roast Home',
   }

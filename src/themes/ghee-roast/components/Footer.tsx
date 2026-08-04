@@ -2,6 +2,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import type {
   GheeRoastFooterData,
+  GheeRoastNavigationData,
   GheeRoastNavigationItem,
   GheeRoastSiteData,
 } from '../dynamicTypes'
@@ -17,12 +18,25 @@ function FooterLink({ item }: { item: GheeRoastNavigationItem }) {
 
 export function Footer({
   footer,
+  navigation,
   site,
 }: {
   footer: GheeRoastFooterData
+  navigation: GheeRoastNavigationData
   site: GheeRoastSiteData
 }) {
   const year = new Date().getFullYear()
+  if (!footer.configured) {
+    return site.siteName ? (
+      <footer className={styles.footer}>
+        <div className={styles.container}>
+          <div className={styles.footerBottom}>
+            <span>© {year} {site.siteName}</span>
+          </div>
+        </div>
+      </footer>
+    ) : null
+  }
   const copyright = footer.copyright.replaceAll('{year}', String(year))
 
   return (
@@ -30,9 +44,14 @@ export function Footer({
       <div className={styles.container}>
         <div className={styles.footerGrid}>
           <div className={styles.footerBrand}>
-            <Link className={styles.footerLogo} href="/">
-              {site.logo && <Image alt={site.logo.alt} height={55} src={site.logo.src} unoptimized width={55} />}
-              <span>{site.siteName}</span>
+            <Link className={`${styles.logo} ${styles.footerLogo}`} href="/">
+              {navigation.logo && <Image alt={navigation.logo.alt} height={55} src={navigation.logo.src} unoptimized width={55} />}
+              {navigation.brandName && (
+                <span>
+                  <strong>{navigation.brandName}</strong>
+                  {navigation.tagline && <small>{navigation.tagline}</small>}
+                </span>
+              )}
             </Link>
             {site.description && <p>{site.description}</p>}
             {site.tagline && <em>&ldquo;{site.tagline}&rdquo;</em>}

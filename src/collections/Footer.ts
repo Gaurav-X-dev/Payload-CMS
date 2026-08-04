@@ -13,10 +13,11 @@ export const Footer: CollectionConfig = {
   admin: {
     useAsTitle: 'id',
     description: 'Manage the footer layout for this tenant. Limited to one document per tenant.',
-    defaultColumns: ['copyright', 'updatedAt'],
+    defaultColumns: ['copyright', '_status', 'updatedAt'],
   },
+  versions: { drafts: true },
   access: {
-    read: tenantPublicRead(),
+    read: tenantPublicRead({ publishedOnly: true }),
     ...tenantContentMutations,
   },
   fields: [

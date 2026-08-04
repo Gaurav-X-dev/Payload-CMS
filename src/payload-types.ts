@@ -296,6 +296,7 @@ export interface Media {
     x?: number | null;
     y?: number | null;
   };
+  svgSanitized?: boolean | null;
   uploadedBy?: (number | null) | User;
   updatedBy?: (number | null) | User;
   updatedAt: string;
@@ -366,16 +367,39 @@ export interface Page {
    * If checked, this page loads at the root URL (/).
    */
   isHomePage?: boolean | null;
+  /**
+   * Controls optional page behavior. The Slug alone never determines the page type.
+   */
+  pageType?:
+    | (
+        | 'home'
+        | 'about'
+        | 'menu'
+        | 'quality'
+        | 'delivery'
+        | 'catering'
+        | 'contact'
+        | 'gallery'
+        | 'locations'
+        | 'faq'
+        | 'reservation'
+        | 'blog-index'
+        | 'generic'
+        | 'legal'
+      )
+    | null;
   template?: ('default' | 'blank' | 'landing') | null;
-  status?: ('draft' | 'published' | 'archived') | null;
   publishedAt?: string | null;
   /**
-   * Construct the page visually. When empty, the Ghee Roast theme keeps its legacy design as a compatibility fallback.
+   * Construct the page visually. Block order here is the public frontend order. Empty layout means no page sections.
    */
   layout?:
     | (
         | HeroBlock
         | FeatureStripBlock
+        | GheeRoastHomeStoryBlock
+        | GheeRoastHomeQualityBlock
+        | GheeRoastHomePromosBlock
         | CardGridBlock
         | ContentGridBlock
         | StepsBlock
@@ -393,6 +417,7 @@ export interface Page {
         | EmbedBlock
         | CTABlock
         | NewsletterBlock
+        | SocialLinksBlock
         | RichTextBlock
         | SpacerBlock
         | RoomsShowcaseBlock
@@ -464,12 +489,256 @@ export interface HeroBlock {
  */
 export interface FeatureStripBlock {
   /**
+   * Site Settings keeps reusable Brand Feature content in one place; this block controls its position in the page layout.
+   */
+  source?: ('manual' | 'site-settings') | null;
+  presentation?: ('cards' | 'ghee-home-brand') | null;
+  /**
    * Short trust signals or selling points displayed in a compact strip.
    */
-  items: {
-    icon?: string | null;
-    title: string;
-    description?: string | null;
+  items?:
+    | {
+        icon?: string | null;
+        title: string;
+        description?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Appearance and visibility settings for this block.
+   */
+  settings?: {
+    backgroundColor?: ('transparent' | 'surface' | 'primary' | 'accent' | 'dark') | null;
+    containerWidth?: ('standard' | 'wide' | 'full') | null;
+    /**
+     * Optional image to place behind the block.
+     */
+    backgroundImage?: (number | null) | Media;
+    /**
+     * 0-100 opacity for the background overlay.
+     */
+    overlayOpacity?: number | null;
+    paddingTop?: ('none' | 'small' | 'medium' | 'large') | null;
+    paddingBottom?: ('none' | 'small' | 'medium' | 'large') | null;
+    visibility?: ('desktop' | 'tablet' | 'mobile')[] | null;
+    animation?: ('none' | 'fade-in' | 'slide-up' | 'zoom-in' | 'stagger') | null;
+    /**
+     * Inject custom CSS classes for developer overrides.
+     */
+    customClasses?: string | null;
+    /**
+     * Used for #anchor links. Must be unique.
+     */
+    htmlId?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'featurestripBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "GheeRoastHomeStoryBlock".
+ */
+export interface GheeRoastHomeStoryBlock {
+  /**
+   * Small orange label above the heading.
+   */
+  eyebrow?: string | null;
+  heading: string;
+  /**
+   * Optional highlighted continuation.
+   */
+  highlightedHeading?: string | null;
+  /**
+   * Use a blank line between paragraphs.
+   */
+  description: string;
+  /**
+   * The first image is large; the second and third form the lower collage row.
+   */
+  images?: {
+    /**
+     * Large primary image. Upload a responsive food or restaurant photograph; SVG is not recommended here.
+     */
+    primaryImage?: (number | null) | Media;
+    /**
+     * Optional override; otherwise Media Alt is used.
+     */
+    primaryImageAlt?: string | null;
+    /**
+     * Lower-left image. Upload a responsive food or restaurant photograph; SVG is not recommended here.
+     */
+    secondaryImage?: (number | null) | Media;
+    /**
+     * Lower-right image. Upload a responsive food or restaurant photograph; SVG is not recommended here.
+     */
+    tertiaryImage?: (number | null) | Media;
+    /**
+     * Optional Media Alt override.
+     */
+    secondaryImageAlt?: string | null;
+    /**
+     * Optional Media Alt override.
+     */
+    tertiaryImageAlt?: string | null;
+    imagePosition?: ('left' | 'right') | null;
+  };
+  /**
+   * Short proof points shown with check marks.
+   */
+  bulletPoints?:
+    | {
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  experienceBadge?: {
+    enabled?: boolean | null;
+    number?: string | null;
+    /**
+     * Line breaks are preserved.
+     */
+    label?: string | null;
+  };
+  /**
+   * The button renders only when both label and URL are present.
+   */
+  cta?: {
+    enabled?: boolean | null;
+    label?: string | null;
+    /**
+     * Internal path such as /about or full https URL.
+     */
+    url?: string | null;
+  };
+  /**
+   * Appearance and visibility settings for this block.
+   */
+  settings?: {
+    backgroundColor?: ('transparent' | 'surface' | 'primary' | 'accent' | 'dark') | null;
+    containerWidth?: ('standard' | 'wide' | 'full') | null;
+    /**
+     * Optional image to place behind the block.
+     */
+    backgroundImage?: (number | null) | Media;
+    /**
+     * 0-100 opacity for the background overlay.
+     */
+    overlayOpacity?: number | null;
+    paddingTop?: ('none' | 'small' | 'medium' | 'large') | null;
+    paddingBottom?: ('none' | 'small' | 'medium' | 'large') | null;
+    visibility?: ('desktop' | 'tablet' | 'mobile')[] | null;
+    animation?: ('none' | 'fade-in' | 'slide-up' | 'zoom-in' | 'stagger') | null;
+    /**
+     * Inject custom CSS classes for developer overrides.
+     */
+    customClasses?: string | null;
+    /**
+     * Used for #anchor links. Must be unique.
+     */
+    htmlId?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'gheeHomeStoryBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "GheeRoastHomeQualityBlock".
+ */
+export interface GheeRoastHomeQualityBlock {
+  /**
+   * Use a line break where required by the design.
+   */
+  heading: string;
+  highlightedHeading?: string | null;
+  description: string;
+  /**
+   * Quality/ingredient photograph shown beside the copy.
+   */
+  image?: (number | null) | Media;
+  /**
+   * Optional override; otherwise Media Alt is used.
+   */
+  imageAlt?: string | null;
+  points?:
+    | {
+        icon?: string | null;
+        title?: string | null;
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * The button renders only when both label and URL are present.
+   */
+  cta?: {
+    enabled?: boolean | null;
+    label?: string | null;
+    url?: string | null;
+  };
+  /**
+   * Appearance and visibility settings for this block.
+   */
+  settings?: {
+    backgroundColor?: ('transparent' | 'surface' | 'primary' | 'accent' | 'dark') | null;
+    containerWidth?: ('standard' | 'wide' | 'full') | null;
+    /**
+     * Optional image to place behind the block.
+     */
+    backgroundImage?: (number | null) | Media;
+    /**
+     * 0-100 opacity for the background overlay.
+     */
+    overlayOpacity?: number | null;
+    paddingTop?: ('none' | 'small' | 'medium' | 'large') | null;
+    paddingBottom?: ('none' | 'small' | 'medium' | 'large') | null;
+    visibility?: ('desktop' | 'tablet' | 'mobile')[] | null;
+    animation?: ('none' | 'fade-in' | 'slide-up' | 'zoom-in' | 'stagger') | null;
+    /**
+     * Inject custom CSS classes for developer overrides.
+     */
+    customClasses?: string | null;
+    /**
+     * Used for #anchor links. Must be unique.
+     */
+    htmlId?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'gheeHomeQualityBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "GheeRoastHomePromosBlock".
+ */
+export interface GheeRoastHomePromosBlock {
+  /**
+   * Admin row label only; it is not shown publicly.
+   */
+  title?: string | null;
+  /**
+   * One or two promotional panels. Array order controls left/right placement.
+   */
+  promos: {
+    enabled?: boolean | null;
+    eyebrow?: string | null;
+    heading: string;
+    description: string;
+    bulletPoints?:
+      | {
+          text: string;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * The button renders only when both label and URL are present.
+     */
+    cta?: {
+      enabled?: boolean | null;
+      label?: string | null;
+      url?: string | null;
+    };
     id?: string | null;
   }[];
   /**
@@ -501,7 +770,7 @@ export interface FeatureStripBlock {
   };
   id?: string | null;
   blockName?: string | null;
-  blockType: 'featurestripBlock';
+  blockType: 'gheeHomePromosBlock';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -689,6 +958,7 @@ export interface StepsBlock {
     alignment?: ('left' | 'center' | 'right') | null;
     maxWidth?: ('standard' | 'narrow' | 'wide') | null;
   };
+  presentation?: ('cards' | 'ghee-home-process') | null;
   steps: {
     label?: string | null;
     icon?: string | null;
@@ -747,6 +1017,7 @@ export interface TestimonialsBlock {
     alignment?: ('left' | 'center' | 'right') | null;
     maxWidth?: ('standard' | 'narrow' | 'wide') | null;
   };
+  presentation?: ('cards' | 'ghee-home-dark') | null;
   source?: ('collection' | 'manual') | null;
   testimonials?: (number | Testimonial)[] | null;
   featuredOnly?: boolean | null;
@@ -827,6 +1098,7 @@ export interface StatsBlock {
     alignment?: ('left' | 'center' | 'right') | null;
     maxWidth?: ('standard' | 'narrow' | 'wide') | null;
   };
+  presentation?: ('cards' | 'ghee-home-strip') | null;
   stats: {
     value: string;
     label: string;
@@ -1087,6 +1359,10 @@ export interface Gallery {
  */
 export interface FormBlock {
   /**
+   * Hide this form section without deleting its configuration.
+   */
+  enabled?: boolean | null;
+  /**
    * Standardized section title and description.
    */
   sectionHeader: {
@@ -1102,8 +1378,30 @@ export interface FormBlock {
     maxWidth?: ('standard' | 'narrow' | 'wide') | null;
   };
   formType: 'contact' | 'reservation' | 'catering';
+  /**
+   * Allowed subjects shown in Contact and Catering forms. Values are also verified before submission.
+   */
+  subjectOptions?:
+    | {
+        label: string;
+        value: string;
+        id?: string | null;
+      }[]
+    | null;
   submitLabel?: string | null;
   successMessage?: string | null;
+  errorMessage?: string | null;
+  /**
+   * Optional Contact image. When omitted, the form uses a clean single-column layout.
+   */
+  sideImage?: (number | null) | Media;
+  /**
+   * Overrides Media alt text for this section.
+   */
+  imageAlt?: string | null;
+  imagePosition?: ('right' | 'left') | null;
+  imageFit?: ('cover' | 'contain') | null;
+  formCardStyle?: ('elevated' | 'bordered' | 'flat') | null;
   /**
    * Appearance and visibility settings for this block.
    */
@@ -1578,12 +1876,39 @@ export interface Location {
   tenantId: number | Tenant;
   title: string;
   city: string;
+  state?: string | null;
+  postalCode?: string | null;
+  country?: string | null;
   address: string;
   description?: string | null;
+  /**
+   * Service areas shown on the Contact location card.
+   */
+  deliveryZones?:
+    | {
+        zone: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Optional location-specific hours shown on the Contact card.
+   */
+  businessHours?:
+    | {
+        day: string;
+        openTime?: string | null;
+        closeTime?: string | null;
+        isClosed?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
   phone?: string | null;
   email?: string | null;
   mapsUrl?: string | null;
   mapsEmbedUrl?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
+  mapButtonLabel?: string | null;
   orderLinks?:
     | {
         platform: string;
@@ -1592,7 +1917,11 @@ export interface Location {
       }[]
     | null;
   isActive?: boolean | null;
+  isPrimary?: boolean | null;
   sortOrder?: number | null;
+  showOnContact?: boolean | null;
+  showInFooter?: boolean | null;
+  showOnHome?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1731,6 +2060,14 @@ export interface CTABlock {
  */
 export interface NewsletterBlock {
   /**
+   * Hide this section without removing it from the layout.
+   */
+  enabled?: boolean | null;
+  /**
+   * Site Settings keeps Contact and global newsletter copy in sync.
+   */
+  source?: ('block' | 'site-settings') | null;
+  /**
    * Standardized section title and description.
    */
   sectionHeader: {
@@ -1747,7 +2084,10 @@ export interface NewsletterBlock {
   };
   placeholder?: string | null;
   buttonLabel?: string | null;
+  highlightedWord?: string | null;
   privacyText?: string | null;
+  successMessage?: string | null;
+  errorMessage?: string | null;
   /**
    * Appearance and visibility settings for this block.
    */
@@ -1778,6 +2118,63 @@ export interface NewsletterBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'newsletterBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SocialLinksBlock".
+ */
+export interface SocialLinksBlock {
+  /**
+   * Hide this section without removing its content or position.
+   */
+  enabled?: boolean | null;
+  /**
+   * Standardized section title and description.
+   */
+  sectionHeader: {
+    /**
+     * Small accented text above the title.
+     */
+    eyebrow?: string | null;
+    title: string;
+    headingTag?: ('h1' | 'h2' | 'h3' | 'h4') | null;
+    subtitle?: string | null;
+    description?: string | null;
+    alignment?: ('left' | 'center' | 'right') | null;
+    maxWidth?: ('standard' | 'narrow' | 'wide') | null;
+  };
+  showHandles?: boolean | null;
+  showDescriptions?: boolean | null;
+  /**
+   * Appearance and visibility settings for this block.
+   */
+  settings?: {
+    backgroundColor?: ('transparent' | 'surface' | 'primary' | 'accent' | 'dark') | null;
+    containerWidth?: ('standard' | 'wide' | 'full') | null;
+    /**
+     * Optional image to place behind the block.
+     */
+    backgroundImage?: (number | null) | Media;
+    /**
+     * 0-100 opacity for the background overlay.
+     */
+    overlayOpacity?: number | null;
+    paddingTop?: ('none' | 'small' | 'medium' | 'large') | null;
+    paddingBottom?: ('none' | 'small' | 'medium' | 'large') | null;
+    visibility?: ('desktop' | 'tablet' | 'mobile')[] | null;
+    animation?: ('none' | 'fade-in' | 'slide-up' | 'zoom-in' | 'stagger') | null;
+    /**
+     * Inject custom CSS classes for developer overrides.
+     */
+    customClasses?: string | null;
+    /**
+     * Used for #anchor links. Must be unique.
+     */
+    htmlId?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'socialLinksBlock';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2062,6 +2459,10 @@ export interface ContactSubmission {
   phone?: string | null;
   type: 'general' | 'catering' | 'franchise' | 'careers';
   status?: ('new' | 'read' | 'resolved') | null;
+  /**
+   * Required for new public enquiries. Optional on historical records for backwards compatibility.
+   */
+  subject?: string | null;
   message: string;
   updatedAt: string;
   createdAt: string;
@@ -2124,10 +2525,22 @@ export interface SiteSetting {
     provider?: ('internal' | 'opentable' | 'resy') | null;
     providerUrl?: string | null;
   };
+  /**
+   * Published social CTAs. Enabled platforms must be unique and use complete http/https URLs.
+   */
   socials?:
     | {
-        platform?: ('facebook' | 'instagram' | 'twitter' | 'tiktok' | 'youtube') | null;
+        enabled?: boolean | null;
+        platform: 'instagram' | 'facebook' | 'youtube' | 'twitter' | 'linkedin' | 'whatsapp' | 'tiktok' | 'other';
+        icon?:
+          ('platform' | 'instagram' | 'facebook' | 'youtube' | 'twitter' | 'linkedin' | 'whatsapp' | 'link') | null;
+        sortOrder?: number | null;
+        displayLabel?: string | null;
+        handle?: string | null;
+        ctaLabel?: string | null;
+        description?: string | null;
         url?: string | null;
+        openInNewTab?: boolean | null;
         id?: string | null;
       }[]
     | null;
@@ -2146,9 +2559,81 @@ export interface SiteSetting {
     placeholder?: string | null;
     buttonLabel?: string | null;
     privacyText?: string | null;
+    successMessage?: string | null;
+    errorMessage?: string | null;
   };
+  /**
+   * Brand features shown below the Ghee Roast Home Hero. Add up to 5 rows. An empty list intentionally hides the section, and Sort Order must be unique across enabled and disabled rows.
+   */
+  featureStrip?:
+    | {
+        /**
+         * Only enabled features appear on the home page.
+         */
+        enabled?: boolean | null;
+        /**
+         * Use a unique whole number. Lower values appear first.
+         */
+        sortOrder: number;
+        /**
+         * Choose a controlled built-in icon or a validated SVG from Media.
+         */
+        iconSource: 'built-in' | 'custom-svg';
+        /**
+         * Select an icon from the supported Ghee Roast icon registry.
+         */
+        icon?:
+          | (
+              | 'arrow'
+              | 'bowl'
+              | 'briefcase'
+              | 'building'
+              | 'cake'
+              | 'calendar'
+              | 'caretDown'
+              | 'caretRight'
+              | 'check'
+              | 'chef'
+              | 'clock'
+              | 'coriander'
+              | 'delivery'
+              | 'diamond'
+              | 'event'
+              | 'facebook'
+              | 'fire'
+              | 'ghee'
+              | 'handcrafted'
+              | 'hands'
+              | 'heart'
+              | 'instagram'
+              | 'leaf'
+              | 'map'
+              | 'martini'
+              | 'medal'
+              | 'moped'
+              | 'pepper'
+              | 'phone'
+              | 'shield'
+              | 'spice'
+              | 'star'
+              | 'sun'
+              | 'utensils'
+              | 'wedding'
+              | 'youtube'
+            )
+          | null;
+        /**
+         * Upload a simple, single-color SVG for best results. Maximum SVG size: 256 KB.
+         */
+        customSVG?: (number | null) | Media;
+        title: string;
+        description: string;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * Manage the primary header navigation for this tenant. Limited to one document per tenant.
@@ -2172,16 +2657,24 @@ export interface Nav {
             label: string;
             type?: ('page' | 'internal' | 'external' | 'anchor') | null;
             enabled?: boolean | null;
-            sortOrder?: number | null;
+            /**
+             * Use a unique whole number for each navigation item. Lower values appear first.
+             */
+            sortOrder: number;
             page?: (number | null) | Page;
             url?: string | null;
             /**
-             * Optional dropdown links. On mobile these follow the parent item.
+             * Optional dropdown links. Sort Order must be unique within this parent. On mobile these follow the parent item.
              */
             children?:
               | {
                   label: string;
                   url: string;
+                  enabled?: boolean | null;
+                  /**
+                   * Use a unique whole number within this dropdown. Lower values appear first.
+                   */
+                  sortOrder: number;
                   newTab?: boolean | null;
                   id?: string | null;
                 }[]
@@ -2220,6 +2713,7 @@ export interface Nav {
   };
   updatedAt: string;
   createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * Manage the footer layout for this tenant. Limited to one document per tenant.
@@ -2271,6 +2765,7 @@ export interface Footer {
   copyright?: string | null;
   updatedAt: string;
   createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * Manage global fallback SEO metadata for this tenant. Limited to one document per tenant.
@@ -2653,6 +3148,7 @@ export interface MediaSelect<T extends boolean = true> {
         x?: T;
         y?: T;
       };
+  svgSanitized?: T;
   uploadedBy?: T;
   updatedBy?: T;
   updatedAt?: T;
@@ -2721,14 +3217,17 @@ export interface PagesSelect<T extends boolean = true> {
   slug?: T;
   parent?: T;
   isHomePage?: T;
+  pageType?: T;
   template?: T;
-  status?: T;
   publishedAt?: T;
   layout?:
     | T
     | {
         heroBlock?: T | HeroBlockSelect<T>;
         featurestripBlock?: T | FeatureStripBlockSelect<T>;
+        gheeHomeStoryBlock?: T | GheeRoastHomeStoryBlockSelect<T>;
+        gheeHomeQualityBlock?: T | GheeRoastHomeQualityBlockSelect<T>;
+        gheeHomePromosBlock?: T | GheeRoastHomePromosBlockSelect<T>;
         cardgridBlock?: T | CardGridBlockSelect<T>;
         contentgridBlock?: T | ContentGridBlockSelect<T>;
         stepsBlock?: T | StepsBlockSelect<T>;
@@ -2746,6 +3245,7 @@ export interface PagesSelect<T extends boolean = true> {
         embedBlock?: T | EmbedBlockSelect<T>;
         ctaBlock?: T | CTABlockSelect<T>;
         newsletterBlock?: T | NewsletterBlockSelect<T>;
+        socialLinksBlock?: T | SocialLinksBlockSelect<T>;
         richtextBlock?: T | RichTextBlockSelect<T>;
         spacerBlock?: T | SpacerBlockSelect<T>;
         roomsshowcaseBlock?: T | RoomsShowcaseBlockSelect<T>;
@@ -2801,12 +3301,158 @@ export interface HeroBlockSelect<T extends boolean = true> {
  * via the `definition` "FeatureStripBlock_select".
  */
 export interface FeatureStripBlockSelect<T extends boolean = true> {
+  source?: T;
+  presentation?: T;
   items?:
     | T
     | {
         icon?: T;
         title?: T;
         description?: T;
+        id?: T;
+      };
+  settings?:
+    | T
+    | {
+        backgroundColor?: T;
+        containerWidth?: T;
+        backgroundImage?: T;
+        overlayOpacity?: T;
+        paddingTop?: T;
+        paddingBottom?: T;
+        visibility?: T;
+        animation?: T;
+        customClasses?: T;
+        htmlId?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "GheeRoastHomeStoryBlock_select".
+ */
+export interface GheeRoastHomeStoryBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  highlightedHeading?: T;
+  description?: T;
+  images?:
+    | T
+    | {
+        primaryImage?: T;
+        primaryImageAlt?: T;
+        secondaryImage?: T;
+        tertiaryImage?: T;
+        secondaryImageAlt?: T;
+        tertiaryImageAlt?: T;
+        imagePosition?: T;
+      };
+  bulletPoints?:
+    | T
+    | {
+        text?: T;
+        id?: T;
+      };
+  experienceBadge?:
+    | T
+    | {
+        enabled?: T;
+        number?: T;
+        label?: T;
+      };
+  cta?:
+    | T
+    | {
+        enabled?: T;
+        label?: T;
+        url?: T;
+      };
+  settings?:
+    | T
+    | {
+        backgroundColor?: T;
+        containerWidth?: T;
+        backgroundImage?: T;
+        overlayOpacity?: T;
+        paddingTop?: T;
+        paddingBottom?: T;
+        visibility?: T;
+        animation?: T;
+        customClasses?: T;
+        htmlId?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "GheeRoastHomeQualityBlock_select".
+ */
+export interface GheeRoastHomeQualityBlockSelect<T extends boolean = true> {
+  heading?: T;
+  highlightedHeading?: T;
+  description?: T;
+  image?: T;
+  imageAlt?: T;
+  points?:
+    | T
+    | {
+        icon?: T;
+        title?: T;
+        text?: T;
+        id?: T;
+      };
+  cta?:
+    | T
+    | {
+        enabled?: T;
+        label?: T;
+        url?: T;
+      };
+  settings?:
+    | T
+    | {
+        backgroundColor?: T;
+        containerWidth?: T;
+        backgroundImage?: T;
+        overlayOpacity?: T;
+        paddingTop?: T;
+        paddingBottom?: T;
+        visibility?: T;
+        animation?: T;
+        customClasses?: T;
+        htmlId?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "GheeRoastHomePromosBlock_select".
+ */
+export interface GheeRoastHomePromosBlockSelect<T extends boolean = true> {
+  title?: T;
+  promos?:
+    | T
+    | {
+        enabled?: T;
+        eyebrow?: T;
+        heading?: T;
+        description?: T;
+        bulletPoints?:
+          | T
+          | {
+              text?: T;
+              id?: T;
+            };
+        cta?:
+          | T
+          | {
+              enabled?: T;
+              label?: T;
+              url?: T;
+            };
         id?: T;
       };
   settings?:
@@ -2958,6 +3604,7 @@ export interface StepsBlockSelect<T extends boolean = true> {
         alignment?: T;
         maxWidth?: T;
       };
+  presentation?: T;
   steps?:
     | T
     | {
@@ -3000,6 +3647,7 @@ export interface TestimonialsBlockSelect<T extends boolean = true> {
         alignment?: T;
         maxWidth?: T;
       };
+  presentation?: T;
   source?: T;
   testimonials?: T;
   featuredOnly?: T;
@@ -3037,6 +3685,7 @@ export interface StatsBlockSelect<T extends boolean = true> {
         alignment?: T;
         maxWidth?: T;
       };
+  presentation?: T;
   stats?:
     | T
     | {
@@ -3202,6 +3851,7 @@ export interface GalleryBlockSelect<T extends boolean = true> {
  * via the `definition` "FormBlock_select".
  */
 export interface FormBlockSelect<T extends boolean = true> {
+  enabled?: T;
   sectionHeader?:
     | T
     | {
@@ -3214,8 +3864,21 @@ export interface FormBlockSelect<T extends boolean = true> {
         maxWidth?: T;
       };
   formType?: T;
+  subjectOptions?:
+    | T
+    | {
+        label?: T;
+        value?: T;
+        id?: T;
+      };
   submitLabel?: T;
   successMessage?: T;
+  errorMessage?: T;
+  sideImage?: T;
+  imageAlt?: T;
+  imagePosition?: T;
+  imageFit?: T;
+  formCardStyle?: T;
   settings?:
     | T
     | {
@@ -3550,6 +4213,8 @@ export interface CTABlockSelect<T extends boolean = true> {
  * via the `definition` "NewsletterBlock_select".
  */
 export interface NewsletterBlockSelect<T extends boolean = true> {
+  enabled?: T;
+  source?: T;
   sectionHeader?:
     | T
     | {
@@ -3563,7 +4228,46 @@ export interface NewsletterBlockSelect<T extends boolean = true> {
       };
   placeholder?: T;
   buttonLabel?: T;
+  highlightedWord?: T;
   privacyText?: T;
+  successMessage?: T;
+  errorMessage?: T;
+  settings?:
+    | T
+    | {
+        backgroundColor?: T;
+        containerWidth?: T;
+        backgroundImage?: T;
+        overlayOpacity?: T;
+        paddingTop?: T;
+        paddingBottom?: T;
+        visibility?: T;
+        animation?: T;
+        customClasses?: T;
+        htmlId?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SocialLinksBlock_select".
+ */
+export interface SocialLinksBlockSelect<T extends boolean = true> {
+  enabled?: T;
+  sectionHeader?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        headingTag?: T;
+        subtitle?: T;
+        description?: T;
+        alignment?: T;
+        maxWidth?: T;
+      };
+  showHandles?: T;
+  showDescriptions?: T;
   settings?:
     | T
     | {
@@ -3820,12 +4524,33 @@ export interface LocationsSelect<T extends boolean = true> {
   tenantId?: T;
   title?: T;
   city?: T;
+  state?: T;
+  postalCode?: T;
+  country?: T;
   address?: T;
   description?: T;
+  deliveryZones?:
+    | T
+    | {
+        zone?: T;
+        id?: T;
+      };
+  businessHours?:
+    | T
+    | {
+        day?: T;
+        openTime?: T;
+        closeTime?: T;
+        isClosed?: T;
+        id?: T;
+      };
   phone?: T;
   email?: T;
   mapsUrl?: T;
   mapsEmbedUrl?: T;
+  latitude?: T;
+  longitude?: T;
+  mapButtonLabel?: T;
   orderLinks?:
     | T
     | {
@@ -3834,7 +4559,11 @@ export interface LocationsSelect<T extends boolean = true> {
         id?: T;
       };
   isActive?: T;
+  isPrimary?: T;
   sortOrder?: T;
+  showOnContact?: T;
+  showInFooter?: T;
+  showOnHome?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -3863,6 +4592,7 @@ export interface ContactSubmissionsSelect<T extends boolean = true> {
   phone?: T;
   type?: T;
   status?: T;
+  subject?: T;
   message?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -3928,8 +4658,16 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   socials?:
     | T
     | {
+        enabled?: T;
         platform?: T;
+        icon?: T;
+        sortOrder?: T;
+        displayLabel?: T;
+        handle?: T;
+        ctaLabel?: T;
+        description?: T;
         url?: T;
+        openInNewTab?: T;
         id?: T;
       };
   googleAnalyticsId?: T;
@@ -3949,9 +4687,24 @@ export interface SiteSettingsSelect<T extends boolean = true> {
         placeholder?: T;
         buttonLabel?: T;
         privacyText?: T;
+        successMessage?: T;
+        errorMessage?: T;
+      };
+  featureStrip?:
+    | T
+    | {
+        enabled?: T;
+        sortOrder?: T;
+        iconSource?: T;
+        icon?: T;
+        customSVG?: T;
+        title?: T;
+        description?: T;
+        id?: T;
       };
   updatedAt?: T;
   createdAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -3980,6 +4733,8 @@ export interface NavSelect<T extends boolean = true> {
                 | {
                     label?: T;
                     url?: T;
+                    enabled?: T;
+                    sortOrder?: T;
                     newTab?: T;
                     id?: T;
                   };
@@ -4015,6 +4770,7 @@ export interface NavSelect<T extends boolean = true> {
       };
   updatedAt?: T;
   createdAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -4048,6 +4804,7 @@ export interface FooterSelect<T extends boolean = true> {
   copyright?: T;
   updatedAt?: T;
   createdAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

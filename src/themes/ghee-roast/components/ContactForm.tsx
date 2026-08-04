@@ -2,17 +2,18 @@
 
 import { FormEvent, useRef, useState } from 'react'
 import type { FormFieldData } from '../types'
+import { DEFAULT_CONTACT_SUBJECT_OPTIONS } from '../../../validation/contactPage'
 import {
   buildGheeRoastFormRequest,
   createSubmissionGuard,
 } from '../forms/formRequests'
 import styles from './Theme.module.css'
 
-const contactFields: FormFieldData[] = [
+const contactFields = (subjectOptions: Array<{ label: string; value: string }>): FormFieldData[] => [
   { label: 'Full Name', name: 'name', placeholder: 'Enter your name', required: true, type: 'text' },
   { label: 'Email Address', name: 'email', placeholder: 'Enter your email', required: true, type: 'email' },
   { label: 'Phone Number', name: 'phone', placeholder: '10-digit mobile number', type: 'tel' },
-  { label: 'Subject', name: 'subject', required: true, type: 'select', options: ['General Enquiry', 'Catering Request', 'Feedback', 'Partnership'] },
+  { label: 'Subject', name: 'subject', required: true, type: 'select', options: subjectOptions },
   { label: 'Message', name: 'message', placeholder: 'How can we help you?', required: true, type: 'textarea' },
 ]
 
@@ -29,18 +30,25 @@ const reservationFields: FormFieldData[] = [
 export function ContactForm({
   fields,
   formType = 'contact',
+  heading,
+  errorMessage = 'We could not submit the form. Please check your details or contact the restaurant directly.',
+  subjectOptions = DEFAULT_CONTACT_SUBJECT_OPTIONS.map((option) => ({ ...option })),
   submitLabel = 'Send Message',
   successMessage = 'Thank you. We will be in touch shortly.',
 }: {
   fields?: FormFieldData[]
+  errorMessage?: string
   formType?: string
+  heading?: string | null
+  subjectOptions?: Array<{ label: string; value: string }>
   submitLabel?: string
   successMessage?: string
 }) {
   const [message, setMessage] = useState('')
+  const [messageTone, setMessageTone] = useState<'error' | 'success' | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const submissionGuard = useRef(createSubmissionGuard())
-  const formFields = fields ?? (formType === 'reservation' ? reservationFields : contactFields)
+  const formFields = fields ?? (formType === 'reservation' ? reservationFields : contactFields(subjectOptions))
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -48,14 +56,19 @@ export function ContactForm({
 
     const form = event.currentTarget
     const values = Object.fromEntries(new FormData(form).entries())
-    const requestResult = buildGheeRoastFormRequest(formType, values)
+    const allowedSubjects = formFields
+      .find((field) => field.name === 'subject')
+      ?.options?.map((option) => typeof option === 'string' ? option : option.value)
+    const requestResult = buildGheeRoastFormRequest(formType, values, allowedSubjects)
     if (!requestResult.ok) {
       submissionGuard.current.finish()
+      setMessageTone('error')
       setMessage(requestResult.error)
       return
     }
 
     setSubmitting(true)
+    setMessageTone(null)
     setMessage('')
     try {
       const response = await fetch(requestResult.request.endpoint, {
@@ -65,9 +78,11 @@ export function ContactForm({
       })
       if (!response.ok) throw new Error('Submission rejected')
       form.reset()
+      setMessageTone('success')
       setMessage(successMessage)
     } catch {
-      setMessage('We could not submit the form. Please check your details or contact the restaurant directly.')
+      setMessageTone('error')
+      setMessage(errorMessage)
     } finally {
       submissionGuard.current.finish()
       setSubmitting(false)
@@ -76,7 +91,7 @@ export function ContactForm({
 
   return (
     <form className={styles.contactForm} onSubmit={submit}>
-      <h2>{formType === 'reservation' ? 'Request a Reservation' : formType === 'catering' ? 'Plan Your Event' : 'Send a Message'}</h2>
+      {heading !== null && <h2>{heading || (formType === 'reservation' ? 'Request a Reservation' : formType === 'catering' ? 'Plan Your Event' : 'Send a Message')}</h2>}
       {formFields.map((field) => (
         <div className={!['email', 'phone', 'date', 'time'].includes(field.name) ? styles.fullField : undefined} key={field.name}>
           <label htmlFor={`contact-${field.name}`}>{field.label}</label>
@@ -91,7 +106,11 @@ export function ContactForm({
           ) : field.type === 'select' ? (
             <select defaultValue="" id={`contact-${field.name}`} name={field.name} required={field.required}>
               <option disabled value="">Select an option</option>
-              {field.options?.map((option) => <option key={option}>{option}</option>)}
+              {field.options?.map((option) => {
+                const label = typeof option === 'string' ? option : option.label
+                const optionValue = typeof option === 'string' ? option : option.value
+                return <option key={optionValue} value={optionValue}>{label}</option>
+              })}
             </select>
           ) : (
             <input
@@ -108,8 +127,8 @@ export function ContactForm({
           )}
         </div>
       ))}
-      <button disabled={submitting} type="submit">{submitting ? 'Sending…' : submitLabel}</button>
-      {message && <p className={styles.formNotice} role="status">{message}</p>}
+      <button aria-disabled={submitting} disabled={submitting} type="submit">{submitting ? 'Sending…' : submitLabel}</button>
+      {message && <p className={styles.formNotice} data-tone={messageTone} role="status">{message}</p>}
     </form>
   )
 }

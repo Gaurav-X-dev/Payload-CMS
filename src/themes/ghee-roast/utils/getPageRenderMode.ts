@@ -14,11 +14,7 @@ export function getGheeRoastPageRenderMode({
   if (content.tenantState === 'inactive' || content.tenantState === 'missing') {
     return 'not-found'
   }
-  if (!hasRegisteredPage && !content.page) return 'not-found'
-  if (!hasRegisteredPage) return 'cms'
-  if (pathname === '/') return 'legacy'
-
-  return content.page?.layout.some((block) => block.blockType !== 'heroBlock')
-    ? 'cms'
-    : 'legacy'
+  if (content.page) return 'cms'
+  if (hasRegisteredPage) return 'legacy'
+  return pathname === '/' ? 'cms' : 'not-found'
 }

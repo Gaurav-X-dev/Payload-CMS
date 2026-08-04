@@ -5,8 +5,21 @@ import { sectionHeader } from './shared/sectionHeader'
 export const StepsBlock: Block = {
   slug: 'stepsBlock',
   interfaceName: 'StepsBlock',
+  labels: { singular: 'Process / Steps', plural: 'Process / Steps Sections' },
+  admin: {
+    group: 'Reusable Sections',
+  },
   fields: [
     sectionHeader(),
+    {
+      name: 'presentation',
+      type: 'select',
+      defaultValue: 'cards',
+      options: [
+        { label: 'Reusable Cards', value: 'cards' },
+        { label: 'Ghee Roast Home Process', value: 'ghee-home-process' },
+      ],
+    },
     {
       name: 'steps',
       type: 'array',

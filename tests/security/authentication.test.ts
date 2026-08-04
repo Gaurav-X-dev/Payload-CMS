@@ -40,7 +40,7 @@ describe('Stage 4 - Authentication and Session Boundaries', () => {
         data: {
           title: 'Hacked Page',
           slug: 'hacked-page',
-          status: 'published',
+          _status: 'published',
           tenantId: fixtures.tenants.tenantA.id
         },
         overrideAccess: false
@@ -86,7 +86,7 @@ describe('Stage 4 - Authentication and Session Boundaries', () => {
           title: 'Inactive Tenant Page',
           slug: 'inactive-tenant-page',
           tenantId: fixtures.tenants.tenantC.id,
-          status: 'draft'
+          _status: 'draft'
         },
         req,
         overrideAccess: false
@@ -135,7 +135,7 @@ describe('Stage 4 - Authentication and Session Boundaries', () => {
           title: 'Malformed User Page',
           slug: 'malformed-page',
           tenantId: fixtures.users.malformedUser.tenants[0],
-          status: 'draft'
+          _status: 'draft'
         },
         req: {
           user: malformedLogin.user,

@@ -19,6 +19,8 @@ import {
   HeartIcon,
   InstagramLogoIcon,
   LeafIcon,
+  LinkIcon,
+  LinkedinLogoIcon,
   MapPinIcon,
   MartiniIcon,
   MedalIcon,
@@ -31,10 +33,13 @@ import {
   StarIcon,
   SunIcon,
   TruckIcon,
+  WhatsappLogoIcon,
+  XLogoIcon,
   YoutubeLogoIcon,
 } from '@phosphor-icons/react/dist/ssr'
 import type { IconProps } from '@phosphor-icons/react'
 import type { ComponentType } from 'react'
+import { normalizeGheeRoastIconName } from '../iconRegistry'
 
 const icons: Record<string, ComponentType<IconProps>> = {
   arrow: ArrowRightIcon,
@@ -60,6 +65,8 @@ const icons: Record<string, ComponentType<IconProps>> = {
   heart: HeartIcon,
   instagram: InstagramLogoIcon,
   leaf: LeafIcon,
+  link: LinkIcon,
+  linkedin: LinkedinLogoIcon,
   map: MapPinIcon,
   martini: MartiniIcon,
   medal: MedalIcon,
@@ -71,11 +78,13 @@ const icons: Record<string, ComponentType<IconProps>> = {
   star: StarIcon,
   sun: SunIcon,
   utensils: ForkKnifeIcon,
+  whatsapp: WhatsappLogoIcon,
   wedding: HeartIcon,
   youtube: YoutubeLogoIcon,
+  twitter: XLogoIcon,
 }
 
 export function Icon({ name, weight, ...props }: { name: string } & IconProps) {
-  const PhosphorIcon = icons[name] ?? SparkleIcon
+  const PhosphorIcon = icons[name] ?? icons[normalizeGheeRoastIconName(name)] ?? SparkleIcon
   return <PhosphorIcon aria-hidden="true" weight={weight ?? 'regular'} {...props} />
 }

@@ -4,6 +4,10 @@ import {
   tenantRelationshipFilter,
 } from '../../hooks/sameTenantRelationship'
 import { pageBlockVisibilityDBName } from './scopedDBName'
+import {
+  validateCSSClassList,
+  validateHTMLID,
+} from '../../validation/pageLayout'
 
 export const blockSettings = (): GroupField => ({
   name: 'settings',
@@ -132,6 +136,7 @@ export const blockSettings = (): GroupField => ({
         {
           name: 'customClasses',
           type: 'text',
+          validate: (value: unknown) => validateCSSClassList(value),
           admin: {
             description: 'Inject custom CSS classes for developer overrides.',
           },
@@ -139,6 +144,7 @@ export const blockSettings = (): GroupField => ({
         {
           name: 'htmlId',
           type: 'text',
+          validate: (value: unknown) => validateHTMLID(value),
           admin: {
             description: 'Used for #anchor links. Must be unique.',
           },

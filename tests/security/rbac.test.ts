@@ -35,7 +35,7 @@ describe('Stage 10 & 11 - Role-Based Access Control and Membership', () => {
           title: 'Member Page',
           slug: 'member-page',
           tenantId: fixtures.tenants.tenantA.id,
-          status: 'draft',
+          _status: 'draft',
         },
         req: {
           user,

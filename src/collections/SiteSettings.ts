@@ -1,4 +1,4 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionConfig, SelectFieldValidation, Where } from 'payload'
 import { tenantField } from '../fields/tenantField'
 import { tenantIsolation } from '../access/tenantIsolation'
 import { tenantContentMutations } from '../access/tenantContext'
@@ -9,16 +9,43 @@ import {
 import {
   normalizeIndianMobile,
   validateIndianMobile,
+  validateFiniteInteger,
   validateSafeURL,
 } from '../validation/shared'
+import { validateBrandFeatureRows } from '../validation/orderedRows'
+import {
+  validateExternalHTTPURL,
+  validateSocialRows,
+} from '../validation/contactPage'
+import {
+  GHEE_ROAST_ICON_NAMES,
+  validateGheeRoastIconName,
+} from '../themes/ghee-roast/iconRegistry'
+import { tenantRelationshipFilter } from '../hooks/sameTenantRelationship'
+import { sameTenantSVGRelationship } from '../hooks/sameTenantSVGRelationship'
+import { SVG_MIME_TYPE } from '../validation/svgSafety'
+
+const trimText = (value: unknown): unknown =>
+  typeof value === 'string' ? value.trim() : value
+
+const filterTenantMedia = tenantRelationshipFilter('media')
+
+const validateBuiltInFeatureIcon: SelectFieldValidation = (value, { siblingData }) => {
+  const row = siblingData && typeof siblingData === 'object'
+    ? siblingData as Record<string, unknown>
+    : {}
+  if (row.iconSource === 'custom-svg') return true
+  return value ? validateGheeRoastIconName(value) : 'Choose a Built-in Icon.'
+}
 
 export const SiteSettings: CollectionConfig = {
   slug: 'site-settings',
   admin: {
     useAsTitle: 'id',
     description: 'Manage core operational settings for this tenant. Limited to one document per tenant.',
-    defaultColumns: ['businessName', 'updatedAt'],
+    defaultColumns: ['businessName', '_status', 'updatedAt'],
   },
+  versions: { drafts: true },
   access: {
     read: tenantIsolation,
     ...tenantContentMutations,
@@ -127,14 +154,47 @@ export const SiteSettings: CollectionConfig = {
             {
               name: 'socials',
               type: 'array',
+              validate: (value: unknown) => validateSocialRows(value),
+              admin: {
+                description: 'Published social CTAs. Enabled platforms must be unique and use complete http/https URLs.',
+                initCollapsed: true,
+              },
               fields: [
-                { name: 'platform', type: 'select', options: ['facebook', 'instagram', 'twitter', 'tiktok', 'youtube'] },
+                {
+                  type: 'row',
+                  fields: [
+                    { name: 'enabled', type: 'checkbox', defaultValue: true },
+                    {
+                      name: 'platform',
+                      type: 'select',
+                      required: true,
+                      options: ['instagram', 'facebook', 'youtube', 'twitter', 'linkedin', 'whatsapp', 'tiktok', 'other'],
+                    },
+                    {
+                      name: 'icon',
+                      type: 'select',
+                      defaultValue: 'platform',
+                      options: ['platform', 'instagram', 'facebook', 'youtube', 'twitter', 'linkedin', 'whatsapp', 'link'],
+                    },
+                    { name: 'sortOrder', type: 'number', defaultValue: 0, min: 0, validate: (value: unknown) => validateFiniteInteger(value) },
+                  ],
+                },
+                {
+                  type: 'row',
+                  fields: [
+                    { name: 'displayLabel', type: 'text', maxLength: 80, hooks: { beforeValidate: [({ value }) => trimText(value)] } },
+                    { name: 'handle', type: 'text', maxLength: 120, hooks: { beforeValidate: [({ value }) => trimText(value)] } },
+                    { name: 'ctaLabel', type: 'text', maxLength: 80, hooks: { beforeValidate: [({ value }) => trimText(value)] } },
+                  ],
+                },
+                { name: 'description', type: 'textarea', maxLength: 300, hooks: { beforeValidate: [({ value }) => trimText(value)] } },
                 {
                   name: 'url',
                   type: 'text',
                   maxLength: 2048,
-                  validate: (value: unknown) => validateSafeURL(value),
+                  validate: (value: unknown) => validateExternalHTTPURL(value),
                 },
+                { name: 'openInNewTab', type: 'checkbox', defaultValue: true },
               ]
             }
           ]
@@ -178,10 +238,123 @@ export const SiteSettings: CollectionConfig = {
                   ],
                 },
                 { name: 'privacyText', type: 'text', defaultValue: 'We respect your privacy. Unsubscribe anytime.', maxLength: 300 },
+                { name: 'successMessage', type: 'text', defaultValue: 'Thank you for joining the list.', maxLength: 300 },
+                { name: 'errorMessage', type: 'text', defaultValue: 'We could not save your signup. Please try again later.', maxLength: 300 },
               ],
             },
           ]
-        }
+        },
+        {
+          label: 'Brand Features',
+          fields: [
+            {
+              name: 'featureStrip',
+              type: 'array',
+              maxRows: 5,
+              validate: (value: unknown) => validateBrandFeatureRows(value),
+              admin: {
+                description: 'Brand features shown below the Ghee Roast Home Hero. Add up to 5 rows. An empty list intentionally hides the section, and Sort Order must be unique across enabled and disabled rows.',
+                initCollapsed: true,
+                components: {
+                  RowLabel: {
+                    exportName: 'BrandFeatureRowLabel',
+                    path: './components/admin/BrandFeatureRowLabel',
+                  },
+                },
+              },
+              fields: [
+                {
+                  type: 'row',
+                  fields: [
+                    {
+                      name: 'enabled',
+                      type: 'checkbox',
+                      defaultValue: true,
+                      admin: { description: 'Only enabled features appear on the home page.' },
+                    },
+                    {
+                      name: 'sortOrder',
+                      type: 'number',
+                      required: true,
+                      defaultValue: 0,
+                      min: 0,
+                      validate: (value: unknown) =>
+                        validateFiniteInteger(value, { min: 0, max: 1_000_000 }),
+                      admin: { description: 'Use a unique whole number. Lower values appear first.' },
+                    },
+                  ],
+                },
+                {
+                  name: 'iconSource',
+                  type: 'select',
+                  required: true,
+                  defaultValue: 'built-in',
+                  options: [
+                    { label: 'Built-in Icon', value: 'built-in' },
+                    { label: 'Custom SVG', value: 'custom-svg' },
+                  ],
+                  admin: { description: 'Choose a controlled built-in icon or a validated SVG from Media.' },
+                },
+                {
+                  name: 'icon',
+                  label: 'Built-in Icon',
+                  type: 'select',
+                  defaultValue: 'spice',
+                  options: GHEE_ROAST_ICON_NAMES.map((name) => ({
+                    label: name.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/^./, (letter) => letter.toUpperCase()),
+                    value: name,
+                  })),
+                  validate: validateBuiltInFeatureIcon,
+                  admin: {
+                    condition: (_, siblingData) => siblingData?.iconSource !== 'custom-svg',
+                    description: 'Select an icon from the supported Ghee Roast icon registry.',
+                  },
+                },
+                {
+                  name: 'customSVG',
+                  label: 'Custom SVG Icon',
+                  type: 'relationship',
+                  relationTo: 'media',
+                  filterOptions: async (args) => {
+                    const tenantFilter = await filterTenantMedia(args)
+                    const svgFilter: Where = {
+                      and: [
+                        { mimeType: { equals: SVG_MIME_TYPE } },
+                        { svgSanitized: { equals: true } },
+                      ],
+                    }
+                    if (tenantFilter === false) return false
+                    if (tenantFilter === true) return svgFilter
+                    return { and: [tenantFilter, svgFilter] }
+                  },
+                  hooks: { beforeValidate: [sameTenantSVGRelationship] },
+                  admin: {
+                    condition: (_, siblingData) => siblingData?.iconSource === 'custom-svg',
+                    description: 'Upload a simple, single-color SVG for best results. Maximum SVG size: 256 KB.',
+                  },
+                },
+                {
+                  name: 'title',
+                  type: 'text',
+                  required: true,
+                  minLength: 2,
+                  maxLength: 60,
+                  admin: { placeholder: 'Authentic Recipes' },
+                  hooks: { beforeValidate: [({ value }) => trimText(value)] },
+                },
+                {
+                  name: 'description',
+                  type: 'textarea',
+                  required: true,
+                  minLength: 5,
+                  maxLength: 180,
+                  admin: { placeholder: 'Rooted in tradition. Made for today.' },
+                  hooks: { beforeValidate: [({ value }) => trimText(value)] },
+                },
+              ],
+            },
+          ]
+        },
       ]
     }
   ],
