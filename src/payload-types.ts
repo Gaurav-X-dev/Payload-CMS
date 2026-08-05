@@ -204,7 +204,7 @@ export interface Tenant {
    */
   slug?: string | null;
   type: 'restaurant' | 'hospitality' | 'cloud_kitchen';
-  theme?: ('ghee-roast' | 'zuru-zuru') | null;
+  theme?: ('ghee-roast' | 'zuru-zuru' | 'curious-hub') | null;
   /**
    * Assign if this is a sub-brand of another tenant.
    */

@@ -222,7 +222,7 @@ needed**, must be preserved exactly as-is.
 |---|---|---|---|---|---|---|---|---|---|
 | 1 | Audit | – | – | – | – | – | – | – | ✅ Done (this doc) |
 | 2 | Brand rename + default routing | – | – | – | ✅ | ✅ | – | ✅ | ✅ Done — see §6 |
-| 3 | Site Settings, Nav, Footer | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | Pending |
+| 3 | Site Settings, Nav, Footer | ✅ | – | – | – | – | ✅ | ✅ | ✅ Done — see §7 |
 | 4 | Home | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | Pending |
 | 5 | About | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | Pending |
 | 6 | Services | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | Pending |
@@ -267,7 +267,92 @@ needed**, must be preserved exactly as-is.
   pre-existing unrelated failure (`scripts.dev` string assertion out of date vs `package.json`,
   present at `HEAD` before this branch's work) — not caused by this milestone.
 
-## 6. Verification commands (from `package.json`)
+## 6. Milestone 3 record — Site Settings, Nav, Footer, SEO, and the Curious Ladoo tenant
+
+**Schema change (additive, reviewed, applied):**
+- `src/collections/Tenants.ts`: added `{ label: 'Curious Ladoo', value: 'curious-hub' }` to the
+  `theme` select field's options.
+- Migration `20260805_064839_curious_ladoo_tenant_theme` (generated via
+  `npx payload migrate:create`, reviewed by hand before applying): UP is a single
+  `ALTER TYPE "public"."enum_tenants_theme" ADD VALUE 'curious-hub';` — purely additive, no
+  existing rows touched. DOWN reverts the enum to `('ghee-roast', 'zuru-zuru')` and will fail
+  loudly (by design — Payload's generated pattern) if any row still uses `'curious-hub'` at
+  rollback time, rather than silently corrupting data.
+- **Migration safety steps actually performed**: `payload migrate:status` (7/7 previously applied,
+  clean) → recorded before-counts and a JSON row snapshot of the `tenants` table (no `pg_dump`
+  binary available in this environment, documented as a limitation) → `migrate:create` → manually
+  read the generated SQL → applied via `payload migrate` → re-verified the enum and
+  `payload_migrations` table → re-checked all 8 row counts (`tenants, site_settings, nav, footer,
+  seo, pages, media, users`) were unchanged before vs. after the schema step. The `payload migrate`
+  CLI prompts once for confirmation whenever a historical `{name:"dev", batch:-1}` marker exists in
+  `payload_migrations` (present in this DB from before the migration workflow was formalized) — I
+  read the Payload/drizzle source (`node_modules/@payloadcms/drizzle/dist/migrate.js`) to confirm
+  this prompt only filters that marker row for batch numbering and does not itself run any
+  destructive SQL, before answering it.
+- **Discovered this DB already has ~11 leftover "Test Tenant A/B" rows** from earlier, apparently
+  incomplete `tests/security/*` runs (unrelated to this branch, present before this session). Left
+  untouched per the "do not delete tenants" rule.
+
+**Curious Ladoo tenant + content records (created via Local API, idempotent seed):**
+- `src/seed/curiousLadoo.ts` (`seedCuriousLadooContent`) + `scripts/seed-curious-ladoo.ts` +
+  `npm run db:seed:curious-ladoo`, modeled directly on the existing
+  `src/seed/development.ts`/`scripts/seed-development-data.ts` pattern: find-by-slug/tenantId,
+  update if present, create if not — safe to re-run, never duplicates.
+- Creates: **Tenant** (`slug: curious-ladoo`, `name: Curious Ladoo`, `theme: curious-hub`,
+  `isActive/isPrimary: true`, branding colors pulled from the theme's actual CSS tokens
+  `--ch-primary #C46A3A` / `--ch-accent #D4845A` / `--ch-bg #F8F5F0`, typography from the theme's
+  Google Fonts). **Site Settings** (business name/tagline/description/address, WhatsApp number,
+  3 social links with real URLs from `data/site.ts`, newsletter copy). **Nav** (7 top-level links
+  matching `data/navigation.ts`'s top-level items — `type: internal` + raw `url`, the same pattern
+  the existing Ghee Roast seed uses; megaMenu sub-items were **not** carried over because Payload's
+  `megaMenu` block requires real Page relationships and no Curious Ladoo Pages exist yet — revisit
+  once Milestone 4+ creates them, documented here as a known simplification, not silent data loss).
+  **Footer** (4 columns — Company/Brands/Services/Partner — with real internal-path/anchor URLs
+  from `data/footer.ts`; `bottomLinks` left empty because the source data's Privacy/Terms/Sitemap
+  links were `href="#"` placeholders that fail `validateSafeURL`, and no legal pages exist yet).
+  **SEO** (title pattern, description, keywords, OG/Twitter site name).
+- Verified by reading the actual Postgres rows back (not just trusting the script's return value):
+  site_settings, nav links (all 7, correct order), footer columns (all 4, correct nested links,
+  and confirmed Ghee Roast's own footer columns were untouched in the same table), and SEO row all
+  match exactly what was written. Row counts: tenants 14→15, site_settings 5→6, nav 3→4, footer
+  1→2, seo 1→2 — each +1 as expected, nothing else moved.
+
+**Bug fixed (pre-existing, blocking):** `scripts/register-ts-loader.mjs` was missing the
+`/index.ts` resolution fallback that `tests/register-ts-loader.mjs` already had, so any script run
+via `node --experimental-strip-types --import ./scripts/register-ts-loader.mjs` (i.e. `db:seed:dev`,
+`db:reset:dev`, and the new `db:seed:curious-ladoo`) could not resolve directory-style imports like
+`../blocks` (→ `src/blocks/index.ts`) and crashed with `ERR_MODULE_NOT_FOUND`. Fixed by mirroring
+the working test-loader fallback chain. This was broken before this branch and blocked the existing
+dev-seed scripts too, not just the new one.
+
+**Known tooling quirk (not a bug I introduced, documented for future scripts):** Local API scripts
+that call `payload.db.destroy?.()` directly can hang on process exit due to a documented
+`@payloadcms/db-postgres@3.86` issue (a bootstrap client checked out in `connectWithReconnect` is
+never released) — `tests/security/fixtures.ts`'s `shutdownPayload()` already has a workaround
+(manually releasing idle-tracked clients before `pool.end()`). `scripts/seed-curious-ladoo.ts`
+completed all its actual writes successfully in both attempts (verified against Postgres directly)
+but hung after — the process was killed after confirming the data had landed correctly rather than
+waiting indefinitely. Future scripts in this codebase should adopt the same `shutdownPayload()`
+pattern; not applied here to keep this milestone's diff scoped to what was asked.
+
+**Pre-existing, unrelated test-suite finding:** `npm run test:security` currently fails across
+every stage that uses the shared `tests/security/fixtures.ts` helper (`setupSecurityFixtures`).
+Root cause: fixture tenant/user names are built as `` `Tenant A Active ${deterministicId()}` ``
+where `deterministicId()` embeds digits (e.g. `stage24-isolation-concurrency-1`), but
+`SAFE_NAME_PATTERN` in `src/validation/shared.ts` (`/^[\p{L}\p{M}][\p{L}\p{M}\s'’.-]*$/u`) rejects
+any digit anywhere in a tenant name. This affects `tenants.name` validation
+(`src/hooks/validateTenantIdentity.ts`) for every stage, confirmed via `git diff` that neither
+`tests/security/fixtures.ts`, `src/validation/shared.ts`, nor `validateTenantIdentity.ts` were
+touched by this branch — the entire security suite is broken at the base of
+`feature/curious-ladoo-dynamic`, independent of this work. Left unfixed as out of scope for this
+milestone; flagging clearly rather than silently reporting the suite as passing.
+
+**Verified:** `npm run typecheck` clean. `npm test` (authorization, phase1, phase2,
+development-content, ghee-cms) — all pass except the same pre-existing unrelated `dev` script
+string assertion noted in Milestone 2. `npm run test:ghee-cms` run standalone: 40/40 pass — Ghee
+Roast fully unaffected by the tenant/enum/loader changes.
+
+## 7. Verification commands (from `package.json`)
 
 `npm run typecheck` · `npm run lint` · `npm run build` · `npm test` (chains authorization, phase1,
 phase2, development-content, ghee-cms) · `npm run test:security`. No test runner is Ghee-Roast- or

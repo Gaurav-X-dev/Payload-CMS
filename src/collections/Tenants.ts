@@ -81,6 +81,10 @@ export const Tenants: CollectionConfig = {
           options: [
             { label: 'Ghee Roast', value: 'ghee-roast' },
             { label: 'Zuru Zuru', value: 'zuru-zuru' },
+            // Public brand is "Curious Ladoo"; the value stays "curious-hub" because it is
+            // already threaded through src/themes/curious-hub, LocalThemeKey, and the theme
+            // registry — renaming it is cosmetic only and not worth the migration risk.
+            { label: 'Curious Ladoo', value: 'curious-hub' },
           ],
         },
         {

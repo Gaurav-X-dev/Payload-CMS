@@ -5,6 +5,7 @@ import * as migration_20260803_142729_ghee_page_contract from './20260803_142729
 import * as migration_20260803_163357_globals_versioning from './20260803_163357_globals_versioning';
 import * as migration_20260803_212125_native_page_status_stage_a from './20260803_212125_native_page_status_stage_a';
 import * as migration_20260804_062029_ghee_contact_page_experience from './20260804_062029_ghee_contact_page_experience';
+import * as migration_20260805_064839_curious_ladoo_tenant_theme from './20260805_064839_curious_ladoo_tenant_theme';
 
 export const migrations = [
   {
@@ -40,6 +41,11 @@ export const migrations = [
   {
     up: migration_20260804_062029_ghee_contact_page_experience.up,
     down: migration_20260804_062029_ghee_contact_page_experience.down,
-    name: '20260804_062029_ghee_contact_page_experience'
+    name: '20260804_062029_ghee_contact_page_experience',
+  },
+  {
+    up: migration_20260805_064839_curious_ladoo_tenant_theme.up,
+    down: migration_20260805_064839_curious_ladoo_tenant_theme.down,
+    name: '20260805_064839_curious_ladoo_tenant_theme'
   },
 ];
