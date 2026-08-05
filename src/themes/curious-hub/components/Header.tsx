@@ -3,11 +3,30 @@
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { navigationData as curiousHubNavigation } from '../data/navigation'
+import type { CuriousLadooNavigationData } from '../mappers/dynamicTypes'
+import type { NavItemData } from '../types'
 import styles from './Theme.module.css'
 
-export function Header({ pathname }: { pathname: string }) {
+/** CMS Nav is optional: pages not yet converted to CMS omit it and keep today's static nav. */
+export function Header({
+  nav,
+  pathname,
+  tagline,
+}: {
+  nav?: CuriousLadooNavigationData
+  pathname: string
+  tagline?: string
+}) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+
+  const items: NavItemData[] = nav && nav.links.length > 0
+    ? nav.links.map((link) => ({ href: link.url, label: link.label.toUpperCase() }))
+    : curiousHubNavigation
+  const brandName = nav?.brandName || 'Curious Ladoo'
+  const brandTagline = tagline || 'Building Hospitality Brands'
+  const ctaLabel = nav?.cta?.label || "Let's Talk"
+  const ctaHref = nav?.cta?.url || '/contact'
 
   useEffect(() => {
     const update = () => setScrolled(window.scrollY > 50)
@@ -38,16 +57,16 @@ export function Header({ pathname }: { pathname: string }) {
         id="navbar"
         role="navigation"
       >
-        <Link aria-label="Curious Ladoo Home" className={styles.navLogo} href="/">
+        <Link aria-label={`${brandName} Home`} className={styles.navLogo} href="/">
           <div className={styles.navLogoMark}>CL</div>
           <div className={styles.navLogoText}>
-            <span className={styles.brandName}>Curious Ladoo</span>
-            <span className={styles.brandTagline}>Building Hospitality Brands</span>
+            <span className={styles.brandName}>{brandName}</span>
+            <span className={styles.brandTagline}>{brandTagline}</span>
           </div>
         </Link>
 
         <ul className={styles.navLinks} role="list">
-          {curiousHubNavigation.map((item) => (
+          {items.map((item) => (
             <li className={styles.navItem} key={item.href}>
               <Link
                 aria-current={isActive(item.href) ? 'page' : undefined}
@@ -72,8 +91,8 @@ export function Header({ pathname }: { pathname: string }) {
         </ul>
 
         <div className={styles.navRight}>
-          <Link className={styles.navCta} href="/contact" id="nav-collaborate-btn">
-            Let&apos;s Talk
+          <Link className={styles.navCta} href={ctaHref} id="nav-collaborate-btn">
+            {ctaLabel}
           </Link>
           <button
             aria-controls="curious-hub-mobile-menu"
@@ -97,7 +116,7 @@ export function Header({ pathname }: { pathname: string }) {
         className={`${styles.mobileNav} ${menuOpen ? styles.mobileNavOpen : ''}`}
         id="curious-hub-mobile-menu"
       >
-        {curiousHubNavigation.map((item) => (
+        {items.map((item) => (
           <Link
             aria-current={isActive(item.href) ? 'page' : undefined}
             className={styles.mobileNavLink}

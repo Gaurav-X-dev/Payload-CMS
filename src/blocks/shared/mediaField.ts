@@ -4,7 +4,10 @@ import {
   tenantRelationshipFilter,
 } from '../../hooks/sameTenantRelationship'
 
-export const mediaField = (overrides?: Partial<GroupField>): GroupField => ({
+export const mediaField = (
+  overrides?: Partial<GroupField>,
+  { required = true }: { required?: boolean } = {},
+): GroupField => ({
   name: 'media',
   type: 'group',
   admin: {
@@ -16,7 +19,7 @@ export const mediaField = (overrides?: Partial<GroupField>): GroupField => ({
       name: 'item',
       type: 'relationship',
       relationTo: 'media',
-      required: true,
+      required,
       filterOptions: tenantRelationshipFilter('media'),
       hooks: { beforeValidate: [sameTenantRelationship('media')] },
     },

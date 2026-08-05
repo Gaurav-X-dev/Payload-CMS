@@ -46,6 +46,8 @@ const SINGLETON_BLOCK_LABELS = new Map<string, string>([
   ['formBlock', 'Contact Form'],
   ['locationsBlock', 'Locations'],
   ['socialLinksBlock', 'Social Media'],
+  ['tickerBlock', 'Ticker / Marquee'],
+  ['brandsshowcaseBlock', 'Brands Showcase'],
 ])
 
 export const validateHTMLID = (value: unknown): true | string => {

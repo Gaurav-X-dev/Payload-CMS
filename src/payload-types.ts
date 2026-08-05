@@ -82,6 +82,7 @@ export interface Config {
     faqs: Faq;
     'contact-submissions': ContactSubmission;
     gallery: Gallery;
+    brands: Brand;
     'site-settings': SiteSetting;
     nav: Nav;
     footer: Footer;
@@ -112,6 +113,7 @@ export interface Config {
     faqs: FaqsSelect<false> | FaqsSelect<true>;
     'contact-submissions': ContactSubmissionsSelect<false> | ContactSubmissionsSelect<true>;
     gallery: GallerySelect<false> | GallerySelect<true>;
+    brands: BrandsSelect<false> | BrandsSelect<true>;
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
     nav: NavSelect<false> | NavSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
@@ -424,6 +426,9 @@ export interface Page {
         | AmenitiesBlock
         | PackagesBlock
         | SubBrandsBlock
+        | TickerBlock
+        | StoryBlock
+        | BrandsShowcaseBlock
       )[]
     | null;
   showInNavigation?: boolean | null;
@@ -901,10 +906,71 @@ export interface ContentGridBlock {
     alignment?: ('left' | 'center' | 'right') | null;
     maxWidth?: ('standard' | 'narrow' | 'wide') | null;
   };
+  /**
+   * Controls section chrome (background, decorative text, wrapper) for themes with multiple grid styles. Themes that only use one style can leave this at Grid.
+   */
+  presentation?:
+    ('grid' | 'pillars' | 'edge' | 'industries' | 'b2b' | 'services' | 'partners' | 'values' | 'mission-vision') | null;
+  /**
+   * Optional companion image shown beside the grid (used by the Edge / Media + Grid presentation).
+   */
+  media?: {
+    item?: (number | null) | Media;
+    /**
+     * Overrides the default Alt text.
+     */
+    altOverride?: string | null;
+    /**
+     * Displays a visible figcaption.
+     */
+    caption?: string | null;
+    aspectRatio?: ('auto' | '16:9' | '4:3' | '1:1' | '9:16') | null;
+    objectFit?: ('cover' | 'contain') | null;
+    /**
+     * Load immediately (prevents lazy-loading). Use only for above-the-fold media.
+     */
+    priority?: boolean | null;
+    /**
+     * Precise cropping point for mobile views.
+     */
+    focalPoint?: {
+      x?: number | null;
+      y?: number | null;
+    };
+  };
+  mediaPosition?: ('left' | 'right') | null;
   items: {
+    /**
+     * An emoji/glyph rendered as-is, or a known icon keyword for this theme.
+     */
     icon?: string | null;
     title: string;
     description?: string | null;
+    enableLink?: boolean | null;
+    link?: {
+      type?: ('reference' | 'custom' | 'anchor' | 'email' | 'phone') | null;
+      label: string;
+      reference?: (number | null) | Page;
+      url?: string | null;
+      newTab?: boolean | null;
+      /**
+       * SEO override.
+       */
+      nofollow?: boolean | null;
+      disabled?: boolean | null;
+      buttonStyle?: ('primary' | 'secondary' | 'outline' | 'ghost' | 'text') | null;
+      buttonSize?: ('small' | 'medium' | 'large') | null;
+      icon?: (number | null) | Media;
+      iconPosition?: ('left' | 'right') | null;
+      /**
+       * E.g., GTM ID.
+       */
+      analyticsTrackingId?: string | null;
+      /**
+       * Screen reader override.
+       */
+      ariaLabel?: string | null;
+    };
     id?: string | null;
   }[];
   /**
@@ -959,6 +1025,10 @@ export interface StepsBlock {
     maxWidth?: ('standard' | 'narrow' | 'wide') | null;
   };
   presentation?: ('cards' | 'ghee-home-process') | null;
+  /**
+   * Visual treatment for the Reusable Cards presentation: numbered process steps, or a year/event timeline.
+   */
+  layoutVariant?: ('numbered-steps' | 'timeline') | null;
   steps: {
     label?: string | null;
     icon?: string | null;
@@ -1102,6 +1172,14 @@ export interface StatsBlock {
   stats: {
     value: string;
     label: string;
+    /**
+     * Optional. If set, the number counts up from 0 to this value instead of showing Value as static text.
+     */
+    animatedTarget?: number | null;
+    /**
+     * Shown after the animated number, e.g. "+" or "%".
+     */
+    animatedSuffix?: string | null;
     id?: string | null;
   }[];
   /**
@@ -1932,9 +2010,177 @@ export interface Location {
 export interface BlogPreviewBlock {
   title?: string | null;
   subtitle?: string | null;
+  /**
+   * Optional heading displayed above the blog preview grid.
+   */
+  sectionHeader: {
+    /**
+     * Small accented text above the title.
+     */
+    eyebrow?: string | null;
+    title: string;
+    headingTag?: ('h1' | 'h2' | 'h3' | 'h4') | null;
+    subtitle?: string | null;
+    description?: string | null;
+    alignment?: ('left' | 'center' | 'right') | null;
+    maxWidth?: ('standard' | 'narrow' | 'wide') | null;
+  };
+  source?: ('collection' | 'manual') | null;
+  posts?: (number | BlogPost)[] | null;
+  featuredOnly?: boolean | null;
+  limit?: number | null;
+  /**
+   * Appearance and visibility settings for this block.
+   */
+  settings?: {
+    backgroundColor?: ('transparent' | 'surface' | 'primary' | 'accent' | 'dark') | null;
+    containerWidth?: ('standard' | 'wide' | 'full') | null;
+    /**
+     * Optional image to place behind the block.
+     */
+    backgroundImage?: (number | null) | Media;
+    /**
+     * 0-100 opacity for the background overlay.
+     */
+    overlayOpacity?: number | null;
+    paddingTop?: ('none' | 'small' | 'medium' | 'large') | null;
+    paddingBottom?: ('none' | 'small' | 'medium' | 'large') | null;
+    visibility?: ('desktop' | 'tablet' | 'mobile')[] | null;
+    animation?: ('none' | 'fade-in' | 'slide-up' | 'zoom-in' | 'stagger') | null;
+    /**
+     * Inject custom CSS classes for developer overrides.
+     */
+    customClasses?: string | null;
+    /**
+     * Used for #anchor links. Must be unique.
+     */
+    htmlId?: string | null;
+  };
   id?: string | null;
   blockName?: string | null;
   blockType: 'blogpreviewBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "blog-posts".
+ */
+export interface BlogPost {
+  id: number;
+  /**
+   * Super Admins may select a tenant. Other users are assigned from trusted tenant context.
+   */
+  tenantId: number | Tenant;
+  title: string;
+  /**
+   * Auto-generated if left blank.
+   */
+  slug?: string | null;
+  excerpt?: string | null;
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  heroImage?: (number | null) | Media;
+  status?: ('draft' | 'published' | 'archived') | null;
+  author?: (number | null) | User;
+  /**
+   * Scheduled Publishing: Set a future date to automatically publish.
+   */
+  publishedDate?: string | null;
+  /**
+   * Scheduled Unpublish: Set a date to automatically archive.
+   */
+  unpublishDate?: string | null;
+  isFeatured?: boolean | null;
+  /**
+   * Keep at the top of the blog index.
+   */
+  isPinned?: boolean | null;
+  showTableOfContents?: boolean | null;
+  categories?: string[] | null;
+  tags?: string[] | null;
+  metaTitle?: string | null;
+  metaDescription?: string | null;
+  metaImage?: (number | null) | Media;
+  relatedPosts?: (number | BlogPost)[] | null;
+  relatedMenuItems?: (number | MenuItem)[] | null;
+  readingTimeMinutes?: number | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Manage dishes, pricing, dietary details, availability, imagery, and featured placement.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "menu-items".
+ */
+export interface MenuItem {
+  id: number;
+  /**
+   * Super Admins may select a tenant. Other users are assigned from trusted tenant context.
+   */
+  tenantId: number | Tenant;
+  title: string;
+  /**
+   * Auto-generated if left blank.
+   */
+  slug?: string | null;
+  /**
+   * Optional ID for POS integration.
+   */
+  sku?: string | null;
+  /**
+   * Customer-facing menu description.
+   */
+  description: string;
+  category: number | MenuCategory;
+  displayOrder?: number | null;
+  price: number;
+  taxCategory?: string | null;
+  /**
+   * e.g. Regular vs Large, or add-ons.
+   */
+  pricingOptions?:
+    | {
+        label: string;
+        price: number;
+        id?: string | null;
+      }[]
+    | null;
+  dietary?: ('Veg' | 'Non-Veg' | 'Vegan' | 'Gluten-Free' | 'Keto' | 'Halal')[] | null;
+  spiceLevel?: ('none' | 'mild' | 'medium' | 'hot' | 'extra_hot') | null;
+  allergens?: ('Peanuts' | 'Tree Nuts' | 'Dairy' | 'Eggs' | 'Soy' | 'Wheat' | 'Fish' | 'Shellfish')[] | null;
+  calories?: number | null;
+  servingSize?: string | null;
+  /**
+   * Preparation time in minutes.
+   */
+  prepTime?: number | null;
+  image?: (number | null) | Media;
+  gallery?: (number | Media)[] | null;
+  isAvailable?: boolean | null;
+  isFeatured?: boolean | null;
+  stockStatus?: ('in_stock' | 'low_stock' | 'out_of_stock') | null;
+  /**
+   * e.g., "Lunch Only (11am - 3pm)"
+   */
+  availabilityTime?: string | null;
+  recommendedItems?: (number | MenuItem)[] | null;
+  upsellItems?: (number | MenuItem)[] | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2282,64 +2528,269 @@ export interface SubBrandsBlock {
   blockType: 'subbrandsBlock';
 }
 /**
- * Manage dishes, pricing, dietary details, availability, imagery, and featured placement.
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TickerBlock".
+ */
+export interface TickerBlock {
+  items: {
+    /**
+     * A short glyph or emoji, e.g. ✦
+     */
+    icon?: string | null;
+    /**
+     * Optional CSS font-size override for the glyph, e.g. 1.4rem.
+     */
+    iconStyle?: string | null;
+    name: string;
+    description: string;
+    id?: string | null;
+  }[];
+  /**
+   * Appearance and visibility settings for this block.
+   */
+  settings?: {
+    backgroundColor?: ('transparent' | 'surface' | 'primary' | 'accent' | 'dark') | null;
+    containerWidth?: ('standard' | 'wide' | 'full') | null;
+    /**
+     * Optional image to place behind the block.
+     */
+    backgroundImage?: (number | null) | Media;
+    /**
+     * 0-100 opacity for the background overlay.
+     */
+    overlayOpacity?: number | null;
+    paddingTop?: ('none' | 'small' | 'medium' | 'large') | null;
+    paddingBottom?: ('none' | 'small' | 'medium' | 'large') | null;
+    visibility?: ('desktop' | 'tablet' | 'mobile')[] | null;
+    animation?: ('none' | 'fade-in' | 'slide-up' | 'zoom-in' | 'stagger') | null;
+    /**
+     * Inject custom CSS classes for developer overrides.
+     */
+    customClasses?: string | null;
+    /**
+     * Used for #anchor links. Must be unique.
+     */
+    htmlId?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'tickerBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "StoryBlock".
+ */
+export interface StoryBlock {
+  layout?: ('panel' | 'overlay' | 'simple') | null;
+  eyebrow?: string | null;
+  title?: string | null;
+  /**
+   * Optional trailing phrase rendered with the theme's accent/italic styling.
+   */
+  accentPhrase?: string | null;
+  quote?: string | null;
+  /**
+   * Separate multiple paragraphs with a blank line.
+   */
+  body?: string | null;
+  /**
+   * Optional line shown under the quote (overlay layout only).
+   */
+  attribution?: string | null;
+  media?: (number | null) | Media;
+  /**
+   * Optional second, smaller accent image shown overlapping the primary image.
+   */
+  secondaryMedia?: (number | null) | Media;
+  overlayMedia?: (number | null) | Media;
+  /**
+   * Alt text for the primary/overlay image.
+   */
+  mediaAlt?: string | null;
+  imagePosition?: ('left' | 'right') | null;
+  statBadge?: {
+    enabled?: boolean | null;
+    value?: string | null;
+    label?: string | null;
+  };
+  enableCta?: boolean | null;
+  cta?: {
+    type?: ('reference' | 'custom' | 'anchor' | 'email' | 'phone') | null;
+    label: string;
+    reference?: (number | null) | Page;
+    url?: string | null;
+    newTab?: boolean | null;
+    /**
+     * SEO override.
+     */
+    nofollow?: boolean | null;
+    disabled?: boolean | null;
+    buttonStyle?: ('primary' | 'secondary' | 'outline' | 'ghost' | 'text') | null;
+    buttonSize?: ('small' | 'medium' | 'large') | null;
+    icon?: (number | null) | Media;
+    iconPosition?: ('left' | 'right') | null;
+    /**
+     * E.g., GTM ID.
+     */
+    analyticsTrackingId?: string | null;
+    /**
+     * Screen reader override.
+     */
+    ariaLabel?: string | null;
+  };
+  /**
+   * Appearance and visibility settings for this block.
+   */
+  settings?: {
+    backgroundColor?: ('transparent' | 'surface' | 'primary' | 'accent' | 'dark') | null;
+    containerWidth?: ('standard' | 'wide' | 'full') | null;
+    /**
+     * Optional image to place behind the block.
+     */
+    backgroundImage?: (number | null) | Media;
+    /**
+     * 0-100 opacity for the background overlay.
+     */
+    overlayOpacity?: number | null;
+    paddingTop?: ('none' | 'small' | 'medium' | 'large') | null;
+    paddingBottom?: ('none' | 'small' | 'medium' | 'large') | null;
+    visibility?: ('desktop' | 'tablet' | 'mobile')[] | null;
+    animation?: ('none' | 'fade-in' | 'slide-up' | 'zoom-in' | 'stagger') | null;
+    /**
+     * Inject custom CSS classes for developer overrides.
+     */
+    customClasses?: string | null;
+    /**
+     * Used for #anchor links. Must be unique.
+     */
+    htmlId?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'storyBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BrandsShowcaseBlock".
+ */
+export interface BrandsShowcaseBlock {
+  /**
+   * Optional heading displayed above the brand grid.
+   */
+  sectionHeader: {
+    /**
+     * Small accented text above the title.
+     */
+    eyebrow?: string | null;
+    title: string;
+    headingTag?: ('h1' | 'h2' | 'h3' | 'h4') | null;
+    subtitle?: string | null;
+    description?: string | null;
+    alignment?: ('left' | 'center' | 'right') | null;
+    maxWidth?: ('standard' | 'narrow' | 'wide') | null;
+  };
+  /**
+   * Leave empty to show every enabled brand, sorted by Sort Order.
+   */
+  brands?: (number | Brand)[] | null;
+  limit?: number | null;
+  /**
+   * Appearance and visibility settings for this block.
+   */
+  settings?: {
+    backgroundColor?: ('transparent' | 'surface' | 'primary' | 'accent' | 'dark') | null;
+    containerWidth?: ('standard' | 'wide' | 'full') | null;
+    /**
+     * Optional image to place behind the block.
+     */
+    backgroundImage?: (number | null) | Media;
+    /**
+     * 0-100 opacity for the background overlay.
+     */
+    overlayOpacity?: number | null;
+    paddingTop?: ('none' | 'small' | 'medium' | 'large') | null;
+    paddingBottom?: ('none' | 'small' | 'medium' | 'large') | null;
+    visibility?: ('desktop' | 'tablet' | 'mobile')[] | null;
+    animation?: ('none' | 'fade-in' | 'slide-up' | 'zoom-in' | 'stagger') | null;
+    /**
+     * Inject custom CSS classes for developer overrides.
+     */
+    customClasses?: string | null;
+    /**
+     * Used for #anchor links. Must be unique.
+     */
+    htmlId?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'brandsshowcaseBlock';
+}
+/**
+ * Manage the group's sub-brands and partner brands shown on the Home showcase and Brands page.
  *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "menu-items".
+ * via the `definition` "brands".
  */
-export interface MenuItem {
+export interface Brand {
   id: number;
   /**
    * Super Admins may select a tenant. Other users are assigned from trusted tenant context.
    */
   tenantId: number | Tenant;
-  title: string;
+  name: string;
   /**
-   * Auto-generated if left blank.
+   * Auto-generated if left blank. Used for the #anchor on the Brands page.
    */
   slug?: string | null;
   /**
-   * Optional ID for POS integration.
+   * Short glyph/mark shown on the brand card, e.g. ✦ or a short logotype.
    */
-  sku?: string | null;
+  mark?: string | null;
+  category?: string | null;
   /**
-   * Customer-facing menu description.
+   * Used on the compact Home showcase card.
    */
-  description: string;
-  category: number | MenuCategory;
-  displayOrder?: number | null;
-  price: number;
-  taxCategory?: string | null;
+  shortDescription?: string | null;
   /**
-   * e.g. Regular vs Large, or add-ons.
+   * Used on the Brands page spotlight section.
    */
-  pricingOptions?:
+  fullDescription?: string | null;
+  /**
+   * Optional pull-quote for the Brands page spotlight.
+   */
+  quote?: string | null;
+  statValue?: string | null;
+  statLabel?: string | null;
+  image?: (number | null) | Media;
+  logo?: (number | null) | Media;
+  gallery?: (number | Media)[] | null;
+  /**
+   * Optional: link to this brand's own Tenant record if it runs its own CMS-driven site (e.g. Ghee Roast, Zuru Zuru).
+   */
+  tenant?: (number | null) | Tenant;
+  /**
+   * External or internal link used by "Explore Brand" (e.g. /brands#ghee, or a full https:// URL).
+   */
+  websiteUrl?: string | null;
+  /**
+   * Additional labeled links shown on the Brands page spotlight (e.g. "Visit Website", "View Menu").
+   */
+  links?:
     | {
         label: string;
-        price: number;
+        url: string;
         id?: string | null;
       }[]
     | null;
-  dietary?: ('Veg' | 'Non-Veg' | 'Vegan' | 'Gluten-Free' | 'Keto' | 'Halal')[] | null;
-  spiceLevel?: ('none' | 'mild' | 'medium' | 'hot' | 'extra_hot') | null;
-  allergens?: ('Peanuts' | 'Tree Nuts' | 'Dairy' | 'Eggs' | 'Soy' | 'Wheat' | 'Fish' | 'Shellfish')[] | null;
-  calories?: number | null;
-  servingSize?: string | null;
+  primaryColor?: string | null;
+  accentColor?: string | null;
+  enabled?: boolean | null;
+  featured?: boolean | null;
   /**
-   * Preparation time in minutes.
+   * Renders as a "coming soon" placeholder card instead of a full brand card.
    */
-  prepTime?: number | null;
-  image?: (number | null) | Media;
-  gallery?: (number | Media)[] | null;
-  isAvailable?: boolean | null;
-  isFeatured?: boolean | null;
-  stockStatus?: ('in_stock' | 'low_stock' | 'out_of_stock') | null;
-  /**
-   * e.g., "Lunch Only (11am - 3pm)"
-   */
-  availabilityTime?: string | null;
-  recommendedItems?: (number | MenuItem)[] | null;
-  upsellItems?: (number | MenuItem)[] | null;
+  comingSoon?: boolean | null;
+  sortOrder?: number | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -2383,66 +2834,6 @@ export interface Reservation {
   cancellationReason?: string | null;
   updatedAt: string;
   createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "blog-posts".
- */
-export interface BlogPost {
-  id: number;
-  /**
-   * Super Admins may select a tenant. Other users are assigned from trusted tenant context.
-   */
-  tenantId: number | Tenant;
-  title: string;
-  /**
-   * Auto-generated if left blank.
-   */
-  slug?: string | null;
-  excerpt?: string | null;
-  content: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  };
-  heroImage?: (number | null) | Media;
-  status?: ('draft' | 'published' | 'archived') | null;
-  author?: (number | null) | User;
-  /**
-   * Scheduled Publishing: Set a future date to automatically publish.
-   */
-  publishedDate?: string | null;
-  /**
-   * Scheduled Unpublish: Set a date to automatically archive.
-   */
-  unpublishDate?: string | null;
-  isFeatured?: boolean | null;
-  /**
-   * Keep at the top of the blog index.
-   */
-  isPinned?: boolean | null;
-  showTableOfContents?: boolean | null;
-  categories?: string[] | null;
-  tags?: string[] | null;
-  metaTitle?: string | null;
-  metaDescription?: string | null;
-  metaImage?: (number | null) | Media;
-  relatedPosts?: (number | BlogPost)[] | null;
-  relatedMenuItems?: (number | MenuItem)[] | null;
-  readingTimeMinutes?: number | null;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2953,6 +3344,10 @@ export interface PayloadLockedDocument {
         value: number | Gallery;
       } | null)
     | ({
+        relationTo: 'brands';
+        value: number | Brand;
+      } | null)
+    | ({
         relationTo: 'site-settings';
         value: number | SiteSetting;
       } | null)
@@ -3252,6 +3647,9 @@ export interface PagesSelect<T extends boolean = true> {
         amenitiesBlock?: T | AmenitiesBlockSelect<T>;
         packagesBlock?: T | PackagesBlockSelect<T>;
         subbrandsBlock?: T | SubBrandsBlockSelect<T>;
+        tickerBlock?: T | TickerBlockSelect<T>;
+        storyBlock?: T | StoryBlockSelect<T>;
+        brandsshowcaseBlock?: T | BrandsShowcaseBlockSelect<T>;
       };
   showInNavigation?: T;
   navigationLabel?: T;
@@ -3563,12 +3961,48 @@ export interface ContentGridBlockSelect<T extends boolean = true> {
         alignment?: T;
         maxWidth?: T;
       };
+  presentation?: T;
+  media?:
+    | T
+    | {
+        item?: T;
+        altOverride?: T;
+        caption?: T;
+        aspectRatio?: T;
+        objectFit?: T;
+        priority?: T;
+        focalPoint?:
+          | T
+          | {
+              x?: T;
+              y?: T;
+            };
+      };
+  mediaPosition?: T;
   items?:
     | T
     | {
         icon?: T;
         title?: T;
         description?: T;
+        enableLink?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              label?: T;
+              reference?: T;
+              url?: T;
+              newTab?: T;
+              nofollow?: T;
+              disabled?: T;
+              buttonStyle?: T;
+              buttonSize?: T;
+              icon?: T;
+              iconPosition?: T;
+              analyticsTrackingId?: T;
+              ariaLabel?: T;
+            };
         id?: T;
       };
   settings?:
@@ -3605,6 +4039,7 @@ export interface StepsBlockSelect<T extends boolean = true> {
         maxWidth?: T;
       };
   presentation?: T;
+  layoutVariant?: T;
   steps?:
     | T
     | {
@@ -3691,6 +4126,8 @@ export interface StatsBlockSelect<T extends boolean = true> {
     | {
         value?: T;
         label?: T;
+        animatedTarget?: T;
+        animatedSuffix?: T;
         id?: T;
       };
   settings?:
@@ -4121,6 +4558,35 @@ export interface LocationsBlockSelect<T extends boolean = true> {
 export interface BlogPreviewBlockSelect<T extends boolean = true> {
   title?: T;
   subtitle?: T;
+  sectionHeader?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        headingTag?: T;
+        subtitle?: T;
+        description?: T;
+        alignment?: T;
+        maxWidth?: T;
+      };
+  source?: T;
+  posts?: T;
+  featuredOnly?: T;
+  limit?: T;
+  settings?:
+    | T
+    | {
+        backgroundColor?: T;
+        containerWidth?: T;
+        backgroundImage?: T;
+        overlayOpacity?: T;
+        paddingTop?: T;
+        paddingBottom?: T;
+        visibility?: T;
+        animation?: T;
+        customClasses?: T;
+        htmlId?: T;
+      };
   id?: T;
   blockName?: T;
 }
@@ -4354,6 +4820,131 @@ export interface PackagesBlockSelect<T extends boolean = true> {
 export interface SubBrandsBlockSelect<T extends boolean = true> {
   title?: T;
   subtitle?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TickerBlock_select".
+ */
+export interface TickerBlockSelect<T extends boolean = true> {
+  items?:
+    | T
+    | {
+        icon?: T;
+        iconStyle?: T;
+        name?: T;
+        description?: T;
+        id?: T;
+      };
+  settings?:
+    | T
+    | {
+        backgroundColor?: T;
+        containerWidth?: T;
+        backgroundImage?: T;
+        overlayOpacity?: T;
+        paddingTop?: T;
+        paddingBottom?: T;
+        visibility?: T;
+        animation?: T;
+        customClasses?: T;
+        htmlId?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "StoryBlock_select".
+ */
+export interface StoryBlockSelect<T extends boolean = true> {
+  layout?: T;
+  eyebrow?: T;
+  title?: T;
+  accentPhrase?: T;
+  quote?: T;
+  body?: T;
+  attribution?: T;
+  media?: T;
+  secondaryMedia?: T;
+  overlayMedia?: T;
+  mediaAlt?: T;
+  imagePosition?: T;
+  statBadge?:
+    | T
+    | {
+        enabled?: T;
+        value?: T;
+        label?: T;
+      };
+  enableCta?: T;
+  cta?:
+    | T
+    | {
+        type?: T;
+        label?: T;
+        reference?: T;
+        url?: T;
+        newTab?: T;
+        nofollow?: T;
+        disabled?: T;
+        buttonStyle?: T;
+        buttonSize?: T;
+        icon?: T;
+        iconPosition?: T;
+        analyticsTrackingId?: T;
+        ariaLabel?: T;
+      };
+  settings?:
+    | T
+    | {
+        backgroundColor?: T;
+        containerWidth?: T;
+        backgroundImage?: T;
+        overlayOpacity?: T;
+        paddingTop?: T;
+        paddingBottom?: T;
+        visibility?: T;
+        animation?: T;
+        customClasses?: T;
+        htmlId?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BrandsShowcaseBlock_select".
+ */
+export interface BrandsShowcaseBlockSelect<T extends boolean = true> {
+  sectionHeader?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        headingTag?: T;
+        subtitle?: T;
+        description?: T;
+        alignment?: T;
+        maxWidth?: T;
+      };
+  brands?: T;
+  limit?: T;
+  settings?:
+    | T
+    | {
+        backgroundColor?: T;
+        containerWidth?: T;
+        backgroundImage?: T;
+        overlayOpacity?: T;
+        paddingTop?: T;
+        paddingBottom?: T;
+        visibility?: T;
+        animation?: T;
+        customClasses?: T;
+        htmlId?: T;
+      };
   id?: T;
   blockName?: T;
 }
@@ -4607,6 +5198,42 @@ export interface GallerySelect<T extends boolean = true> {
   category?: T;
   media?: T;
   isFeatured?: T;
+  sortOrder?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "brands_select".
+ */
+export interface BrandsSelect<T extends boolean = true> {
+  tenantId?: T;
+  name?: T;
+  slug?: T;
+  mark?: T;
+  category?: T;
+  shortDescription?: T;
+  fullDescription?: T;
+  quote?: T;
+  statValue?: T;
+  statLabel?: T;
+  image?: T;
+  logo?: T;
+  gallery?: T;
+  tenant?: T;
+  websiteUrl?: T;
+  links?:
+    | T
+    | {
+        label?: T;
+        url?: T;
+        id?: T;
+      };
+  primaryColor?: T;
+  accentColor?: T;
+  enabled?: T;
+  featured?: T;
+  comingSoon?: T;
   sortOrder?: T;
   updatedAt?: T;
   createdAt?: T;

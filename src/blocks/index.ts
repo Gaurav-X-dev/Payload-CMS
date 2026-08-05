@@ -27,6 +27,9 @@ import { SubBrandsBlock } from './SubBrands'
 import { GheeRoastHomePromosBlock } from './GheeRoastHomePromos'
 import { GheeRoastHomeQualityBlock } from './GheeRoastHomeQuality'
 import { GheeRoastHomeStoryBlock } from './GheeRoastHomeStory'
+import { TickerBlock } from './Ticker'
+import { StoryBlock } from './Story'
+import { BrandsShowcaseBlock } from './BrandsShowcase'
 
 export const AllBlocks = [
   HeroBlock,
@@ -58,4 +61,7 @@ export const AllBlocks = [
   AmenitiesBlock,
   PackagesBlock,
   SubBrandsBlock,
+  TickerBlock,
+  StoryBlock,
+  BrandsShowcaseBlock,
 ]

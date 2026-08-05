@@ -25,6 +25,7 @@ import { Locations } from './collections/Locations'
 import { FAQs } from './collections/FAQs'
 import { ContactSubmissions } from './collections/ContactSubmissions'
 import { Gallery } from './collections/Gallery'
+import { Brands } from './collections/Brands'
 import { SiteSettings } from './collections/SiteSettings'
 import { Nav } from './collections/Nav'
 import { Footer } from './collections/Footer'
@@ -94,6 +95,7 @@ export default buildConfig({
     FAQs,
     ContactSubmissions,
     Gallery,
+    Brands,
     SiteSettings,
     Nav,
     Footer,

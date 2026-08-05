@@ -15,7 +15,10 @@ const zuruZuruSite = {
 
 const curiousHubSite = {
   hostname: 'curious-hub.localhost',
-  key: 'curious-hub',
+  // Matches the seeded Tenant.slug ('curious-ladoo'), not the internal theme key — see
+  // resolvePublicTenantID, which looks up the tenant by this value. The theme key below stays
+  // 'curious-hub' deliberately (documented in docs/CURIOUS_LADOO_MIGRATION.md).
+  key: 'curious-ladoo',
   theme: 'curious-hub',
 } as const satisfies LocalSite
 

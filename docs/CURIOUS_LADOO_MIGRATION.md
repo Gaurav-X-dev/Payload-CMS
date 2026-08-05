@@ -223,8 +223,8 @@ needed**, must be preserved exactly as-is.
 | 1 | Audit | – | – | – | – | – | – | – | ✅ Done (this doc) |
 | 2 | Brand rename + default routing | – | – | – | ✅ | ✅ | – | ✅ | ✅ Done — see §6 |
 | 3 | Site Settings, Nav, Footer | ✅ | – | – | – | – | ✅ | ✅ | ✅ Done — see §7 |
-| 4 | Home | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | Pending |
-| 5 | About | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | Pending |
+| 4 | Home | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Done — see §8 |
+| 5 | About | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Done — see §8 |
 | 6 | Services | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | Pending |
 | 7 | Brands | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | Pending |
 | 8 | Portfolio | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | Pending |
@@ -352,7 +352,165 @@ development-content, ghee-cms) — all pass except the same pre-existing unrelat
 string assertion noted in Milestone 2. `npm run test:ghee-cms` run standalone: 40/40 pass — Ghee
 Roast fully unaffected by the tenant/enum/loader changes.
 
-## 7. Verification commands (from `package.json`)
+## 7. Milestone 4 record — Home Page (loader, mapper, renderer, seed)
+
+**Schema (all additive, no rows lost):**
+- New `Brands` collection (name, slug, mark, category, descriptions, quote/stats, image/logo/gallery,
+  optional `tenant` link, external links, colors, enabled/featured/comingSoon/sortOrder).
+- 3 new blocks: `tickerBlock`, `storyBlock` (panel/overlay narrative layouts), `brandsshowcaseBlock`.
+- Additive extensions: `contentgridBlock` (presentation variant, optional `mediaField()` companion
+  image, per-item link), `statsBlock` (animated counter target/suffix), `stepsBlock` (numbered vs.
+  timeline variant), `blogpreviewBlock` fleshed out from a stub (kept legacy `title`/`subtitle`
+  hidden fields to avoid a rename-ambiguity migration prompt).
+- One schema defect found and fixed mid-milestone, per the "stop and report" instruction: shared
+  `mediaField()` hardcoded its inner `item` relationship `required: true` with no override, which
+  is fine for its two existing callers (Split.ts, cardItem.ts) but wrong for ContentGrid's
+  *optional* companion image (5 of 6 Home grid presentations have no image at all). Fixed by adding
+  an opt-in `required` parameter to `mediaField()`, defaulting to `true` so existing callers are
+  unaffected. **No migration needed** — confirmed via `information_schema` that
+  `media_item_id` was already nullable in Postgres; `required: true` was only ever enforced at
+  Payload's application layer for that field, not as a DB constraint.
+- Migration `20260805_084729_curious_ladoo_home_blocks` (regenerated once, after that fix, so it
+  matches the final schema) — reviewed and applied: 18 new tables, 16 new enum types, 97 additive
+  columns, 52 FK constraints, zero destructive statements, DOWN exactly symmetric. Applied; all
+  Ghee-Roast-populated table row counts unchanged before/after.
+
+**`resolveLocalSite.ts` bug fixed:** `curiousHubSite.key` was `'curious-hub'`, which never matched
+the real seeded `Tenant.slug` (`'curious-ladoo'`) — unlike Ghee Roast/Zuru Zuru where `key` already
+equals their tenant slug. This silently broke both the new loader's tenant lookup and Payload's own
+`resolvePublicTenantID` access-control path. Fixed the `key` value only; `theme` stays `'curious-hub'`.
+
+**Pipeline:** `src/lib/site/curiousLadooContentCore.ts` (tenant-safe, published-only, dependency-aware
+loader, typed `find<TDoc>` generic instead of `Record<string, unknown>`) → `getCuriousLadooContent.ts`
+(React `cache()` wrapper) → `src/themes/curious-hub/mappers/cmsContent.ts` (strongly-typed mapper
+using generated Payload types, tenant-checked per relationship, raw/populated Media both handled) →
+`src/themes/curious-hub/components/CMSHomePage.tsx` (18-section renderer reusing the exact original
+JSX/CSS Module classes) → wired into `CuriousHubPageRenderer.tsx`: **only** `/` goes through the CMS
+pipeline; every other Curious Hub route is byte-for-byte the pre-Milestone-4 static path. `Header`/
+`Footer`/`CuriousHubLayout` now accept optional CMS props with the static data as the fallback when
+omitted, so non-Home pages are provably unaffected.
+
+**Seed:** `src/seed/curiousLadooHome.ts` + `npm run db:seed:curious-ladoo-home` — idempotent
+(find-or-create/update throughout), uploads the theme's existing static images into Payload Media
+(dedup'd by `(tenantId, title)`; discovered and fixed a real collision where `journal1.png` is
+reused for two logical purposes in the original design — now uploaded once, referenced twice),
+creates 4 Brands (Zuru Zuru → real Zuru Zuru tenant, Ghee Roast → real Ghee Roast tenant, Z-Quick
+and Future Brands standalone), 3 Testimonials, 3 Team Members, 3 Blog Posts, and the Home Page
+record itself (18 blocks, exact designer order, `pageType: home`, `isHomePage: true`,
+`_status: published`).
+
+**Verified live** against the running dev server (not just unit tests): `/` → 200 with real CMS
+content across every section (hero, ticker, philosophy, services, brands, b2b, process, edge,
+metrics, visual story, industries, testimonials, journal, leadership, journey, partners, CTA all
+confirmed present in the HTML), correct `<title>` from CMS SEO data, `/about` → 200 unchanged
+static content, `ghee-roast.localhost` → 200 unchanged, `zuru-zuru.localhost` → 200 unchanged,
+`/admin` → 200, unknown slug → 404, unknown hostname → 404.
+
+**Tests:** new `tests/curious-ladoo-home.test.ts` (16/16 pass) plus a real bug it caught — the
+loader trusted the DB `where` clause alone for published/tenant filtering with no application-level
+re-check (unlike Ghee Roast's `isPublishedPageDocument` pattern); fixed to re-verify both in code.
+Also fixed a pre-existing gap in `tests/register-ts-loader.mjs` discovered while testing (missing
+`.tsx` resolution attempt) but reverted that specific change since Node's `--experimental-strip-types`
+cannot execute JSX regardless of resolution — documented as a hard limitation, not something fixable
+via the loader hook; the one test needing it was replaced with the live-server proof above.
+
+**Full verification:** `typecheck` clean · `test:ghee-cms` 40/40 · `test:authorization` 23/23 ·
+`test:phase1` 11/11 · `test:phase2` 11/11 · `test:development-content` 11/12 (same pre-existing
+unrelated failure noted in Milestones 2–3) · `lint` 0 errors introduced (1 pre-existing error in
+`scripts/gen-migration.cjs`, untouched by this branch) · `npm run build` succeeds · `git diff --check` clean.
+
+## 8. Milestone 5 record — About Page (loader, mapper, renderer, seed)
+
+**Schema (additive only):**
+- `storyBlock.layout` gained a third option, `'simple'` — the inner-page treatment used by About's
+  Story section (no eyebrow/quote/CTA/stat badge, supports a two-paragraph `body` split on a blank
+  line, `innerSection`/`aboutStoryGrid` CSS classes instead of Home's `aboutSection`). All fields
+  previously gated to `layout === 'panel'` (title, accentPhrase, body, media row, imagePosition)
+  were widened to `layout !== 'overlay'` so `'simple'` gets them too; `statBadge`/`enableCta`/`cta`
+  stayed `'panel'`-only since `'simple'` doesn't use them.
+- `contentgridBlock.presentation` gained `'values'` (centered header, numbered value cards —
+  About's Values section) and `'mission-vision'` (media + two titled sub-items — About's
+  Mission & Vision section). Both were actually added to the block schema in earlier work this
+  session but their migration had never been generated/applied — discovered when regenerating
+  types produced a migration touching both this and the `storyBlock.layout` enum together.
+- Migration `20260805_105546_curious_ladoo_about_story_layout` — reviewed and applied. UP is 6
+  `ALTER TYPE ... ADD VALUE` statements (3 enum values × live table + `_pages_v` versions table),
+  zero drops/renames on the up path. Presented to the user for explicit approval before applying,
+  per this branch's standing migration-approval practice; approved and applied.
+
+**Pipeline reuse vs. new work:** most of About's sections needed no new code at all — reading the
+static `AboutPage.tsx`/`data/about.ts` against the Home renderer already built in Milestone 4
+showed several sections are pixel-identical, self-contained components already:
+- **Leadership** → `teamBlock` + `TeamSection` (same 3 team members already seeded in Milestone 4,
+  reused via `members: [], limit: 3`, not re-created).
+- **Journey** → `stepsBlock` (`layoutVariant: 'timeline'`) + `StepsTimeline` — own `journeySection`
+  wrapper, unaffected by which page it's on.
+- **CTA** → `ctaBlock` + `CTASection` — the `bgWord` decorative text is already derived generically
+  from `siteName.split(' ')[0]`, which resolves to "CURIOUS" for the Curious Ladoo tenant exactly
+  as the static page hardcoded it. No changes needed.
+- **Hero** → needed a pageType-aware dispatch (new): `CMSHomeBlock` now takes `pageType` and
+  renders `InnerHeroSection` (matches `Shared.tsx`'s `InnerHero` markup) for any non-`'home'` page
+  instead of the Home-only composite hero.
+- **Story, Values, Mission & Vision** → genuinely new renderer components (`StorySimpleSection`,
+  `ValuesGrid`, `MissionVisionGrid`) since these sections' markup/CSS classes don't match any
+  existing Home presentation.
+
+**Pipeline:** loader/mapper required no changes beyond `pageType` threading (done in earlier work
+this session) — `curiousLadooContentCore.ts`'s page resolution was already generic (`{slug:{equals:
+...}}` for any non-root pathname), so `/about` worked immediately once a Page record with
+`pageType: 'about'`, `slug: 'about'`, `isHomePage: false` existed.
+
+**Real bug found and fixed (defense in depth):** the loader's application-level re-check after the
+DB query only re-verified tenant ID and publish status, not that the resolved page's
+`slug`/`isHomePage` actually matched the requested pathname — it trusted the query's `where` clause
+alone for that condition, the same class of gap fixed for publish-status in Milestone 4. Caught by
+a new test whose fake `find()` (correctly) doesn't simulate `where`-clause filtering. Fixed in
+`curiousLadooContentCore.ts`: the `publishedTenantPages` filter now also re-checks
+`isHomePage`/`slug` against `normalizedPathname` in application code, not just the query.
+
+**Routing:** `CuriousHubPageRenderer.tsx`'s Home-only `if (normalizedPathname === '/')` became a
+`CMS_DRIVEN_PATHS` set (`'/'`, `'/about'`), exported and reused by `page.tsx`'s `generateMetadata`
+so CMS-driven paths get `getCuriousLadooMetadata` (already page-generic, no changes needed) and
+every other path keeps the static registry metadata. All other Curious Hub routes are untouched.
+
+**Seed:** `src/seed/curiousLadooAbout.ts` + `npm run db:seed:curious-ladoo-about` — idempotent,
+uploads 3 new images (`banner_about.png`, `team_about.png`, `office_tokyo.png`, dedup'd by
+`(tenantId, title)`), creates the About Page record (7 blocks in exact designer order: hero, story,
+mission-vision, values, leadership, journey, cta; `pageType: 'about'`, `slug: 'about'`,
+`isHomePage: false`, `_status: 'published'`). Depends on the Milestone 4 Home seed having already
+run (reuses its 3 Team Members) and fails loudly with a clear message if it hasn't.
+
+**Verified live** against the running dev server (the user's own instance on port 3000 — did not
+start a competing one): `curious-hub.localhost/about`, `curious-ladoo.localhost/about`, and bare
+`localhost/about` all → 200 with real CMS content (every section's copy present in the HTML: hero
+heading, story paragraphs, mission/vision sub-headings, all 3 value cards, all 3 leadership names,
+all 5 journey years, CTA title with the `<br/>`+italic split rendering exactly as the static markup
+did, both CTA buttons with their static arrow suffixes intact). Confirmed the Home-only hero CSS
+classes (`t3Headline`, `heroSection`) are absent and `innerHero*` classes are present, proving the
+`pageType` dispatch actually took effect. `ghee-roast.localhost/` → 200 unchanged,
+`curious-hub.localhost/services` (still-static) → 200 unchanged, unknown route → 404.
+**Noted, not fixed (out of scope — Milestone 15/SEO):** the `<title>`/description shown for
+`/about` currently come from the tenant-wide SEO global (title pattern + description), not the
+Page's own `metaTitle`/`metaDescription` fields — this is pre-existing behavior shared by every
+CMS-driven page including Home, not something introduced or regressed here.
+
+**Tests:** new `tests/curious-ladoo-about.test.ts` (9 tests, all pass) covering slug-based page
+resolution (published/draft/wrong-slug), the `isHomePage`-true-on-a-non-root-path edge case that
+caught the defense-in-depth gap above, the `'simple'` Story layout mapping, the `'values'`/
+`'mission-vision'` presentation mapping, Team block pooling/sorting/limiting, and `pageType`
+flowing through the top-level mapper. `tests/curious-ladoo-home.test.ts` updated only to fix a
+now-stale comment (previously said `/about` stays static; it doesn't anymore) — all 13 of its own
+tests still pass unchanged. Combined Home+About suite: 22/22 pass.
+
+**Full verification:** `typecheck` clean (app + tests) · `tests/curious-ladoo-home.test.ts` +
+`tests/curious-ladoo-about.test.ts` 22/22 · `test:ghee-cms` 40/40 · `test:authorization` 23/23 ·
+`test:phase1` 11/11 · `test:phase2` 11/11 · `test:development-content` 11/12 (same pre-existing
+unrelated `dev`-script-string failure noted in every earlier milestone) · `lint`: 0 errors/warnings
+introduced (removed one now-unnecessary `eslint-disable` in `CMSHomePage.tsx`; the suite's 1
+pre-existing error is in `scripts/gen-migration.cjs`, untouched by this branch) · `npm run build`
+succeeds.
+
+## 9. Verification commands (from `package.json`)
 
 `npm run typecheck` · `npm run lint` · `npm run build` · `npm test` (chains authorization, phase1,
 phase2, development-content, ghee-cms) · `npm run test:security`. No test runner is Ghee-Roast- or

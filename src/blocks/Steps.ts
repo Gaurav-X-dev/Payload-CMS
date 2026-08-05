@@ -21,6 +21,16 @@ export const StepsBlock: Block = {
       ],
     },
     {
+      name: 'layoutVariant',
+      type: 'select',
+      defaultValue: 'numbered-steps',
+      admin: { description: 'Visual treatment for the Reusable Cards presentation: numbered process steps, or a year/event timeline.' },
+      options: [
+        { label: 'Numbered Steps', value: 'numbered-steps' },
+        { label: 'Timeline', value: 'timeline' },
+      ],
+    },
+    {
       name: 'steps',
       type: 'array',
       required: true,

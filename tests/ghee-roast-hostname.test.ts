@@ -51,7 +51,7 @@ test('bare localhost and Curious Ladoo development hosts resolve to Curious Lado
       resolveLocalSite(host),
       {
         hostname: 'curious-hub.localhost',
-        key: 'curious-hub',
+        key: 'curious-ladoo',
         theme: 'curious-hub',
       },
       host,

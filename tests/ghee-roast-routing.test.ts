@@ -10,6 +10,7 @@ import {
 import { buildGheeRoastMetadata } from '../src/themes/ghee-roast/utils/buildGheeRoastMetadata.ts'
 import {
   GHEE_ROAST_SUPPORTED_BLOCK_TYPES,
+  GHEE_ROAST_THEME_EXCLUSIVE_BLOCK_TYPES,
   isGheeRoastSupportedBlock,
 } from '../src/themes/ghee-roast/utils/blockSupport.ts'
 import { getGheeRoastPageRenderMode } from '../src/themes/ghee-roast/utils/getPageRenderMode.ts'
@@ -201,10 +202,19 @@ test('normal Ghee Roast runtime has no static legacy data dependency', () => {
 })
 
 test('every Payload block exposed to Ghee pages has a deterministic renderer disposition', () => {
+  const themeExclusive = new Set<string>(GHEE_ROAST_THEME_EXCLUSIVE_BLOCK_TYPES)
   const configured = AllBlocks.map((block) => block.slug).sort()
-  assert.deepEqual(configured, [...GHEE_ROAST_SUPPORTED_BLOCK_TYPES].sort())
-  assert.ok(configured.every(isGheeRoastSupportedBlock))
+  // The shared `AllBlocks` catalog also carries other themes' exclusive blocks (currently
+  // Curious Ladoo's ticker/story/brandsshowcase) — those are deliberately excluded from Ghee
+  // Roast's supported set, not an oversight, so they're carved out of the equality check below.
+  const gheeRoastEligible = configured.filter((slug) => !themeExclusive.has(slug))
+  assert.deepEqual(gheeRoastEligible, [...GHEE_ROAST_SUPPORTED_BLOCK_TYPES].sort())
+  assert.ok(gheeRoastEligible.every(isGheeRoastSupportedBlock))
   assert.equal(isGheeRoastSupportedBlock('unknownBlock'), false)
+  for (const slug of themeExclusive) {
+    assert.ok(configured.includes(slug), `${slug} should still exist in the shared catalog for Curious Ladoo`)
+    assert.equal(isGheeRoastSupportedBlock(slug), false, `${slug} must not claim Ghee Roast support`)
+  }
 })
 
 test('CMS link validation requires only the target appropriate to the selected link type', () => {

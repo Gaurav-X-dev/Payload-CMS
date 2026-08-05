@@ -47,3 +47,21 @@ export const GHEE_ROAST_SIMPLE_SECTION_BLOCK_TYPES = new Set<string>([
   'roomsshowcaseBlock',
   'subbrandsBlock',
 ])
+
+/**
+ * Block types registered in the shared `AllBlocks` catalog (see `src/blocks/index.ts`) solely
+ * for Curious Ladoo's Pages — `tickerBlock`/`storyBlock`/`brandsshowcaseBlock` have no Ghee
+ * Roast field shape they could render meaningfully (e.g. `storyBlock`'s content lives under
+ * `title`/`quote`/`body`, not the flat `title`/`subtitle` the generic section fallback reads;
+ * `tickerBlock` has no title/subtitle at all). They must never be added to
+ * `GHEE_ROAST_SUPPORTED_BLOCK_TYPES` just to satisfy a block-registry parity check. Because the
+ * `layout` block picker is shared across every tenant, a Ghee Roast editor could still add one
+ * of these in the admin UI — `CMSPage.tsx`'s `CMSBlock` deliberately renders nothing for it (the
+ * fallthrough `return null` once no `if (type === ...)` branch or simple-section membership
+ * matches), which is the intended, documented disposition, not an oversight.
+ */
+export const GHEE_ROAST_THEME_EXCLUSIVE_BLOCK_TYPES = [
+  'tickerBlock',
+  'storyBlock',
+  'brandsshowcaseBlock',
+] as const

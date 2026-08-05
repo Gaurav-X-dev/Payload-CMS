@@ -29,6 +29,22 @@ export const StatsBlock: Block = {
       fields: [
         { name: 'value', type: 'text', required: true, maxLength: 30, admin: { placeholder: '25+' } },
         { name: 'label', type: 'text', required: true, maxLength: 100 },
+        {
+          type: 'row',
+          fields: [
+            {
+              name: 'animatedTarget',
+              type: 'number',
+              admin: { description: 'Optional. If set, the number counts up from 0 to this value instead of showing Value as static text.' },
+            },
+            {
+              name: 'animatedSuffix',
+              type: 'text',
+              maxLength: 10,
+              admin: { description: 'Shown after the animated number, e.g. "+" or "%".', condition: (_, siblingData) => siblingData?.animatedTarget !== undefined && siblingData?.animatedTarget !== null },
+            },
+          ],
+        },
       ],
     },
     blockSettings(),
