@@ -75,7 +75,7 @@ export function HomePage() {
       <Ticker brands={TICKER_BRANDS} />
 
       {/* ABOUT SECTION */}
-      <section aria-label="About Curious Laddoos" className={styles.aboutSection} id="about">
+      <section aria-label="About Curious Ladoo" className={styles.aboutSection} id="about">
         <div className={styles.aboutText}>
           <ScrollReveal>
             <p className={styles.sectionEyebrow}>Hospitality Reimagined</p>
@@ -97,7 +97,7 @@ export function HomePage() {
           </ScrollReveal>
           <ScrollReveal delay={3}>
             <p className={styles.sectionBody}>
-              Curious Laddoos is a multi-service hospitality group based in New Delhi. We own and
+              Curious Ladoo is a multi-service hospitality group based in New Delhi. We own and
               operate restaurant brands, provide B2B consulting, design menus, build cloud kitchens,
               and help other hospitality businesses scale through systems, technology, and training.
             </p>
@@ -111,7 +111,7 @@ export function HomePage() {
         <ScrollReveal className={styles.aboutImageStack} delay={2}>
           <div className={styles.aboutImgMain}>
             <Image
-              alt="Premium restaurant interior by Curious Laddoos"
+              alt="Premium restaurant interior by Curious Ladoo"
               fill
               loading="lazy"
               src="/themes/curious-hub/images/hero.png"
@@ -497,10 +497,10 @@ export function HomePage() {
             <ScrollReveal delay={3}>
               <a
                 className={styles.aboutLink}
-                href="mailto:hello@curiousladdoos.com"
+                href="mailto:hello@curiousladoo.com"
                 style={{ color: 'var(--ch-accent)' }}
               >
-                hello@curiousladdoos.com →
+                hello@curiousladoo.com →
               </a>
             </ScrollReveal>
           </div>
@@ -513,7 +513,7 @@ export function HomePage() {
                 </svg>
                 <div className={styles.b2bCardTitle}>Investors</div>
                 <p className={styles.b2bCardDesc}>Strategic investment in our brands and new concepts. We co-create with partners who bring capital and conviction.</p>
-                <a className={styles.b2bCardLink} href="mailto:hello@curiousladdoos.com" id="b2b-investors-link">Build With Us →</a>
+                <a className={styles.b2bCardLink} href="mailto:hello@curiousladoo.com" id="b2b-investors-link">Build With Us →</a>
               </article>
             </ScrollReveal>
             {/* Franchise Partners */}
@@ -525,7 +525,7 @@ export function HomePage() {
                 </svg>
                 <div className={styles.b2bCardTitle}>Franchise Partners</div>
                 <p className={styles.b2bCardDesc}>Grow with proven brands. Our franchise model comes with full systems, training, and ongoing operational support.</p>
-                <a className={styles.b2bCardLink} href="mailto:hello@curiousladdoos.com" id="b2b-franchise-link">Grow With Us →</a>
+                <a className={styles.b2bCardLink} href="mailto:hello@curiousladoo.com" id="b2b-franchise-link">Grow With Us →</a>
               </article>
             </ScrollReveal>
             {/* Landlords & Spaces */}
@@ -537,7 +537,7 @@ export function HomePage() {
                 </svg>
                 <div className={styles.b2bCardTitle}>Landlords &amp; Spaces</div>
                 <p className={styles.b2bCardDesc}>We&apos;re looking for premium locations across India. Retail spaces, high streets, and mixed-use developments.</p>
-                <a className={styles.b2bCardLink} href="mailto:hello@curiousladdoos.com" id="b2b-landlords-link">Partner With Us →</a>
+                <a className={styles.b2bCardLink} href="mailto:hello@curiousladoo.com" id="b2b-landlords-link">Partner With Us →</a>
               </article>
             </ScrollReveal>
             {/* Suppliers & Vendors */}
@@ -549,7 +549,7 @@ export function HomePage() {
                 </svg>
                 <div className={styles.b2bCardTitle}>Suppliers &amp; Vendors</div>
                 <p className={styles.b2bCardDesc}>Quality ingredients, equipment, and services — we work with suppliers who share our commitment to excellence.</p>
-                <a className={styles.b2bCardLink} href="mailto:hello@curiousladdoos.com" id="b2b-suppliers-link">Work With Us →</a>
+                <a className={styles.b2bCardLink} href="mailto:hello@curiousladoo.com" id="b2b-suppliers-link">Work With Us →</a>
               </article>
             </ScrollReveal>
           </div>
@@ -592,7 +592,7 @@ export function HomePage() {
         <ScrollReveal className={styles.edgeImage}>
           <div className={styles.edgeImageInner}>
             <Image
-              alt="Curious Laddoos team in strategic consulting"
+              alt="Curious Ladoo team in strategic consulting"
               fill
               loading="lazy"
               src="/themes/curious-hub/images/consulting.png"
@@ -644,7 +644,7 @@ export function HomePage() {
       <section aria-label="Visual story" className={styles.visualStorySection} id="visual-story">
         <div className={styles.visualStoryBg}>
           <Image
-            alt="Cinematic restaurant atmosphere — Curious Laddoos"
+            alt="Cinematic restaurant atmosphere — Curious Ladoo"
             fill
             loading="lazy"
             src="/themes/curious-hub/images/visual_story.png"
@@ -895,8 +895,8 @@ export function HomePage() {
         </ScrollReveal>
         <ScrollReveal delay={3}>
           <div className={styles.ctaButtons}>
-            <a className={styles.btnWhite} href="mailto:hello@curiousladdoos.com" id="cta-email-btn">
-              hello@curiousladdoos.com →
+            <a className={styles.btnWhite} href="mailto:hello@curiousladoo.com" id="cta-email-btn">
+              hello@curiousladoo.com →
             </a>
             <Link className={styles.btnOutlineWhite} href="/how-we-work" id="cta-process-btn">
               Our Process ↗

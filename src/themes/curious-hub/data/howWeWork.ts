@@ -2,8 +2,8 @@ import type { PageMetadataData, PageHeroData } from '../types'
 
 export const howWeWorkData = {
   metadata: {
-    title: 'How We Work — Curious Laddoos',
-    description: 'Learn about the five-step F&B development process of Curious Laddoos: Discover, Concept, Build, Launch, and Scale.'
+    title: 'How We Work — Curious Ladoo',
+    description: 'Learn about the five-step F&B development process of Curious Ladoo: Discover, Concept, Build, Launch, and Scale.'
   } as PageMetadataData,
   hero: {
     eyebrow: 'Our Methodology',

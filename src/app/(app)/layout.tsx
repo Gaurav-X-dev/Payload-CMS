@@ -8,7 +8,7 @@ import '../../themes/curious-hub/styles/theme.css'
 export const metadata: Metadata = {
   description: 'A premium hospitality group building restaurant brands, consulting services, cloud kitchens, and hospitality systems across India.',
   title: {
-    default: 'Curious Laddoos — We Build Hospitality That Lasts',
+    default: 'Curious Ladoo — We Build Hospitality That Lasts',
     template: '%s',
   },
 }

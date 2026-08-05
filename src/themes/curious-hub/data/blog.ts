@@ -2,8 +2,8 @@ import type { PageMetadataData, PageHeroData, JournalArticleData } from '../type
 
 export const blogData = {
   metadata: {
-    title: 'Insights & Journal — Curious Laddoos',
-    description: 'Read F&B operational research, menu engineering reports, and restaurant design insights from the Curious Laddoos journal.'
+    title: 'Insights & Journal — Curious Ladoo',
+    description: 'Read F&B operational research, menu engineering reports, and restaurant design insights from the Curious Ladoo journal.'
   } as PageMetadataData,
   hero: {
     eyebrow: 'The Journal',

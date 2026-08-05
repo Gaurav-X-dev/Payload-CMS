@@ -2,7 +2,7 @@ import type { PageMetadataData, PageHeroData, FaqData } from '../types'
 
 export const faqsData = {
   metadata: {
-    title: 'FAQs | Curious Laddoos',
+    title: 'FAQs | Curious Ladoo',
     description: 'Frequently asked questions about our services and process.'
   } as PageMetadataData,
   hero: {

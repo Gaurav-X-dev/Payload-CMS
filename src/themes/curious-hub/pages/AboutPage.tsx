@@ -17,7 +17,7 @@ export function AboutPage() {
           <ScrollReveal className={styles.aboutStoryImage}>
             <Image
               src="/themes/curious-hub/images/team_about.png"
-              alt="Curious Laddoos creative directors collaborating in office"
+              alt="Curious Ladoo creative directors collaborating in office"
               width={800}
               height={600}
               style={{ width: '100%', height: 'auto', display: 'block' }}
@@ -69,7 +69,7 @@ export function AboutPage() {
           <ScrollReveal className={styles.aboutStoryImage} delay={1}>
             <Image
               src="/themes/curious-hub/images/office_tokyo.png"
-              alt="Curious Laddoos clean modern minimalist design headquarters"
+              alt="Curious Ladoo clean modern minimalist design headquarters"
               width={800}
               height={600}
               style={{ width: '100%', height: 'auto', display: 'block' }}

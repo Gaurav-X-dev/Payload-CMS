@@ -99,7 +99,7 @@ export function CareersPage() {
         </ScrollReveal>
         <ScrollReveal delay={2}>
           <div className={styles.ctaButtons}>
-            <a className={styles.btnWhite} href="mailto:hello@curiousladdoos.com" id="careers-cta-btn">
+            <a className={styles.btnWhite} href="mailto:hello@curiousladoo.com" id="careers-cta-btn">
               Send Your CV →
             </a>
           </div>

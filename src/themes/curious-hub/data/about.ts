@@ -2,8 +2,8 @@ import type { PageMetadataData, PageHeroData, LeaderData, JourneyMilestoneData }
 
 export const aboutData = {
   metadata: {
-    title: 'About Us — Curious Laddoos',
-    description: 'Learn about Curious Laddoos, our team, our values, and our journey building category-defining hospitality brands in India.'
+    title: 'About Us — Curious Ladoo',
+    description: 'Learn about Curious Ladoo, our team, our values, and our journey building category-defining hospitality brands in India.'
   } as PageMetadataData,
   hero: {
     eyebrow: 'Our Story',
@@ -13,7 +13,7 @@ export const aboutData = {
   story: {
     title: 'Hospitality Built on',
     italic: 'Conviction.',
-    p1: 'Founded in New Delhi in 2020, Curious Laddoos began with a singular premise: that the restaurant business is not just an art, but a discipline of systems. While great food brings guests in, it is premium design and airtight operational processes that bring them back.',
+    p1: 'Founded in New Delhi in 2020, Curious Ladoo began with a singular premise: that the restaurant business is not just an art, but a discipline of systems. While great food brings guests in, it is premium design and airtight operational processes that bring them back.',
     p2: 'Today, we own and operate prominent restaurant brands, run delivery operations, build cloud kitchen architectures, and advise other major hospitality entities across South Asia. We build with curiosity, design with meaning, and manage with mathematical rigor.'
   },
   mission: {
@@ -79,7 +79,7 @@ export const aboutData = {
       { year: '2020', event: 'Conceived', description: 'Established in New Delhi with a team of three consultants and one vision.' },
       { year: '2021', event: 'Zuru Zuru Opens', description: 'Our flagship Japanese Izakaya brand opens, setting new standards for comfort dining.' },
       { year: '2022', event: 'Ghee Roast Launches', description: 'Coastal South Indian food celebrated in a premium design layout, leading to rapid expansion.' },
-      { year: '2023', event: 'Consulting Expansion', description: 'Curious Laddoos Consulting official launch. Built infrastructure for 20+ partner brands.' },
+      { year: '2023', event: 'Consulting Expansion', description: 'Curious Ladoo Consulting official launch. Built infrastructure for 20+ partner brands.' },
       { year: '2025+', event: 'Scalability', description: 'Expanding to 5 additional cities, launching delivery systems and technology platforms.' }
     ] as JourneyMilestoneData[]
   },

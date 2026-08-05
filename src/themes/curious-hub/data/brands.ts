@@ -2,8 +2,8 @@ import type { PageMetadataData, PageHeroData } from '../types'
 
 export const brandsData = {
   metadata: {
-    title: 'Our Brands — Curious Laddoos',
-    description: 'Explore restaurant brands by Curious Laddoos, including Zuru Zuru Japanese Izakaya, Ghee Roast South Indian Cuisine, and Z-Quick premium delivery.'
+    title: 'Our Brands — Curious Ladoo',
+    description: 'Explore restaurant brands by Curious Ladoo, including Zuru Zuru Japanese Izakaya, Ghee Roast South Indian Cuisine, and Z-Quick premium delivery.'
   } as PageMetadataData,
   hero: {
     eyebrow: 'Our Portfolio',
@@ -63,7 +63,7 @@ export const brandsData = {
     eyebrow: 'Pipelines',
     title: 'What We Are',
     italic: 'Incubating.',
-    desc: 'Curious Laddoos is constantly researching new F&B segments. In the coming year, we are launching two new concepts:',
+    desc: 'Curious Ladoo is constantly researching new F&B segments. In the coming year, we are launching two new concepts:',
     list: [
       { text: 'Project Roastery (Q1 2026):', desc: 'An artisanal coffee roastery concept combined with sourdough bakery operations, systemized for business complexes.' },
       { text: 'Project Botanical (Q3 2026):', desc: 'A high-end cocktail lounge emphasizing native Indian botanicals, local distillates, and cold-pressed infusion bars.' }

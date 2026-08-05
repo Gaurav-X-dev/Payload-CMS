@@ -31,8 +31,8 @@ type PageRegistration = {
 }
 
 const WIP_METADATA: PageMetadataData = {
-  description: 'Coming soon — Curious Laddoos',
-  title: 'Coming Soon | Curious Laddoos',
+  description: 'Coming soon — Curious Ladoo',
+  title: 'Coming Soon | Curious Ladoo',
 }
 
 export const curiousHubPageRegistry = {

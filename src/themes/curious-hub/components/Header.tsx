@@ -38,10 +38,10 @@ export function Header({ pathname }: { pathname: string }) {
         id="navbar"
         role="navigation"
       >
-        <Link aria-label="Curious Laddoos Home" className={styles.navLogo} href="/">
+        <Link aria-label="Curious Ladoo Home" className={styles.navLogo} href="/">
           <div className={styles.navLogoMark}>CL</div>
           <div className={styles.navLogoText}>
-            <span className={styles.brandName}>Curious Laddoos</span>
+            <span className={styles.brandName}>Curious Ladoo</span>
             <span className={styles.brandTagline}>Building Hospitality Brands</span>
           </div>
         </Link>

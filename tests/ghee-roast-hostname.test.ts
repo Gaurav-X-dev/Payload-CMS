@@ -14,12 +14,6 @@ const gheeRoastHosts = [
   'ghee-roast.local',
   'GHEE-ROAST.LOCAL:3000',
   'ghee-roast.local.:3000',
-  'localhost',
-  'LOCALHOST:3000',
-  '127.0.0.1',
-  '127.0.0.1:3000',
-  '[::1]',
-  '[::1]:3000',
 ] as const
 
 test('documented Ghee Roast development hosts resolve deterministically', () => {
@@ -30,6 +24,35 @@ test('documented Ghee Roast development hosts resolve deterministically', () => 
         hostname: 'ghee-roast.localhost',
         key: 'ghee-roast',
         theme: 'ghee-roast',
+      },
+      host,
+    )
+  }
+})
+
+const curiousLadooHosts = [
+  'localhost',
+  'LOCALHOST:3000',
+  '127.0.0.1',
+  '127.0.0.1:3000',
+  '[::1]',
+  '[::1]:3000',
+  'curious-hub.localhost',
+  'CURIOUS-HUB.LOCALHOST',
+  'curious-hub.local',
+  'curious-ladoo.localhost',
+  'CURIOUS-LADOO.LOCALHOST:3000',
+  'curious-ladoo.local',
+] as const
+
+test('bare localhost and Curious Ladoo development hosts resolve to Curious Ladoo (default tenant)', () => {
+  for (const host of curiousLadooHosts) {
+    assert.deepEqual(
+      resolveLocalSite(host),
+      {
+        hostname: 'curious-hub.localhost',
+        key: 'curious-hub',
+        theme: 'curious-hub',
       },
       host,
     )

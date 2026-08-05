@@ -2,8 +2,8 @@ import type { PageMetadataData, PageHeroData, FaqData } from '../types'
 
 export const servicesData = {
   metadata: {
-    title: 'Services — Curious Laddoos',
-    description: 'Discover the 15 hospitality services offered by Curious Laddoos, including menu engineering, restaurant consulting, brand creation, and staff training.'
+    title: 'Services — Curious Ladoo',
+    description: 'Discover the 15 hospitality services offered by Curious Ladoo, including menu engineering, restaurant consulting, brand creation, and staff training.'
   } as PageMetadataData,
   hero: {
     eyebrow: 'Our Services',
@@ -34,7 +34,7 @@ export const servicesData = {
       desc: 'Our consulting division audits operational bottlenecks, optimizes F&B operations, designs kitchen workflows, and builds standard operating procedures (SOPs) that help hotels and independent operators scale efficiently.',
       features: ['Workflow architecture', 'Standard operating procedures', 'Operations auditing', 'Kitchen flow design'],
       link: { label: 'Get Consulted →', href: '/contact?interest=consulting' },
-      image: { src: '/themes/curious-hub/images/consulting.png', alt: 'Hospitality consulting services by Curious Laddoos' },
+      image: { src: '/themes/curious-hub/images/consulting.png', alt: 'Hospitality consulting services by Curious Ladoo' },
       reverse: true
     },
     {
@@ -61,7 +61,7 @@ export const servicesData = {
   advantage: {
     title: 'Our Systems',
     italic: 'Advantage.',
-    desc: 'Why major hospitality names trust Curious Laddoos to build their workflows.',
+    desc: 'Why major hospitality names trust Curious Ladoo to build their workflows.',
     items: [
       { title: 'PORTION CONTROL SYSTEMS', desc: 'Our digital SOP binders outline recipe portioning to the gram. This ensures taste consistency across cities while controlling food cost variance to within 1%.' },
       { title: 'COMMERCIAL COMPLIANCE', desc: 'We handle full regulatory audits, including food safety inspections, municipal licensing, pollution controls, and structural approvals for kitchens.' },

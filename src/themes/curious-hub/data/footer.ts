@@ -48,5 +48,5 @@ export const footerData = {
     { ariaLabel: 'YouTube', href: '#', label: 'yt' },
     { ariaLabel: 'Twitter/X', href: '#', label: '𝕏' }
   ] as SocialLinkData[],
-  copyright: '© 2025 Curious Laddoos Pvt. Ltd. All rights reserved.'
+  copyright: '© 2025 Curious Ladoo Pvt. Ltd. All rights reserved.'
 } as const

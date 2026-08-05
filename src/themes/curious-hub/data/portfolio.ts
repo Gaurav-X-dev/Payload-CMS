@@ -2,8 +2,8 @@ import type { PageMetadataData, PageHeroData, PortfolioItemData } from '../types
 
 export const portfolioData = {
   metadata: {
-    title: 'Portfolio & Cases — Curious Laddoos',
-    description: 'View the portfolio and case studies of Curious Laddoos, showcasing restaurant designs, engineered menus, and turnaround operations.'
+    title: 'Portfolio & Cases — Curious Ladoo',
+    description: 'View the portfolio and case studies of Curious Ladoo, showcasing restaurant designs, engineered menus, and turnaround operations.'
   } as PageMetadataData,
   hero: {
     title: 'Case Studies &\nTurnkey Launches',

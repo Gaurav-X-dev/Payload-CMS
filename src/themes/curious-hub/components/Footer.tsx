@@ -9,7 +9,7 @@ export function Footer() {
       <div className={styles.footerTop}>
         <div className={styles.footerBrand}>
           <div className={styles.footerLogo}>
-            Curious <span>Laddoos</span>
+            Curious <span>Ladoo</span>
           </div>
           <div className={styles.footerTagline}>{curiousHubSiteData.tagline}</div>
           <p className={styles.footerDesc}>{curiousHubSiteData.description}</p>

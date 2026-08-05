@@ -23,7 +23,7 @@ export function PageLoader() {
       <div className={styles.loaderLogo}>
         C<span>L</span>
       </div>
-      <div className={styles.loaderSubtitle}>Curious Laddoos</div>
+      <div className={styles.loaderSubtitle}>Curious Ladoo</div>
       <div className={styles.loaderBar} />
     </div>
   )

@@ -7,17 +7,17 @@ import type {
 
 export const homeData = {
   metadata: {
-    title: 'Curious Laddoos — We Build Hospitality That Lasts',
-    description: 'Curious Laddoos is a premium hospitality group building restaurant brands, consulting services, cloud kitchens, and hospitality systems across India.'
+    title: 'Curious Ladoo — We Build Hospitality That Lasts',
+    description: 'Curious Ladoo is a premium hospitality group building restaurant brands, consulting services, cloud kitchens, and hospitality systems across India.'
   } as PageMetadataData,
 
   hero: {
     title: "We question. We design. We build what's next.",
     subtitle: 'A hospitality company for a different kind of future. We build restaurant brands with curiosity, systems and soul.',
-    eyebrow: 'Welcome to Curious Laddoos'
+    eyebrow: 'Welcome to Curious Ladoo'
   } as PageHeroData,
 
-  aboutSection: 'Curious Laddoos is a multi-service hospitality group based in New Delhi. We own and operate restaurant brands, provide B2B consulting, design menus, build cloud kitchens, and help other hospitality businesses scale through systems, technology, and training.',
+  aboutSection: 'Curious Ladoo is a multi-service hospitality group based in New Delhi. We own and operate restaurant brands, provide B2B consulting, design menus, build cloud kitchens, and help other hospitality businesses scale through systems, technology, and training.',
 
   philosophyPillars: [
     { title: 'Question', description: 'Curiosity drives better ideas. We question assumptions before we design solutions.', number: '01', icon: 'circle-plus' },
@@ -85,28 +85,28 @@ export const homeData = {
       title: 'Investors',
       description: 'Strategic investment in our brands and new concepts. We co-create with partners who bring capital and conviction.',
       icon: 'star',
-      href: 'mailto:hello@curiousladdoos.com',
+      href: 'mailto:hello@curiousladoo.com',
       link: 'Build With Us'
     },
     {
       title: 'Franchise Partners',
       description: 'Grow with proven brands. Our franchise model comes with full systems, training, and ongoing operational support.',
       icon: 'checkmark-circle',
-      href: 'mailto:hello@curiousladdoos.com',
+      href: 'mailto:hello@curiousladoo.com',
       link: 'Grow With Us'
     },
     {
       title: 'Landlords & Spaces',
       description: "We're looking for premium locations across India. Retail spaces, high streets, and mixed-use developments.",
       icon: 'grid-table',
-      href: 'mailto:hello@curiousladdoos.com',
+      href: 'mailto:hello@curiousladoo.com',
       link: 'Partner With Us'
     },
     {
       title: 'Suppliers & Vendors',
       description: 'Quality ingredients, equipment, and services — we work with suppliers who share our commitment to excellence.',
       icon: 'building',
-      href: 'mailto:hello@curiousladdoos.com',
+      href: 'mailto:hello@curiousladoo.com',
       link: 'Work With Us'
     }
   ] as B2BCardData[],
@@ -149,7 +149,7 @@ export const homeData = {
       author: 'Rajiv Kumar',
       role: 'Founder, Makhani House',
       company: 'Founder, Makhani House',
-      quote: "Curious Laddoos didn't just design our restaurant — they built us a business. The systems they put in place made scaling to three locations feel effortless.",
+      quote: "Curious Ladoo didn't just design our restaurant — they built us a business. The systems they put in place made scaling to three locations feel effortless.",
       avatar: 'RK'
     },
     {
@@ -217,7 +217,7 @@ export const homeData = {
   ] as LeaderData[],
 
   journeyMilestones: [
-    { year: '2020', event: 'Founded', description: 'Curious Laddoos established with a single restaurant consulting project and a big vision.' },
+    { year: '2020', event: 'Founded', description: 'Curious Ladoo established with a single restaurant consulting project and a big vision.' },
     { year: '2021', event: 'Zuru Zuru Launched', description: 'Our first restaurant brand opens in New Delhi to immediate critical acclaim.' },
     { year: '2022', event: 'Ghee Roast Opens', description: 'South Indian brand launches; franchise enquiries begin within 60 days of opening.' },
     { year: '2023', event: 'B2B Division', description: 'CL Consulting officially launched. 20+ clients in Year 1. Z-Quick delivery brand goes live.' },
@@ -238,7 +238,7 @@ export const homeData = {
   cta: {
     title: 'Ready to Build Something Remarkable?',
     subtitle: "Whether you're an investor, franchise partner, aspiring restaurateur, or a hospitality brand looking to scale — we'd love to hear from you.",
-    buttonLabel: 'hello@curiousladdoos.com →',
-    buttonHref: 'mailto:hello@curiousladdoos.com'
+    buttonLabel: 'hello@curiousladoo.com →',
+    buttonHref: 'mailto:hello@curiousladoo.com'
   }
 } as const

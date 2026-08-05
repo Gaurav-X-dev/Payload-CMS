@@ -2,8 +2,8 @@ import type { PageMetadataData, PageHeroData, FaqData } from '../types'
 
 export const contactData = {
   metadata: {
-    title: 'Contact Us — Curious Laddoos',
-    description: 'Get in touch with Curious Laddoos. Partner with us for restaurant brands, hospitality consulting, franchise development, and systems scaling.'
+    title: 'Contact Us — Curious Ladoo',
+    description: 'Get in touch with Curious Ladoo. Partner with us for restaurant brands, hospitality consulting, franchise development, and systems scaling.'
   } as PageMetadataData,
   hero: {
     eyebrow: 'Connect',
@@ -14,7 +14,7 @@ export const contactData = {
   general: {
     title: 'General Inquiries',
     desc: 'For general partnerships, media requests, or job queries, write to us.',
-    email: 'hello@curiousladdoos.com',
+    email: 'hello@curiousladoo.com',
     phone: '+91 98765 43210'
   },
   hours: [
@@ -44,9 +44,9 @@ export const contactData = {
     title: 'Common',
     italic: 'Queries.',
     items: [
-      { question: 'How do I partner with Curious Laddoos as a franchisee?', answer: 'We look for franchise partners with operational experience and strong alignment with our brand values. We provide comprehensive operational SOPs, supply chain pipelines, staff training programs, and regional marketing support. Fill out the contact form with the area of interest set to "B2B Solutions" to start.' },
+      { question: 'How do I partner with Curious Ladoo as a franchisee?', answer: 'We look for franchise partners with operational experience and strong alignment with our brand values. We provide comprehensive operational SOPs, supply chain pipelines, staff training programs, and regional marketing support. Fill out the contact form with the area of interest set to "B2B Solutions" to start.' },
       { question: 'What consulting services do you offer?', answer: 'Our consulting division covers menu engineering, commercial kitchen layouts, F&B brand concept creation, staff recruitment/training, operations auditing, and technology integration (POS/analytics). We work with individual restaurants as well as luxury hotel groups.' },
-      { question: 'Are you looking for new retail spaces?', answer: 'Yes, we are actively looking for commercial spaces, high streets, and premium mall spots of 1,200 to 4,000 sq ft across tier-1 cities in India for our brands Zuru Zuru and Ghee Roast. Real estate partners are welcome to write to us directly at hello@curiousladdoos.com.' }
+      { question: 'Are you looking for new retail spaces?', answer: 'Yes, we are actively looking for commercial spaces, high streets, and premium mall spots of 1,200 to 4,000 sq ft across tier-1 cities in India for our brands Zuru Zuru and Ghee Roast. Real estate partners are welcome to write to us directly at hello@curiousladoo.com.' }
     ] as FaqData[]
   }
 } as const
