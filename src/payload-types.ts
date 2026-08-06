@@ -1044,14 +1044,41 @@ export interface StepsBlock {
   };
   presentation?: ('cards' | 'ghee-home-process') | null;
   /**
-   * Visual treatment for the Reusable Cards presentation: numbered process steps, or a year/event timeline.
+   * Visual treatment for the Reusable Cards presentation: numbered process steps, a year/event timeline, or an alternating-image visual timeline.
    */
-  layoutVariant?: ('numbered-steps' | 'timeline') | null;
+  layoutVariant?: ('numbered-steps' | 'timeline' | 'visual-timeline') | null;
   steps: {
     label?: string | null;
     icon?: string | null;
     title: string;
     description: string;
+    /**
+     * Used only by the Visual Timeline layout variant.
+     */
+    media?: {
+      item?: (number | null) | Media;
+      /**
+       * Overrides the default Alt text.
+       */
+      altOverride?: string | null;
+      /**
+       * Displays a visible figcaption.
+       */
+      caption?: string | null;
+      aspectRatio?: ('auto' | '16:9' | '4:3' | '1:1' | '9:16') | null;
+      objectFit?: ('cover' | 'contain') | null;
+      /**
+       * Load immediately (prevents lazy-loading). Use only for above-the-fold media.
+       */
+      priority?: boolean | null;
+      /**
+       * Precise cropping point for mobile views.
+       */
+      focalPoint?: {
+        x?: number | null;
+        y?: number | null;
+      };
+    };
     id?: string | null;
   }[];
   /**
@@ -2966,7 +2993,7 @@ export interface PipelineBlock {
     maxWidth?: ('standard' | 'narrow' | 'wide') | null;
   };
   /**
-   * Bulleted list of upcoming initiatives.
+   * Optional bulleted list of upcoming initiatives. Leave empty for a plain narrative section (paragraphs only, no list).
    */
   items?:
     | {
@@ -3008,6 +3035,10 @@ export interface PipelineBlock {
    */
   spotlight?: {
     enabled?: boolean | null;
+    /**
+     * Optional large stat number, e.g. "16 Wks". Rendered above the icon.
+     */
+    value?: string | null;
     /**
      * An emoji/glyph rendered as-is.
      */
@@ -4545,6 +4576,22 @@ export interface StepsBlockSelect<T extends boolean = true> {
         icon?: T;
         title?: T;
         description?: T;
+        media?:
+          | T
+          | {
+              item?: T;
+              altOverride?: T;
+              caption?: T;
+              aspectRatio?: T;
+              objectFit?: T;
+              priority?: T;
+              focalPoint?:
+                | T
+                | {
+                    x?: T;
+                    y?: T;
+                  };
+            };
         id?: T;
       };
   settings?:
@@ -5575,6 +5622,7 @@ export interface PipelineBlockSelect<T extends boolean = true> {
     | T
     | {
         enabled?: T;
+        value?: T;
         icon?: T;
         title?: T;
         description?: T;

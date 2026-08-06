@@ -8,7 +8,7 @@ import { normalizePathname } from './utils/normalizePathname'
 import { getCuriousHubPage } from './utils/getPageComponent'
 
 // Routes migrated to the CMS pipeline so far. Every other path remains fully static.
-export const CMS_DRIVEN_PATHS = new Set(['/', '/about', '/services', '/brands', '/portfolio'])
+export const CMS_DRIVEN_PATHS = new Set(['/', '/about', '/services', '/brands', '/portfolio', '/how-we-work'])
 
 export async function CuriousHubPageRenderer({ hostname, pathname, site }: ThemePageRendererProps) {
   const normalizedPathname = normalizePathname(pathname)

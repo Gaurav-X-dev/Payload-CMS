@@ -867,8 +867,39 @@ function StepsTimeline({ block }: { block: CuriousLadooStepsBlockData }) {
   )
 }
 
+/** Alternating image-per-step timeline with a connecting line — matches the How We Work page. No heading is rendered above it (matches the original design). */
+function StepsVisualTimeline({ block }: { block: CuriousLadooStepsBlockData }) {
+  return (
+    <section className={styles.innerSection}>
+      <div className={styles.timelineVisualContainer}>
+        <div className={styles.timelineVisualLine} />
+        {block.steps.map((step, i) => (
+          <div className={styles.timelineVisualNode} key={step.title}>
+            <div className={styles.timelineVisualDot} />
+            <div className={styles.timelineVisualContent}>
+              <ScrollReveal>
+                {step.label && <div className={styles.timelineNodeNum}>{step.label}</div>}
+                <h3 className={styles.timelineNodeTitle}>{step.title}</h3>
+              </ScrollReveal>
+              <ScrollReveal delay={1}>
+                <p className={styles.sectionBody}>{step.description}</p>
+              </ScrollReveal>
+            </div>
+            {step.image && (
+              <ScrollReveal className={styles.timelineVisualImg} delay={revealDelay(i, 2)}>
+                <Image alt={step.image.alt} fill loading="lazy" src={step.image.src} style={{ objectFit: 'cover' }} />
+              </ScrollReveal>
+            )}
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}
+
 function StepsSection({ block }: { block: CuriousLadooStepsBlockData }) {
   if (block.steps.length === 0) return null
+  if (block.layoutVariant === 'visual-timeline') return <StepsVisualTimeline block={block} />
   return block.layoutVariant === 'timeline' ? <StepsTimeline block={block} /> : <StepsNumbered block={block} />
 }
 
@@ -1144,9 +1175,7 @@ function PipelineSection({ block }: { block: CuriousLadooPipelineBlockData }) {
       </ScrollReveal>
       <ScrollReveal delay={2}>
         <div className={styles.brushDivider} />
-        {block.header.description && (
-          <p className={styles.sectionBody} style={{ marginBottom: '1.5rem' }}>{block.header.description}</p>
-        )}
+        {block.header.description && renderParagraphs(block.header.description, styles.sectionBody)}
         {block.items.length > 0 && (
           <ul style={{ listStyle: 'none', marginBottom: '2rem', paddingLeft: 0 }}>
             {block.items.map((item, i) => (
@@ -1170,7 +1199,12 @@ function PipelineSection({ block }: { block: CuriousLadooPipelineBlockData }) {
       delay={1}
       style={{ alignItems: 'center', background: 'var(--ch-surface-2)', border: '1px solid var(--ch-border)', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
     >
-      {block.spotlight.icon && <span style={{ fontSize: '4rem', marginBottom: '1rem' }}>{block.spotlight.icon}</span>}
+      {block.spotlight.value && (
+        <div style={{ color: 'var(--ch-accent)', fontFamily: "'Playfair Display', serif", fontSize: '4rem', fontWeight: 700, lineHeight: 1, marginBottom: '1rem' }}>
+          {block.spotlight.value}
+        </div>
+      )}
+      {!block.spotlight.value && block.spotlight.icon && <span style={{ fontSize: '4rem', marginBottom: '1rem' }}>{block.spotlight.icon}</span>}
       {block.spotlight.title && (
         <h4 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.5rem', fontWeight: 600, marginBottom: '0.5rem' }}>{block.spotlight.title}</h4>
       )}

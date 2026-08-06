@@ -293,12 +293,17 @@ function mapPortfolioShowcaseBlock(
   }
 }
 
-function mapStepsBlock(block: StepsBlock): CuriousLadooStepsBlockData {
+function mapStepsBlock(block: StepsBlock, tenantID: number): CuriousLadooStepsBlockData {
   return {
     header: mapSectionHeader(block.sectionHeader),
-    layoutVariant: block.layoutVariant === 'timeline' ? 'timeline' : 'numbered-steps',
+    layoutVariant: block.layoutVariant === 'timeline'
+      ? 'timeline'
+      : block.layoutVariant === 'visual-timeline'
+        ? 'visual-timeline'
+        : 'numbered-steps',
     steps: (block.steps ?? []).map((step) => ({
       description: text(step.description),
+      image: mapMedia(step.media?.item, tenantID),
       label: text(step.label),
       title: text(step.title),
     })),
@@ -481,6 +486,7 @@ function mapPipelineBlock(block: PipelineBlock): CuriousLadooPipelineBlockData {
           description: text(block.spotlight.description),
           icon: text(block.spotlight.icon),
           title: text(block.spotlight.title),
+          value: text(block.spotlight.value),
         }
       : null,
     spotlightPosition: block.spotlightPosition === 'left' ? 'left' : 'right',
@@ -552,7 +558,7 @@ export function mapCuriousLadooLayout(
         blocks.push(mapBrandsShowcaseBlock(block, tenantID, collections.brands))
         break
       case 'stepsBlock':
-        blocks.push(mapStepsBlock(block))
+        blocks.push(mapStepsBlock(block, tenantID))
         break
       case 'statsBlock':
         blocks.push(mapStatsBlock(block))

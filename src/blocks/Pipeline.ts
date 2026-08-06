@@ -15,9 +15,8 @@ export const PipelineBlock: Block = {
     {
       name: 'items',
       type: 'array',
-      minRows: 1,
       maxRows: 8,
-      admin: { description: 'Bulleted list of upcoming initiatives.' },
+      admin: { description: 'Optional bulleted list of upcoming initiatives. Leave empty for a plain narrative section (paragraphs only, no list).' },
       fields: [
         {
           name: 'label',
@@ -44,6 +43,7 @@ export const PipelineBlock: Block = {
           type: 'row',
           admin: { condition: (_, siblingData) => siblingData?.enabled },
           fields: [
+            { name: 'value', type: 'text', maxLength: 20, admin: { description: 'Optional large stat number, e.g. "16 Wks". Rendered above the icon.' } },
             { name: 'icon', type: 'text', maxLength: 10, admin: { description: 'An emoji/glyph rendered as-is.' } },
             { name: 'title', type: 'text', maxLength: 120 },
           ],

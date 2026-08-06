@@ -1,5 +1,6 @@
 import type { Block } from 'payload'
 import { blockSettings } from './shared/blockSettings'
+import { mediaField } from './shared/mediaField'
 import { sectionHeader } from './shared/sectionHeader'
 
 export const StepsBlock: Block = {
@@ -24,10 +25,11 @@ export const StepsBlock: Block = {
       name: 'layoutVariant',
       type: 'select',
       defaultValue: 'numbered-steps',
-      admin: { description: 'Visual treatment for the Reusable Cards presentation: numbered process steps, or a year/event timeline.' },
+      admin: { description: 'Visual treatment for the Reusable Cards presentation: numbered process steps, a year/event timeline, or an alternating-image visual timeline.' },
       options: [
         { label: 'Numbered Steps', value: 'numbered-steps' },
         { label: 'Timeline', value: 'timeline' },
+        { label: 'Visual Timeline (with image per step)', value: 'visual-timeline' },
       ],
     },
     {
@@ -42,6 +44,10 @@ export const StepsBlock: Block = {
         { name: 'icon', type: 'text', maxLength: 50 },
         { name: 'title', type: 'text', required: true, maxLength: 120 },
         { name: 'description', type: 'textarea', required: true, maxLength: 1_000 },
+        mediaField(
+          { name: 'media', admin: { description: 'Used only by the Visual Timeline layout variant.' } },
+          { required: false },
+        ),
       ],
     },
     blockSettings(),

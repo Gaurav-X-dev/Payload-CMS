@@ -162,7 +162,7 @@ test('Pipeline block maps items, an enabled link, and an enabled spotlight callo
     assert.equal(block.items.length, 2)
     assert.equal(block.items[0].label, 'Project Roastery (Q1 2026):')
     assert.equal(block.link?.url, '/contact?interest=brand')
-    assert.deepEqual(block.spotlight, { description: 'Minimal styling.', icon: '☕', title: 'Project Roastery' })
+    assert.deepEqual(block.spotlight, { description: 'Minimal styling.', icon: '☕', title: 'Project Roastery', value: '' })
     assert.equal(block.spotlightPosition, 'right')
   }
 })

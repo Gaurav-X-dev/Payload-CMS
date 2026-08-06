@@ -228,7 +228,7 @@ needed**, must be preserved exactly as-is.
 | 6 | Services | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Done — see §9 |
 | 7 | Brands | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Done — see §10 |
 | 8 | Portfolio | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Done — see §11 |
-| 9 | How We Work | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | Pending |
+| 9 | How We Work | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Done — see §12 |
 | 10 | Testimonials | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | Pending |
 | 11 | Careers | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | Pending |
 | 12 | FAQs | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | Pending |
@@ -849,7 +849,106 @@ warning is Payload's own generator boilerplate, present in all 11 migration file
 this one) · `npm run build` succeeds · `git diff --check` passes (only informational CRLF/LF
 advisories, zero actual whitespace errors).
 
-## 12. Verification commands (from `package.json`)
+## 12. Milestone 9 record — How We Work Page (reuse-first: extend two existing blocks, zero new blocks/collections)
+
+**Data model:** both sections are simple page-local repeated cards (no cross-page reuse, filtering,
+featured selection, or detail routing) — squarely "Data Model A," not a new collection. Given no
+new collection was needed, this milestone didn't hit the "stop and ask" trigger from Milestone 8's
+brief; proceeded directly, still gating the migration on your approval as always.
+
+**Timeline section → extended `stepsBlock`** (`src/blocks/Steps.ts`): added an optional per-step
+`media` field (`mediaField()`, `required: false`) and a new `layoutVariant` option,
+`'visual-timeline'`. The alternating left/right layout needed **no new data field at all** — it's
+driven entirely by `:nth-child(even)` CSS (`direction: rtl` trick) in the existing
+`.timelineVisualNode` class, matching pure-CSS alternation already used elsewhere (Brands
+spotlight's `reverse`-by-index). Purely additive: existing `'numbered-steps'`/`'timeline'` usages
+(Home's process/journey sections, About's journey) are untouched — verified both by a dedicated
+regression test and the full existing suite.
+
+**Lifecycle section → reused `pipelineBlock`** (Milestone 7's Brands "Future Projects" block)
+almost as-is, with two small additive changes:
+- `items` array's `minRows: 1` requirement removed (Lifecycle has no bulleted list at all — just
+  two plain paragraphs). Produced **zero migration SQL** — confirmed `minRows` was Payload-level
+  validation only, not a DB constraint, matching the exact pattern already established for
+  Milestone 6's `mediaField()` `required` flag.
+- `spotlight` group gained an optional `value` field (large stat number, e.g. "16 Wks"), rendered
+  above the icon — mutually exclusive with the existing `icon` field in the renderer (Brands'
+  existing icon-only spotlights are visually untouched; the new stat-number treatment only applies
+  when `value` is set).
+- `PipelineSection`'s `header.description` rendering was switched from a single `<p>` to the
+  existing `renderParagraphs()` helper (Milestone 5, used by `StorySimpleSection`) — splits on a
+  blank line into multiple paragraphs. Backward-compatible: Brands' existing single-paragraph
+  pipeline description (no blank line) still renders as exactly one `<p>`, byte-identical to before.
+
+**No new blocks or collections were created this milestone** — the entire page reuses `heroBlock`,
+the extended `stepsBlock`, the extended `pipelineBlock`, and `ctaBlock`.
+
+**Schema/migration** (`20260806_070027_curious_ladoo_how_we_work`) — reviewed with the same
+pre-generation identifier-length scan as Milestone 8: **zero** identifiers over 63 chars this time
+(max enum name 57 — no nested-array-plus-mediaField combination this time, since the media field
+lives in a plain array item, not doubly-nested). 4 new enum types, 1 new enum value, 9 new nullable
+columns (8 for per-step media, 1 for `spotlight_value`), 1 FK, 2 indexes. Zero DROP/DELETE/TRUNCATE.
+Pre/post row counts confirmed identical for `pages`/`steps_block`/`steps`/`pipeline_block` and
+Ghee Roast's page count specifically. Shown to you and approved before applying.
+
+**Loader:** no changes — both blocks were already fully supported by the existing dependency-free
+path (`stepsBlock`/`pipelineBlock` carry their content inline, no collection dependency).
+
+**Mapper:** `mapStepsBlock` gained a `tenantID` parameter (needed for the new per-step `mapMedia`
+call) and the `'visual-timeline'` variant passthrough; `mapPipelineBlock`'s spotlight mapping gained
+`value`. Both changes are non-breaking for existing callers.
+
+**Renderer:** new `StepsVisualTimeline` component (exact reproduction of the connecting-line/dot/
+alternating-image layout; no heading rendered above it, matching the original and the same
+established "spotlight/showcase blocks render no header" pattern from Milestones 7–8).
+`PipelineSection` updated in place for multi-paragraph + stat-value support, verified via a direct
+regression test asserting Brands' exact original shape (populated items, icon, no value) still maps
+identically.
+
+**Seed:** `src/seed/curiousLadooHowWeWork.ts` + `npm run db:seed:curious-ladoo-how-we-work` —
+idempotent, 1 new media upload (`t3_interior.png`), 5 reused (`team_about.png`, `zuru_zuru.png`,
+`kitchen_ops.png`, `ghee_roast.png`, `consulting.png` — all already uploaded in earlier
+milestones), creates the How We Work Page (4 blocks: hero, steps[visual-timeline], pipeline, cta).
+
+**A rendering detail investigated and confirmed correct:** the CTA title
+`"Have a Space or a Brand Idea?<br/>"` + italic `"Let's Co-Create."` uses the same
+`dangerouslySetInnerHTML`-with-explicit-space pattern as Services'/Brands' CTAs (unlike Portfolio's
+plain-JSX no-space CTA from Milestone 8) — seeded with a trailing space after the `\n`, verified
+live that the rendered space is present, matching the original exactly.
+
+**Routing:** `CuriousHubPageRenderer.tsx`'s `CMS_DRIVEN_PATHS` extended to `'/how-we-work'`.
+
+**Live verification hit an unrelated environment issue, not a code bug:** the long-running dev
+server (in continuous use since Milestone 7) hit `TypeError: __webpack_modules__[moduleId] is not
+a function` — a known Next.js dev-mode HMR module-cache corruption from many accumulated
+hot-reloads, not a code defect. Killed and restarted cleanly; full live verification then passed on
+the first attempt against the fresh server.
+
+**Verified live** across every tenant hostname alias: `/how-we-work` → 200 with every section's
+content confirmed (hero, all 5 timeline steps with their images, the Lifecycle section with both
+paragraphs rendered distinctly and the "16 Wks" stat box, CTA with its exact space-preserved
+`<br/>`+italic split). **Brands page re-verified live**: its Pipeline section (icon, both list
+items, "Partner on Concepts" link) renders completely unchanged, proving the `pipelineBlock`
+extension didn't regress Milestone 7. Ghee Roast, Home, About, Services, Portfolio, static
+`/contact`, `/admin` → all 200 unchanged. Unknown route → 404.
+
+**Tests:** new `tests/curious-ladoo-how-we-work.test.ts` (6 tests) covering slug resolution,
+per-step Media relationship safety (raw/populated/missing/cross-tenant) on the new visual-timeline
+variant, a direct regression check that the pre-existing `'timeline'`/`'numbered-steps'` variants
+are unaffected, the new items-less/stat-value Pipeline usage, a direct regression check reproducing
+Brands' exact original Pipeline shape, and layout ordering. One pre-existing Brands test
+(`curious-ladoo-brands.test.ts`) needed a one-line update to its strict `deepEqual` assertion to
+account for the new `value: ''` field on the spotlight shape — a mechanical fixture update, not a
+behavioral change (identical to the `faqs: []` pattern from Milestone 6). Combined Curious Ladoo
+suite: 49/49 pass.
+
+**Full verification:** `typecheck` clean (app + tests) · combined Curious Ladoo suite 49/49 ·
+`test:ghee-cms` 40/40 · full `npm test` chain passes (same one pre-existing unrelated failure noted
+in every earlier milestone) · `lint`: 0 new warnings after fixing one unused import in my own new
+test file (the suite's 1 pre-existing error remains in `scripts/gen-migration.cjs`, untouched) ·
+`npm run build` succeeds.
+
+## 13. Verification commands (from `package.json`)
 
 `npm run typecheck` · `npm run lint` · `npm run build` · `npm test` (chains authorization, phase1,
 phase2, development-content, ghee-cms) · `npm run test:security`. No test runner is Ghee-Roast- or

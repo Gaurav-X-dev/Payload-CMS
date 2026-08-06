@@ -101,13 +101,14 @@ export type CuriousLadooBrandsShowcaseBlockData = {
 
 export type CuriousLadooStepData = {
   description: string
+  image: CuriousLadooMediaData
   label: string
   title: string
 }
 
 export type CuriousLadooStepsBlockData = {
   header: CuriousLadooSectionHeaderData
-  layoutVariant: 'numbered-steps' | 'timeline'
+  layoutVariant: 'numbered-steps' | 'timeline' | 'visual-timeline'
   steps: CuriousLadooStepData[]
   type: 'steps'
 }
@@ -216,6 +217,7 @@ export type CuriousLadooPipelineSpotlightData = {
   description: string
   icon: string
   title: string
+  value: string
 } | null
 
 export type CuriousLadooPipelineBlockData = {
