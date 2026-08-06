@@ -122,7 +122,7 @@ test("Story block 'simple' layout maps title/accentPhrase/body/image for the inn
       imagePosition: 'left',
     },
   ] as unknown as Page['layout']
-  const mapped = mapCuriousLadooLayout(layout, tenantID, { blogPosts: [], brands: [], faqs: [], teamMembers: [], testimonials: [] })
+  const mapped = mapCuriousLadooLayout(layout, tenantID, { blogPosts: [], brands: [], faqs: [], portfolio: [], teamMembers: [], testimonials: [] })
   const story = mapped[0]
   assert.equal(story.type, 'story')
   if (story.type === 'story') {
@@ -159,7 +159,7 @@ test("ContentGrid 'mission-vision' and 'values' presentations pass through with 
       ],
     },
   ] as unknown as Page['layout']
-  const mapped = mapCuriousLadooLayout(layout, tenantID, { blogPosts: [], brands: [], faqs: [], teamMembers: [], testimonials: [] })
+  const mapped = mapCuriousLadooLayout(layout, tenantID, { blogPosts: [], brands: [], faqs: [], portfolio: [], teamMembers: [], testimonials: [] })
 
   const [missionVision, values] = mapped
   assert.equal(missionVision.type, 'contentgrid')
@@ -186,7 +186,7 @@ test('Team block with no explicit members and a limit pulls from the tenant pool
   const layout = [
     { blockType: 'teamBlock', members: [], limit: 2, sectionHeader: { title: 'Our Leadership.' } },
   ] as unknown as Page['layout']
-  const mapped = mapCuriousLadooLayout(layout, tenantID, { blogPosts: [], brands: [], faqs: [], teamMembers: members as never, testimonials: [] })
+  const mapped = mapCuriousLadooLayout(layout, tenantID, { blogPosts: [], brands: [], faqs: [], portfolio: [], teamMembers: members as never, testimonials: [] })
   const team = mapped[0]
   assert.equal(team.type, 'team')
   if (team.type === 'team') {
@@ -208,6 +208,7 @@ test("page-level mapper carries pageType through as 'about', not the 'generic' d
     footer: null,
     nav: null,
     page,
+    portfolio: [],
     seo: null,
     siteSettings: null,
     teamMembers: [],

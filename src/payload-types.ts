@@ -83,6 +83,7 @@ export interface Config {
     'contact-submissions': ContactSubmission;
     gallery: Gallery;
     brands: Brand;
+    portfolio: Portfolio;
     'site-settings': SiteSetting;
     nav: Nav;
     footer: Footer;
@@ -114,6 +115,7 @@ export interface Config {
     'contact-submissions': ContactSubmissionsSelect<false> | ContactSubmissionsSelect<true>;
     gallery: GallerySelect<false> | GallerySelect<true>;
     brands: BrandsSelect<false> | BrandsSelect<true>;
+    portfolio: PortfolioSelect<false> | PortfolioSelect<true>;
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
     nav: NavSelect<false> | NavSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
@@ -431,6 +433,8 @@ export interface Page {
         | BrandsShowcaseBlock
         | CapabilityBlock
         | PipelineBlock
+        | PortfolioShowcaseBlock
+        | CompareBlock
       )[]
     | null;
   showInNavigation?: boolean | null;
@@ -3045,6 +3049,243 @@ export interface PipelineBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PortfolioShowcaseBlock".
+ */
+export interface PortfolioShowcaseBlock {
+  /**
+   * Optional heading. The Portfolio page's filterable grid renders no heading above it by default.
+   */
+  sectionHeader: {
+    /**
+     * Small accented text above the title.
+     */
+    eyebrow?: string | null;
+    title: string;
+    headingTag?: ('h1' | 'h2' | 'h3' | 'h4') | null;
+    subtitle?: string | null;
+    description?: string | null;
+    alignment?: ('left' | 'center' | 'right') | null;
+    maxWidth?: ('standard' | 'narrow' | 'wide') | null;
+  };
+  /**
+   * Leave empty to show every enabled case study, sorted by Sort Order.
+   */
+  items?: (number | Portfolio)[] | null;
+  limit?: number | null;
+  /**
+   * Appearance and visibility settings for this block.
+   */
+  settings?: {
+    backgroundColor?: ('transparent' | 'surface' | 'primary' | 'accent' | 'dark') | null;
+    containerWidth?: ('standard' | 'wide' | 'full') | null;
+    /**
+     * Optional image to place behind the block.
+     */
+    backgroundImage?: (number | null) | Media;
+    /**
+     * 0-100 opacity for the background overlay.
+     */
+    overlayOpacity?: number | null;
+    paddingTop?: ('none' | 'small' | 'medium' | 'large') | null;
+    paddingBottom?: ('none' | 'small' | 'medium' | 'large') | null;
+    visibility?: ('desktop' | 'tablet' | 'mobile')[] | null;
+    animation?: ('none' | 'fade-in' | 'slide-up' | 'zoom-in' | 'stagger') | null;
+    /**
+     * Inject custom CSS classes for developer overrides.
+     */
+    customClasses?: string | null;
+    /**
+     * Used for #anchor links. Must be unique.
+     */
+    htmlId?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'portfolioshowcaseBlock';
+}
+/**
+ * Manage case studies and past project write-ups shown on the Portfolio page.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "portfolio".
+ */
+export interface Portfolio {
+  id: number;
+  /**
+   * Super Admins may select a tenant. Other users are assigned from trusted tenant context.
+   */
+  tenantId: number | Tenant;
+  title: string;
+  /**
+   * Auto-generated if left blank. Not currently used for routing — reserved for a future case-study detail page.
+   */
+  slug?: string | null;
+  /**
+   * Must match a Portfolio page filter label exactly (e.g. "Restaurant Design") for filtering to work.
+   */
+  category?: string | null;
+  year?: string | null;
+  description?: string | null;
+  coverImage?: (number | null) | Media;
+  /**
+   * Optional: link this case study to one of this tenant's Brands.
+   */
+  brand?: (number | null) | Brand;
+  /**
+   * Leave off to use the default "Inquire on case" link to Contact.
+   */
+  enableCTA?: boolean | null;
+  cta?: {
+    type?: ('reference' | 'custom' | 'anchor' | 'email' | 'phone') | null;
+    label: string;
+    reference?: (number | null) | Page;
+    url?: string | null;
+    newTab?: boolean | null;
+    /**
+     * SEO override.
+     */
+    nofollow?: boolean | null;
+    disabled?: boolean | null;
+    buttonStyle?: ('primary' | 'secondary' | 'outline' | 'ghost' | 'text') | null;
+    buttonSize?: ('small' | 'medium' | 'large') | null;
+    icon?: (number | null) | Media;
+    iconPosition?: ('left' | 'right') | null;
+    /**
+     * E.g., GTM ID.
+     */
+    analyticsTrackingId?: string | null;
+    /**
+     * Screen reader override.
+     */
+    ariaLabel?: string | null;
+  };
+  enabled?: boolean | null;
+  featured?: boolean | null;
+  sortOrder?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CompareBlock".
+ */
+export interface CompareBlock {
+  /**
+   * Standardized section title and description.
+   */
+  sectionHeader: {
+    /**
+     * Small accented text above the title.
+     */
+    eyebrow?: string | null;
+    title: string;
+    headingTag?: ('h1' | 'h2' | 'h3' | 'h4') | null;
+    subtitle?: string | null;
+    description?: string | null;
+    alignment?: ('left' | 'center' | 'right') | null;
+    maxWidth?: ('standard' | 'narrow' | 'wide') | null;
+  };
+  before?: {
+    badgeLabel?: string | null;
+    /**
+     * Optional. If left empty, the placeholder text below is shown instead.
+     */
+    media?: {
+      item?: (number | null) | Media;
+      /**
+       * Overrides the default Alt text.
+       */
+      altOverride?: string | null;
+      /**
+       * Displays a visible figcaption.
+       */
+      caption?: string | null;
+      aspectRatio?: ('auto' | '16:9' | '4:3' | '1:1' | '9:16') | null;
+      objectFit?: ('cover' | 'contain') | null;
+      /**
+       * Load immediately (prevents lazy-loading). Use only for above-the-fold media.
+       */
+      priority?: boolean | null;
+      /**
+       * Precise cropping point for mobile views.
+       */
+      focalPoint?: {
+        x?: number | null;
+        y?: number | null;
+      };
+    };
+    /**
+     * Shown only when no image is set.
+     */
+    placeholderText?: string | null;
+  };
+  after?: {
+    badgeLabel?: string | null;
+    /**
+     * Optional. If left empty, the placeholder text below is shown instead.
+     */
+    media?: {
+      item?: (number | null) | Media;
+      /**
+       * Overrides the default Alt text.
+       */
+      altOverride?: string | null;
+      /**
+       * Displays a visible figcaption.
+       */
+      caption?: string | null;
+      aspectRatio?: ('auto' | '16:9' | '4:3' | '1:1' | '9:16') | null;
+      objectFit?: ('cover' | 'contain') | null;
+      /**
+       * Load immediately (prevents lazy-loading). Use only for above-the-fold media.
+       */
+      priority?: boolean | null;
+      /**
+       * Precise cropping point for mobile views.
+       */
+      focalPoint?: {
+        x?: number | null;
+        y?: number | null;
+      };
+    };
+    /**
+     * Shown only when no image is set.
+     */
+    placeholderText?: string | null;
+  };
+  /**
+   * Appearance and visibility settings for this block.
+   */
+  settings?: {
+    backgroundColor?: ('transparent' | 'surface' | 'primary' | 'accent' | 'dark') | null;
+    containerWidth?: ('standard' | 'wide' | 'full') | null;
+    /**
+     * Optional image to place behind the block.
+     */
+    backgroundImage?: (number | null) | Media;
+    /**
+     * 0-100 opacity for the background overlay.
+     */
+    overlayOpacity?: number | null;
+    paddingTop?: ('none' | 'small' | 'medium' | 'large') | null;
+    paddingBottom?: ('none' | 'small' | 'medium' | 'large') | null;
+    visibility?: ('desktop' | 'tablet' | 'mobile')[] | null;
+    animation?: ('none' | 'fade-in' | 'slide-up' | 'zoom-in' | 'stagger') | null;
+    /**
+     * Inject custom CSS classes for developer overrides.
+     */
+    customClasses?: string | null;
+    /**
+     * Used for #anchor links. Must be unique.
+     */
+    htmlId?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'compareBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "reservations".
  */
 export interface Reservation {
@@ -3597,6 +3838,10 @@ export interface PayloadLockedDocument {
         value: number | Brand;
       } | null)
     | ({
+        relationTo: 'portfolio';
+        value: number | Portfolio;
+      } | null)
+    | ({
         relationTo: 'site-settings';
         value: number | SiteSetting;
       } | null)
@@ -3901,6 +4146,8 @@ export interface PagesSelect<T extends boolean = true> {
         brandsshowcaseBlock?: T | BrandsShowcaseBlockSelect<T>;
         capabilityBlock?: T | CapabilityBlockSelect<T>;
         pipelineBlock?: T | PipelineBlockSelect<T>;
+        portfolioshowcaseBlock?: T | PortfolioShowcaseBlockSelect<T>;
+        compareBlock?: T | CompareBlockSelect<T>;
       };
   showInNavigation?: T;
   navigationLabel?: T;
@@ -5352,6 +5599,118 @@ export interface PipelineBlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PortfolioShowcaseBlock_select".
+ */
+export interface PortfolioShowcaseBlockSelect<T extends boolean = true> {
+  sectionHeader?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        headingTag?: T;
+        subtitle?: T;
+        description?: T;
+        alignment?: T;
+        maxWidth?: T;
+      };
+  items?: T;
+  limit?: T;
+  settings?:
+    | T
+    | {
+        backgroundColor?: T;
+        containerWidth?: T;
+        backgroundImage?: T;
+        overlayOpacity?: T;
+        paddingTop?: T;
+        paddingBottom?: T;
+        visibility?: T;
+        animation?: T;
+        customClasses?: T;
+        htmlId?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CompareBlock_select".
+ */
+export interface CompareBlockSelect<T extends boolean = true> {
+  sectionHeader?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        headingTag?: T;
+        subtitle?: T;
+        description?: T;
+        alignment?: T;
+        maxWidth?: T;
+      };
+  before?:
+    | T
+    | {
+        badgeLabel?: T;
+        media?:
+          | T
+          | {
+              item?: T;
+              altOverride?: T;
+              caption?: T;
+              aspectRatio?: T;
+              objectFit?: T;
+              priority?: T;
+              focalPoint?:
+                | T
+                | {
+                    x?: T;
+                    y?: T;
+                  };
+            };
+        placeholderText?: T;
+      };
+  after?:
+    | T
+    | {
+        badgeLabel?: T;
+        media?:
+          | T
+          | {
+              item?: T;
+              altOverride?: T;
+              caption?: T;
+              aspectRatio?: T;
+              objectFit?: T;
+              priority?: T;
+              focalPoint?:
+                | T
+                | {
+                    x?: T;
+                    y?: T;
+                  };
+            };
+        placeholderText?: T;
+      };
+  settings?:
+    | T
+    | {
+        backgroundColor?: T;
+        containerWidth?: T;
+        backgroundImage?: T;
+        overlayOpacity?: T;
+        paddingTop?: T;
+        paddingBottom?: T;
+        visibility?: T;
+        animation?: T;
+        customClasses?: T;
+        htmlId?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "menu-categories_select".
  */
 export interface MenuCategoriesSelect<T extends boolean = true> {
@@ -5636,6 +5995,43 @@ export interface BrandsSelect<T extends boolean = true> {
   enabled?: T;
   featured?: T;
   comingSoon?: T;
+  sortOrder?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "portfolio_select".
+ */
+export interface PortfolioSelect<T extends boolean = true> {
+  tenantId?: T;
+  title?: T;
+  slug?: T;
+  category?: T;
+  year?: T;
+  description?: T;
+  coverImage?: T;
+  brand?: T;
+  enableCTA?: T;
+  cta?:
+    | T
+    | {
+        type?: T;
+        label?: T;
+        reference?: T;
+        url?: T;
+        newTab?: T;
+        nofollow?: T;
+        disabled?: T;
+        buttonStyle?: T;
+        buttonSize?: T;
+        icon?: T;
+        iconPosition?: T;
+        analyticsTrackingId?: T;
+        ariaLabel?: T;
+      };
+  enabled?: T;
+  featured?: T;
   sortOrder?: T;
   updatedAt?: T;
   createdAt?: T;

@@ -2,6 +2,7 @@ import type {
   BlogPost,
   Brand,
   CapabilityBlock,
+  CompareBlock,
   ContentGridBlock,
   CTABlock,
   Faq,
@@ -12,6 +13,7 @@ import type {
   Nav,
   Page,
   PipelineBlock,
+  Portfolio,
   Seo,
   SiteSetting,
   StatsBlock,
@@ -24,6 +26,7 @@ import type {
   TickerBlock,
   BlogPreviewBlock as BlogPreviewBlockType,
   BrandsShowcaseBlock as BrandsShowcaseBlockType,
+  PortfolioShowcaseBlock as PortfolioShowcaseBlockType,
   TeamBlock as TeamBlockType,
 } from '../../../payload-types'
 import type {
@@ -31,6 +34,8 @@ import type {
   CuriousLadooBrandItemData,
   CuriousLadooBrandsShowcaseBlockData,
   CuriousLadooCapabilityBlockData,
+  CuriousLadooCompareBlockData,
+  CuriousLadooComparePanelData,
   CuriousLadooContentGridBlockData,
   CuriousLadooCTABlockData,
   CuriousLadooFAQBlockData,
@@ -43,6 +48,8 @@ import type {
   CuriousLadooMediaData,
   CuriousLadooNavigationData,
   CuriousLadooPipelineBlockData,
+  CuriousLadooPortfolioItemData,
+  CuriousLadooPortfolioShowcaseBlockData,
   CuriousLadooSectionHeaderData,
   CuriousLadooSEOData,
   CuriousLadooSiteData,
@@ -251,6 +258,41 @@ function mapBrandsShowcaseBlock(
   }
 }
 
+function mapPortfolioItem(item: Portfolio, tenantID: number): CuriousLadooPortfolioItemData {
+  return {
+    category: text(item.category),
+    description: text(item.description),
+    id: item.id,
+    image: mapMedia(item.coverImage, tenantID),
+    link: item.enableCTA ? mapLink(item.cta) : null,
+    slug: text(item.slug),
+    title: text(item.title),
+    year: text(item.year),
+  }
+}
+
+function mapPortfolioShowcaseBlock(
+  block: PortfolioShowcaseBlockType,
+  tenantID: number,
+  allPortfolioItems: Portfolio[],
+): CuriousLadooPortfolioShowcaseBlockData {
+  const selected = (block.items ?? [])
+    .map((entry) => (isPopulated<Portfolio>(entry) ? entry : allPortfolioItems.find((item) => item.id === entry)))
+    .filter((item): item is Portfolio => Boolean(item))
+    .filter((item) => belongsToTenant(item.tenantId, tenantID))
+  const pool = selected.length > 0 ? selected : allPortfolioItems
+  const limit = block.limit ?? pool.length
+  return {
+    header: mapSectionHeader(block.sectionHeader),
+    items: pool
+      .filter((item) => item.enabled !== false)
+      .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
+      .slice(0, limit)
+      .map((item) => mapPortfolioItem(item, tenantID)),
+    type: 'portfolioshowcase',
+  }
+}
+
 function mapStepsBlock(block: StepsBlock): CuriousLadooStepsBlockData {
   return {
     header: mapSectionHeader(block.sectionHeader),
@@ -446,6 +488,26 @@ function mapPipelineBlock(block: PipelineBlock): CuriousLadooPipelineBlockData {
   }
 }
 
+function mapComparePanel(
+  panel: CompareBlock['before'] | CompareBlock['after'],
+  tenantID: number,
+): CuriousLadooComparePanelData {
+  return {
+    badgeLabel: text(panel?.badgeLabel),
+    image: mapMedia(panel?.media?.item, tenantID),
+    placeholderText: text(panel?.placeholderText),
+  }
+}
+
+function mapCompareBlock(block: CompareBlock, tenantID: number): CuriousLadooCompareBlockData {
+  return {
+    after: mapComparePanel(block.after, tenantID),
+    before: mapComparePanel(block.before, tenantID),
+    header: mapSectionHeader(block.sectionHeader),
+    type: 'compare',
+  }
+}
+
 function mapCTABlock(block: CTABlock): CuriousLadooCTABlockData {
   return {
     header: mapSectionHeader(block.sectionHeader),
@@ -466,6 +528,7 @@ export function mapCuriousLadooLayout(
     blogPosts: BlogPost[]
     brands: Brand[]
     faqs: Faq[]
+    portfolio: Portfolio[]
     teamMembers: Teammember[]
     testimonials: Testimonial[]
   },
@@ -514,6 +577,12 @@ export function mapCuriousLadooLayout(
         break
       case 'pipelineBlock':
         blocks.push(mapPipelineBlock(block))
+        break
+      case 'portfolioshowcaseBlock':
+        blocks.push(mapPortfolioShowcaseBlock(block, tenantID, collections.portfolio))
+        break
+      case 'compareBlock':
+        blocks.push(mapCompareBlock(block, tenantID))
         break
       default:
         // Any other block type in the shared catalog has no Curious Ladoo renderer yet;
@@ -596,6 +665,7 @@ export function mapCuriousLadooHomeContent({
   footer,
   nav,
   page,
+  portfolio,
   seo,
   siteSettings,
   teamMembers,
@@ -608,6 +678,7 @@ export function mapCuriousLadooHomeContent({
   footer: Footer | null
   nav: Nav | null
   page: Page | null
+  portfolio: Portfolio[]
   seo: Seo | null
   siteSettings: SiteSetting | null
   teamMembers: Teammember[]
@@ -618,7 +689,7 @@ export function mapCuriousLadooHomeContent({
   return {
     footer: mapCuriousLadooFooter(footer, tenantID),
     layout: tenant && page
-      ? mapCuriousLadooLayout(page.layout, tenantID, { blogPosts, brands, faqs, teamMembers, testimonials })
+      ? mapCuriousLadooLayout(page.layout, tenantID, { blogPosts, brands, faqs, portfolio, teamMembers, testimonials })
       : [],
     navigation: mapCuriousLadooNavigation(nav, tenantID),
     page: page ? { id: page.id, pageType: text(page.pageType) || 'generic', title: text(page.title) } : null,

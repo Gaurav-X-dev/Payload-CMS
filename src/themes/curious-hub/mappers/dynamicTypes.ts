@@ -227,6 +227,36 @@ export type CuriousLadooPipelineBlockData = {
   type: 'pipeline'
 }
 
+export type CuriousLadooPortfolioItemData = {
+  category: string
+  description: string
+  id: number
+  image: CuriousLadooMediaData
+  link: CuriousLadooLinkData
+  slug: string
+  title: string
+  year: string
+}
+
+export type CuriousLadooPortfolioShowcaseBlockData = {
+  header: CuriousLadooSectionHeaderData
+  items: CuriousLadooPortfolioItemData[]
+  type: 'portfolioshowcase'
+}
+
+export type CuriousLadooComparePanelData = {
+  badgeLabel: string
+  image: CuriousLadooMediaData
+  placeholderText: string
+}
+
+export type CuriousLadooCompareBlockData = {
+  after: CuriousLadooComparePanelData
+  before: CuriousLadooComparePanelData
+  header: CuriousLadooSectionHeaderData
+  type: 'compare'
+}
+
 export type CuriousLadooHomeBlockData =
   | CuriousLadooHeroBlockData
   | CuriousLadooTickerBlockData
@@ -242,6 +272,8 @@ export type CuriousLadooHomeBlockData =
   | CuriousLadooCapabilityBlockData
   | CuriousLadooFAQBlockData
   | CuriousLadooPipelineBlockData
+  | CuriousLadooPortfolioShowcaseBlockData
+  | CuriousLadooCompareBlockData
 
 export type CuriousLadooNavLinkData = {
   enabled: boolean

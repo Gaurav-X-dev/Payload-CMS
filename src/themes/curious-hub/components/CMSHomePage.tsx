@@ -5,6 +5,7 @@ import type {
   CuriousLadooBlogPreviewBlockData,
   CuriousLadooBrandsShowcaseBlockData,
   CuriousLadooCapabilityBlockData,
+  CuriousLadooCompareBlockData,
   CuriousLadooContentGridBlockData,
   CuriousLadooCTABlockData,
   CuriousLadooFAQBlockData,
@@ -12,6 +13,7 @@ import type {
   CuriousLadooHomeBlockData,
   CuriousLadooHomeContent,
   CuriousLadooPipelineBlockData,
+  CuriousLadooPortfolioShowcaseBlockData,
   CuriousLadooStatsBlockData,
   CuriousLadooStepsBlockData,
   CuriousLadooStoryBlockData,
@@ -21,6 +23,7 @@ import type {
 } from '../mappers/dynamicTypes'
 import { AnimatedCounter } from './AnimatedCounter'
 import { FAQAccordion } from './FAQAccordion'
+import { PortfolioFilterGrid } from './PortfolioFilterGrid'
 import { ScrollReveal } from './ScrollReveal'
 import { Ticker } from './Ticker'
 import { CuriousHubIcon } from '../iconRegistry'
@@ -29,7 +32,7 @@ import styles from './Theme.module.css'
 const revealDelay = (index: number, mod = 5) => (index % mod) as 0 | 1 | 2 | 3 | 4
 
 /** mailto:/tel:/http(s) links need a plain <a>; internal paths use <Link> for client-side nav. */
-function SmartLink({ children, className, href, id }: { children: ReactNode; className?: string; href: string; id?: string }) {
+export function SmartLink({ children, className, href, id }: { children: ReactNode; className?: string; href: string; id?: string }) {
   const isExternalStyle = /^(mailto:|tel:|https?:)/.test(href)
   if (isExternalStyle) {
     return <a className={className} href={href} id={id}>{children}</a>
@@ -1185,6 +1188,64 @@ function PipelineSection({ block }: { block: CuriousLadooPipelineBlockData }) {
   )
 }
 
+/** Filterable case-study grid — matches the Portfolio page. No heading is rendered above it by default (matches the original design). */
+function PortfolioShowcaseSection({ block }: { block: CuriousLadooPortfolioShowcaseBlockData }) {
+  if (block.items.length === 0) return null
+  return (
+    <section className={styles.innerSection}>
+      <PortfolioFilterGrid items={block.items} />
+    </section>
+  )
+}
+
+function ComparePanelView({ accent, fallbackLabel, panel }: { accent: boolean; fallbackLabel: string; panel: CuriousLadooCompareBlockData['before'] }) {
+  return (
+    <div className={styles.beforeAfterImg}>
+      <div className={styles.beforeAfterBadge} style={accent ? { background: 'var(--ch-accent)', color: 'var(--ch-dark-2)' } : undefined}>
+        {panel.badgeLabel || fallbackLabel}
+      </div>
+      {panel.image ? (
+        <Image alt={panel.image.alt} fill src={panel.image.src} style={{ objectFit: 'cover' }} />
+      ) : (
+        <div style={{ alignItems: 'center', background: '#8A8680', color: '#fff', display: 'flex', fontFamily: '"Courier Prime", monospace', fontSize: '1.2rem', height: '100%', justifyContent: 'center', padding: '1rem', textAlign: 'center', width: '100%' }}>
+          {panel.placeholderText}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function CompareSection({ block }: { block: CuriousLadooCompareBlockData }) {
+  if (!block.header.title) return null
+  return (
+    <section className={`${styles.innerSection} ${styles.innerSectionAlt}`}>
+      <div className={styles.servicesHeader} style={{ marginBottom: '2rem' }}>
+        <div>
+          {block.header.eyebrow && (
+            <ScrollReveal>
+              <p className={styles.sectionEyebrow}>{block.header.eyebrow}</p>
+            </ScrollReveal>
+          )}
+          <ScrollReveal delay={1}>
+            <h2 className={styles.sectionTitle}>{renderHeading(block.header.title, block.header.subtitle)}</h2>
+          </ScrollReveal>
+        </div>
+      </div>
+      {block.header.description && (
+        <ScrollReveal delay={2}>
+          <p className={styles.sectionBody}>{block.header.description}</p>
+        </ScrollReveal>
+      )}
+      <ScrollReveal delay={3}>
+        <div className={styles.beforeAfterBox}>
+          <ComparePanelView accent={false} fallbackLabel="Before" panel={block.before} />
+          <ComparePanelView accent={true} fallbackLabel="After" panel={block.after} />
+        </div>
+      </ScrollReveal>
+    </section>
+  )
+}
+
 function CMSHomeBlock({ block, pageType, siteName }: { block: CuriousLadooHomeBlockData; pageType: string; siteName: string }) {
   switch (block.type) {
     case 'hero': return pageType === 'home' ? <HeroSection block={block} /> : <InnerHeroSection block={block} />
@@ -1198,6 +1259,8 @@ function CMSHomeBlock({ block, pageType, siteName }: { block: CuriousLadooHomeBl
     case 'capability': return <CapabilitySection block={block} />
     case 'faq': return <FAQSection block={block} />
     case 'pipeline': return <PipelineSection block={block} />
+    case 'portfolioshowcase': return <PortfolioShowcaseSection block={block} />
+    case 'compare': return <CompareSection block={block} />
     case 'blogpreview': return <JournalSection block={block} />
     case 'team': return <TeamSection block={block} />
     case 'cta': return <CTASection block={block} siteName={siteName} />

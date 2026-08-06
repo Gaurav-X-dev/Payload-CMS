@@ -10,6 +10,7 @@ import * as migration_20260805_084729_curious_ladoo_home_blocks from './20260805
 import * as migration_20260805_105546_curious_ladoo_about_story_layout from './20260805_105546_curious_ladoo_about_story_layout';
 import * as migration_20260805_160441_curious_ladoo_services from './20260805_160441_curious_ladoo_services';
 import * as migration_20260806_051406_curious_ladoo_brands from './20260806_051406_curious_ladoo_brands';
+import * as migration_20260806_060607_curious_ladoo_portfolio from './20260806_060607_curious_ladoo_portfolio';
 
 export const migrations = [
   {
@@ -70,6 +71,11 @@ export const migrations = [
   {
     up: migration_20260806_051406_curious_ladoo_brands.up,
     down: migration_20260806_051406_curious_ladoo_brands.down,
-    name: '20260806_051406_curious_ladoo_brands'
+    name: '20260806_051406_curious_ladoo_brands',
+  },
+  {
+    up: migration_20260806_060607_curious_ladoo_portfolio.up,
+    down: migration_20260806_060607_curious_ladoo_portfolio.down,
+    name: '20260806_060607_curious_ladoo_portfolio'
   },
 ];

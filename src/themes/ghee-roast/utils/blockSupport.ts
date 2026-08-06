@@ -56,12 +56,15 @@ export const GHEE_ROAST_SIMPLE_SECTION_BLOCK_TYPES = new Set<string>([
  * `tickerBlock` has no title/subtitle at all). `capabilityBlock` (Milestone 6) is the same
  * story — its content lives in a nested `items[]` array, not a flat `title`/`subtitle`.
  * `pipelineBlock` (Milestone 7) is the same again — its list/spotlight shape doesn't fit the flat
- * `title`/`subtitle` fallback either. They must never be added to `GHEE_ROAST_SUPPORTED_BLOCK_TYPES`
- * just to satisfy a block-registry parity check. Because the `layout` block picker is shared
- * across every tenant, a Ghee Roast editor could still add one of these in the admin UI —
- * `CMSPage.tsx`'s `CMSBlock` deliberately renders nothing for it (the fallthrough `return null`
- * once no `if (type === ...)` branch or simple-section membership matches), which is the
- * intended, documented disposition, not an oversight.
+ * `title`/`subtitle` fallback either. `portfolioshowcaseBlock` and `compareBlock` (Milestone 8)
+ * follow the same rule — a `portfolio`-collection relationship and two before/after media panels
+ * have no meaningful flat-title/subtitle rendering either, and Ghee Roast has no Portfolio
+ * collection content or case-study concept at all. They must never be added to
+ * `GHEE_ROAST_SUPPORTED_BLOCK_TYPES` just to satisfy a block-registry parity check. Because the
+ * `layout` block picker is shared across every tenant, a Ghee Roast editor could still add one of
+ * these in the admin UI — `CMSPage.tsx`'s `CMSBlock` deliberately renders nothing for it (the
+ * fallthrough `return null` once no `if (type === ...)` branch or simple-section membership
+ * matches), which is the intended, documented disposition, not an oversight.
  */
 export const GHEE_ROAST_THEME_EXCLUSIVE_BLOCK_TYPES = [
   'tickerBlock',
@@ -69,4 +72,6 @@ export const GHEE_ROAST_THEME_EXCLUSIVE_BLOCK_TYPES = [
   'brandsshowcaseBlock',
   'capabilityBlock',
   'pipelineBlock',
+  'portfolioshowcaseBlock',
+  'compareBlock',
 ] as const

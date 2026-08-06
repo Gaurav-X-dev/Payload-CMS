@@ -32,6 +32,8 @@ import { StoryBlock } from './Story'
 import { BrandsShowcaseBlock } from './BrandsShowcase'
 import { CapabilityBlock } from './Capability'
 import { PipelineBlock } from './Pipeline'
+import { PortfolioShowcaseBlock } from './PortfolioShowcase'
+import { CompareBlock } from './Compare'
 
 export const AllBlocks = [
   HeroBlock,
@@ -68,4 +70,6 @@ export const AllBlocks = [
   BrandsShowcaseBlock,
   CapabilityBlock,
   PipelineBlock,
+  PortfolioShowcaseBlock,
+  CompareBlock,
 ]

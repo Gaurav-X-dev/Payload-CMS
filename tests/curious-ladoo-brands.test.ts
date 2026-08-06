@@ -107,7 +107,7 @@ test('mapBrand includes the spotlight-only fields (fullDescription, quote, stats
   const layout = [
     { blockType: 'brandsshowcaseBlock', presentation: 'spotlight', sectionHeader: { title: 'Spotlights' }, brands: [] },
   ] as unknown as Page['layout']
-  const mapped = mapCuriousLadooLayout(layout, tenantID, { blogPosts: [], brands: brands as never, faqs: [], teamMembers: [], testimonials: [] })
+  const mapped = mapCuriousLadooLayout(layout, tenantID, { blogPosts: [], brands: brands as never, faqs: [], portfolio: [], teamMembers: [], testimonials: [] })
   const block = mapped[0]
   assert.equal(block.type, 'brandsshowcase')
   if (block.type === 'brandsshowcase') {
@@ -132,7 +132,7 @@ test("BrandsShowcase presentation defaults to 'grid' when unset, preserving Home
   const layout = [
     { blockType: 'brandsshowcaseBlock', sectionHeader: { title: 'Brands' }, brands: [] },
   ] as unknown as Page['layout']
-  const mapped = mapCuriousLadooLayout(layout, tenantID, { blogPosts: [], brands: brands as never, faqs: [], teamMembers: [], testimonials: [] })
+  const mapped = mapCuriousLadooLayout(layout, tenantID, { blogPosts: [], brands: brands as never, faqs: [], portfolio: [], teamMembers: [], testimonials: [] })
   const block = mapped[0]
   assert.equal(block.type, 'brandsshowcase')
   if (block.type === 'brandsshowcase') {
@@ -155,7 +155,7 @@ test('Pipeline block maps items, an enabled link, and an enabled spotlight callo
       spotlightPosition: 'right',
     },
   ] as unknown as Page['layout']
-  const mapped = mapCuriousLadooLayout(layout, tenantID, { blogPosts: [], brands: [], faqs: [], teamMembers: [], testimonials: [] })
+  const mapped = mapCuriousLadooLayout(layout, tenantID, { blogPosts: [], brands: [], faqs: [], portfolio: [], teamMembers: [], testimonials: [] })
   const block = mapped[0]
   assert.equal(block.type, 'pipeline')
   if (block.type === 'pipeline') {
@@ -178,7 +178,7 @@ test('Pipeline block omits the link and spotlight when disabled, even if the und
       spotlight: { enabled: false, icon: '⭐', title: 'Should not appear', description: 'Hidden.' },
     },
   ] as unknown as Page['layout']
-  const mapped = mapCuriousLadooLayout(layout, tenantID, { blogPosts: [], brands: [], faqs: [], teamMembers: [], testimonials: [] })
+  const mapped = mapCuriousLadooLayout(layout, tenantID, { blogPosts: [], brands: [], faqs: [], portfolio: [], teamMembers: [], testimonials: [] })
   const block = mapped[0]
   assert.equal(block.type, 'pipeline')
   if (block.type === 'pipeline') {

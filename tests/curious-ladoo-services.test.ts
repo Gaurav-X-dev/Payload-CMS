@@ -127,7 +127,7 @@ test('Capability block maps repeatable items with features, image, link, and rev
       ],
     },
   ] as unknown as Page['layout']
-  const mapped = mapCuriousLadooLayout(layout, tenantID, { blogPosts: [], brands: [], faqs: [], teamMembers: [], testimonials: [] })
+  const mapped = mapCuriousLadooLayout(layout, tenantID, { blogPosts: [], brands: [], faqs: [], portfolio: [], teamMembers: [], testimonials: [] })
   const block = mapped[0]
   assert.equal(block.type, 'capability')
   if (block.type === 'capability') {
@@ -158,7 +158,7 @@ test("ContentGrid 'benefits' presentation passes through with plain (non-numbere
       ],
     },
   ] as unknown as Page['layout']
-  const mapped = mapCuriousLadooLayout(layout, tenantID, { blogPosts: [], brands: [], faqs: [], teamMembers: [], testimonials: [] })
+  const mapped = mapCuriousLadooLayout(layout, tenantID, { blogPosts: [], brands: [], faqs: [], portfolio: [], teamMembers: [], testimonials: [] })
   const block = mapped[0]
   assert.equal(block.type, 'contentgrid')
   if (block.type === 'contentgrid') {
@@ -177,7 +177,7 @@ test('FAQ block resolves explicitly-selected items, filters inactive/cross-tenan
   const layout = [
     { blockType: 'faqBlock', sectionHeader: { title: 'FAQs' }, items: [1, 2, 3, 4], limit: 10 },
   ] as unknown as Page['layout']
-  const mapped = mapCuriousLadooLayout(layout, tenantID, { blogPosts: [], brands: [], faqs: faqs as never, teamMembers: [], testimonials: [] })
+  const mapped = mapCuriousLadooLayout(layout, tenantID, { blogPosts: [], brands: [], faqs: faqs as never, portfolio: [], teamMembers: [], testimonials: [] })
   const block = mapped[0]
   assert.equal(block.type, 'faq')
   if (block.type === 'faq') {
@@ -192,7 +192,7 @@ test('FAQ block with no explicit items falls back to the full active tenant pool
   const layout = [
     { blockType: 'faqBlock', sectionHeader: { title: 'FAQs' }, items: [] },
   ] as unknown as Page['layout']
-  const mapped = mapCuriousLadooLayout(layout, tenantID, { blogPosts: [], brands: [], faqs: faqs as never, teamMembers: [], testimonials: [] })
+  const mapped = mapCuriousLadooLayout(layout, tenantID, { blogPosts: [], brands: [], faqs: faqs as never, portfolio: [], teamMembers: [], testimonials: [] })
   const block = mapped[0]
   assert.equal(block.type, 'faq')
   if (block.type === 'faq') {

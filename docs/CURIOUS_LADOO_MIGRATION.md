@@ -227,7 +227,7 @@ needed**, must be preserved exactly as-is.
 | 5 | About | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Done — see §8 |
 | 6 | Services | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Done — see §9 |
 | 7 | Brands | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Done — see §10 |
-| 8 | Portfolio | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | Pending |
+| 8 | Portfolio | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Done — see §11 |
 | 9 | How We Work | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | Pending |
 | 10 | Testimonials | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | Pending |
 | 11 | Careers | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | Pending |
@@ -720,7 +720,136 @@ full `npm test` chain passes (same one pre-existing unrelated `dev`-script-strin
 every earlier milestone) · `lint`: 0 errors/warnings introduced (the suite's 1 pre-existing error
 remains in `scripts/gen-migration.cjs`, untouched by this branch) · `npm run build` succeeds.
 
-## 11. Verification commands (from `package.json`)
+## 11. Milestone 8 record — Portfolio Page (new collection: schema, mapper, renderer, seed)
+
+**Data model decision (stopped and asked before implementing, per your instruction):** the
+Portfolio grid has real client-side category filtering, which alone satisfies your stated
+collection-creation trigger. Checked both existing candidates first and ruled them out: the
+`Gallery` collection has no `description`/CTA/case-study fields and a fixed Ghee-Roast category
+enum (food/ambiance/events/kitchen/exterior); `galleryBlock` hardcodes `relationTo: 'gallery'`, and
+modifying it to support another source collection would touch a block Ghee Roast already uses.
+Presented the full field-by-field design (including what was deliberately excluded — gallery,
+metrics, services-delivered, per-item SEO, native drafts — none of which anything in the current
+design renders) and got your explicit approval before writing any code.
+
+**New collection — `Portfolio`** (`src/collections/Portfolio.ts`): tenant-scoped, `title`,
+`slug` (auto via the same `tenantScopedUnique` pattern as Brands, reserved for a future detail
+page, not used for routing yet), `category` (free text, must match a hardcoded filter label —
+preserves the original's non-dynamic filter buttons exactly, no redesign), `year`, `description`,
+`coverImage`, optional `brand` relationship (inert metadata, mirrors how `Brands.tenant` was added
+ahead-of-need), `enableCTA` + shared `linkField()` (optional per-item override; unset falls back to
+the exact original hardcoded "Inquire on case → /contact"), `featured`/`enabled`/`sortOrder`
+(matching the `Brands`/`FAQs`/`TeamMembers` boolean-visibility convention rather than introducing
+native drafts, since no sibling collection uses that pattern).
+
+**New blocks — justified, both reuse-checked first:**
+- `portfolioshowcaseBlock`: relationship→`portfolio` (hasMany, optional explicit selection, empty =
+  all enabled sorted) + `limit`. `sectionHeader()` present for schema consistency but not
+  rendered — the original grid has no heading above it (same established pattern as Milestone 7's
+  Brands spotlight).
+- `compareBlock`: two symmetric panels (`before`/`after`), each with `badgeLabel` + optional
+  `mediaField()` + `placeholderText` (shown when no image is set — reproduces the original's
+  literal "Unfinished Concrete Column Shell" text box exactly, while letting either panel become a
+  real photo later with zero schema change). Badge accent color is a fixed presentational rule by
+  panel position (matches how `reverse` alternation is derived elsewhere, not stored as a toggle).
+  **Renamed from the originally-planned `beforeafterBlock`**: that slug pushed the nested
+  before-panel media enum name to 64 chars in the `_pages_v` versions table — caught by
+  *pre-generation* identifier-length checking this time (learned from Milestone 6's incident),
+  before ever running `migrate:create`. `compareBlock` leaves 3 chars of margin.
+
+Both new blocks registered in the shared `AllBlocks` catalog and immediately added to
+`GHEE_ROAST_THEME_EXCLUSIVE_BLOCK_TYPES` — Ghee Roast has no case-study or before/after-comparison
+concept, and must not claim support merely to satisfy the block-registry parity test. Zero existing
+block schema was modified this milestone (unlike Milestones 6–7).
+
+**Schema/migration** (`20260806_060607_curious_ladoo_portfolio`) — reviewed with a full
+programmatic identifier-length scan before showing you the SQL: zero `CREATE TABLE`/`CREATE TYPE`
+identifiers over 63 chars (max 39/60 respectively — those hard-fail if exceeded, confirmed by the
+clean `migrate:create` run). Found 4 **foreign-key constraint names** over 63 chars
+(`settings_background_image_id` combined with the longer new table names); verified empirically in
+a rolled-back throwaway transaction against the real database that Postgres silently truncates
+these without error and with zero collision risk (each is scoped to a different table) — cosmetic
+only, not a blocker, and very likely already true of other long pre-existing block names in this
+schema. 8 enums, 9 new tables, 3 new nullable columns on Payload's shared relationship-join tables,
+zero DROP/DELETE/TRUNCATE on the `up` path. Captured before/after row counts for every relevant
+table (including Ghee Roast's own page count) and confirmed byte-for-byte unchanged post-apply.
+Shown to you and approved before applying, per your explicit instruction.
+
+**Loader:** `portfolio` added as a 6th conditional collection dependency in
+`curiousLadooContentCore.ts`, gated on `portfolioshowcaseBlock` presence — identical shape to
+`brands`/`testimonials`/`teamMembers`/`blogPosts`/`faqs`. `/portfolio` needed no page-resolution
+changes — the generic slug-based lookup already handles it.
+
+**Mapper:** `mapPortfolioItem`/`mapPortfolioShowcaseBlock` (explicit-selection-with-pool-fallback,
+identical shape to `mapTeamBlock`/`mapFAQBlock`) and `mapCompareBlock`/`mapComparePanel`. Both use
+the generated Payload types (`Portfolio`, `PortfolioShowcaseBlock`, `CompareBlock`) throughout.
+
+**Renderer:** new client component `PortfolioFilterGrid.tsx` (the interactive category-filter
+state, reproducing the exact 4 hardcoded filter buttons and per-card "eager for first 3, lazy after"
+image-loading behavior from the original) — `SmartLink` was exported from `CMSHomePage.tsx` for
+reuse here rather than duplicated, per your explicit "reuse SmartLink" instruction.
+`PortfolioShowcaseSection` (server wrapper, no heading rendered) and `CompareSection` +
+`ComparePanelView` reproduce the Before/After section's exact layout, including the literal inline
+placeholder-box styling (`#8A8680` background, Courier Prime monospace) when no image is set. No
+Ghee Roast CSS or components were referenced anywhere.
+
+**A byte-level rendering detail investigated and confirmed intentionally preserved:** the original
+hero title `'Case Studies &\nTurnkey Launches'` contains a literal `\n`, but `.innerHeroTitle` has
+no `white-space: pre-line` — so both the original static page and this CMS renderer collapse it to
+a single space in the browser (`InnerHeroSection`'s `<h1>{heading}</h1>` has no special handling,
+byte-for-byte matching `Shared.tsx`'s `InnerHero`). Seeded the literal `\n` anyway for source-data
+fidelity; confirmed via the live server's raw payload that both the source string and the rendered
+behavior match the pre-migration original exactly. Separately, the CTA title
+`'Want to Turnaround Your\nRestaurant Business?'` was seeded **without** a trailing space after the
+`\n` (unlike Services'/Brands'/About's CTAs) — the original Portfolio CTA uses plain JSX
+(`Your<br /><em>`) with no space, not the `dangerouslySetInnerHTML` string-concatenation pattern
+the other pages use (which always inserts one) — verified this reproduces the exact no-space output
+via the existing `renderHeading`/`withLineBreaks` helpers with no code changes needed.
+
+**Seed:** `src/seed/curiousLadooPortfolio.ts` + `npm run db:seed:curious-ladoo-portfolio` —
+idempotent (find-by-title-then-update-or-create for all 6 Portfolio items, find-by-slug for the
+Page). Uploads 2 new images (`culinary_art.png`, `t2_interior.png`) and reuses 5 already uploaded
+in earlier milestones (`zuru_zuru.png`, `ghee_roast.png`, `zquick.png`, `consulting.png`,
+`visual_story.png`), all deduplicated by `(tenantId, title)`. Never touches Users or Tenants.
+Reports created/updated/skipped counts for media, portfolio items, and the page.
+
+**Record counts (verified via direct Postgres read after seeding):** 6 Portfolio items created
+(sort order 0–5, matching the original array order exactly), 1 Page created (`slug: 'portfolio'`,
+4 blocks: hero → portfolioshowcase → compare → cta), 2 new Media rows created, 5 reused.
+
+**Routing:** `CuriousHubPageRenderer.tsx`'s `CMS_DRIVEN_PATHS` extended to `'/portfolio'` (shared
+with `page.tsx`'s `generateMetadata`).
+
+**Live-verified** against the dev server across every tenant hostname alias: `/portfolio` → 200
+with every section's content confirmed (hero, all 6 case-study cards, all 4 filter button labels,
+all 6 cards correctly using the default "Inquire on case" fallback since none override it, the
+Before/After section with its exact placeholder-box styling and the real Ghee Roast image on the
+"After" panel, CTA with its exact no-space `<br/>`+italic split and both buttons).
+`ghee-roast.localhost/`, Home, `/about`, `/services`, `/brands` → 200 unchanged.
+`/how-we-work` (still-static) → 200 unchanged. Unknown route → 404. `/admin` → 200 unaffected.
+Zuru Zuru carries no Payload-backed code at all, so it is unaffected by construction, not by
+omission — confirmed no file under any Zuru Zuru path was touched.
+
+**Tests:** new `tests/curious-ladoo-portfolio.test.ts` (10 tests) covering published/draft
+visibility, the conditional `portfolio` collection dependency, empty-block handling, sortOrder +
+enabled filtering + limit, cover-image and CTA-link relationship safety (raw ID, populated, missing,
+cross-tenant), explicit-selection resolution (raw + populated + cross-tenant exclusion), the Compare
+block's placeholder-vs-image panel logic, layout ordering, and the no-static-fallback source check.
+Existing test files needed only the same mechanical `portfolio: []` addition to their
+`mapCuriousLadooLayout`/`mapCuriousLadooHomeContent` fixture objects that Milestone 6's `faqs`
+addition required — no behavioral changes. Combined Home+About+Services+Brands+Portfolio suite:
+43/43 pass.
+
+**Full verification:** `typecheck` clean (app + tests) · combined Curious Ladoo suite 43/43 ·
+`test:ghee-cms` 40/40 (block-registry parity test confirms both new blocks correctly excluded) ·
+full `npm test` chain passes (same one pre-existing unrelated `dev`-script-string failure noted in
+every earlier milestone) · `lint`: 0 new errors/warnings (the suite's 1 pre-existing error remains
+in `scripts/gen-migration.cjs`, untouched; the new migration file's `payload`/`req` unused-var
+warning is Payload's own generator boilerplate, present in all 11 migration files, not unique to
+this one) · `npm run build` succeeds · `git diff --check` passes (only informational CRLF/LF
+advisories, zero actual whitespace errors).
+
+## 12. Verification commands (from `package.json`)
 
 `npm run typecheck` · `npm run lint` · `npm run build` · `npm test` (chains authorization, phase1,
 phase2, development-content, ghee-cms) · `npm run test:security`. No test runner is Ghee-Roast- or
