@@ -1,13 +1,17 @@
 import type {
   BlogPost,
   Brand,
+  CapabilityBlock,
   ContentGridBlock,
   CTABlock,
+  Faq,
+  FAQBlock,
   Footer,
   HeroBlock,
   Media,
   Nav,
   Page,
+  PipelineBlock,
   Seo,
   SiteSetting,
   StatsBlock,
@@ -26,8 +30,10 @@ import type {
   CuriousLadooBlogPreviewBlockData,
   CuriousLadooBrandItemData,
   CuriousLadooBrandsShowcaseBlockData,
+  CuriousLadooCapabilityBlockData,
   CuriousLadooContentGridBlockData,
   CuriousLadooCTABlockData,
+  CuriousLadooFAQBlockData,
   CuriousLadooFooterData,
   CuriousLadooGridItemData,
   CuriousLadooHeroBlockData,
@@ -36,6 +42,7 @@ import type {
   CuriousLadooLinkData,
   CuriousLadooMediaData,
   CuriousLadooNavigationData,
+  CuriousLadooPipelineBlockData,
   CuriousLadooSectionHeaderData,
   CuriousLadooSEOData,
   CuriousLadooSiteData,
@@ -207,11 +214,17 @@ function mapBrand(brand: Brand, tenantID: number): CuriousLadooBrandItemData {
     category: text(brand.category),
     comingSoon: Boolean(brand.comingSoon),
     description: text(brand.shortDescription),
+    fullDescription: text(brand.fullDescription),
     href: text(brand.websiteUrl) || '/brands',
     id: brand.id,
     image: mapMedia(brand.image, tenantID),
+    links: (brand.links ?? []).map((link) => ({ label: text(link.label), url: text(link.url) })).filter((link) => link.label && link.url),
     mark: text(brand.mark),
     name: text(brand.name),
+    quote: text(brand.quote),
+    slug: text(brand.slug),
+    statLabel: text(brand.statLabel),
+    statValue: text(brand.statValue),
   }
 }
 
@@ -233,6 +246,7 @@ function mapBrandsShowcaseBlock(
       .slice(0, limit)
       .map((brand) => mapBrand(brand, tenantID)),
     header: mapSectionHeader(block.sectionHeader),
+    presentation: block.presentation === 'spotlight' ? 'spotlight' : 'grid',
     type: 'brandsshowcase',
   }
 }
@@ -366,6 +380,72 @@ function mapTeamBlock(
   }
 }
 
+function mapCapabilityBlock(
+  block: CapabilityBlock,
+  tenantID: number,
+): CuriousLadooCapabilityBlockData {
+  return {
+    header: mapSectionHeader(block.sectionHeader),
+    items: (block.items ?? []).map((item) => ({
+      anchorId: text(item.anchorId),
+      description: text(item.description),
+      features: (item.features ?? []).map((feature) => text(feature.text)).filter(Boolean),
+      image: mapMedia(item.media?.item, tenantID),
+      link: item.enableLink ? mapLink(item.link) : null,
+      number: text(item.number),
+      reverse: Boolean(item.reverse),
+      title: text(item.title),
+    })),
+    type: 'capability',
+  }
+}
+
+function mapFAQBlock(
+  block: FAQBlock,
+  tenantID: number,
+  allFAQs: Faq[],
+): CuriousLadooFAQBlockData {
+  const selected = (block.items ?? [])
+    .map((entry) => (isPopulated<Faq>(entry) ? entry : allFAQs.find((faq) => faq.id === entry)))
+    .filter((faq): faq is Faq => Boolean(faq))
+  const pool = selected.length > 0 ? selected : allFAQs
+  const limit = block.limit ?? pool.length
+  return {
+    header: mapSectionHeader(block.sectionHeader),
+    items: pool
+      .filter((faq) => belongsToTenant(faq.tenantId, tenantID) && faq.isActive !== false)
+      .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
+      .slice(0, limit)
+      .map((faq) => ({
+        answer: text(faq.answer),
+        category: text(faq.category),
+        id: faq.id,
+        question: text(faq.title),
+      })),
+    type: 'faq',
+  }
+}
+
+function mapPipelineBlock(block: PipelineBlock): CuriousLadooPipelineBlockData {
+  return {
+    header: mapSectionHeader(block.sectionHeader),
+    items: (block.items ?? []).map((item) => ({
+      description: text(item.description),
+      label: text(item.label),
+    })),
+    link: block.enableLink ? mapLink(block.link) : null,
+    spotlight: block.spotlight?.enabled
+      ? {
+          description: text(block.spotlight.description),
+          icon: text(block.spotlight.icon),
+          title: text(block.spotlight.title),
+        }
+      : null,
+    spotlightPosition: block.spotlightPosition === 'left' ? 'left' : 'right',
+    type: 'pipeline',
+  }
+}
+
 function mapCTABlock(block: CTABlock): CuriousLadooCTABlockData {
   return {
     header: mapSectionHeader(block.sectionHeader),
@@ -385,6 +465,7 @@ export function mapCuriousLadooLayout(
   collections: {
     blogPosts: BlogPost[]
     brands: Brand[]
+    faqs: Faq[]
     teamMembers: Teammember[]
     testimonials: Testimonial[]
   },
@@ -424,6 +505,15 @@ export function mapCuriousLadooLayout(
         break
       case 'ctaBlock':
         blocks.push(mapCTABlock(block))
+        break
+      case 'capabilityBlock':
+        blocks.push(mapCapabilityBlock(block, tenantID))
+        break
+      case 'faqBlock':
+        blocks.push(mapFAQBlock(block, tenantID, collections.faqs))
+        break
+      case 'pipelineBlock':
+        blocks.push(mapPipelineBlock(block))
         break
       default:
         // Any other block type in the shared catalog has no Curious Ladoo renderer yet;
@@ -502,6 +592,7 @@ export function mapCuriousLadooSEO(seo: Seo | null, tenant: Tenant | null): Curi
 export function mapCuriousLadooHomeContent({
   blogPosts,
   brands,
+  faqs,
   footer,
   nav,
   page,
@@ -513,6 +604,7 @@ export function mapCuriousLadooHomeContent({
 }: {
   blogPosts: BlogPost[]
   brands: Brand[]
+  faqs: Faq[]
   footer: Footer | null
   nav: Nav | null
   page: Page | null
@@ -526,7 +618,7 @@ export function mapCuriousLadooHomeContent({
   return {
     footer: mapCuriousLadooFooter(footer, tenantID),
     layout: tenant && page
-      ? mapCuriousLadooLayout(page.layout, tenantID, { blogPosts, brands, teamMembers, testimonials })
+      ? mapCuriousLadooLayout(page.layout, tenantID, { blogPosts, brands, faqs, teamMembers, testimonials })
       : [],
     navigation: mapCuriousLadooNavigation(nav, tenantID),
     page: page ? { id: page.id, pageType: text(page.pageType) || 'generic', title: text(page.title) } : null,

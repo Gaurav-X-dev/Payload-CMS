@@ -4,11 +4,14 @@ import type { ReactNode } from 'react'
 import type {
   CuriousLadooBlogPreviewBlockData,
   CuriousLadooBrandsShowcaseBlockData,
+  CuriousLadooCapabilityBlockData,
   CuriousLadooContentGridBlockData,
   CuriousLadooCTABlockData,
+  CuriousLadooFAQBlockData,
   CuriousLadooHeroBlockData,
   CuriousLadooHomeBlockData,
   CuriousLadooHomeContent,
+  CuriousLadooPipelineBlockData,
   CuriousLadooStatsBlockData,
   CuriousLadooStepsBlockData,
   CuriousLadooStoryBlockData,
@@ -17,6 +20,7 @@ import type {
   CuriousLadooTickerBlockData,
 } from '../mappers/dynamicTypes'
 import { AnimatedCounter } from './AnimatedCounter'
+import { FAQAccordion } from './FAQAccordion'
 import { ScrollReveal } from './ScrollReveal'
 import { Ticker } from './Ticker'
 import { CuriousHubIcon } from '../iconRegistry'
@@ -639,6 +643,35 @@ function MissionVisionGrid({ block }: { block: CuriousLadooContentGridBlockData 
   )
 }
 
+const benefitsCardHeadingStyle = { fontFamily: "'Playfair Display', serif", fontSize: '1.25rem', fontWeight: 600, marginBottom: '1rem' } as const
+
+function BenefitsGrid({ block }: { block: CuriousLadooContentGridBlockData }) {
+  return (
+    <section className={`${styles.innerSection} ${styles.innerSectionAlt}`}>
+      <ScrollReveal>
+        <h2 className={styles.sectionTitle} style={{ textAlign: 'center', marginBottom: '1rem' }}>
+          {renderHeading(block.header.title, block.header.subtitle)}
+        </h2>
+      </ScrollReveal>
+      {block.header.description && (
+        <ScrollReveal delay={1}>
+          <p className={styles.sectionBody} style={{ margin: '0 auto 4rem', textAlign: 'center' }}>{block.header.description}</p>
+        </ScrollReveal>
+      )}
+      <div className={styles.valuesGrid}>
+        {block.items.map((item, i) => (
+          <ScrollReveal delay={revealDelay(i, 3)} key={item.title}>
+            <div className={styles.valueCard} style={{ height: '100%' }}>
+              <h4 style={benefitsCardHeadingStyle}>{item.title}</h4>
+              <p className={styles.sectionBody} style={{ color: 'var(--ch-text)', fontSize: '0.9rem' }}>{item.description}</p>
+            </div>
+          </ScrollReveal>
+        ))}
+      </div>
+    </section>
+  )
+}
+
 function ContentGridSection({ block }: { block: CuriousLadooContentGridBlockData }) {
   if (block.items.length === 0) return null
   switch (block.presentation) {
@@ -650,12 +683,12 @@ function ContentGridSection({ block }: { block: CuriousLadooContentGridBlockData
     case 'partners': return <PartnersGrid block={block} />
     case 'values': return <ValuesGrid block={block} />
     case 'mission-vision': return <MissionVisionGrid block={block} />
+    case 'benefits': return <BenefitsGrid block={block} />
     default: return <GenericGrid block={block} />
   }
 }
 
-function BrandsShowcaseSection({ block }: { block: CuriousLadooBrandsShowcaseBlockData }) {
-  if (block.brands.length === 0) return null
+function BrandsGrid({ block }: { block: CuriousLadooBrandsShowcaseBlockData }) {
   return (
     <section aria-label="Our restaurant brands" className={styles.brandsSection} id="brands">
       <div className={styles.brandsHeader}>
@@ -710,6 +743,62 @@ function BrandsShowcaseSection({ block }: { block: CuriousLadooBrandsShowcaseBlo
       </div>
     </section>
   )
+}
+
+function BrandSpotlightGrid({ block }: { block: CuriousLadooBrandsShowcaseBlockData }) {
+  return (
+    <section className={styles.innerSection}>
+      <div className={styles.brandSpotlightSection}>
+        {block.brands.filter((brand) => !brand.comingSoon).map((brand, i) => {
+          const reverse = i % 2 === 1
+          const imageCol = (
+            <ScrollReveal className={styles.brandSpotlightImg} delay={revealDelay(i, 2)}>
+              {brand.image && (
+                <Image alt={brand.image.alt} fill loading="lazy" src={brand.image.src} style={{ objectFit: 'cover' }} />
+              )}
+              {(brand.statValue || brand.statLabel) && (
+                <div className={styles.brandSpotlightAccentBox}>
+                  <div className={styles.stat}>{brand.statValue}</div>
+                  <div style={{ color: 'var(--ch-accent)', fontSize: '0.75rem', letterSpacing: '1px', textTransform: 'uppercase' }}>
+                    {brand.statLabel}
+                  </div>
+                </div>
+              )}
+            </ScrollReveal>
+          )
+          const contentCol = (
+            <div className={styles.brandSpotlightContent}>
+              <ScrollReveal delay={1}>
+                {brand.category && <span className={styles.brandBadge}>{brand.category}</span>}
+                <h3>{brand.name}</h3>
+                <p className={styles.sectionBody}>{brand.fullDescription}</p>
+              </ScrollReveal>
+              <ScrollReveal delay={2}>
+                {brand.quote && <p className={styles.brandTestimonialQuote}>{brand.quote}</p>}
+                {brand.links.length > 0 && (
+                  <div className={styles.footerSocial} style={{ justifyContent: 'flex-start', marginTop: '1.5rem' }}>
+                    {brand.links.map((link) => (
+                      <SmartLink className={styles.footerSocialLink} href={link.url} key={link.label}>{link.label}</SmartLink>
+                    ))}
+                  </div>
+                )}
+              </ScrollReveal>
+            </div>
+          )
+          return (
+            <div className={`${styles.brandSpotlightItem} ${reverse ? styles.reverse : ''}`} id={brand.slug || undefined} key={brand.id}>
+              {reverse ? (<>{contentCol}{imageCol}</>) : (<>{imageCol}{contentCol}</>)}
+            </div>
+          )
+        })}
+      </div>
+    </section>
+  )
+}
+
+function BrandsShowcaseSection({ block }: { block: CuriousLadooBrandsShowcaseBlockData }) {
+  if (block.brands.length === 0) return null
+  return block.presentation === 'spotlight' ? <BrandSpotlightGrid block={block} /> : <BrandsGrid block={block} />
 }
 
 function StepsNumbered({ block }: { block: CuriousLadooStepsBlockData }) {
@@ -958,6 +1047,144 @@ function CTASection({ block, siteName }: { block: CuriousLadooCTABlockData; site
   )
 }
 
+function CapabilitySection({ block }: { block: CuriousLadooCapabilityBlockData }) {
+  if (block.items.length === 0) return null
+  return (
+    <section className={styles.innerSection}>
+      <div className={styles.servicesOverviewIntro}>
+        <div>
+          <ScrollReveal>
+            <h2 className={styles.sectionTitle}>{renderHeading(block.header.title, block.header.subtitle)}</h2>
+          </ScrollReveal>
+          <ScrollReveal delay={1}>
+            <div className={styles.brushDivider} />
+          </ScrollReveal>
+        </div>
+        {block.header.description && (
+          <div>
+            <ScrollReveal delay={2}>
+              <p className={styles.sectionBody}>{block.header.description}</p>
+            </ScrollReveal>
+          </div>
+        )}
+      </div>
+      <div className={styles.serviceDetailsWrap}>
+        {block.items.map((item, i) => (
+          <div className={`${styles.serviceDetailBlock} ${item.reverse ? styles.reverse : ''}`} id={item.anchorId || undefined} key={item.title}>
+            {item.image && (
+              <ScrollReveal className={styles.serviceDetailImageWrap} delay={revealDelay(i, 2)}>
+                <Image alt={item.image.alt} fill loading="lazy" src={item.image.src} style={{ objectFit: 'cover' }} />
+              </ScrollReveal>
+            )}
+            <div className={styles.serviceDetailContent}>
+              <ScrollReveal delay={1}>
+                {item.number && <span className={styles.sectionEyebrow}>{item.number}</span>}
+                <h3>{item.title}</h3>
+                <p className={styles.sectionBody} style={{ marginBottom: '1.5rem' }}>{item.description}</p>
+              </ScrollReveal>
+              {item.features.length > 0 && (
+                <ScrollReveal delay={2}>
+                  <div className={styles.serviceDetailFeatures}>
+                    {item.features.map((feature) => (
+                      <div className={styles.serviceFeatureItem} key={feature}>
+                        <span>✓</span> {feature}
+                      </div>
+                    ))}
+                  </div>
+                </ScrollReveal>
+              )}
+              {item.link && (
+                <ScrollReveal delay={3}>
+                  <SmartLink className={styles.aboutLink} href={item.link.url}>{item.link.label}</SmartLink>
+                </ScrollReveal>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+function FAQSection({ block }: { block: CuriousLadooFAQBlockData }) {
+  if (block.items.length === 0) return null
+  return (
+    <section className={styles.innerSection}>
+      <ScrollReveal>
+        <h2 className={styles.sectionTitle} style={{ marginBottom: block.header.description ? '1rem' : '4rem', textAlign: 'center' }}>
+          {renderHeading(block.header.title, block.header.subtitle)}
+        </h2>
+      </ScrollReveal>
+      {block.header.description && (
+        <ScrollReveal delay={1}>
+          <p className={styles.sectionBody} style={{ margin: '0 auto 4rem', textAlign: 'center' }}>{block.header.description}</p>
+        </ScrollReveal>
+      )}
+      <FAQAccordion items={block.items} />
+    </section>
+  )
+}
+
+/** Narrative + bulleted list beside an optional decorative callout box — matches the Brands page's "Collaborations & Future Projects" section. */
+function PipelineSection({ block }: { block: CuriousLadooPipelineBlockData }) {
+  if (!block.header.title && block.items.length === 0) return null
+  const spotlightFirst = block.spotlightPosition === 'left'
+  const textCol = (
+    <div>
+      {block.header.eyebrow && (
+        <ScrollReveal>
+          <span className={styles.sectionEyebrow}>{block.header.eyebrow}</span>
+        </ScrollReveal>
+      )}
+      <ScrollReveal delay={1}>
+        <h2 className={styles.sectionTitle}>{renderHeading(block.header.title, block.header.subtitle)}</h2>
+      </ScrollReveal>
+      <ScrollReveal delay={2}>
+        <div className={styles.brushDivider} />
+        {block.header.description && (
+          <p className={styles.sectionBody} style={{ marginBottom: '1.5rem' }}>{block.header.description}</p>
+        )}
+        {block.items.length > 0 && (
+          <ul style={{ listStyle: 'none', marginBottom: '2rem', paddingLeft: 0 }}>
+            {block.items.map((item, i) => (
+              <li key={item.label} style={{ color: 'var(--ch-text)', fontSize: '1rem', marginBottom: i === 0 ? '1rem' : '0' }}>
+                <strong>✦ {item.label}</strong> {item.description}
+              </li>
+            ))}
+          </ul>
+        )}
+      </ScrollReveal>
+      {block.link && (
+        <ScrollReveal delay={3}>
+          <SmartLink className={styles.aboutLink} href={block.link.url}>{block.link.label}</SmartLink>
+        </ScrollReveal>
+      )}
+    </div>
+  )
+  const spotlightCol = block.spotlight && (
+    <ScrollReveal
+      className={styles.aboutStoryImage}
+      delay={1}
+      style={{ alignItems: 'center', background: 'var(--ch-surface-2)', border: '1px solid var(--ch-border)', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
+    >
+      {block.spotlight.icon && <span style={{ fontSize: '4rem', marginBottom: '1rem' }}>{block.spotlight.icon}</span>}
+      {block.spotlight.title && (
+        <h4 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.5rem', fontWeight: 600, marginBottom: '0.5rem' }}>{block.spotlight.title}</h4>
+      )}
+      {block.spotlight.description && (
+        <p className={styles.sectionBody} style={{ fontSize: '0.9rem', padding: '0 2rem', textAlign: 'center' }}>{block.spotlight.description}</p>
+      )}
+    </ScrollReveal>
+  )
+  return (
+    <section className={`${styles.innerSection} ${styles.innerSectionAlt}`} id="future">
+      <div className={styles.aboutStoryGrid}>
+        {spotlightFirst ? (<>{spotlightCol}{textCol}</>) : (<>{textCol}{spotlightCol}</>)}
+      </div>
+    </section>
+  )
+}
+
 function CMSHomeBlock({ block, pageType, siteName }: { block: CuriousLadooHomeBlockData; pageType: string; siteName: string }) {
   switch (block.type) {
     case 'hero': return pageType === 'home' ? <HeroSection block={block} /> : <InnerHeroSection block={block} />
@@ -968,6 +1195,9 @@ function CMSHomeBlock({ block, pageType, siteName }: { block: CuriousLadooHomeBl
     case 'steps': return <StepsSection block={block} />
     case 'stats': return <StatsSection block={block} />
     case 'testimonials': return <TestimonialsSection block={block} />
+    case 'capability': return <CapabilitySection block={block} />
+    case 'faq': return <FAQSection block={block} />
+    case 'pipeline': return <PipelineSection block={block} />
     case 'blogpreview': return <JournalSection block={block} />
     case 'team': return <TeamSection block={block} />
     case 'cta': return <CTASection block={block} siteName={siteName} />

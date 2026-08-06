@@ -429,6 +429,8 @@ export interface Page {
         | TickerBlock
         | StoryBlock
         | BrandsShowcaseBlock
+        | CapabilityBlock
+        | PipelineBlock
       )[]
     | null;
   showInNavigation?: boolean | null;
@@ -910,7 +912,19 @@ export interface ContentGridBlock {
    * Controls section chrome (background, decorative text, wrapper) for themes with multiple grid styles. Themes that only use one style can leave this at Grid.
    */
   presentation?:
-    ('grid' | 'pillars' | 'edge' | 'industries' | 'b2b' | 'services' | 'partners' | 'values' | 'mission-vision') | null;
+    | (
+        | 'grid'
+        | 'pillars'
+        | 'edge'
+        | 'industries'
+        | 'b2b'
+        | 'services'
+        | 'partners'
+        | 'values'
+        | 'mission-vision'
+        | 'benefits'
+      )
+    | null;
   /**
    * Optional companion image shown beside the grid (used by the Edge / Media + Grid presentation).
    */
@@ -2675,7 +2689,7 @@ export interface StoryBlock {
  */
 export interface BrandsShowcaseBlock {
   /**
-   * Optional heading displayed above the brand grid.
+   * Optional heading displayed above the brand grid. Not rendered by the Spotlight presentation.
    */
   sectionHeader: {
     /**
@@ -2689,6 +2703,10 @@ export interface BrandsShowcaseBlock {
     alignment?: ('left' | 'center' | 'right') | null;
     maxWidth?: ('standard' | 'narrow' | 'wide') | null;
   };
+  /**
+   * Grid: compact cards (Home). Spotlight: full editorial write-up per brand, alternating image side (Brands page).
+   */
+  presentation?: ('grid' | 'spotlight') | null;
   /**
    * Leave empty to show every enabled brand, sorted by Sort Order.
    */
@@ -2793,6 +2811,237 @@ export interface Brand {
   sortOrder?: number | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CapabilityBlock".
+ */
+export interface CapabilityBlock {
+  /**
+   * Standardized section title and description.
+   */
+  sectionHeader: {
+    /**
+     * Small accented text above the title.
+     */
+    eyebrow?: string | null;
+    title: string;
+    headingTag?: ('h1' | 'h2' | 'h3' | 'h4') | null;
+    subtitle?: string | null;
+    description?: string | null;
+    alignment?: ('left' | 'center' | 'right') | null;
+    maxWidth?: ('standard' | 'narrow' | 'wide') | null;
+  };
+  items: {
+    /**
+     * Displayed index badge, e.g. 01.
+     */
+    number?: string | null;
+    /**
+     * Optional #anchor for this item (used for anchor links elsewhere on the site).
+     */
+    anchorId?: string | null;
+    title: string;
+    description: string;
+    /**
+     * Short checklist bullets shown beneath the description.
+     */
+    features?:
+      | {
+          text: string;
+          id?: string | null;
+        }[]
+      | null;
+    enableLink?: boolean | null;
+    link?: {
+      type?: ('reference' | 'custom' | 'anchor' | 'email' | 'phone') | null;
+      label: string;
+      reference?: (number | null) | Page;
+      url?: string | null;
+      newTab?: boolean | null;
+      /**
+       * SEO override.
+       */
+      nofollow?: boolean | null;
+      disabled?: boolean | null;
+      buttonStyle?: ('primary' | 'secondary' | 'outline' | 'ghost' | 'text') | null;
+      buttonSize?: ('small' | 'medium' | 'large') | null;
+      icon?: (number | null) | Media;
+      iconPosition?: ('left' | 'right') | null;
+      /**
+       * E.g., GTM ID.
+       */
+      analyticsTrackingId?: string | null;
+      /**
+       * Screen reader override.
+       */
+      ariaLabel?: string | null;
+    };
+    /**
+     * Image shown beside this item.
+     */
+    media: {
+      item: number | Media;
+      /**
+       * Overrides the default Alt text.
+       */
+      altOverride?: string | null;
+      /**
+       * Displays a visible figcaption.
+       */
+      caption?: string | null;
+      aspectRatio?: ('auto' | '16:9' | '4:3' | '1:1' | '9:16') | null;
+      objectFit?: ('cover' | 'contain') | null;
+      /**
+       * Load immediately (prevents lazy-loading). Use only for above-the-fold media.
+       */
+      priority?: boolean | null;
+      /**
+       * Precise cropping point for mobile views.
+       */
+      focalPoint?: {
+        x?: number | null;
+        y?: number | null;
+      };
+    };
+    /**
+     * Flip this item to place the image on the opposite side.
+     */
+    reverse?: boolean | null;
+    id?: string | null;
+  }[];
+  /**
+   * Appearance and visibility settings for this block.
+   */
+  settings?: {
+    backgroundColor?: ('transparent' | 'surface' | 'primary' | 'accent' | 'dark') | null;
+    containerWidth?: ('standard' | 'wide' | 'full') | null;
+    /**
+     * Optional image to place behind the block.
+     */
+    backgroundImage?: (number | null) | Media;
+    /**
+     * 0-100 opacity for the background overlay.
+     */
+    overlayOpacity?: number | null;
+    paddingTop?: ('none' | 'small' | 'medium' | 'large') | null;
+    paddingBottom?: ('none' | 'small' | 'medium' | 'large') | null;
+    visibility?: ('desktop' | 'tablet' | 'mobile')[] | null;
+    animation?: ('none' | 'fade-in' | 'slide-up' | 'zoom-in' | 'stagger') | null;
+    /**
+     * Inject custom CSS classes for developer overrides.
+     */
+    customClasses?: string | null;
+    /**
+     * Used for #anchor links. Must be unique.
+     */
+    htmlId?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'capabilityBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PipelineBlock".
+ */
+export interface PipelineBlock {
+  /**
+   * Standardized section title and description.
+   */
+  sectionHeader: {
+    /**
+     * Small accented text above the title.
+     */
+    eyebrow?: string | null;
+    title: string;
+    headingTag?: ('h1' | 'h2' | 'h3' | 'h4') | null;
+    subtitle?: string | null;
+    description?: string | null;
+    alignment?: ('left' | 'center' | 'right') | null;
+    maxWidth?: ('standard' | 'narrow' | 'wide') | null;
+  };
+  /**
+   * Bulleted list of upcoming initiatives.
+   */
+  items?:
+    | {
+        /**
+         * Bold lead-in text, e.g. "Project Roastery (Q1 2026):"
+         */
+        label: string;
+        description?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  enableLink?: boolean | null;
+  link?: {
+    type?: ('reference' | 'custom' | 'anchor' | 'email' | 'phone') | null;
+    label: string;
+    reference?: (number | null) | Page;
+    url?: string | null;
+    newTab?: boolean | null;
+    /**
+     * SEO override.
+     */
+    nofollow?: boolean | null;
+    disabled?: boolean | null;
+    buttonStyle?: ('primary' | 'secondary' | 'outline' | 'ghost' | 'text') | null;
+    buttonSize?: ('small' | 'medium' | 'large') | null;
+    icon?: (number | null) | Media;
+    iconPosition?: ('left' | 'right') | null;
+    /**
+     * E.g., GTM ID.
+     */
+    analyticsTrackingId?: string | null;
+    /**
+     * Screen reader override.
+     */
+    ariaLabel?: string | null;
+  };
+  /**
+   * Optional decorative callout box shown beside the list.
+   */
+  spotlight?: {
+    enabled?: boolean | null;
+    /**
+     * An emoji/glyph rendered as-is.
+     */
+    icon?: string | null;
+    title?: string | null;
+    description?: string | null;
+  };
+  spotlightPosition?: ('left' | 'right') | null;
+  /**
+   * Appearance and visibility settings for this block.
+   */
+  settings?: {
+    backgroundColor?: ('transparent' | 'surface' | 'primary' | 'accent' | 'dark') | null;
+    containerWidth?: ('standard' | 'wide' | 'full') | null;
+    /**
+     * Optional image to place behind the block.
+     */
+    backgroundImage?: (number | null) | Media;
+    /**
+     * 0-100 opacity for the background overlay.
+     */
+    overlayOpacity?: number | null;
+    paddingTop?: ('none' | 'small' | 'medium' | 'large') | null;
+    paddingBottom?: ('none' | 'small' | 'medium' | 'large') | null;
+    visibility?: ('desktop' | 'tablet' | 'mobile')[] | null;
+    animation?: ('none' | 'fade-in' | 'slide-up' | 'zoom-in' | 'stagger') | null;
+    /**
+     * Inject custom CSS classes for developer overrides.
+     */
+    customClasses?: string | null;
+    /**
+     * Used for #anchor links. Must be unique.
+     */
+    htmlId?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'pipelineBlock';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -3650,6 +3899,8 @@ export interface PagesSelect<T extends boolean = true> {
         tickerBlock?: T | TickerBlockSelect<T>;
         storyBlock?: T | StoryBlockSelect<T>;
         brandsshowcaseBlock?: T | BrandsShowcaseBlockSelect<T>;
+        capabilityBlock?: T | CapabilityBlockSelect<T>;
+        pipelineBlock?: T | PipelineBlockSelect<T>;
       };
   showInNavigation?: T;
   navigationLabel?: T;
@@ -4929,8 +5180,159 @@ export interface BrandsShowcaseBlockSelect<T extends boolean = true> {
         alignment?: T;
         maxWidth?: T;
       };
+  presentation?: T;
   brands?: T;
   limit?: T;
+  settings?:
+    | T
+    | {
+        backgroundColor?: T;
+        containerWidth?: T;
+        backgroundImage?: T;
+        overlayOpacity?: T;
+        paddingTop?: T;
+        paddingBottom?: T;
+        visibility?: T;
+        animation?: T;
+        customClasses?: T;
+        htmlId?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CapabilityBlock_select".
+ */
+export interface CapabilityBlockSelect<T extends boolean = true> {
+  sectionHeader?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        headingTag?: T;
+        subtitle?: T;
+        description?: T;
+        alignment?: T;
+        maxWidth?: T;
+      };
+  items?:
+    | T
+    | {
+        number?: T;
+        anchorId?: T;
+        title?: T;
+        description?: T;
+        features?:
+          | T
+          | {
+              text?: T;
+              id?: T;
+            };
+        enableLink?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              label?: T;
+              reference?: T;
+              url?: T;
+              newTab?: T;
+              nofollow?: T;
+              disabled?: T;
+              buttonStyle?: T;
+              buttonSize?: T;
+              icon?: T;
+              iconPosition?: T;
+              analyticsTrackingId?: T;
+              ariaLabel?: T;
+            };
+        media?:
+          | T
+          | {
+              item?: T;
+              altOverride?: T;
+              caption?: T;
+              aspectRatio?: T;
+              objectFit?: T;
+              priority?: T;
+              focalPoint?:
+                | T
+                | {
+                    x?: T;
+                    y?: T;
+                  };
+            };
+        reverse?: T;
+        id?: T;
+      };
+  settings?:
+    | T
+    | {
+        backgroundColor?: T;
+        containerWidth?: T;
+        backgroundImage?: T;
+        overlayOpacity?: T;
+        paddingTop?: T;
+        paddingBottom?: T;
+        visibility?: T;
+        animation?: T;
+        customClasses?: T;
+        htmlId?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PipelineBlock_select".
+ */
+export interface PipelineBlockSelect<T extends boolean = true> {
+  sectionHeader?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        headingTag?: T;
+        subtitle?: T;
+        description?: T;
+        alignment?: T;
+        maxWidth?: T;
+      };
+  items?:
+    | T
+    | {
+        label?: T;
+        description?: T;
+        id?: T;
+      };
+  enableLink?: T;
+  link?:
+    | T
+    | {
+        type?: T;
+        label?: T;
+        reference?: T;
+        url?: T;
+        newTab?: T;
+        nofollow?: T;
+        disabled?: T;
+        buttonStyle?: T;
+        buttonSize?: T;
+        icon?: T;
+        iconPosition?: T;
+        analyticsTrackingId?: T;
+        ariaLabel?: T;
+      };
+  spotlight?:
+    | T
+    | {
+        enabled?: T;
+        icon?: T;
+        title?: T;
+        description?: T;
+      };
+  spotlightPosition?: T;
   settings?:
     | T
     | {

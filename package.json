@@ -16,6 +16,8 @@
     "db:seed:curious-ladoo": "node --env-file=.env --experimental-strip-types --import ./scripts/register-ts-loader.mjs scripts/seed-curious-ladoo.ts",
     "db:seed:curious-ladoo-home": "node --env-file=.env --experimental-strip-types --import ./scripts/register-ts-loader.mjs scripts/seed-curious-ladoo-home.ts",
     "db:seed:curious-ladoo-about": "node --env-file=.env --experimental-strip-types --import ./scripts/register-ts-loader.mjs scripts/seed-curious-ladoo-about.ts",
+    "db:seed:curious-ladoo-services": "node --env-file=.env --experimental-strip-types --import ./scripts/register-ts-loader.mjs scripts/seed-curious-ladoo-services.ts",
+    "db:seed:curious-ladoo-brands": "node --env-file=.env --experimental-strip-types --import ./scripts/register-ts-loader.mjs scripts/seed-curious-ladoo-brands.ts",
     "typecheck": "npm run typecheck:app && npm run typecheck:tests",
     "typecheck:app": "tsc --noEmit -p tsconfig.json",
     "typecheck:tests": "tsc --noEmit -p tsconfig.tests.json",

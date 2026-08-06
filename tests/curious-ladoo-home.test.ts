@@ -161,6 +161,7 @@ test('layout order is preserved and disabled blocks are dropped', () => {
   const mapped = mapCuriousLadooLayout(layout, tenantID, {
     blogPosts: [],
     brands: [],
+    faqs: [],
     teamMembers: [],
     testimonials: [],
   })
@@ -176,7 +177,7 @@ test('raw (unpopulated) and populated Media both resolve safely, missing Media n
       foregroundImage: media(9, tenantID),
     },
   ] as unknown as Page['layout']
-  const mapped = mapCuriousLadooLayout(layout, tenantID, { blogPosts: [], brands: [], teamMembers: [], testimonials: [] })
+  const mapped = mapCuriousLadooLayout(layout, tenantID, { blogPosts: [], brands: [], faqs: [], teamMembers: [], testimonials: [] })
   const hero = mapped[0]
   assert.equal(hero.type, 'hero')
   if (hero.type === 'hero') {
@@ -186,7 +187,7 @@ test('raw (unpopulated) and populated Media both resolve safely, missing Media n
   const rawLayout = [
     { blockType: 'heroBlock', description: 'body', heading: 'Heading', foregroundImage: 9 },
   ] as unknown as Page['layout']
-  const rawMapped = mapCuriousLadooLayout(rawLayout, tenantID, { blogPosts: [], brands: [], teamMembers: [], testimonials: [] })
+  const rawMapped = mapCuriousLadooLayout(rawLayout, tenantID, { blogPosts: [], brands: [], faqs: [], teamMembers: [], testimonials: [] })
   const rawHero = rawMapped[0]
   assert.equal(rawHero.type, 'hero')
   if (rawHero.type === 'hero') {
@@ -196,7 +197,7 @@ test('raw (unpopulated) and populated Media both resolve safely, missing Media n
   const missingLayout = [
     { blockType: 'heroBlock', description: 'body', heading: 'Heading', foregroundImage: null },
   ] as unknown as Page['layout']
-  const missingMapped = mapCuriousLadooLayout(missingLayout, tenantID, { blogPosts: [], brands: [], teamMembers: [], testimonials: [] })
+  const missingMapped = mapCuriousLadooLayout(missingLayout, tenantID, { blogPosts: [], brands: [], faqs: [], teamMembers: [], testimonials: [] })
   const missingHero = missingMapped[0]
   assert.equal(missingHero.type, 'hero')
   if (missingHero.type === 'hero') assert.equal(missingHero.image, null)
@@ -211,7 +212,7 @@ test('cross-tenant Media relationships are rejected even when populated', () => 
       foregroundImage: media(9, tenantID + 1),
     },
   ] as unknown as Page['layout']
-  const mapped = mapCuriousLadooLayout(layout, tenantID, { blogPosts: [], brands: [], teamMembers: [], testimonials: [] })
+  const mapped = mapCuriousLadooLayout(layout, tenantID, { blogPosts: [], brands: [], faqs: [], teamMembers: [], testimonials: [] })
   const hero = mapped[0]
   assert.equal(hero.type, 'hero')
   if (hero.type === 'hero') assert.equal(hero.image, null, 'a foreign-tenant Media document must never render')
@@ -227,7 +228,7 @@ test('Brands showcase sorts by sortOrder and applies the limit', () => {
   const layout = [
     { blockType: 'brandsshowcaseBlock', sectionHeader: { title: 'Brands' }, brands: [], limit: 2 },
   ] as unknown as Page['layout']
-  const mapped = mapCuriousLadooLayout(layout, tenantID, { blogPosts: [], brands: brands as never, teamMembers: [], testimonials: [] })
+  const mapped = mapCuriousLadooLayout(layout, tenantID, { blogPosts: [], brands: brands as never, faqs: [], teamMembers: [], testimonials: [] })
   const block = mapped[0]
   assert.equal(block.type, 'brandsshowcase')
   if (block.type === 'brandsshowcase') {
@@ -249,7 +250,7 @@ test('tenant-linked Brand fields (comingSoon, category, mark) map through untouc
   const layout = [
     { blockType: 'brandsshowcaseBlock', sectionHeader: { title: 'Brands' }, brands: [] },
   ] as unknown as Page['layout']
-  const mapped = mapCuriousLadooLayout(layout, tenantID, { blogPosts: [], brands: brands as never, teamMembers: [], testimonials: [] })
+  const mapped = mapCuriousLadooLayout(layout, tenantID, { blogPosts: [], brands: brands as never, faqs: [], teamMembers: [], testimonials: [] })
   const block = mapped[0]
   assert.equal(block.type, 'brandsshowcase')
   if (block.type === 'brandsshowcase') {
@@ -281,7 +282,7 @@ test('Story, Ticker, Stats, and Steps blocks map their theme-specific fields cor
       steps: [{ label: '2020', title: 'Founded', description: 'Started it all' }],
     },
   ] as unknown as Page['layout']
-  const mapped = mapCuriousLadooLayout(layout, tenantID, { blogPosts: [], brands: [], teamMembers: [], testimonials: [] })
+  const mapped = mapCuriousLadooLayout(layout, tenantID, { blogPosts: [], brands: [], faqs: [], teamMembers: [], testimonials: [] })
 
   const [ticker, story, stats, steps] = mapped
   assert.equal(ticker.type, 'ticker')
@@ -313,7 +314,7 @@ test('Blog Preview only ever includes published, same-tenant posts', () => {
   const layout = [
     { blockType: 'blogpreviewBlock', sectionHeader: { title: 'Journal' }, source: 'collection' },
   ] as unknown as Page['layout']
-  const mapped = mapCuriousLadooLayout(layout, tenantID, { blogPosts: posts as never, brands: [], teamMembers: [], testimonials: [] })
+  const mapped = mapCuriousLadooLayout(layout, tenantID, { blogPosts: posts as never, brands: [], faqs: [], teamMembers: [], testimonials: [] })
   const block = mapped[0]
   assert.equal(block.type, 'blogpreview')
   if (block.type === 'blogpreview') {

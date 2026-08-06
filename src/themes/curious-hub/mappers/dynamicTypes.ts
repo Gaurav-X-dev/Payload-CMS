@@ -71,7 +71,7 @@ export type CuriousLadooContentGridBlockData = {
   items: CuriousLadooGridItemData[]
   media: CuriousLadooMediaData
   mediaPosition: 'left' | 'right'
-  presentation: 'b2b' | 'edge' | 'grid' | 'industries' | 'mission-vision' | 'partners' | 'pillars' | 'services' | 'values'
+  presentation: 'b2b' | 'benefits' | 'edge' | 'grid' | 'industries' | 'mission-vision' | 'partners' | 'pillars' | 'services' | 'values'
   type: 'contentgrid'
 }
 
@@ -79,16 +79,23 @@ export type CuriousLadooBrandItemData = {
   category: string
   comingSoon: boolean
   description: string
+  fullDescription: string
   href: string
   id: number
   image: CuriousLadooMediaData
+  links: { label: string; url: string }[]
   mark: string
   name: string
+  quote: string
+  slug: string
+  statLabel: string
+  statValue: string
 }
 
 export type CuriousLadooBrandsShowcaseBlockData = {
   brands: CuriousLadooBrandItemData[]
   header: CuriousLadooSectionHeaderData
+  presentation: 'grid' | 'spotlight'
   type: 'brandsshowcase'
 }
 
@@ -170,6 +177,56 @@ export type CuriousLadooCTABlockData = {
   type: 'cta'
 }
 
+export type CuriousLadooCapabilityItemData = {
+  anchorId: string
+  description: string
+  features: string[]
+  image: CuriousLadooMediaData
+  link: CuriousLadooLinkData
+  number: string
+  reverse: boolean
+  title: string
+}
+
+export type CuriousLadooCapabilityBlockData = {
+  header: CuriousLadooSectionHeaderData
+  items: CuriousLadooCapabilityItemData[]
+  type: 'capability'
+}
+
+export type CuriousLadooFAQItemData = {
+  answer: string
+  category: string
+  id: number
+  question: string
+}
+
+export type CuriousLadooFAQBlockData = {
+  header: CuriousLadooSectionHeaderData
+  items: CuriousLadooFAQItemData[]
+  type: 'faq'
+}
+
+export type CuriousLadooPipelineItemData = {
+  description: string
+  label: string
+}
+
+export type CuriousLadooPipelineSpotlightData = {
+  description: string
+  icon: string
+  title: string
+} | null
+
+export type CuriousLadooPipelineBlockData = {
+  header: CuriousLadooSectionHeaderData
+  items: CuriousLadooPipelineItemData[]
+  link: CuriousLadooLinkData
+  spotlight: CuriousLadooPipelineSpotlightData
+  spotlightPosition: 'left' | 'right'
+  type: 'pipeline'
+}
+
 export type CuriousLadooHomeBlockData =
   | CuriousLadooHeroBlockData
   | CuriousLadooTickerBlockData
@@ -182,6 +239,9 @@ export type CuriousLadooHomeBlockData =
   | CuriousLadooBlogPreviewBlockData
   | CuriousLadooTeamBlockData
   | CuriousLadooCTABlockData
+  | CuriousLadooCapabilityBlockData
+  | CuriousLadooFAQBlockData
+  | CuriousLadooPipelineBlockData
 
 export type CuriousLadooNavLinkData = {
   enabled: boolean

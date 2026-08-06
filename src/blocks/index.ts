@@ -30,6 +30,8 @@ import { GheeRoastHomeStoryBlock } from './GheeRoastHomeStory'
 import { TickerBlock } from './Ticker'
 import { StoryBlock } from './Story'
 import { BrandsShowcaseBlock } from './BrandsShowcase'
+import { CapabilityBlock } from './Capability'
+import { PipelineBlock } from './Pipeline'
 
 export const AllBlocks = [
   HeroBlock,
@@ -64,4 +66,6 @@ export const AllBlocks = [
   TickerBlock,
   StoryBlock,
   BrandsShowcaseBlock,
+  CapabilityBlock,
+  PipelineBlock,
 ]

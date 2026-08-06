@@ -14,7 +14,19 @@ export const BrandsShowcaseBlock: Block = {
     group: 'Reusable Sections',
   },
   fields: [
-    sectionHeader({ admin: { description: 'Optional heading displayed above the brand grid.' } }),
+    sectionHeader({ admin: { description: 'Optional heading displayed above the brand grid. Not rendered by the Spotlight presentation.' } }),
+    {
+      name: 'presentation',
+      type: 'select',
+      defaultValue: 'grid',
+      options: [
+        { label: 'Compact Grid (default)', value: 'grid' },
+        { label: 'Editorial Spotlight', value: 'spotlight' },
+      ],
+      admin: {
+        description: 'Grid: compact cards (Home). Spotlight: full editorial write-up per brand, alternating image side (Brands page).',
+      },
+    },
     {
       name: 'brands',
       type: 'relationship',

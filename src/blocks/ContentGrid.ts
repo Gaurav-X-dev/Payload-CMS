@@ -26,6 +26,7 @@ export const ContentGridBlock: Block = {
         { label: 'Compact Pills', value: 'partners' },
         { label: 'Numbered Value Cards', value: 'values' },
         { label: 'Mission / Vision (Media + 2 Items)', value: 'mission-vision' },
+        { label: 'Benefits (Plain Cards)', value: 'benefits' },
       ],
     },
     mediaField(

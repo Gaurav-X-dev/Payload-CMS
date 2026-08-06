@@ -223,10 +223,10 @@ needed**, must be preserved exactly as-is.
 | 1 | Audit | – | – | – | – | – | – | – | ✅ Done (this doc) |
 | 2 | Brand rename + default routing | – | – | – | ✅ | ✅ | – | ✅ | ✅ Done — see §6 |
 | 3 | Site Settings, Nav, Footer | ✅ | – | – | – | – | ✅ | ✅ | ✅ Done — see §7 |
-| 4 | Home | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Done — see §8 |
+| 4 | Home | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Done — see §7 |
 | 5 | About | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Done — see §8 |
-| 6 | Services | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | Pending |
-| 7 | Brands | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | Pending |
+| 6 | Services | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Done — see §9 |
+| 7 | Brands | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Done — see §10 |
 | 8 | Portfolio | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | Pending |
 | 9 | How We Work | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | Pending |
 | 10 | Testimonials | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | Pending |
@@ -510,7 +510,217 @@ introduced (removed one now-unnecessary `eslint-disable` in `CMSHomePage.tsx`; t
 pre-existing error is in `scripts/gen-migration.cjs`, untouched by this branch) · `npm run build`
 succeeds.
 
-## 9. Verification commands (from `package.json`)
+## 9. Milestone 6 record — Services Page (loader, mapper, renderer, seed)
+
+**Schema (additive, reviewed, one real defect found and fixed):**
+- New block `capabilityBlock` (`src/blocks/Capability.ts`): `sectionHeader()` + a repeatable
+  `items[]` array (number, anchorId, title, description, `features[]` checklist, optional link,
+  a required per-item image via `mediaField()`, and a `reverse` toggle) — backs the "Core Services
+  Deep Dive" section, which has no existing block shape (title/desc/features/image/link repeated
+  4x under one shared intro).
+- `contentgridBlock.presentation` gained `'benefits'` — a centered-header, plain (non-numbered)
+  card grid, distinct from `'values'` only in that it has no number badge.
+- Curious Ladoo's existing `faqBlock` + `FAQs` collection support (both already existed in the
+  shared catalog for Ghee Roast) — no schema change needed, just new Curious Ladoo mapper/renderer
+  support, mirroring the `teamBlock`/`testimonialsBlock` "explicit selection with pool fallback"
+  pattern already established.
+- **Real schema defect found and fixed, per the "stop and report" rule:** the first migration
+  attempt crashed `payload migrate:create` outright (not a DB write — a Postgres identifier-length
+  violation caught before touching the database): `enum__pages_v_blocks_servicedetail_block_items_media_aspect_ratio`
+  is 65 characters, 2 over Postgres's 63-char `NAMEDATALEN` limit. Root cause: the original block
+  slug `servicedetailBlock` combined with nesting the shared `mediaField()` helper *inside* an
+  `items` array (adds an `_items_` segment) and the `_pages_v_` versions/drafts shadow-table prefix
+  (3 chars longer than the live table's `pages_`). Presented 3 fix options to you (shorten the
+  block slug / shorten the nested field name / add enum-name overrides to the shared `mediaField()`
+  builder); you chose shortening the slug. Renamed `servicedetailBlock` → `capabilityBlock`
+  throughout (block file, `AllBlocks` registry, Curious Ladoo view-model types, mapper, renderer,
+  and the Ghee Roast theme-exclusive block list) — zero blast radius since nothing had referenced
+  the old name in committed/applied state yet. New enum name is 62 chars (fits, 1 to spare).
+- Migration `20260805_160441_curious_ladoo_services` — reviewed and applied: 4 new enum types
+  (aspect ratio/object fit × live/versions), 8 new tables (`capabilityBlock` and its nested arrays,
+  live + versions), 1 new enum value (`benefits`) on the existing `contentgrid_block_presentation`
+  enum × 2, all FKs pointing only at pre-existing tables (`pages`, `media`, and the block's own new
+  tables). Zero drops/alterations to any existing data-bearing column on the `up` path.
+
+**Loader:** added `faqs` as a fifth conditional collection dependency in
+`curiousLadooContentCore.ts` (`CuriousLadooCollectionSlug`, `CuriousLadooContentResult`,
+`collectionDependenciesForLayout` detecting `faqBlock`, and the dependency-gated fetch), following
+the exact same shape as `brands`/`testimonials`/`teamMembers`/`blogPosts`. `/services` needed no
+page-resolution changes at all — the slug-based lookup already built for `/about` in Milestone 5 is
+fully generic.
+
+**Mapper:** `mapCapabilityBlock` (features array flattened to strings, per-item image/link/reverse
+mapped) and `mapFAQBlock` (explicit `items` relationship resolved against the fetched pool,
+falls back to "all active tenant FAQs" when empty, filtered by tenant + `isActive`, sorted by
+`sortOrder`, capped at `limit` — identical shape to `mapTeamBlock`). Both wired into
+`mapCuriousLadooLayout`'s switch and the `collections` param threaded through
+`mapCuriousLadooHomeContent`.
+
+**Renderer:** `CapabilitySection` (reproduces the "Services Overview Intro" + "Core Services Deep
+Dive" as one continuous section, alternating image side via the `reverse` class exactly as the
+static CSS already expected), `BenefitsGrid` (new `ContentGridSection` case, reuses `.valuesGrid`/
+`.valueCard` without the numbered badge), and a new client component `FAQAccordion.tsx` (single-
+open-index accordion state, matching the original `ServicesPage.tsx`'s exact click-to-toggle
+behavior) wrapped by a server `FAQSection`. Hero uses the same `pageType !== 'home'` →
+`InnerHeroSection` dispatch built in Milestone 5; no new pageType value was added since nothing yet
+branches on `'services'` specifically — `pageType: 'generic'` is used for now (documented decision,
+not an oversight; add a real `'services'` `CMS_PAGE_TYPES` value later only if something needs to
+key off it).
+
+**Routing:** `CuriousHubPageRenderer.tsx`'s `CMS_DRIVEN_PATHS` set extended to `'/services'`
+(already shared with `page.tsx`'s `generateMetadata` from Milestone 5's refactor — no separate
+metadata wiring needed).
+
+**Seed:** `src/seed/curiousLadooServices.ts` + `npm run db:seed:curious-ladoo-services` —
+idempotent, uploads 2 new images (`banner_services.png`, `kitchen_ops.png`) and reuses 3 already
+uploaded in Milestone 4 (`zuru_zuru.png`, `consulting.png`, `journal1.png`, deduplicated by
+`(tenantId, title)`), creates 3 Services-specific FAQs (explicitly selected by ID in the
+`faqBlock`, not left to "show all" — Services' FAQs aren't meant to leak onto a future unrelated
+FAQ page), and the Services Page record (5 blocks: hero, capability, benefits, faq, cta;
+`pageType: 'generic'`, `slug: 'services'`, `_status: 'published'`). Verified by reading the actual
+Postgres rows back, including the `pages_rels` table to confirm the 3 FAQ relationship rows
+persisted with the correct `path: 'layout.3.items'`.
+
+**Live verification hit a real environment issue, not a code bug:** the long-running dev server
+from prior milestones stopped responding entirely partway through verification — its log showed it
+had independently hit the *same* 63-char identifier error (via Payload's dev-mode live schema-push
+reacting to the pre-rename code on disk) at some point, which likely left its DB connection pool in
+a bad state. The user's laptop was powered off before this could be resolved interactively; once it
+came back, the stale dev server process was gone (port 3000 free), Postgres was confirmed reachable
+independently, a fresh `npm run dev` was started cleanly, and full live verification then passed on
+the first attempt (two initial cold-compile timeouts on first hit, succeeded immediately on retry).
+
+**Verified live** against the fresh dev server across every tenant hostname alias
+(`curious-hub.localhost`, `curious-ladoo.localhost`, bare `localhost`): `/services` → 200 with every
+section's real content confirmed in the HTML (hero heading, all 4 capability items with their
+features and alternating `reverse` class, all 3 benefit cards, all 3 FAQ questions, CTA title with
+its exact `<br/>`+space+italic split and both arrow-suffixed buttons). `ghee-roast.localhost/` → 200
+unchanged, `curious-hub.localhost/about` → 200 unchanged, `curious-hub.localhost/portfolio`
+(still-static) → 200 unchanged, unknown route → 404.
+
+**Tests:** new `tests/curious-ladoo-services.test.ts` (6 tests, all pass) covering slug-based page
+resolution, the new `faqs` conditional collection dependency, `capabilityBlock` item mapping
+(features/image/link/reverse, including the `enableLink: false` suppression case), the `'benefits'`
+presentation pass-through, and both FAQ block modes (explicit selection with sort/filter/limit, and
+empty-selection pool fallback). Existing `curious-ladoo-home.test.ts`/`curious-ladoo-about.test.ts`
+call sites updated only to add the new required `faqs: []` collections param — no behavioral
+changes, all 22 of their own tests still pass unchanged. Combined Home+About+Services suite: 28/28.
+
+**Full verification:** `typecheck` clean (app + tests) · Home+About+Services suite 28/28 ·
+`test:ghee-cms` 40/40 (including the block-registry parity test, confirming `capabilityBlock` is
+correctly excluded from Ghee Roast's supported list, not rubber-stamped) · `test:authorization`
+23/23 · `test:phase1` 11/11 · `test:phase2` 11/11 · `test:development-content` 11/12 (same
+pre-existing unrelated `dev`-script-string failure noted in every earlier milestone) · `lint`: 0
+errors/warnings introduced (the suite's 1 pre-existing error remains in `scripts/gen-migration.cjs`,
+untouched by this branch) · `npm run build` succeeds.
+
+## 10. Milestone 7 record — Brands Page (reuse-first: schema, mapper, renderer, seed)
+
+**Reuse-first outcome:** the `Brands` collection (Milestone 4) already had `fullDescription`,
+`quote`, `statValue`, `statLabel`, `links[]`, and a `slug` field explicitly documented as "Used on
+the Brands page spotlight section" / "Used for the #anchor on the Brands page" — built ahead of
+need in Milestone 4 but never consumed. Zero collection schema changes were required. Only the
+Curious Ladoo *mapper* (which hadn't been reading those fields into the view-model) and the
+*renderer* (which only had Home's compact-grid presentation) needed extending.
+
+**Schema (additive only):**
+- `brandsshowcaseBlock.presentation` gained `'grid'` (existing, now explicit default — Home's
+  usage is untouched since the column defaults to `'grid'`) / `'spotlight'` (new — the Brands
+  page's full editorial write-up per brand, alternating image side).
+- **One new block, justified:** `pipelineBlock` (`src/blocks/Pipeline.ts`) for the "Collaborations
+  & Future Projects" section — narrative header + a bulleted list of `{label, description}` items
+  + an optional decorative icon/title/description callout box + an optional link. No existing
+  block fits this shape: `contentgridBlock`'s single `media` field is a real image relationship,
+  which can't represent a decorative icon+text callout box with no actual image; `splitBlock`'s
+  `mediaField()` is `required: true` for the same reason; and the list itself (bold label + plain
+  description) doesn't match `contentgridBlock.items`' icon/title/description/link shape closely
+  enough to reuse without distorting either field's meaning. Registered in the shared `AllBlocks`
+  catalog and added to Ghee Roast's `GHEE_ROAST_THEME_EXCLUSIVE_BLOCK_TYPES` (same pattern as
+  `capabilityBlock` in Milestone 6) — Ghee Roast has no matching section and must not claim support
+  merely to satisfy the block-registry parity test.
+- Migration `20260806_051406_curious_ladoo_brands` — reviewed, shown to you, approved, then
+  applied: 4 new enum types, 2 new nullable columns on `brandsshowcase_block` (default `'grid'`),
+  6 new tables for `pipelineBlock` (live + versions), all FKs pointing only at pre-existing tables.
+  Zero drops/alterations to any existing data-bearing column on the `up` path.
+
+**Loader:** no changes. `collectionDependenciesForLayout` already detects `brandsshowcaseBlock` →
+fetches `brands`; `pipelineBlock` is fully self-contained (no collection dependency). `/brands`
+needed no page-resolution changes — the slug-based lookup built in Milestone 5 is fully generic.
+
+**Mapper:** `mapBrand` extended to also populate `fullDescription`/`quote`/`statValue`/`statLabel`/
+`links[]`/`slug` (all pre-existing collection fields, previously unmapped) alongside the fields
+Home's grid already used (`category`/`comingSoon`/`description`/`href`/`image`/`mark`/`name`) — one
+function now serves both presentations, nothing duplicated. `mapBrandsShowcaseBlock` passes through
+the new `presentation` field. New `mapPipelineBlock` mirrors the established
+enable-flag-gates-a-group pattern (`storyBlock.statBadge`, `contentgridBlock` items' `enableLink`).
+
+**Renderer:** the existing `BrandsShowcaseSection` was split into a thin presentation dispatcher
+plus `BrandsGrid` (renamed, otherwise byte-for-byte the pre-Milestone-7 Home card grid — verified
+by test and live check that Home's brand grid still shows unchanged content) and a new
+`BrandSpotlightGrid` (reproduces the exact alternating spotlight layout, `reverse` derived from
+array index parity rather than a new field since the original data's alternation is always
+index-based, filters out `comingSoon` brands defensively since the spotlight is for established
+brands only). New `PipelineSection` reproduces the narrative+list+callout layout exactly, reusing
+`.aboutStoryGrid`/`.aboutStoryImage` (the same wrapper classes Milestone 5's `MissionVisionGrid`
+already established for this "text column beside a boxed callout" pattern) with a hardcoded
+`id="future"` anchor — matching the precedent already set by `StorySimpleSection`/`MissionVisionGrid`
+(id="story"/"philosophy") for single-use narrative sections, since no block-level `htmlId` wiring
+exists anywhere in the renderer yet. Hero reuses the Milestone 5 `pageType !== 'home'` dispatch.
+
+**A genuine content inconsistency was found, not fixed:** the original static `data/brands.ts`
+badge for Ghee Roast reads "South Indian Coastal", but the already-seeded (Milestone 4) `Brands`
+collection record — shared by Home's grid and now the Brands page's spotlight — has
+`category: "South Indian Cuisine"`. This is a pre-existing mismatch between two previously-separate
+static data files, now surfaced by unifying them into one CMS record. Per the explicit instruction
+not to modify anything Home displays, this was **left as-is** rather than "fixed" toward either
+page's wording — the Brands page spotlight badge shows the same "South Indian Cuisine" text Home's
+card already shows. Flagging for your decision; changing it is a one-field content edit, not a
+schema or code change, whenever you want it.
+
+**Seed:** `src/seed/curiousLadooBrands.ts` + `npm run db:seed:curious-ladoo-brands` — idempotent.
+Uploads zero new media (the hero image `visual_story.png` was already uploaded in Milestone 4 for
+Home's overlay story section, reused via the standard `(tenantId, title)` dedup). **Partial
+`payload.update()` calls** on the 3 existing Brand records (Zuru Zuru/Ghee Roast/Z-Quick) set only
+`slug`/`fullDescription`/`quote`/`statValue`/`statLabel`/`links` — verified via direct Postgres
+read that every field Home's grid depends on (`category`, `mark`, `enabled`, `featured`,
+`comingSoon`, `sortOrder`, `websiteUrl`, `image`) is byte-for-byte unchanged from Milestone 4.
+`slug` is set to `zuru`/`ghee`/`quick` (not the collection's name-derived auto-slug, which would
+have produced `zuru-zuru`/`ghee-roast`/`z-quick` and broken the `/brands#zuru` etc. anchors already
+referenced by Milestone 4's seeded `websiteUrl`s and the static footer). The 3 brands' placeholder
+"ig"/"web" links (bare `#` in the original static data, which fails `validateSafeURL`) were seeded
+as self-referential `/brands#{slug}` anchors — preserves the visible two-pill layout without
+inventing a fake external URL. Creates the Brands Page record (4 blocks: hero, brandsshowcase
+[spotlight, limit 3], pipeline, cta; `pageType: 'generic'`, `slug: 'brands'`,
+`_status: 'published'`). The spotlight block's `sectionHeader.title` is set to an internal-only
+value ("Brand Spotlights") to satisfy the shared `sectionHeader()`'s required-title field — never
+rendered, since the original design has no heading above the brand list at all.
+
+**Routing:** `CuriousHubPageRenderer.tsx`'s `CMS_DRIVEN_PATHS` extended to `'/brands'` (shared with
+`page.tsx`'s `generateMetadata`, no separate wiring needed).
+
+**Verified live** against the dev server across every tenant hostname alias: `/brands` → 200 with
+every section's content confirmed (hero, all 3 spotlight brands with their full descriptions,
+quotes, stats, and correct `id="zuru"/"ghee"/"quick"` anchors, "Future Brands" correctly absent
+from the spotlight cards — confirmed present only in the unrelated static footer link — pipeline
+section with both list items and the ☕ callout box, CTA with its exact `<br/>`+space+italic title
+split). `ghee-roast.localhost/` → 200 unchanged. **Home's brand grid re-verified live**: still
+shows "South Indian Cuisine" (not "Coastal"), proving the partial-update seed didn't touch it.
+`/about`, `/services`, `/portfolio` (static) → 200 unchanged. Unknown route → 404.
+
+**Tests:** new `tests/curious-ladoo-brands.test.ts` (5 tests) covering slug-based page resolution,
+`mapBrand`'s new spotlight fields alongside its existing grid fields, the `presentation` default
+(`'grid'` when unset — direct regression proof for Home), and `mapPipelineBlock`'s item/link/
+spotlight mapping including the disabled-flag suppression case. Combined Home+About+Services+Brands
+suite: 33/33 pass (no existing test needed modification — Milestone 7 introduced no new required
+mapper parameters, unlike Milestone 6's `faqs`).
+
+**Full verification:** `typecheck` clean (app + tests) · Home+About+Services+Brands suite 33/33 ·
+`test:ghee-cms` 40/40 (block-registry parity test confirms `pipelineBlock` correctly excluded) ·
+full `npm test` chain passes (same one pre-existing unrelated `dev`-script-string failure noted in
+every earlier milestone) · `lint`: 0 errors/warnings introduced (the suite's 1 pre-existing error
+remains in `scripts/gen-migration.cjs`, untouched by this branch) · `npm run build` succeeds.
+
+## 11. Verification commands (from `package.json`)
 
 `npm run typecheck` · `npm run lint` · `npm run build` · `npm test` (chains authorization, phase1,
 phase2, development-content, ghee-cms) · `npm run test:security`. No test runner is Ghee-Roast- or
