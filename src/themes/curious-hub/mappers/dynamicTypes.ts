@@ -67,6 +67,7 @@ export type CuriousLadooSectionHeaderData = {
 }
 
 export type CuriousLadooContentGridBlockData = {
+  bgText: string
   header: CuriousLadooSectionHeaderData
   items: CuriousLadooGridItemData[]
   media: CuriousLadooMediaData
@@ -172,6 +173,7 @@ export type CuriousLadooTeamBlockData = {
 }
 
 export type CuriousLadooCTABlockData = {
+  bgText: string
   header: CuriousLadooSectionHeaderData
   primaryCTA: CuriousLadooLinkData
   secondaryCTA: CuriousLadooLinkData
@@ -259,6 +261,20 @@ export type CuriousLadooCompareBlockData = {
   type: 'compare'
 }
 
+export type CuriousLadooCareerPositionData = {
+  department: string
+  description: string
+  location: string
+  title: string
+  type: string
+}
+
+export type CuriousLadooCareersBlockData = {
+  header: CuriousLadooSectionHeaderData
+  positions: CuriousLadooCareerPositionData[]
+  type: 'careers'
+}
+
 export type CuriousLadooHomeBlockData =
   | CuriousLadooHeroBlockData
   | CuriousLadooTickerBlockData
@@ -276,6 +292,7 @@ export type CuriousLadooHomeBlockData =
   | CuriousLadooPipelineBlockData
   | CuriousLadooPortfolioShowcaseBlockData
   | CuriousLadooCompareBlockData
+  | CuriousLadooCareersBlockData
 
 export type CuriousLadooNavLinkData = {
   enabled: boolean

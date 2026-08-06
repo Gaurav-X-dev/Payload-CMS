@@ -29,6 +29,15 @@ export const ContentGridBlock: Block = {
         { label: 'Benefits (Plain Cards)', value: 'benefits' },
       ],
     },
+    {
+      name: 'bgText',
+      type: 'text',
+      maxLength: 20,
+      admin: {
+        description: 'Numbered Pillars only: overrides the large decorative background word. Defaults to "PHILOSOPHY" if left blank.',
+        condition: (_, siblingData) => siblingData?.presentation === 'pillars',
+      },
+    },
     mediaField(
       {
         name: 'media',

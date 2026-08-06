@@ -229,8 +229,8 @@ needed**, must be preserved exactly as-is.
 | 7 | Brands | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Done — see §10 |
 | 8 | Portfolio | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Done — see §11 |
 | 9 | How We Work | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Done — see §12 |
-| 10 | Testimonials | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | Pending |
-| 11 | Careers | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | Pending |
+| 10 | Testimonials | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Done — see §13 |
+| 11 | Careers | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Done — see §14 |
 | 12 | FAQs | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | Pending |
 | 13 | Contact | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | Pending |
 | 14 | Blog/Journal | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | Pending |
@@ -948,7 +948,212 @@ in every earlier milestone) · `lint`: 0 new warnings after fixing one unused im
 test file (the suite's 1 pre-existing error remains in `scripts/gen-migration.cjs`, untouched) ·
 `npm run build` succeeds.
 
-## 13. Verification commands (from `package.json`)
+## 13. Milestone 10 record — Testimonials Page (reuse-first: reused `testimonialsBlock` as-is, one additive field on `ctaBlock`, zero new blocks/collections)
+
+**Data model:** the page is exactly Home's/About's existing testimonials pattern applied to a fourth
+set of records — no new fields needed on `Testimonials` itself. The only new field this milestone
+needed was cosmetic (CTA background text), on an unrelated block. No new-collection trigger, no
+stop-and-ask needed.
+
+**CTA background word → additive `ctaBlock.bgText` field** (`src/blocks/CTA.ts`): a `maxLength: 20`
+optional text field. The original static Testimonials CTA renders "STORIES" as the large decorative
+background word instead of every other page's "CURIOUS" — previously hardcoded to the site name's
+first word in `CTASection`. Renderer now checks `block.bgText` first, falling back to the site name
+exactly as before when unset — purely additive, verified non-breaking for every existing `ctaBlock`
+usage (Home, About, Services, Brands, Portfolio, How We Work all leave it unset and still render
+"CURIOUS").
+
+**Testimonials section → reused `testimonialsBlock`, no schema change.** Set `source: 'manual'` with
+the 4 new testimonials explicitly selected, same contract already established for this page's dedicated
+use of the block: manual mode is supposed to render exactly what's selected, ignoring `isFeatured`.
+
+**No new blocks or collections were created this milestone** — the page reuses `heroBlock`, the
+existing `testimonialsBlock`, and the extended `ctaBlock`.
+
+**Schema/migration** (`20260806_084335_curious_ladoo_testimonials`) — 2 new nullable `varchar`
+columns (`bg_text` on `pages_blocks_cta_block` and its `_pages_v_blocks_cta_block` draft-version
+counterpart). Zero DROP/DELETE/TRUNCATE, zero new identifiers to length-check. Pre/post row counts
+confirmed identical (`pages_blocks_cta_block=10`, Ghee Roast `pages=7`). Shown to you and approved
+before applying.
+
+**Loader:** no changes — `testimonials` was already a conditional collection dependency since
+Milestone 4 (Home).
+
+**Mapper:** `mapCTABlock` reads `block.bgText` (defaults to `''`, letting the renderer fall back to
+the site name).
+
+**Bug found and fixed during live verification (not a regression, but a pre-existing latent defect
+this milestone was the first to trigger):** the freshly seeded page initially rendered only 3 of the
+4 selected testimonials — Sarah Williams silently missing. Root cause: `TestimonialsBlock.limit`
+(`src/blocks/Testimonials.ts`) has `defaultValue: 3` with **no admin `condition`**, unlike its sibling
+field `featuredOnly` which is already correctly hidden outside `source: 'collection'` mode. Payload
+persists that default onto every block row regardless of `source`, and `mapTestimonialsBlock`'s
+`const limit = block.limit ?? filtered.length` applied it even in manual mode, truncating the
+explicit 4-item selection to 3. This directly contradicted the block's own established contract
+("manual mode uses only explicitly-selected items, regardless of `isFeatured`") — `limit` should
+carry the same collection-mode-only meaning `featuredOnly` already does. Fixed in two places:
+- `src/blocks/Testimonials.ts` and `src/blocks/BlogPreview.ts` (identical latent bug, not yet
+  triggered live since Blog is a later milestone): added `admin.condition` hiding `limit` when
+  `source !== 'collection'`, matching `featuredOnly`'s existing pattern. Admin-UI-only change, no DB
+  column affected, no migration needed.
+- `mapTestimonialsBlock`/`mapBlogPreviewBlock` in `cmsContent.ts`: `limit` is now only applied in
+  collection mode (`manual ? filtered.length : (block.limit ?? filtered.length)`); manual mode always
+  renders every explicitly-selected item.
+Verified this didn't touch `mapBrandsShowcaseBlock`/`mapPortfolioShowcaseBlock`, whose `limit` field
+has no `source` toggle at all (empty selection there means "auto-pull all," not "manual mode" — a
+genuinely different, unconditional-limit contract by design) — left untouched. Added a dedicated
+regression test reproducing the exact scenario (`limit: 3` explicitly present alongside 4 manually
+selected items) so this can't silently reappear.
+
+**Renderer:** `CTASection`'s background-word computation now checks `block.bgText` before falling
+back to the site name's first word.
+
+**Seed:** `src/seed/curiousLadooTestimonials.ts` + `npm run db:seed:curious-ladoo-testimonials` —
+idempotent, creates 4 new tenant-scoped testimonials (`isFeatured: false`, no `photo`) and the
+Testimonials Page (3 blocks: hero, testimonials[manual, 4 items], cta[bgText: "STORIES"]). No photo
+is seeded deliberately: the original static page's avatar markup rendered a raw file path as literal
+text instead of an image, and the referenced files don't exist in the repo — a pre-existing bug, not
+a design choice worth reproducing. The existing initials fallback (already used by Home's
+testimonials) renders correctly instead.
+
+**Routing:** `CuriousHubPageRenderer.tsx`'s `CMS_DRIVEN_PATHS` extended to `'/testimonials'`.
+
+**Live verification hit the same unrelated environment issue as Milestone 9:** the long-running dev
+server (in continuous use since Milestone 7) hit the same `TypeError: __webpack_modules__[moduleId]
+is not a function` HMR module-cache corruption. Killed and restarted cleanly; live verification then
+proceeded (and is what caught the `limit`-truncation bug above — not an environment artifact).
+
+**Verified live** across every tenant hostname alias: `/testimonials` → 200 with all 4 testimonials
+present (names, roles, quotes, correct initials, no broken avatar-path text) and the CTA rendering
+"STORIES" as the background word with both buttons. **Home re-verified live**: still exactly 3
+featured testimonials (Rajiv Kumar/Sunita Patel/Arjun Mehta) and still "CURIOUS" as the CTA
+background word — proving the additive `bgText` field and the `limit` fix didn't regress Home's
+collection-mode usage. **Ghee Roast home re-verified live**: its own `testimonialsBlock` (also
+`source: 'manual'`, coincidentally) still renders all 3 of its testimonials unchanged. Services,
+Brands, Portfolio, How We Work, static `/contact`, `/admin`, Zuru Zuru → all 200 unchanged. Unknown
+route → 404.
+
+**Tests:** `tests/curious-ladoo-testimonials.test.ts` (6 tests) covering slug resolution, the CTA
+`bgText` override vs. empty-string default, manual-mode explicit selection ignoring `isFeatured`, the
+`limit`-truncation regression above, photo-null-falls-back-to-initials, and layout order. Combined
+Curious Ladoo suite: 55/55 pass.
+
+**Full verification:** `typecheck` clean (app + tests) · combined Curious Ladoo suite 55/55 ·
+`test:ghee-cms` 40/40 · full `npm test` chain passes (same one pre-existing unrelated failure noted
+in every earlier milestone: an assertion expecting `next dev` where the script is `next dev
+--webpack`) · `lint`: 0 new warnings/errors (the suite's 1 pre-existing error remains in
+`scripts/gen-migration.cjs`, confirmed untouched via `git status`) · `npm run build` succeeds.
+
+## 14. Milestone 11 record — Careers Page (one new block, justified: `careersBlock`; one additive field on `contentgridBlock`)
+
+**Data model:** Open Positions is a page-local repeated card list (title/department/type/location/
+description, no cross-page reuse, filtering, featured selection, or detail routing) — "Data Model A,"
+not a new collection. The Values section is a title-only numbered-pillar list — already the exact
+shape `contentgridBlock`'s `pillars` presentation exists for. No collection-creation trigger fired.
+
+**Open Positions → new `careersBlock`, justified.** Audited every existing block against the
+department-badge + type-badge + title + description + 📍location + fixed "Apply →" card shape before
+writing anything new: `ContentGrid` items have no department/type/location fields and stuffing them
+into `description` would visually flatten the two badge pills and footer row the original design
+uses; `CardGrid`'s `cardItemFields` is image-led with a per-card link, wrong shape and wrong link
+model (Careers hardcodes every card's Apply link to `/contact`, never per-item); `FeatureStrip` is
+icon/title/description only; `Events`/`Locations` are Ghee-Roast-specific collection relationships
+with no job-listing concept at all; `Packages`/`Amenities` are bare title/subtitle stubs. None could
+represent the shape without distortion, so `careersBlock` (`sectionHeader()` + `positions[]` array:
+title/department/type/location/description, `required: true, minRows: 1`) was proposed, shown to you
+with this reasoning, and approved before generating the migration. The "Apply →" destination stays
+hardcoded to `/contact` in the renderer, matching the original exactly — not exposed as CMS data,
+since the source design never made it configurable either.
+
+**Values → reused `contentgridBlock`'s existing `pillars` presentation**, which already renders with
+the identical CSS classes (`.philosophySection`/`.philosophyBgText`/`.philosophyPillars`/`.pillar`/
+`.pillarNum`/`.pillarTitle`) the original static Careers page hand-authored for its Values section —
+confirming this was the designer's own intended reuse, not a coincidental fit. Two small, additive
+changes made it usable by a second page without touching Home's rendering:
+- New optional `bgText` field on `contentgridBlock` (mirrors Milestone 10's `ctaBlock.bgText` exactly)
+  — overrides the large decorative background word, defaulting to `PHILOSOPHY` when unset so Home's
+  existing usage is untouched.
+- `PillarsGrid`'s hardcoded `aria-label="Our philosophy"` now reads `block.header.eyebrow` (falls back
+  to the same string when absent), and the per-item icon/description now render conditionally instead
+  of unconditionally — Careers' title-only values items have neither, and the icon box in particular
+  has a fixed 48px CSS footprint that would otherwise leave a visible empty gap above each title. Home
+  always populates both, so this is a no-op there — verified live (5/5 icons and descriptions still
+  render on Home's Philosophy section, unchanged). The section `id="philosophy"` stays hardcoded
+  across both usages, matching the codebase's existing precedent of reused chrome-level ids (e.g.
+  `BrandsGrid`'s `id="brands"` across Home and the dedicated Brands page) — verified via grep that
+  nothing anywhere links to either `#philosophy` or the original static page's `#our-values`, so this
+  has zero functional or visual impact; noted under Limitations below.
+
+**No new collections were created this milestone.**
+
+**Schema/migration** (`20260806_094912_curious_ladoo_careers`) — reviewed with the same
+pre-generation identifier-length scan as every prior milestone: 2 FK constraint names exceed 63
+chars (67/70 — both `..._settings_background_image_id_media_id_fk`), the same class of finding
+already verified safe in Milestone 8 (FK constraint names silently truncate, no hard failure, no
+collision — CREATE TYPE/CREATE TABLE identifiers, which do hard-fail, all stayed under the limit).
+6 new tables (`careersBlock` + its `positions` array, live + draft-version), 2 new nullable `varchar`
+columns (`contentgridBlock.bg_text`, live + draft-version), FKs, indexes. Zero DROP/DELETE/TRUNCATE
+in the applied `up()`. Pre/post row counts confirmed identical (Ghee Roast pages=7,
+`pages_blocks_contentgrid_block`=17). Shown to you with the full justification above and approved
+before applying.
+
+**Loader:** no changes — `careersBlock` carries all its content inline, no collection dependency.
+
+**Mapper:** new `mapCareersBlock` (positions array passthrough); `mapContentGridBlock` gained
+`bgText: text(block.bgText)`, non-breaking for every existing `contentgridBlock` usage.
+
+**Renderer:** new `CareersSection` component (`id="open-positions"`, header structure matching the
+original exactly — a plain `ScrollReveal` body paragraph, not wrapped in the `servicesHeaderRight`
+container `ServicesGrid` uses for its own header, since the original Careers JSX never used that
+wrapper either), hidden when `positions` is empty. `PillarsGrid` updated in place per above, verified
+non-breaking for Home via a direct live re-check.
+
+**Seed:** `src/seed/curiousLadooCareers.ts` + `npm run db:seed:curious-ladoo-careers` — idempotent,
+fully page-local (no separate collection records, unlike Testimonials), creates the Careers Page (4
+blocks: hero, careers[4 positions], contentgrid[pillars, 4 values], cta[bgText: "CAREERS"]). Verified
+idempotent by running twice: second run returned `status: "updated"` against the same page id with an
+unchanged block count.
+
+**A rendering detail investigated and confirmed correct:** the original CTA button carried a
+page-specific `id="careers-cta-btn"` with no corresponding CSS or script reference anywhere in the
+codebase (confirmed via grep) — the shared `CTASection` component doesn't expose a per-button id hook
+and every other CTA-driven page already omits one, so this was left out rather than adding a new field
+to preserve a dead attribute.
+
+**Routing:** `CuriousHubPageRenderer.tsx`'s `CMS_DRIVEN_PATHS` extended to `'/careers'`.
+
+**Verified live** across every tenant hostname alias: `/careers` → 200 with every section's content
+confirmed (hero, all 4 position cards with correct department/type/location badges and descriptions,
+Apply linking to `/contact`, the Values section showing "VALUES" as the background word with all 4
+plain titles and zero stray icon/description markup, CTA showing "CAREERS" and the "Send Your CV →"
+mailto button). **Home re-verified live**: Philosophy section unchanged — still "PHILOSOPHY", all 5
+icons and descriptions present, testimonials still exactly Rajiv/Sunita/Arjun, CTA still "CURIOUS".
+Ghee Roast, Zuru Zuru, Services, Brands, Portfolio, How We Work, Testimonials, `/admin`, unknown route
+→ all unchanged (one transient `/admin` timeout on first hit was a dev-server cold-compile delay, not
+a regression — confirmed by an immediate clean retry).
+
+**Tests:** new `tests/curious-ladoo-careers.test.ts` (5 tests) covering slug resolution, the
+`careersBlock` positions mapper (populated and empty), the ContentGrid `pillars` `bgText` override vs.
+empty-string default plus the icon/description-degrade-to-empty-string contract the renderer's new
+conditionals depend on, and layout ordering. Combined Curious Ladoo suite: 60/60 pass.
+
+**Full verification:** `typecheck` clean (app + tests) · combined Curious Ladoo suite 60/60 ·
+`test:ghee-cms` 40/40 (block-registry parity test confirms `careersBlock` is correctly excluded from
+Ghee Roast) · full `npm test` chain passes (same one pre-existing unrelated failure noted in every
+earlier milestone) · `lint`: 0 new warnings/errors in any hand-written file (the only new warnings are
+the standard 4-per-file `payload`/`req`-unused-parameter warnings Payload's migration generator always
+produces, ×2 new migration files this pass — identical boilerplate pattern already present in every
+prior migration; the suite's 1 pre-existing error remains in `scripts/gen-migration.cjs`, confirmed
+untouched) · `npm run build` succeeds · `git diff --check` clean (only benign CRLF/LF warnings, no
+actual whitespace errors).
+
+**Limitations:** the reused `PillarsGrid` section keeps a single hardcoded `id="philosophy"` across
+both its Home and Careers usages rather than the original static Careers page's `id="our-values"` —
+confirmed via grep that neither id is referenced by any link or script anywhere in the codebase, so
+this has no functional or visual effect, but is flagged here for full transparency since it's a literal
+(if inert) departure from the original markup.
+
+## 15. Verification commands (from `package.json`)
 
 `npm run typecheck` · `npm run lint` · `npm run build` · `npm test` (chains authorization, phase1,
 phase2, development-content, ghee-cms) · `npm run test:security`. No test runner is Ghee-Roast- or

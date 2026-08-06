@@ -5,6 +5,7 @@ import type {
   CuriousLadooBlogPreviewBlockData,
   CuriousLadooBrandsShowcaseBlockData,
   CuriousLadooCapabilityBlockData,
+  CuriousLadooCareersBlockData,
   CuriousLadooCompareBlockData,
   CuriousLadooContentGridBlockData,
   CuriousLadooCTABlockData,
@@ -324,9 +325,10 @@ function renderHeading(title: string, subtitle: string) {
 }
 
 function PillarsGrid({ block }: { block: CuriousLadooContentGridBlockData }) {
+  const bgWord = (block.bgText || 'PHILOSOPHY').toUpperCase()
   return (
-    <section aria-label="Our philosophy" className={styles.philosophySection} id="philosophy">
-      <div aria-hidden="true" className={styles.philosophyBgText}>PHILOSOPHY</div>
+    <section aria-label={block.header.eyebrow || 'Our philosophy'} className={styles.philosophySection} id="philosophy">
+      <div aria-hidden="true" className={styles.philosophyBgText}>{bgWord}</div>
       <div className={styles.philosophyHeader}>
         <div>
           {block.header.eyebrow && (
@@ -356,9 +358,9 @@ function PillarsGrid({ block }: { block: CuriousLadooContentGridBlockData }) {
           <ScrollReveal delay={revealDelay(i)} key={item.title}>
             <div className={styles.pillar}>
               <div className={styles.pillarNum}>{String(i + 1).padStart(2, '0')}</div>
-              <CuriousHubIcon className={styles.pillarIcon} name={item.icon} />
+              {item.icon && <CuriousHubIcon className={styles.pillarIcon} name={item.icon} />}
               <div className={styles.pillarTitle}>{item.title}</div>
-              <p className={styles.pillarDesc}>{item.description}</p>
+              {item.description && <p className={styles.pillarDesc}>{item.description}</p>}
             </div>
           </ScrollReveal>
         ))}
@@ -1048,7 +1050,7 @@ function TeamSection({ block }: { block: CuriousLadooTeamBlockData }) {
 
 function CTASection({ block, siteName }: { block: CuriousLadooCTABlockData; siteName: string }) {
   if (!block.header.title) return null
-  const bgWord = (siteName.split(/\s+/)[0] || 'CURIOUS').toUpperCase()
+  const bgWord = (block.bgText || siteName.split(/\s+/)[0] || 'CURIOUS').toUpperCase()
   return (
     <section aria-label="Call to action" className={styles.ctaSection} id="cta">
       <div aria-hidden="true" className={styles.ctaBgText}>{bgWord}</div>
@@ -1280,6 +1282,49 @@ function CompareSection({ block }: { block: CuriousLadooCompareBlockData }) {
   )
 }
 
+function CareersSection({ block }: { block: CuriousLadooCareersBlockData }) {
+  if (block.positions.length === 0) return null
+  return (
+    <section className={styles.careersSection} id="open-positions">
+      <div className={styles.servicesHeader} style={{ marginBottom: 'clamp(40px, 6vw, 80px)' }}>
+        <div>
+          {block.header.eyebrow && (
+            <ScrollReveal>
+              <p className={styles.sectionEyebrow}>{block.header.eyebrow}</p>
+            </ScrollReveal>
+          )}
+          <ScrollReveal delay={1}>
+            <h2 className={styles.sectionTitle}>{renderHeading(block.header.title, block.header.subtitle)}</h2>
+          </ScrollReveal>
+        </div>
+        {block.header.description && (
+          <ScrollReveal>
+            <p className={styles.sectionBody}>{block.header.description}</p>
+          </ScrollReveal>
+        )}
+      </div>
+      <div className={styles.careersGrid}>
+        {block.positions.map((pos, i) => (
+          <ScrollReveal delay={revealDelay(i, 3)} key={pos.title}>
+            <article className={styles.careerCard}>
+              <div className={styles.careerCardHeader}>
+                <span className={styles.careerDept}>{pos.department}</span>
+                <span className={styles.careerType}>{pos.type}</span>
+              </div>
+              <h3 className={styles.careerTitle}>{pos.title}</h3>
+              <p className={styles.careerDesc}>{pos.description}</p>
+              <div className={styles.careerFooter}>
+                <span className={styles.careerLocation}>📍 {pos.location}</span>
+                <SmartLink className={styles.careerApply} href="/contact">Apply →</SmartLink>
+              </div>
+            </article>
+          </ScrollReveal>
+        ))}
+      </div>
+    </section>
+  )
+}
+
 function CMSHomeBlock({ block, pageType, siteName }: { block: CuriousLadooHomeBlockData; pageType: string; siteName: string }) {
   switch (block.type) {
     case 'hero': return pageType === 'home' ? <HeroSection block={block} /> : <InnerHeroSection block={block} />
@@ -1295,6 +1340,7 @@ function CMSHomeBlock({ block, pageType, siteName }: { block: CuriousLadooHomeBl
     case 'pipeline': return <PipelineSection block={block} />
     case 'portfolioshowcase': return <PortfolioShowcaseSection block={block} />
     case 'compare': return <CompareSection block={block} />
+    case 'careers': return <CareersSection block={block} />
     case 'blogpreview': return <JournalSection block={block} />
     case 'team': return <TeamSection block={block} />
     case 'cta': return <CTASection block={block} siteName={siteName} />

@@ -8,6 +8,12 @@ export const CTABlock: Block = {
   interfaceName: 'CTABlock',
   fields: [
     sectionHeader(),
+    {
+      name: 'bgText',
+      type: 'text',
+      maxLength: 20,
+      admin: { description: 'Overrides the large decorative background text. Defaults to the site name\'s first word if left blank.' },
+    },
     ctaGroup({ admin: { description: 'Primary and optional secondary CTA.' } }),
     blockSettings(),
   ],

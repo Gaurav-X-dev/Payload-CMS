@@ -2,6 +2,7 @@ import type {
   BlogPost,
   Brand,
   CapabilityBlock,
+  CareersBlock,
   CompareBlock,
   ContentGridBlock,
   CTABlock,
@@ -34,6 +35,7 @@ import type {
   CuriousLadooBrandItemData,
   CuriousLadooBrandsShowcaseBlockData,
   CuriousLadooCapabilityBlockData,
+  CuriousLadooCareersBlockData,
   CuriousLadooCompareBlockData,
   CuriousLadooComparePanelData,
   CuriousLadooContentGridBlockData,
@@ -207,12 +209,27 @@ function mapContentGridBlock(
     title: text(item.title),
   }))
   return {
+    bgText: text(block.bgText),
     header: mapSectionHeader(block.sectionHeader),
     items,
     media: mapMedia(block.media?.item, tenantID),
     mediaPosition: block.mediaPosition === 'right' ? 'right' : 'left',
     presentation: block.presentation ?? 'grid',
     type: 'contentgrid',
+  }
+}
+
+function mapCareersBlock(block: CareersBlock): CuriousLadooCareersBlockData {
+  return {
+    header: mapSectionHeader(block.sectionHeader),
+    positions: (block.positions ?? []).map((position) => ({
+      department: text(position.department),
+      description: text(position.description),
+      location: text(position.location),
+      title: text(position.title),
+      type: text(position.type),
+    })),
+    type: 'careers',
   }
 }
 
@@ -346,7 +363,7 @@ function mapTestimonialsBlock(
   const filtered = manual
     ? source
     : source.filter((t) => (block.featuredOnly ? t.isFeatured === true : true))
-  const limit = block.limit ?? filtered.length
+  const limit = manual ? filtered.length : (block.limit ?? filtered.length)
   return {
     header: mapSectionHeader(block.sectionHeader),
     items: filtered
@@ -379,7 +396,7 @@ function mapBlogPreviewBlock(
   const filtered = manual
     ? source
     : source.filter((p) => (block.featuredOnly ? p.isFeatured === true : true))
-  const limit = block.limit ?? filtered.length
+  const limit = manual ? filtered.length : (block.limit ?? filtered.length)
   return {
     header: mapSectionHeader(block.sectionHeader),
     items: filtered
@@ -516,6 +533,7 @@ function mapCompareBlock(block: CompareBlock, tenantID: number): CuriousLadooCom
 
 function mapCTABlock(block: CTABlock): CuriousLadooCTABlockData {
   return {
+    bgText: text(block.bgText),
     header: mapSectionHeader(block.sectionHeader),
     primaryCTA: block.ctaGroup?.enablePrimary ? mapLink(block.ctaGroup.primaryCTA) : null,
     secondaryCTA: block.ctaGroup?.enableSecondary ? mapLink(block.ctaGroup.secondaryCTA) : null,
@@ -589,6 +607,9 @@ export function mapCuriousLadooLayout(
         break
       case 'compareBlock':
         blocks.push(mapCompareBlock(block, tenantID))
+        break
+      case 'careersBlock':
+        blocks.push(mapCareersBlock(block))
         break
       default:
         // Any other block type in the shared catalog has no Curious Ladoo renderer yet;

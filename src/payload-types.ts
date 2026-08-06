@@ -435,6 +435,7 @@ export interface Page {
         | PipelineBlock
         | PortfolioShowcaseBlock
         | CompareBlock
+        | CareersBlock
       )[]
     | null;
   showInNavigation?: boolean | null;
@@ -929,6 +930,10 @@ export interface ContentGridBlock {
         | 'benefits'
       )
     | null;
+  /**
+   * Numbered Pillars only: overrides the large decorative background word. Defaults to "PHILOSOPHY" if left blank.
+   */
+  bgText?: string | null;
   /**
    * Optional companion image shown beside the grid (used by the Edge / Media + Grid presentation).
    */
@@ -2259,6 +2264,10 @@ export interface CTABlock {
     maxWidth?: ('standard' | 'narrow' | 'wide') | null;
   };
   /**
+   * Overrides the large decorative background text. Defaults to the site name's first word if left blank.
+   */
+  bgText?: string | null;
+  /**
    * Primary and optional secondary CTA.
    */
   ctaGroup?: {
@@ -3317,6 +3326,68 @@ export interface CompareBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CareersBlock".
+ */
+export interface CareersBlock {
+  /**
+   * Standardized section title and description.
+   */
+  sectionHeader: {
+    /**
+     * Small accented text above the title.
+     */
+    eyebrow?: string | null;
+    title: string;
+    headingTag?: ('h1' | 'h2' | 'h3' | 'h4') | null;
+    subtitle?: string | null;
+    description?: string | null;
+    alignment?: ('left' | 'center' | 'right') | null;
+    maxWidth?: ('standard' | 'narrow' | 'wide') | null;
+  };
+  positions: {
+    title: string;
+    department: string;
+    /**
+     * e.g. Full-time, Contract, Remote.
+     */
+    type: string;
+    location: string;
+    description?: string | null;
+    id?: string | null;
+  }[];
+  /**
+   * Appearance and visibility settings for this block.
+   */
+  settings?: {
+    backgroundColor?: ('transparent' | 'surface' | 'primary' | 'accent' | 'dark') | null;
+    containerWidth?: ('standard' | 'wide' | 'full') | null;
+    /**
+     * Optional image to place behind the block.
+     */
+    backgroundImage?: (number | null) | Media;
+    /**
+     * 0-100 opacity for the background overlay.
+     */
+    overlayOpacity?: number | null;
+    paddingTop?: ('none' | 'small' | 'medium' | 'large') | null;
+    paddingBottom?: ('none' | 'small' | 'medium' | 'large') | null;
+    visibility?: ('desktop' | 'tablet' | 'mobile')[] | null;
+    animation?: ('none' | 'fade-in' | 'slide-up' | 'zoom-in' | 'stagger') | null;
+    /**
+     * Inject custom CSS classes for developer overrides.
+     */
+    customClasses?: string | null;
+    /**
+     * Used for #anchor links. Must be unique.
+     */
+    htmlId?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'careersBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "reservations".
  */
 export interface Reservation {
@@ -4179,6 +4250,7 @@ export interface PagesSelect<T extends boolean = true> {
         pipelineBlock?: T | PipelineBlockSelect<T>;
         portfolioshowcaseBlock?: T | PortfolioShowcaseBlockSelect<T>;
         compareBlock?: T | CompareBlockSelect<T>;
+        careersBlock?: T | CareersBlockSelect<T>;
       };
   showInNavigation?: T;
   navigationLabel?: T;
@@ -4491,6 +4563,7 @@ export interface ContentGridBlockSelect<T extends boolean = true> {
         maxWidth?: T;
       };
   presentation?: T;
+  bgText?: T;
   media?:
     | T
     | {
@@ -5161,6 +5234,7 @@ export interface CTABlockSelect<T extends boolean = true> {
         alignment?: T;
         maxWidth?: T;
       };
+  bgText?: T;
   ctaGroup?:
     | T
     | {
@@ -5739,6 +5813,49 @@ export interface CompareBlockSelect<T extends boolean = true> {
                   };
             };
         placeholderText?: T;
+      };
+  settings?:
+    | T
+    | {
+        backgroundColor?: T;
+        containerWidth?: T;
+        backgroundImage?: T;
+        overlayOpacity?: T;
+        paddingTop?: T;
+        paddingBottom?: T;
+        visibility?: T;
+        animation?: T;
+        customClasses?: T;
+        htmlId?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CareersBlock_select".
+ */
+export interface CareersBlockSelect<T extends boolean = true> {
+  sectionHeader?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        headingTag?: T;
+        subtitle?: T;
+        description?: T;
+        alignment?: T;
+        maxWidth?: T;
+      };
+  positions?:
+    | T
+    | {
+        title?: T;
+        department?: T;
+        type?: T;
+        location?: T;
+        description?: T;
+        id?: T;
       };
   settings?:
     | T

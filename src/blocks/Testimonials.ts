@@ -40,7 +40,14 @@ export const TestimonialsBlock: Block = {
       admin: { condition: (_, siblingData) => siblingData?.source === 'manual' },
     },
     { name: 'featuredOnly', type: 'checkbox', defaultValue: true, admin: { condition: (_, siblingData) => siblingData?.source === 'collection' } },
-    { name: 'limit', type: 'number', min: 1, max: 12, defaultValue: 3 },
+    {
+      name: 'limit',
+      type: 'number',
+      min: 1,
+      max: 12,
+      defaultValue: 3,
+      admin: { condition: (_, siblingData) => siblingData?.source === 'collection' },
+    },
     blockSettings(),
   ],
 }
