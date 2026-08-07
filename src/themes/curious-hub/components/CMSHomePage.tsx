@@ -1142,8 +1142,7 @@ function CapabilitySection({ block }: { block: CuriousLadooCapabilityBlockData }
   )
 }
 
-function FAQSection({ block }: { block: CuriousLadooFAQBlockData }) {
-  if (block.items.length === 0) return null
+function FAQTabsSection({ block }: { block: CuriousLadooFAQBlockData }) {
   return (
     <section className={styles.innerSection}>
       <ScrollReveal>
@@ -1159,6 +1158,38 @@ function FAQSection({ block }: { block: CuriousLadooFAQBlockData }) {
       <FAQAccordion items={block.items} />
     </section>
   )
+}
+
+function FAQPlusMinusSection({ block }: { block: CuriousLadooFAQBlockData }) {
+  return (
+    <section className={styles.faqsSection} id="all-faqs">
+      <div className={styles.servicesHeader} style={{ marginBottom: 'clamp(40px, 6vw, 80px)' }}>
+        <div>
+          {block.header.eyebrow && (
+            <ScrollReveal>
+              <p className={styles.sectionEyebrow}>{block.header.eyebrow}</p>
+            </ScrollReveal>
+          )}
+          <ScrollReveal delay={1}>
+            <h2 className={styles.sectionTitle}>{renderHeading(block.header.title, block.header.subtitle)}</h2>
+          </ScrollReveal>
+        </div>
+        {block.header.description && (
+          <ScrollReveal>
+            <p className={styles.sectionBody}>{block.header.description}</p>
+          </ScrollReveal>
+        )}
+      </div>
+      <FAQAccordion items={block.items} presentation="plusminus" />
+    </section>
+  )
+}
+
+function FAQSection({ block }: { block: CuriousLadooFAQBlockData }) {
+  if (block.items.length === 0) return null
+  return block.presentation === 'plusminus'
+    ? <FAQPlusMinusSection block={block} />
+    : <FAQTabsSection block={block} />
 }
 
 /** Narrative + bulleted list beside an optional decorative callout box — matches the Brands page's "Collaborations & Future Projects" section. */

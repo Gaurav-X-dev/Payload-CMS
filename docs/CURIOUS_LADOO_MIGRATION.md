@@ -231,7 +231,7 @@ needed**, must be preserved exactly as-is.
 | 9 | How We Work | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Done — see §12 |
 | 10 | Testimonials | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Done — see §13 |
 | 11 | Careers | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Done — see §14 |
-| 12 | FAQs | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | Pending |
+| 12 | FAQs | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Done — see §15 |
 | 13 | Contact | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | Pending |
 | 14 | Blog/Journal | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | Pending |
 | 15 | SEO | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | Pending |
@@ -1153,7 +1153,116 @@ confirmed via grep that neither id is referenced by any link or script anywhere 
 this has no functional or visual effect, but is flagged here for full transparency since it's a literal
 (if inert) departure from the original markup.
 
-## 15. Verification commands (from `package.json`)
+## 15. Milestone 12 record — FAQs Page (reuse-first: extend `FAQBlock`/`FAQs` collection and `FAQAccordion`, zero new blocks/collections)
+
+**Data model:** the FAQ list is tenant-scoped reusable Q&A content — the `FAQs` collection and
+`faqBlock` already exist and are already used by the Services page. No new collection or block was
+needed; the only gap was a second visual presentation for the shared accordion.
+
+**Hero and CTA → fully reused, zero schema changes.** `heroBlock` needed nothing new. `ctaBlock`
+already had everything required — Milestone 10's `bgText` field covers "FAQ" as the background word,
+and a single primary button (no secondary) was already supported.
+
+**FAQ list → reused `faqBlock`/`FAQs` collection/`FAQAccordion`, with two justified additive
+extensions.** Inspecting the CSS proved the dedicated FAQs page's accordion
+(`.faqItem`/`.faqQuestion`/`.faqAnswer`/`.faqIcon`, real `<button>` + `aria-controls` +
+`aria-expanded` + `role="region"` semantics) is a genuinely different visual treatment from the
+existing `FAQAccordion`'s tab-style accordion already serving the Services page
+(`.faqTabAccordion`/`.faqTabHeader`/`.faqTabContent`) — not an alias of the same styling. Reusing
+`FAQAccordion` unmodified would have rendered the wrong design on the dedicated page; building a
+parallel accordion component instead of extending it would have duplicated the shared single-open
+`useState` logic. Resolved by:
+- `FAQBlock` gained an optional `presentation` field (`'tabs'` default / `'plusminus'`), mirroring the
+  identical pattern already established for `ContentGridBlock`/`TestimonialsBlock`/`BrandsShowcaseBlock`.
+  Services' existing usage is untouched (defaults to `'tabs'`).
+- `FAQAccordion.tsx` split its existing body into `FAQTabAccordion` (mechanical extraction, byte-
+  identical behavior) and a new `FAQPlusMinusAccordion` (exact original markup/classes/aria semantics,
+  wrapped in `ScrollReveal` with the original's `(i % 4)` stagger delay), dispatched by the new
+  `presentation` prop (default `'tabs'`).
+- `CMSHomePage.tsx`'s `FAQSection` became a thin dispatcher; the original body was renamed
+  `FAQTabsSection` (mechanical, zero behavior change) and a new `FAQPlusMinusSection` reproduces the
+  original page's left-aligned `.faqsSection`/`.servicesHeader` header exactly (distinct from
+  `FAQTabsSection`'s centered `.innerSection` header, matching the two pages' genuinely different
+  original layouts).
+
+**`isFeatured` on the `FAQs` collection + `featuredOnly` on `FAQBlock`** — added per your CMS
+requirement that Featured state be editable, even though the original design never visually filters
+by it (nothing renders differently by default; every existing FAQ defaults to `isFeatured: false`).
+`featuredOnly` only narrows the **auto-pulled pool** (empty `items`) — an explicit `items` selection
+always renders exactly what was chosen, regardless of `featuredOnly` or `isFeatured`. This was
+deliberately designed to avoid the exact bug class found and fixed in Milestone 10 (where
+`Testimonials.limit` incorrectly applied to an explicit manual selection); a dedicated regression test
+proves an explicit selection wins even when `featuredOnly: true` is also set.
+
+**No new blocks or collections were created this milestone.**
+
+**Schema/migration** (`20260806_103849_curious_ladoo_faqs`) — reviewed with the same pre-generation
+identifier-length scan as every prior milestone: longest identifier 43 chars, zero over the 63-char
+limit. 2 new enum types (`presentation`, live + draft-version), 4 new nullable/defaulted columns
+(`faqBlock.presentation`, `faqBlock.featured_only` ×2 tables; `faqs.is_featured`), 1 new index. Zero
+DROP/DELETE/TRUNCATE in the applied `up()`. Pre/post row counts confirmed identical (Ghee Roast
+pages=7, `faqs` count unchanged pre-seed). Shown to you with the full justification above and
+approved before applying.
+
+**Loader:** no changes — the FAQs collection was already a conditional dependency
+(`blockTypes.has('faqBlock')`) since Milestone 6 (Services), already tenant-scoped
+(`tenantWhere(tenantID, [{isActive: {equals: true}}])`), bounded (`limit: 50`), and deterministically
+sorted (`sort: 'sortOrder'`) at the query level — every LOADER requirement in your spec was already
+satisfied by the existing implementation.
+
+**Mapper:** `mapFAQBlock` gained the `featuredOnly`-narrows-the-auto-pool-only branch described above,
+and passes through `presentation` (defaulting unknown/missing values to `'tabs'`).
+
+**Renderer:** `FAQAccordion`/`FAQSection` split as described above; zero visible change to Services'
+existing FAQ section, verified live.
+
+**Seed:** `src/seed/curiousLadooFaqs.ts` + `npm run db:seed:curious-ladoo-faqs` — idempotent (verified
+by running twice: second run reported `created: 0, updated: 5` against the same 5 record ids and the
+same page id), creates 5 new tenant-scoped FAQs matching the original page's exact 5 questions
+(`isFeatured: false`, no `category` — the original design never displays one) and the FAQs Page (3
+blocks: hero, faq[plusminus, 5 explicit items], cta[bgText: "FAQ"]). Confirmed via direct SQL that
+none of the 3 existing "Services"-category FAQs (ids 6–8, already used by the Services page) or the 5
+Ghee Roast "Delivery"-category FAQs (ids 1–5) were touched, duplicated, or pulled into this page's
+explicit selection.
+
+**Record counts:** `faqs` table: 5 pre-existing (Ghee Roast) + 3 pre-existing (Services) + 5 new
+(FAQs page) = 13 total, confirmed via direct SQL. Zero duplicates, zero deletions.
+
+**Routing proof:** `CuriousHubPageRenderer.tsx`'s `CMS_DRIVEN_PATHS` extended to `'/faqs'`. Verified
+live across every tenant hostname alias: `/faqs` → 200 with all 5 questions/answers, the plus/minus
+accordion markup (`.faqItem`/`.faqQuestion`, `aria-expanded` ×5, `role="region"` ×5, zero
+`.faqTabAccordion` classes leaked), and the CTA showing "FAQ" + "Still Have Questions?" + "Contact Us
+→" → `/contact`. Draft pages confirmed hidden (unit test). Unknown route → 404 (live). No static
+fallback — `/faqs` is now served exclusively through the CMS pipeline, matching every other completed
+Curious Ladoo page.
+
+**Test results:** new `tests/curious-ladoo-faqs.test.ts` (8 tests) covering published/draft
+visibility, conditional collection dependency, tenant isolation + active filtering + sorting, category
+passthrough, the featuredOnly/explicit-selection contract, presentation defaulting, raw/dangling
+relationship safety, and layout ordering. Combined Curious Ladoo suite: 68/68 pass. `test:ghee-cms`:
+40/40 (block-registry parity test unaffected — `faqBlock` was already Ghee-Roast-supported and its
+Ghee Roast renderer, `FAQList`, doesn't read either new field). Full `npm test` chain passes (same one
+pre-existing unrelated failure noted in every earlier milestone). Accordion single-open-interaction
+behavior itself is a client-side `useState` concern with no server-side equivalent — verified live
+(button semantics/aria attributes render correctly) rather than unit-tested, consistent with every
+prior milestone's treatment of client-only interactivity.
+
+**Build result:** `typecheck` clean (app + tests) · `lint`: 0 new warnings/errors in any hand-written
+file (only the standard 4 `payload`/`req`-unused-parameter warnings from this milestone's one new
+auto-generated migration file) · `npm run build` succeeds · `git diff --check` clean (only benign
+CRLF/LF warnings).
+
+**Ghee Roast status:** unaffected. `faqBlock` was already in `GHEE_ROAST_SUPPORTED_BLOCK_TYPES`; its
+Ghee Roast renderer (`FAQList` in `CMSPage.tsx`) only reads `block.items`/`block.limit`, never
+`presentation` or `featuredOnly`. Live-verified `ghee-roast.localhost/` → 200; `test:ghee-cms` 40/40.
+
+**Zuru Zuru status:** unaffected — no code path touched this milestone reads or renders anything
+Zuru-Zuru-specific. Live-verified `zuru-zuru.localhost/` → 200.
+
+**Limitations:** none beyond the accordion-interactivity note above (not unit-testable in this
+suite's architecture, verified live instead).
+
+## 16. Verification commands (from `package.json`)
 
 `npm run typecheck` · `npm run lint` · `npm run build` · `npm test` (chains authorization, phase1,
 phase2, development-content, ghee-cms) · `npm run test:security`. No test runner is Ghee-Roast- or

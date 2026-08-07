@@ -14,6 +14,7 @@ import * as migration_20260806_060607_curious_ladoo_portfolio from './20260806_0
 import * as migration_20260806_070027_curious_ladoo_how_we_work from './20260806_070027_curious_ladoo_how_we_work';
 import * as migration_20260806_084335_curious_ladoo_testimonials from './20260806_084335_curious_ladoo_testimonials';
 import * as migration_20260806_094912_curious_ladoo_careers from './20260806_094912_curious_ladoo_careers';
+import * as migration_20260806_103849_curious_ladoo_faqs from './20260806_103849_curious_ladoo_faqs';
 
 export const migrations = [
   {
@@ -94,6 +95,11 @@ export const migrations = [
   {
     up: migration_20260806_094912_curious_ladoo_careers.up,
     down: migration_20260806_094912_curious_ladoo_careers.down,
-    name: '20260806_094912_curious_ladoo_careers'
+    name: '20260806_094912_curious_ladoo_careers',
+  },
+  {
+    up: migration_20260806_103849_curious_ladoo_faqs.up,
+    down: migration_20260806_103849_curious_ladoo_faqs.down,
+    name: '20260806_103849_curious_ladoo_faqs'
   },
 ];

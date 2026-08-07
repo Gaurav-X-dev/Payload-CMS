@@ -42,6 +42,7 @@ export const FAQs: CollectionConfig = {
         },
       ],
     },
+    { name: 'isFeatured', type: 'checkbox', defaultValue: false, index: true },
   ],
   hooks: {
     afterChange: [invalidateTenantCache],

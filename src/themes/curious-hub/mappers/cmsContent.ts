@@ -472,7 +472,14 @@ function mapFAQBlock(
   const selected = (block.items ?? [])
     .map((entry) => (isPopulated<Faq>(entry) ? entry : allFAQs.find((faq) => faq.id === entry)))
     .filter((faq): faq is Faq => Boolean(faq))
-  const pool = selected.length > 0 ? selected : allFAQs
+  // featuredOnly only narrows the auto-pulled pool — an explicit Items selection always renders
+  // exactly what was chosen, matching the manual-selection contract established for every other
+  // source-vs-explicit-selection block (Testimonials, BlogPreview).
+  const pool = selected.length > 0
+    ? selected
+    : block.featuredOnly
+      ? allFAQs.filter((faq) => faq.isFeatured === true)
+      : allFAQs
   const limit = block.limit ?? pool.length
   return {
     header: mapSectionHeader(block.sectionHeader),
@@ -486,6 +493,7 @@ function mapFAQBlock(
         id: faq.id,
         question: text(faq.title),
       })),
+    presentation: block.presentation === 'plusminus' ? 'plusminus' : 'tabs',
     type: 'faq',
   }
 }

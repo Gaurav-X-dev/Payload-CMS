@@ -1879,9 +1879,17 @@ export interface FAQBlock {
     maxWidth?: ('standard' | 'narrow' | 'wide') | null;
   };
   /**
+   * Controls the accordion's visual style. Themes that only use one style can leave this at Tab Accordion.
+   */
+  presentation?: ('tabs' | 'plusminus') | null;
+  /**
    * Leave empty to show all published FAQs.
    */
   items?: (number | Faq)[] | null;
+  /**
+   * Only applies to the auto-pulled pool (i.e. when Items above is left empty). An explicit Items selection always renders exactly what was chosen.
+   */
+  featuredOnly?: boolean | null;
   limit?: number | null;
   /**
    * Appearance and visibility settings for this block.
@@ -1931,6 +1939,7 @@ export interface Faq {
   category?: string | null;
   isActive?: boolean | null;
   sortOrder?: number | null;
+  isFeatured?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -5115,7 +5124,9 @@ export interface FAQBlockSelect<T extends boolean = true> {
         alignment?: T;
         maxWidth?: T;
       };
+  presentation?: T;
   items?: T;
+  featuredOnly?: T;
   limit?: T;
   settings?:
     | T
@@ -6095,6 +6106,7 @@ export interface FaqsSelect<T extends boolean = true> {
   category?: T;
   isActive?: T;
   sortOrder?: T;
+  isFeatured?: T;
   updatedAt?: T;
   createdAt?: T;
 }

@@ -207,6 +207,7 @@ export type CuriousLadooFAQItemData = {
 export type CuriousLadooFAQBlockData = {
   header: CuriousLadooSectionHeaderData
   items: CuriousLadooFAQItemData[]
+  presentation: 'plusminus' | 'tabs'
   type: 'faq'
 }
 
