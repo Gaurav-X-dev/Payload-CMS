@@ -8,10 +8,13 @@ import type {
   CTABlock,
   Faq,
   FAQBlock,
+  FormBlock,
   Footer,
   HeroBlock,
+  Location,
   Media,
   Nav,
+  OfficeMapBlock,
   Page,
   PipelineBlock,
   Portfolio,
@@ -38,10 +41,12 @@ import type {
   CuriousLadooCareersBlockData,
   CuriousLadooCompareBlockData,
   CuriousLadooComparePanelData,
+  CuriousLadooContactInfoData,
   CuriousLadooContentGridBlockData,
   CuriousLadooCTABlockData,
   CuriousLadooFAQBlockData,
   CuriousLadooFooterData,
+  CuriousLadooFormBlockData,
   CuriousLadooGridItemData,
   CuriousLadooHeroBlockData,
   CuriousLadooHomeBlockData,
@@ -49,6 +54,7 @@ import type {
   CuriousLadooLinkData,
   CuriousLadooMediaData,
   CuriousLadooNavigationData,
+  CuriousLadooOfficeMapBlockData,
   CuriousLadooPipelineBlockData,
   CuriousLadooPortfolioItemData,
   CuriousLadooPortfolioShowcaseBlockData,
@@ -230,6 +236,67 @@ function mapCareersBlock(block: CareersBlock): CuriousLadooCareersBlockData {
       type: text(position.type),
     })),
     type: 'careers',
+  }
+}
+
+/** Reconstructs the "+91 XXXXX XXXXX" display format from a normalized 10-digit stored number. */
+function formatIndianMobileDisplay(rawPhone: string): string {
+  const digits = rawPhone.replace(/\D/g, '')
+  const local = digits.length === 12 && digits.startsWith('91') ? digits.slice(2) : digits
+  if (!/^[6-9]\d{9}$/.test(local)) return rawPhone
+  return `+91 ${local.slice(0, 5)} ${local.slice(5)}`
+}
+
+function mapFormBlock(
+  block: FormBlock,
+  tenantID: number,
+  tenant: Tenant | null,
+  locations: Location[],
+  siteSettings: SiteSetting | null,
+): CuriousLadooFormBlockData {
+  const contactInfo: CuriousLadooContactInfoData = block.showContactInfoCards
+    ? {
+        generalEmail: text(tenant?.contact?.contactEmail),
+        generalPhone: formatIndianMobileDisplay(text(tenant?.contact?.contactPhone)),
+        hours: (siteSettings && belongsToTenant(siteSettings.tenantId, tenantID) ? (siteSettings.hours ?? []) : [])
+          .map((row) => ({
+            closeTime: text(row.closeTime),
+            day: text(row.day),
+            isClosed: Boolean(row.isClosed),
+            openTime: text(row.openTime),
+          })),
+        locations: locations
+          .filter((location) => belongsToTenant(location.tenantId, tenantID))
+          .map((location) => ({
+            address: text(location.address),
+            city: text(location.city),
+            id: location.id,
+            name: text(location.title),
+          })),
+      }
+    : null
+  return {
+    contactInfo,
+    errorMessage: text(block.errorMessage),
+    header: mapSectionHeader(block.sectionHeader),
+    subjectOptions: (block.subjectOptions ?? [])
+      .map((option) => ({ label: text(option.label), value: text(option.value) }))
+      .filter((option) => option.label && option.value),
+    submitLabel: text(block.submitLabel),
+    successMessage: text(block.successMessage),
+    type: 'form',
+  }
+}
+
+function mapOfficeMapBlock(block: OfficeMapBlock): CuriousLadooOfficeMapBlockData {
+  return {
+    header: mapSectionHeader(block.sectionHeader),
+    markers: (block.markers ?? []).map((marker) => ({
+      label: text(marker.label),
+      left: text(marker.left),
+      top: text(marker.top),
+    })),
+    type: 'officemap',
   }
 }
 
@@ -560,10 +627,13 @@ export function mapCuriousLadooLayout(
     blogPosts: BlogPost[]
     brands: Brand[]
     faqs: Faq[]
+    locations?: Location[]
     portfolio: Portfolio[]
     teamMembers: Teammember[]
     testimonials: Testimonial[]
   },
+  tenant?: Tenant | null,
+  siteSettings?: SiteSetting | null,
 ): CuriousLadooHomeBlockData[] {
   const blocks: CuriousLadooHomeBlockData[] = []
   for (const block of layout ?? []) {
@@ -618,6 +688,14 @@ export function mapCuriousLadooLayout(
         break
       case 'careersBlock':
         blocks.push(mapCareersBlock(block))
+        break
+      case 'formBlock':
+        if (block.enabled !== false) {
+          blocks.push(mapFormBlock(block, tenantID, tenant ?? null, collections.locations ?? [], siteSettings ?? null))
+        }
+        break
+      case 'officeMapBlock':
+        blocks.push(mapOfficeMapBlock(block))
         break
       default:
         // Any other block type in the shared catalog has no Curious Ladoo renderer yet;
@@ -698,6 +776,7 @@ export function mapCuriousLadooHomeContent({
   brands,
   faqs,
   footer,
+  locations,
   nav,
   page,
   portfolio,
@@ -711,6 +790,7 @@ export function mapCuriousLadooHomeContent({
   brands: Brand[]
   faqs: Faq[]
   footer: Footer | null
+  locations: Location[]
   nav: Nav | null
   page: Page | null
   portfolio: Portfolio[]
@@ -724,7 +804,7 @@ export function mapCuriousLadooHomeContent({
   return {
     footer: mapCuriousLadooFooter(footer, tenantID),
     layout: tenant && page
-      ? mapCuriousLadooLayout(page.layout, tenantID, { blogPosts, brands, faqs, portfolio, teamMembers, testimonials })
+      ? mapCuriousLadooLayout(page.layout, tenantID, { blogPosts, brands, faqs, locations, portfolio, teamMembers, testimonials }, tenant, siteSettings)
       : [],
     navigation: mapCuriousLadooNavigation(nav, tenantID),
     page: page ? { id: page.id, pageType: text(page.pageType) || 'generic', title: text(page.title) } : null,

@@ -276,6 +276,54 @@ export type CuriousLadooCareersBlockData = {
   type: 'careers'
 }
 
+export type CuriousLadooContactSubjectOptionData = {
+  label: string
+  value: string
+}
+
+export type CuriousLadooLocationCardData = {
+  address: string
+  city: string
+  id: number
+  name: string
+}
+
+export type CuriousLadooBusinessHoursRowData = {
+  closeTime: string
+  day: string
+  isClosed: boolean
+  openTime: string
+}
+
+export type CuriousLadooContactInfoData = {
+  generalEmail: string
+  generalPhone: string
+  hours: CuriousLadooBusinessHoursRowData[]
+  locations: CuriousLadooLocationCardData[]
+} | null
+
+export type CuriousLadooFormBlockData = {
+  contactInfo: CuriousLadooContactInfoData
+  errorMessage: string
+  header: CuriousLadooSectionHeaderData
+  subjectOptions: CuriousLadooContactSubjectOptionData[]
+  submitLabel: string
+  successMessage: string
+  type: 'form'
+}
+
+export type CuriousLadooOfficeMapMarkerData = {
+  label: string
+  left: string
+  top: string
+}
+
+export type CuriousLadooOfficeMapBlockData = {
+  header: CuriousLadooSectionHeaderData
+  markers: CuriousLadooOfficeMapMarkerData[]
+  type: 'officemap'
+}
+
 export type CuriousLadooHomeBlockData =
   | CuriousLadooHeroBlockData
   | CuriousLadooTickerBlockData
@@ -294,6 +342,8 @@ export type CuriousLadooHomeBlockData =
   | CuriousLadooPortfolioShowcaseBlockData
   | CuriousLadooCompareBlockData
   | CuriousLadooCareersBlockData
+  | CuriousLadooFormBlockData
+  | CuriousLadooOfficeMapBlockData
 
 export type CuriousLadooNavLinkData = {
   enabled: boolean

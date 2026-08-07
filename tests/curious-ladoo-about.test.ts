@@ -206,6 +206,7 @@ test("page-level mapper carries pageType through as 'about', not the 'generic' d
     brands: [],
     faqs: [],
     footer: null,
+    locations: [],
     nav: null,
     page,
     portfolio: [],

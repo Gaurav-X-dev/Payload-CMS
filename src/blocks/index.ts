@@ -35,6 +35,7 @@ import { PipelineBlock } from './Pipeline'
 import { PortfolioShowcaseBlock } from './PortfolioShowcase'
 import { CompareBlock } from './Compare'
 import { CareersBlock } from './Careers'
+import { OfficeMapBlock } from './OfficeMap'
 
 export const AllBlocks = [
   HeroBlock,
@@ -74,4 +75,5 @@ export const AllBlocks = [
   PortfolioShowcaseBlock,
   CompareBlock,
   CareersBlock,
+  OfficeMapBlock,
 ]

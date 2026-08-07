@@ -232,7 +232,7 @@ needed**, must be preserved exactly as-is.
 | 10 | Testimonials | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Done — see §13 |
 | 11 | Careers | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Done — see §14 |
 | 12 | FAQs | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Done — see §15 |
-| 13 | Contact | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | Pending |
+| 13 | Contact | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Done — see §16 |
 | 14 | Blog/Journal | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | Pending |
 | 15 | SEO | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | Pending |
 | 16 | Final design parity | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | Pending |
@@ -1262,7 +1262,191 @@ Zuru-Zuru-specific. Live-verified `zuru-zuru.localhost/` → 200.
 **Limitations:** none beyond the accordion-interactivity note above (not unit-testable in this
 suite's architecture, verified live instead).
 
-## 16. Verification commands (from `package.json`)
+## 16. Milestone 13 record — Contact Page (one new block, justified: `officeMapBlock`; one additive field on `formBlock`; one pre-existing shared-infrastructure bug found and fixed)
+
+**Data model:** the audit found the actual designer page simpler than a generic contact-page
+checklist implies — no real per-location map buttons/URLs, no Instagram-specific CTA, no separate
+newsletter section (Instagram is already on every page via the global Footer; the "map" is a
+decorative hand-placed-marker SVG illustration, not a real map). Confirmed with you upfront:
+preserve the actual design exactly, make everything that actually exists editable, and don't invent
+sections the source of truth doesn't have.
+
+**Hero and FAQ → fully reused, zero schema changes.** `heroBlock` already supports a foreground
+image end-to-end (built generically since Milestone 4, just never previously exercised by an inner
+page). `faqBlock`'s `presentation: 'tabs'` (Milestone 12) already renders the exact `.faqTabAccordion`
+styling this page's own FAQ section uses.
+
+**Form + info-cards split → reused `formBlock`/`Locations`/`ContactSubmissions`/`SiteSettings`/
+`Tenant.contact`, with one additive field.** The original interleaves the form with three info cards
+(General Inquiries, Operating Hours, Global Locations) in one `.contactSplitCustom` grid — a
+different composition from Ghee Roast's own Contact page, which stacks `formBlock` and `locationsBlock`
+as separate sections (confirmed by reading Ghee Roast's `CMSPage.tsx`). Reproducing the split without
+a new block: added `formBlock.showContactInfoCards` (boolean, default `false` — Ghee Roast's own
+formBlock usage, and its renderer, never reads it, so it's unaffected) that tells only the Curious
+Ladoo renderer to compose the cards from data that was *already sitting in already-reused
+collections* — General Inquiries reads `tenant.contact.contactEmail`/`contactPhone` (already seeded
+in Milestone 3, matching the original text exactly), Operating Hours reads `SiteSettings.hours`
+(existing global field, previously empty for this tenant), Global Locations reads the `Locations`
+collection filtered `isActive`+`showOnContact`, tenant-scoped, sorted by `sortOrder`. Real form
+submission reuses Ghee Roast's own `formRequests.ts` (`buildContactSubmissionRequest`,
+`createSubmissionGuard`, `CONTACT_SUBMISSIONS_ENDPOINT`) via a plain cross-theme import — zero
+duplication, zero modification to that file, so zero Ghee Roast risk from the import itself. The
+rewritten `ContactForm.tsx` (previously dead code, never imported anywhere) now uses the classNames
+the page's own "Contact Page specific local adjustments" CSS block actually targets (bare
+`<input>`/`<select>`/`<textarea>` inside `.formGroupCustom`, `.premiumFormContainer`) instead of its
+old `.formInputCustom` family, which — traced through the CSS cascade — would have rendered a
+mismatched light-bordered-box style inside the page's dark form container.
+
+**Decorative map → new `officeMapBlock`, justified.** No existing block has a "label + illustrative
+left%/top% position" shape; `ContentGrid`'s items have no position fields, and adding them there
+would pollute a widely-shared, Ghee-Roast-used block for one decorative, single-use concept. Fields:
+`sectionHeader()` + `markers[]` (label/left/top, all plain text — the original stores raw CSS
+percentage strings like `"65%"`, so the block does too, avoiding any invented coordinate system).
+
+**No new collections were created this milestone.**
+
+**Schema/migration** (`20260807_050855_curious_ladoo_contact`) — reviewed with the same
+pre-generation identifier-length scan as every prior milestone: 2 FK constraint names exceed 63
+chars (70/73 — both `..._settings_background_image_id_media_id_fk`), the same non-blocking class of
+finding verified safe in Milestones 8/11/12. 6 new tables (`officeMapBlock` + its `markers` array,
+live + draft-version), 2 new nullable boolean columns (`formBlock.show_contact_info_cards`, live +
+draft-version). Zero DROP/DELETE/TRUNCATE in the applied `up()`. Pre/post row counts confirmed
+identical (Ghee Roast pages=7; Ghee Roast's own pre-existing `formBlock` row confirmed to receive the
+new column's default `false` with no behavior change). Shown to you with the full justification above
+and approved before applying.
+
+**A genuine pre-existing bug found and fixed, outside this page's own code.** Live end-to-end testing
+of the real form submission (a `POST /api/contact-submissions`, not just a mapper/loader unit test)
+failed with a `tenantId` validation error. Investigating, I found `tenantField()`'s (shared by all 23
+tenant-scoped collections) `filterOptions` returns `false` for any unauthenticated request — because
+`getUserTenantIDs(undefined)` is always `[]` — which rejects *any* value on the field, including the
+correct, trusted, host-derived tenant that the `assignTenant` hook had already assigned moments
+earlier in the same `beforeValidate` chain. I confirmed this wasn't something introduced by this
+milestone by POSTing to Ghee Roast's own `/contact` form the identical way — it failed with the
+identical error, proving every public contact/reservation submission site-wide was already broken
+before I touched anything. Since the fix lives in shared infrastructure and this milestone's rules
+say not to modify Ghee Roast or Zuru Zuru, I stopped and asked before touching it. Approved fix:
+`filterOptions` now falls back to `resolvePublicTenantID(req)` or `false` (the exact tenant-derivation
+`assignTenant` already trusts) instead of unconditionally `false`, when no user/user-tenants are
+present. This is strictly corrective — the two authenticated branches (`isSuperAdminUser`,
+`getUserTenantIDs`) are byte-identical to before, so nothing that currently works can regress; only
+the previously-always-rejected public path changes, and it can only go from broken to working. This
+change affects public *creates* on 23 collections in principle, but only `ContactSubmissions` and
+`Reservations` actually allow public `create` — verified live for both: Curious Ladoo's Contact form
+now returns `201` scoped to tenant `3181`, Ghee Roast's own Contact form now also returns `201`
+scoped to tenant `3167` (previously broken, now fixed), and a spoofed `tenantId` in the request body
+is still correctly rejected by `assignTenant`'s own explicit check (the security boundary is
+unchanged — only the redundant, over-broad `filterOptions` layer was corrected).
+
+**Form behavior and validation:** name/email required; subject optional in the UI (matching the
+original's un-`required` `<select>`) but always carries a real value since a `<select>` always has
+something selected; message required. Server-side: name/email/message validated+normalized via the
+existing `ContactSubmissions` field hooks; subject validated against this page's own
+`formBlock.subjectOptions` via the existing `validateContactSubmissionSubject` hook — which requires
+`pageType: 'contact'` on the published page to resolve the right options, a detail the seed gets
+right (verified with a dedicated unit test) and would silently break if a future edit ever changed
+the page's type. Tenant is derived exclusively from the trusted request host (`assignTenant`), never
+trusted from the client; a mismatched client-submitted tenantId is rejected. Duplicate/rapid
+resubmission is guarded client-side via the shared `createSubmissionGuard` (the only
+"spam protection" pattern that exists anywhere in this codebase — no honeypot/CAPTCHA infrastructure
+exists to reuse, so none was invented). Success and error states are accessible (`role="status"` /
+`role="alert"`), replacing the original prototype's blocking `alert()` — the original's `onSubmit`
+never actually persisted anything, so this isn't a design change, it's completing an unfinished stub.
+Internal errors are never exposed — only the CMS-configured `errorMessage` or a generic client-side
+validation message.
+
+**Location/map behavior:** `Locations` collection reused as-is — `validatePrimaryLocation` (existing
+hook) still enforces exactly one primary per tenant; the seed's New Delhi record is primary, Mumbai
+and Tokyo are not. Query-level filtering (`isActive`, `showOnContact`) plus mapper-level
+tenant-isolation filtering (defense in depth, matching every other collection in this pipeline).
+Deterministic `sortOrder` sort. Per the approved "preserve exact design only" scope, per-location
+`mapsUrl`/`mapButtonLabel` are not rendered on this page (the original's map is decorative, not a
+real per-location map), though the collection already supports them for any future page that needs
+real map buttons.
+
+**Media:** hero image reuses `t3_interior.png` (already uploaded in Milestone 9), zero new uploads,
+tenant-safe relationship, alt text set, missing-image-safe (existing `mapMedia`/`InnerHeroSection`
+null-guard, unchanged).
+
+**Loader:** `Location` added to `CuriousLadooContentResult`/`CuriousLadooCollectionSlug`; `locations`
+is a new conditional dependency (`blockTypes.has('formBlock')`), tenant-scoped, `isActive`+
+`showOnContact` filtered at the query level, bounded (`limit: 50`), deterministically sorted
+(`sort: 'sortOrder'`), depth 0 (no relationships to expand). No changes to any other collection's
+query. Cache key (host/pathname/tenant) is unchanged — cache isolation was already correct.
+
+**Mapper:** new `mapFormBlock` (tenant contact info + Site Settings hours + tenant-scoped Locations,
+only computed when `showContactInfoCards` is true) and `mapOfficeMapBlock`.
+`mapCuriousLadooLayout`/`mapCuriousLadooHomeContent` gained two new optional parameters (`tenant`,
+`siteSettings`) and an optional `collections.locations` field — all optional/defaulted specifically so
+none of the 9 existing test files' call sites needed to change (only one, unrelated,
+`mapCuriousLadooHomeContent`-calling test needed a mechanical `locations: []` addition, since that
+function's own inline type keeps every collection required).
+
+**Renderer:** new `ContactFormSection` (dispatches to the plain single-column form or the full
+info-cards split, matching `block.contactInfo`) and `OfficeMapSection` (exact original SVG/marker
+markup). Rewrote `ContactForm.tsx` as described above.
+
+**Seed:** `src/seed/curiousLadooContact.ts` + `npm run db:seed:curious-ladoo-contact` — idempotent
+(verified by running twice: second run reported 0 created / 3 updated for both Locations and FAQs,
+`siteSettingsHours: 'updated'` both times, same page id). Creates 3 tenant-scoped Locations, adds 7
+Site Settings hours rows via a **partial update** (only the `hours` field is touched — Payload's
+partial-update semantics leave every other Site Settings field, including socials and newsletter,
+completely untouched), creates 3 new FAQs specific to this page (none overlap Ghee Roast's,
+Services', the dedicated FAQs page's, or Careers' existing FAQs), reuses the existing hero image, and
+creates the Contact Page (4 blocks: hero, form[split, 4 subject options], officemap[4 markers],
+faq[tabs, 3 items]) with `pageType: 'contact'`.
+
+**Record counts:** `locations` table: 2 pre-existing (Ghee Roast) + 3 new (Curious Ladoo) = 5, zero
+duplicates. `faqs` table: 13 pre-existing + 3 new = 16. `contact-submissions`: verified live (see
+below), 2 new rows from live-verification POSTs (tenant 3181 and 3167 respectively), zero data loss.
+
+**Routing proof:** `CuriousHubPageRenderer.tsx`'s `CMS_DRIVEN_PATHS` extended to `'/contact'`.
+Verified live across every tenant hostname alias: `/contact` → 200 with every section's content
+confirmed (hero, General Inquiries card with correctly-formatted `+91 98765 43210`, Operating Hours
+with all 7 configured rows, all 3 Locations, all 4 form fields and subject options, the decorative
+map's 4 markers, all 3 FAQ questions in the tab-accordion presentation). **Real form submission
+verified end-to-end**: valid submission → `201`; invalid email → `400` with a clear message; subject
+not configured on this page → `400`; missing required field → `400`; spoofed `tenantId` → `400`,
+rejected. Draft hidden (unit test). Unknown route → 404 (live). No static fallback. `/admin`
+unaffected (one transient cold-start timeout on first hit, clean on immediate retry — not a
+regression, consistent with every prior milestone's dev-server behavior).
+
+**Test results:** new `tests/curious-ladoo-contact.test.ts` (8 tests) covering published/draft
+visibility, the `locations` conditional collection dependency, the `showContactInfoCards`
+true/false branches (including tenant-isolation of the Locations list), the `formBlock.enabled`
+contract, `officeMapBlock` mapping, layout ordering, and the `pageType: 'contact'` requirement for
+subject validation. Combined Curious Ladoo suite: 76/76. `tests/ghee-roast-forms.test.ts` (the
+existing suite covering the shared form/tenant-safety infrastructure this milestone reused and then
+fixed): 12/12, unchanged. `test:ghee-cms`: 40/40. Full `npm test` chain passes through
+`test:phase1`/`test:phase2` (tenant-isolation regression, relevant given the `tenantField.ts` change)
+before the same one pre-existing unrelated failure every prior milestone has hit.
+
+**Build result:** `typecheck` clean (app + tests) · `lint`: 0 new warnings/errors in any hand-written
+file (only the standard 4 `payload`/`req`-unused-parameter warnings from this milestone's one new
+migration file; two real lint findings surfaced and fixed during development — an unused
+`eslint-disable` comment and a `react-hooks/set-state-in-effect` violation on the query-param
+preselect effect, justified and suppressed with an explanatory comment since deferring to an effect
+is required to avoid a hydration mismatch) · `npm run build` succeeds · `git diff --check` clean (only
+benign CRLF/LF warnings).
+
+**Ghee Roast status:** unaffected by the Contact page's own new code (`showContactInfoCards`/
+`officeMapBlock` are never read by Ghee Roast's renderer). **Improved, not regressed, by the shared
+`tenantField.ts` fix** — its own contact form went from silently broken (every public submission
+rejected) to working, verified live (`201`, correctly tenant-scoped to `3167`). `test:ghee-cms` 40/40,
+`ghee-roast-forms.test.ts` 12/12.
+
+**Zuru Zuru status:** unaffected — no Zuru-Zuru-specific code path touched. Live-verified
+`zuru-zuru.localhost/` → 200. (Zuru Zuru has no public-facing tenant-scoped create form in the current
+build, so the `tenantField.ts` fix has no observable effect there either way.)
+
+**Limitations:** per the approved "preserve exact design only" scope, Instagram-specific CTA,
+per-location real map buttons/URLs, and a separate newsletter/final-CTA section were intentionally
+not added — none exist in the source-of-truth page (Instagram is already reachable via the global
+Footer on this page like every other). The decorative map's marker positions remain hand-placed
+illustrative percentages, not derived from Locations' real `latitude`/`longitude` — matching the
+original design exactly.
+
+## 17. Verification commands (from `package.json`)
 
 `npm run typecheck` · `npm run lint` · `npm run build` · `npm test` (chains authorization, phase1,
 phase2, development-content, ghee-cms) · `npm run test:security`. No test runner is Ghee-Roast- or

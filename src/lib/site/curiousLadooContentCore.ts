@@ -4,6 +4,7 @@ import type {
   Brand,
   Faq,
   Footer,
+  Location,
   Nav,
   Page,
   Portfolio,
@@ -24,6 +25,7 @@ export type CuriousLadooContentResult = {
   brands: Brand[]
   faqs: Faq[]
   footer: Footer | null
+  locations: Location[]
   nav: Nav | null
   page: Page | null
   portfolio: Portfolio[]
@@ -40,6 +42,7 @@ export type CuriousLadooCollectionSlug =
   | 'brands'
   | 'faqs'
   | 'footer'
+  | 'locations'
   | 'nav'
   | 'pages'
   | 'portfolio'
@@ -73,6 +76,7 @@ export function emptyCuriousLadooContent(
     brands: [],
     faqs: [],
     footer: null,
+    locations: [],
     nav: null,
     page: null,
     portfolio: [],
@@ -168,6 +172,7 @@ const collectionDependenciesForLayout = (layout: Page['layout']) => {
     blogPosts: blockTypes.has('blogpreviewBlock'),
     brands: blockTypes.has('brandsshowcaseBlock'),
     faqs: blockTypes.has('faqBlock'),
+    locations: blockTypes.has('formBlock'),
     portfolio: blockTypes.has('portfolioshowcaseBlock'),
     teamMembers: blockTypes.has('teamBlock'),
     testimonials: blockTypes.has('testimonialsBlock'),
@@ -274,7 +279,7 @@ export async function loadCuriousLadooContentWithPayload({
   const page = requireAtMostOne('published page resolution', publishedTenantPages) ?? null
   const dependencies = collectionDependenciesForLayout(page?.layout ?? [])
 
-  const [brands, testimonials, teamMembers, blogPosts, faqs, portfolio] = await Promise.all([
+  const [brands, testimonials, teamMembers, blogPosts, faqs, portfolio, locations] = await Promise.all([
     dependencies.brands
       ? findDocuments<Brand>(find, {
           collection: 'brands',
@@ -329,6 +334,15 @@ export async function loadCuriousLadooContentWithPayload({
           where: tenantWhere(tenantID, [{ enabled: { equals: true } }]),
         })
       : Promise.resolve([]),
+    dependencies.locations
+      ? findDocuments<Location>(find, {
+          collection: 'locations',
+          depth: 0,
+          limit: 50,
+          sort: 'sortOrder',
+          where: tenantWhere(tenantID, [{ isActive: { equals: true } }, { showOnContact: { equals: true } }]),
+        })
+      : Promise.resolve([]),
   ])
 
   const nav = requireAtMostOne('header navigation', navDocs) ?? null
@@ -339,7 +353,7 @@ export async function loadCuriousLadooContentWithPayload({
   const hasCMSContent = Boolean(
     page || nav || siteSettings || footer || seo
     || brands.length || testimonials.length || teamMembers.length || blogPosts.length || faqs.length
-    || portfolio.length,
+    || portfolio.length || locations.length,
   )
 
   return {
@@ -347,6 +361,7 @@ export async function loadCuriousLadooContentWithPayload({
     brands,
     faqs,
     footer,
+    locations,
     nav,
     page,
     portfolio,

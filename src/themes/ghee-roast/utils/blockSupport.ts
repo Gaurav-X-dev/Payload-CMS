@@ -62,12 +62,15 @@ export const GHEE_ROAST_SIMPLE_SECTION_BLOCK_TYPES = new Set<string>([
  * collection content or case-study concept at all. `careersBlock` (Milestone 11) is the same
  * again — its content lives in a nested `positions[]` array (title/department/type/location/
  * description), not a flat `title`/`subtitle`, and Ghee Roast has no careers/job-listing concept.
- * They must never be added to `GHEE_ROAST_SUPPORTED_BLOCK_TYPES` just to satisfy a block-registry
- * parity check. Because the `layout` block picker is shared across every tenant, a Ghee Roast
- * editor could still add one of these in the admin UI — `CMSPage.tsx`'s `CMSBlock` deliberately
- * renders nothing for it (the fallthrough `return null` once no `if (type === ...)` branch or
- * simple-section membership matches), which is the intended, documented disposition, not an
- * oversight.
+ * `officeMapBlock` (Milestone 13) is the same again — its content is a `markers[]` array of
+ * illustrative label/left%/top% positions, not a flat `title`/`subtitle`, and it renders Curious
+ * Ladoo's decorative Contact-page map, a concept Ghee Roast's own Contact/Locations pages don't
+ * use. They must never be added to `GHEE_ROAST_SUPPORTED_BLOCK_TYPES` just to satisfy a
+ * block-registry parity check. Because the `layout` block picker is shared across every tenant, a
+ * Ghee Roast editor could still add one of these in the admin UI — `CMSPage.tsx`'s `CMSBlock`
+ * deliberately renders nothing for it (the fallthrough `return null` once no `if (type === ...)`
+ * branch or simple-section membership matches), which is the intended, documented disposition, not
+ * an oversight.
  */
 export const GHEE_ROAST_THEME_EXCLUSIVE_BLOCK_TYPES = [
   'tickerBlock',
@@ -78,4 +81,5 @@ export const GHEE_ROAST_THEME_EXCLUSIVE_BLOCK_TYPES = [
   'portfolioshowcaseBlock',
   'compareBlock',
   'careersBlock',
+  'officeMapBlock',
 ] as const

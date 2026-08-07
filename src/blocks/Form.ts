@@ -67,6 +67,14 @@ export const FormBlock: Block = {
     { name: 'successMessage', type: 'text', defaultValue: 'Thank you. We will be in touch shortly.', maxLength: 300 },
     { name: 'errorMessage', type: 'text', defaultValue: 'We could not submit the form. Please check your details or contact the restaurant directly.', maxLength: 300 },
     {
+      name: 'showContactInfoCards',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: {
+        description: 'Curious Ladoo only: shows General Inquiries / Operating Hours / Locations cards beside the form, sourced from the primary Location and Site Settings business hours.',
+      },
+    },
+    {
       name: 'sideImage',
       type: 'relationship',
       relationTo: 'media',

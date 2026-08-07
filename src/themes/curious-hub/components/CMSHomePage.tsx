@@ -10,9 +10,11 @@ import type {
   CuriousLadooContentGridBlockData,
   CuriousLadooCTABlockData,
   CuriousLadooFAQBlockData,
+  CuriousLadooFormBlockData,
   CuriousLadooHeroBlockData,
   CuriousLadooHomeBlockData,
   CuriousLadooHomeContent,
+  CuriousLadooOfficeMapBlockData,
   CuriousLadooPipelineBlockData,
   CuriousLadooPortfolioShowcaseBlockData,
   CuriousLadooStatsBlockData,
@@ -23,6 +25,7 @@ import type {
   CuriousLadooTickerBlockData,
 } from '../mappers/dynamicTypes'
 import { AnimatedCounter } from './AnimatedCounter'
+import { ContactForm } from './ContactForm'
 import { FAQAccordion } from './FAQAccordion'
 import { PortfolioFilterGrid } from './PortfolioFilterGrid'
 import { ScrollReveal } from './ScrollReveal'
@@ -1356,6 +1359,121 @@ function CareersSection({ block }: { block: CuriousLadooCareersBlockData }) {
   )
 }
 
+function ContactFormSection({ block }: { block: CuriousLadooFormBlockData }) {
+  const form = (
+    <ContactForm
+      errorMessage={block.errorMessage}
+      heading={block.header.title}
+      subjectOptions={block.subjectOptions}
+      submitLabel={block.submitLabel}
+      successMessage={block.successMessage}
+    />
+  )
+
+  if (!block.contactInfo) {
+    return <section className={styles.innerSection}>{form}</section>
+  }
+
+  const { contactInfo } = block
+  return (
+    <section className={styles.innerSection}>
+      <div className={styles.contactSplitCustom}>
+        <div>
+          <ScrollReveal>
+            <div className={styles.contactCardBox}>
+              <h2 className={styles.contactCardTitle}><span>✉</span> General Inquiries</h2>
+              <p className={styles.sectionBody} style={{ marginBottom: '1.5rem' }}>
+                For general partnerships, media requests, or job queries, write to us.
+              </p>
+              {contactInfo.generalEmail && (
+                <a className={styles.contactCardLink} href={`mailto:${contactInfo.generalEmail}`}>{contactInfo.generalEmail}</a>
+              )}
+              {contactInfo.generalPhone && (
+                <a className={styles.contactCardLink} href={`tel:${contactInfo.generalPhone.replace(/\s/g, '')}`}>{contactInfo.generalPhone}</a>
+              )}
+            </div>
+          </ScrollReveal>
+
+          {contactInfo.hours.length > 0 && (
+            <ScrollReveal delay={1}>
+              <div className={styles.contactCardBox}>
+                <h2 className={styles.contactCardTitle}><span>⏰</span> Operating Hours</h2>
+                {contactInfo.hours.map((row) => (
+                  <div className={styles.contactHoursItem} key={row.day}>
+                    <span>{row.day}</span>
+                    <span>{row.isClosed ? 'Closed' : `${row.openTime} — ${row.closeTime}`}</span>
+                  </div>
+                ))}
+              </div>
+            </ScrollReveal>
+          )}
+
+          {contactInfo.locations.length > 0 && (
+            <ScrollReveal delay={2}>
+              <div className={styles.contactCardBox}>
+                <h2 className={styles.contactCardTitle}><span>📍</span> Global Locations</h2>
+                {contactInfo.locations.map((location, i) => (
+                  <div key={location.id} style={{ marginBottom: i < contactInfo.locations.length - 1 ? '1.5rem' : '0' }}>
+                    <h4 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.15rem', marginBottom: '0.5rem', fontWeight: 600 }}>{location.name}</h4>
+                    <p className={styles.sectionBody} style={{ fontSize: '0.9rem' }}>{location.address}</p>
+                  </div>
+                ))}
+              </div>
+            </ScrollReveal>
+          )}
+        </div>
+
+        <ScrollReveal delay={1}>{form}</ScrollReveal>
+      </div>
+    </section>
+  )
+}
+
+function OfficeMapSection({ block }: { block: CuriousLadooOfficeMapBlockData }) {
+  if (block.markers.length === 0) return null
+  return (
+    <section className={`${styles.innerSection} ${styles.innerSectionAlt}`}>
+      <div className={styles.servicesHeader} style={{ marginBottom: '2rem' }}>
+        <div>
+          {block.header.eyebrow && (
+            <ScrollReveal>
+              <p className={styles.sectionEyebrow}>{block.header.eyebrow}</p>
+            </ScrollReveal>
+          )}
+          <ScrollReveal delay={1}>
+            <h2 className={styles.sectionTitle}>
+              {renderHeading(block.header.title, block.header.subtitle)}
+            </h2>
+          </ScrollReveal>
+        </div>
+      </div>
+      {block.header.description && (
+        <ScrollReveal delay={2}>
+          <p className={styles.sectionBody} style={{ marginBottom: '2rem' }}>{block.header.description}</p>
+        </ScrollReveal>
+      )}
+
+      <ScrollReveal delay={1}>
+        <div className={styles.mapContainer}>
+          <div className={styles.mapCanvas}>
+            <svg fill="var(--ch-border)" height="100%" opacity="0.3" viewBox="0 0 1000 400" width="100%" xmlns="http://www.w3.org/2000/svg">
+              <path d="M150,150 Q160,140 180,160 T220,150 T280,180" fill="none" stroke="var(--ch-accent)" strokeDasharray="4 4" strokeWidth="1.5" />
+              <path d="M400,220 Q500,180 650,210 T780,120" fill="none" stroke="var(--ch-accent)" strokeDasharray="4 4" strokeWidth="1.5" />
+              <circle cx="200" cy="180" fill="var(--ch-border)" opacity="0.05" r="100" />
+              <circle cx="700" cy="200" fill="var(--ch-border)" opacity="0.05" r="150" />
+            </svg>
+            {block.markers.map((marker, i) => (
+              <div className={styles.mapMarker} key={i} style={{ left: marker.left, top: marker.top }}>
+                <div className={styles.mapMarkerLabel}>{marker.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </ScrollReveal>
+    </section>
+  )
+}
+
 function CMSHomeBlock({ block, pageType, siteName }: { block: CuriousLadooHomeBlockData; pageType: string; siteName: string }) {
   switch (block.type) {
     case 'hero': return pageType === 'home' ? <HeroSection block={block} /> : <InnerHeroSection block={block} />
@@ -1372,6 +1490,8 @@ function CMSHomeBlock({ block, pageType, siteName }: { block: CuriousLadooHomeBl
     case 'portfolioshowcase': return <PortfolioShowcaseSection block={block} />
     case 'compare': return <CompareSection block={block} />
     case 'careers': return <CareersSection block={block} />
+    case 'form': return <ContactFormSection block={block} />
+    case 'officemap': return <OfficeMapSection block={block} />
     case 'blogpreview': return <JournalSection block={block} />
     case 'team': return <TeamSection block={block} />
     case 'cta': return <CTASection block={block} siteName={siteName} />

@@ -436,6 +436,7 @@ export interface Page {
         | PortfolioShowcaseBlock
         | CompareBlock
         | CareersBlock
+        | OfficeMapBlock
       )[]
     | null;
   showInNavigation?: boolean | null;
@@ -1519,6 +1520,10 @@ export interface FormBlock {
   submitLabel?: string | null;
   successMessage?: string | null;
   errorMessage?: string | null;
+  /**
+   * Curious Ladoo only: shows General Inquiries / Operating Hours / Locations cards beside the form, sourced from the primary Location and Site Settings business hours.
+   */
+  showContactInfoCards?: boolean | null;
   /**
    * Optional Contact image. When omitted, the form uses a clean single-column layout.
    */
@@ -3397,6 +3402,66 @@ export interface CareersBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "OfficeMapBlock".
+ */
+export interface OfficeMapBlock {
+  /**
+   * Standardized section title and description.
+   */
+  sectionHeader: {
+    /**
+     * Small accented text above the title.
+     */
+    eyebrow?: string | null;
+    title: string;
+    headingTag?: ('h1' | 'h2' | 'h3' | 'h4') | null;
+    subtitle?: string | null;
+    description?: string | null;
+    alignment?: ('left' | 'center' | 'right') | null;
+    maxWidth?: ('standard' | 'narrow' | 'wide') | null;
+  };
+  /**
+   * Illustrative markers on the decorative map, positioned by percentage. Not tied to real coordinates.
+   */
+  markers: {
+    label: string;
+    left: string;
+    top: string;
+    id?: string | null;
+  }[];
+  /**
+   * Appearance and visibility settings for this block.
+   */
+  settings?: {
+    backgroundColor?: ('transparent' | 'surface' | 'primary' | 'accent' | 'dark') | null;
+    containerWidth?: ('standard' | 'wide' | 'full') | null;
+    /**
+     * Optional image to place behind the block.
+     */
+    backgroundImage?: (number | null) | Media;
+    /**
+     * 0-100 opacity for the background overlay.
+     */
+    overlayOpacity?: number | null;
+    paddingTop?: ('none' | 'small' | 'medium' | 'large') | null;
+    paddingBottom?: ('none' | 'small' | 'medium' | 'large') | null;
+    visibility?: ('desktop' | 'tablet' | 'mobile')[] | null;
+    animation?: ('none' | 'fade-in' | 'slide-up' | 'zoom-in' | 'stagger') | null;
+    /**
+     * Inject custom CSS classes for developer overrides.
+     */
+    customClasses?: string | null;
+    /**
+     * Used for #anchor links. Must be unique.
+     */
+    htmlId?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'officeMapBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "reservations".
  */
 export interface Reservation {
@@ -4260,6 +4325,7 @@ export interface PagesSelect<T extends boolean = true> {
         portfolioshowcaseBlock?: T | PortfolioShowcaseBlockSelect<T>;
         compareBlock?: T | CompareBlockSelect<T>;
         careersBlock?: T | CareersBlockSelect<T>;
+        officeMapBlock?: T | OfficeMapBlockSelect<T>;
       };
   showInNavigation?: T;
   navigationLabel?: T;
@@ -4938,6 +5004,7 @@ export interface FormBlockSelect<T extends boolean = true> {
   submitLabel?: T;
   successMessage?: T;
   errorMessage?: T;
+  showContactInfoCards?: T;
   sideImage?: T;
   imageAlt?: T;
   imagePosition?: T;
@@ -5866,6 +5933,47 @@ export interface CareersBlockSelect<T extends boolean = true> {
         type?: T;
         location?: T;
         description?: T;
+        id?: T;
+      };
+  settings?:
+    | T
+    | {
+        backgroundColor?: T;
+        containerWidth?: T;
+        backgroundImage?: T;
+        overlayOpacity?: T;
+        paddingTop?: T;
+        paddingBottom?: T;
+        visibility?: T;
+        animation?: T;
+        customClasses?: T;
+        htmlId?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "OfficeMapBlock_select".
+ */
+export interface OfficeMapBlockSelect<T extends boolean = true> {
+  sectionHeader?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        headingTag?: T;
+        subtitle?: T;
+        description?: T;
+        alignment?: T;
+        maxWidth?: T;
+      };
+  markers?:
+    | T
+    | {
+        label?: T;
+        left?: T;
+        top?: T;
         id?: T;
       };
   settings?:
