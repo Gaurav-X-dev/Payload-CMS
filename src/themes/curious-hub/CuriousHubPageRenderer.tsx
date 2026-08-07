@@ -4,11 +4,12 @@ import { getCuriousLadooContent } from '@/lib/site/getCuriousLadooContent'
 import { CMSHomePage } from './components/CMSHomePage'
 import { CuriousHubLayout } from './layouts/CuriousHubLayout'
 import { mapCuriousLadooHomeContent } from './mappers/cmsContent'
+import { buildCuriousLadooBreadcrumbJsonLd, combineCuriousLadooJsonLd } from './utils/buildCuriousLadooJsonLd'
 import { normalizePathname } from './utils/normalizePathname'
 import { getCuriousHubPage } from './utils/getPageComponent'
 
 // Routes migrated to the CMS pipeline so far. Every other path remains fully static.
-export const CMS_DRIVEN_PATHS = new Set(['/', '/about', '/services', '/brands', '/portfolio', '/how-we-work', '/testimonials', '/careers', '/faqs', '/contact'])
+export const CMS_DRIVEN_PATHS = new Set(['/', '/about', '/services', '/brands', '/portfolio', '/how-we-work', '/testimonials', '/careers', '/faqs', '/contact', '/blog'])
 
 export async function CuriousHubPageRenderer({ hostname, pathname, site }: ThemePageRendererProps) {
   const normalizedPathname = normalizePathname(pathname)
@@ -24,9 +25,20 @@ export async function CuriousHubPageRenderer({ hostname, pathname, site }: Theme
     if (!rawContent.page) notFound()
 
     const content = mapCuriousLadooHomeContent(rawContent)
+    const breadcrumbItems = normalizedPathname === '/' || !content.page
+      ? []
+      : [
+          { name: 'Home', url: `https://${site.hostname}/` },
+          { name: content.page.title, url: `https://${site.hostname}${normalizedPathname}` },
+        ]
+    const jsonLd = combineCuriousLadooJsonLd(
+      content.seo.jsonLd,
+      buildCuriousLadooBreadcrumbJsonLd(breadcrumbItems),
+    )
     return (
       <CuriousHubLayout
         footer={content.footer}
+        jsonLd={jsonLd}
         nav={content.navigation}
         pathname={normalizedPathname}
         site={content.site}

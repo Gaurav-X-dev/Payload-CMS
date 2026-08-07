@@ -233,8 +233,8 @@ needed**, must be preserved exactly as-is.
 | 11 | Careers | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Done — see §14 |
 | 12 | FAQs | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Done — see §15 |
 | 13 | Contact | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Done — see §16 |
-| 14 | Blog/Journal | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | Pending |
-| 15 | SEO | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | Pending |
+| 14 | Blog/Journal | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Done — see §17 |
+| 15 | SEO | – | – | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Done — see §18 |
 | 16 | Final design parity | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | Pending |
 | 17 | Regression testing | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | Pending |
 
@@ -1446,7 +1446,275 @@ Footer on this page like every other). The decorative map's marker positions rem
 illustrative percentages, not derived from Locations' real `latitude`/`longitude` — matching the
 original design exactly.
 
-## 17. Verification commands (from `package.json`)
+## 17. Milestone 14 record — Blog / Journal (one additive field on `blogpreviewBlock`; the detail route built from scratch — it never rendered anything for any local theme before this milestone)
+
+**Index page audit:** `BlogPage.tsx` has hero + a separate "Featured Article" banner + a 3-column
+article grid (`.blogMainGrid`, distinct from the `blogpreviewBlock`-driven `.journalGrid` Home's
+preview already uses) + a newsletter box. Every field it needs already exists on the `BlogPosts`
+collection (title/slug/excerpt/content/heroImage/status/author/publishedDate/isFeatured/isPinned/
+categories/tags/metaTitle/metaDescription/metaImage/relatedPosts/readingTimeMinutes) — confirmed
+nothing was missing before writing any code.
+
+**Detail route audit — a genuinely different starting point from every prior milestone.**
+`src/app/(app)/blog/[slug]/page.tsx` never called `resolveLocalSite`/`renderLocalThemePage` at all;
+it only handled a legacy `x-tenant-config` stub and otherwise 404'd. Confirmed live before touching
+anything: every local-site request to `/blog/<any-slug>` already 404'd. There is no static "source of
+truth" for the detail page to preserve — it was built from scratch, reusing `heroBlock`'s CSS
+pattern, `.blogMainGrid`/`.journalCard`-family classes for "Related Articles", and Payload's own
+official Lexical React serializer (`@payloadcms/richtext-lexical/react`'s `RichText`) for the article
+body — Ghee Roast's own richText handling (`lexicalText`) is a lossy plain-text stub, not reused here
+since the entire point of this page is displaying rich content correctly (headings/bold/links/lists).
+
+**Reuse-first, one additive field.** `blogpreviewBlock` gained `presentation: 'preview' | 'index'`
+(default `'preview'`, mirroring the FAQ/ContentGrid pattern from Milestones 11-12 exactly) so the
+index page's featured-banner-plus-grid layout doesn't disturb Home's existing "Latest from the
+Journal" preview section, which keeps using `'preview'` unchanged and was re-verified live to still
+show its original 3 posts in the original order. No new block, no new collection.
+
+**Schema/migration** (`20260807_061312_curious_ladoo_blog`) — reviewed with the same
+pre-generation identifier-length scan as every prior milestone: longest identifier 51 chars, zero
+over the 63-char limit. 2 new enum types, 2 new nullable/defaulted columns. Zero DROP/DELETE/TRUNCATE
+in the applied `up()`. Pre/post row counts confirmed identical (Ghee Roast pages=7; the one
+pre-existing `blogpreviewBlock` row on Home confirmed to receive the new column's default `'preview'`
+with no behavior change). Shown to you with the full justification above and approved before applying.
+
+**Featured-post selection:** `isPinned` ("Keep at the top of the blog index," per the field's own
+admin description) selects the banner post; falling back to the first visible post (by
+`-publishedDate`) when none is pinned. `isFeatured` keeps its pre-existing, separate meaning
+(Home's `featuredOnly` curation flag) — the two fields were never conflated.
+
+**Loader:** new `loadCuriousLadooBlogPostWithPayload` (added to `curiousLadooContentCore.ts`,
+reusing its existing private helpers directly rather than duplicating them) resolves a single post by
+tenant + slug — published-only, defense-in-depth re-verified in application code exactly like every
+other Curious Ladoo loader in this file, which is also what makes cross-tenant slug guessing
+impossible (a same-slug post under a different tenant is filtered out, never returned). `relatedPosts`
+are resolved and tenant-filtered in the same pass. New `getCuriousLadooBlogPost.ts` mirrors
+`getCuriousLadooContent.ts`'s `React.cache()` wrapper exactly, keyed on host + slug + tenant for cache
+isolation. The index page's own data need (all published posts) was already served by the existing
+conditional `blogPosts` dependency (`blockTypes.has('blogpreviewBlock')`, tenant-scoped, sorted
+`-publishedDate`, bounded) since Milestone 4 — zero loader changes needed there.
+
+**Mapper:** `mapBlogPreviewBlock` gained the featured/items split for `presentation: 'index'` (no
+`limit` applied in index mode — the original design has no pagination to preserve). New
+`mapCuriousLadooBlogPost` (post detail + author-name-if-populated + related posts + SEO fields).
+`mapCuriousLadooSite` gained a `newsletter` field (sourced from the existing, previously-unused
+`SiteSettings.newsletter` group) so the blog page's newsletter box content is genuinely
+CMS-editable — confirmed via grep that nothing else in the theme reads this field, so populating it
+had no effect on any other page.
+
+**Renderer:** new `BlogIndexSection` (featured banner + grid, cards linked to `/blog/{slug}` — the
+original static cards were never linked anywhere, which would have made the new detail routes
+unreachable from the UI; fixing this is completing the "routes" the goal explicitly asked for, not a
+redesign, and is called out here transparently), new `BlogPostPage` (title/meta/cover/RichText
+body/tags/related posts), new `BlogNewsletter` (real submission, reusing Ghee Roast's
+`buildNewsletterRequest`/`createSubmissionGuard` via a plain cross-theme import — same zero-risk,
+zero-duplication pattern already established for the Contact form in Milestone 13; replaces the
+original's non-functional `alert()` stub, matching that same precedent). New `buildCuriousLadooBlogPostMetadata`
++ `buildCuriousLadooBlogPostJsonLd` (canonical URL, OpenGraph `type: 'article'`, Twitter card,
+`BlogPosting` JSON-LD) modeled on Ghee Roast's own already-proven `buildGheeRoastMetadata.ts`
+approach — not shared code (different content-result shapes), but the same pattern. A small,
+genuinely new `.articleBody`/`.articleMeta`/`.articleCoverImage`/`.articleTags` CSS block was added
+for the article body's typography, since no prior design exists to preserve there.
+
+**Detail routing:** `src/app/(app)/blog/[slug]/page.tsx` now checks `resolveLocalSite` first (mirroring
+`/blog/page.tsx`'s already-existing pattern exactly) and renders the new detail page for local themes;
+the pre-existing `x-tenant-config` stub path is untouched for non-local tenants. `generateMetadata` is
+wired the same way. Unknown/draft slugs → `notFound()`.
+
+**Seed:** `src/seed/curiousLadooBlog.ts` + `npm run db:seed:curious-ladoo-blog` — idempotent (verified
+by running twice: second run reported `created: 0, updated: 7` for posts and `updated` for the index
+page and Site Settings newsletter). The 3 posts already seeded by Milestone 4's Home seed are
+**updated, never duplicated**, and only detail-page-relevant fields are touched (`isPinned` on the one
+featured post, `metaTitle`... reverted after hitting the collection's 70-char limit — omitted instead,
+falling back to the post title like every other page's SEO pattern, and a fuller article body).
+`title`/`slug`/`excerpt`/`heroImage`/`publishedDate`/`categories`/`tags` on those three are left
+**completely untouched**, so Home's preview (which reads exactly those fields) cannot change — verified
+live. A pre-existing minor gap was found and deliberately left alone rather than "fixed": those three
+posts' category label was originally seeded into `tags` instead of `categories` (which is what both
+`JournalSection` and the new index page actually read for the small card label), so their cards show
+no category chip; fixing it would also change Home's already-shipped rendering, so — per this
+milestone's own "do not change completed Curious Ladoo behavior" rule — it was left exactly as
+Milestone 4 shipped it. The 4 new posts set `categories` correctly. 4 new media uploads, reused
+on every subsequent run. `SiteSettings.newsletter` updated via a **partial update** (only that field
+touched — every other Site Settings field, including the `hours` array from Milestone 13, is left
+untouched by Payload's partial-update semantics).
+
+**No author was set on any post.** The only three users in the database are the super admin (no
+tenant association) and one tenant-scoped admin/member each for Ghee Roast and Zuru Zuru — there is no
+Curious-Ladoo-tenant-scoped user to assign, and creating one would violate this milestone's explicit
+"never create/delete tenants or users" rule. `authorName` degrades to an empty string and the
+detail page's meta line simply omits it, matching the posts' pre-existing `author: null` state.
+
+**Record counts:** `blog-posts` table: 3 pre-existing (updated in place) + 4 new = 7 total for Curious
+Ladoo, zero duplicates on re-run (confirmed via direct SQL, ordered by `publishedDate`).
+
+**Routing proof:** `CMS_DRIVEN_PATHS` extended to `/blog` (index, via the standard Page pipeline).
+Verified live across every tenant hostname alias: `/blog` → 200 (hero, featured banner showing the
+pinned post, all 6 other posts in the grid, newsletter box with the correct seeded copy, all 7 cards
+linked to their detail pages); `/blog/why-systems-beat-talent-every-time-in-restaurants` → 200 (title,
+date, cover image, full multi-paragraph article body via the Lexical serializer, related-posts
+section, JSON-LD `BlogPosting` script, correct canonical `<link>`); `/blog/does-not-exist` → 404.
+**Real newsletter submission verified end-to-end**: `POST /api/contact-submissions` with
+`subject: "Newsletter Signup"` → `201`, correctly tenant-scoped, exercising the same
+`validateContactSubmissionSubject` bypass and the Milestone 13 `tenantField` fix. **Home
+re-verified live**: still exactly the same 3 original posts, in the same order, in its preview
+section — confirmed the 4 new (older-dated) posts never displace them from the existing `limit: 3`
+auto-pool. Ghee Roast's own separate `/contact` and `/blog` (404, it has none) both re-checked live.
+
+**Test results:** new `tests/curious-ladoo-blog.test.ts` (14 tests) covering index page
+publish/draft visibility, the featured/items split (pinned-post-wins and no-pinned-post-falls-back
+cases), the `'preview'` default staying unaffected, tenant + slug resolution, draft-hidden, unknown
+slug, cross-tenant same-slug rejection (both at the loader level, where the filtering actually lives),
+author/media/relatedPosts mapping safety, and the SEO metadata/JSON-LD builders. Combined Curious
+Ladoo suite: 90/90 (including the pre-existing Home test "Blog Preview only ever includes published,
+same-tenant posts," re-run and confirmed unaffected). `test:ghee-cms`: 40/40. Full `npm test` chain
+passes through phase1/phase2 (same one pre-existing unrelated failure noted in every earlier
+milestone).
+
+**Build result:** `typecheck` clean (app + tests) · `lint`: 0 new warnings/errors in any hand-written
+file after fixing two real findings during development (an unused destructured variable, suppressed
+with an explanatory comment since it exists purely to exclude a field from a spread; only the standard
+4 migration-boilerplate warnings are new) · `npm run build` succeeds · `git diff --check` clean (only
+benign CRLF/LF warnings).
+
+**Ghee Roast status:** unaffected. It has no blog pages of its own; `/blog` and `/blog/[slug]` both
+correctly 404 for it (confirmed live), and its own `/contact` page (unrelated to this milestone,
+re-checked as a general regression sweep) is unaffected.
+
+**Zuru Zuru status:** unaffected — no code path touched this milestone reads or renders anything
+Zuru-Zuru-specific. Live-verified `zuru-zuru.localhost/` → 200.
+
+**Limitations:** no author is set on any Curious Ladoo blog post (no tenant-scoped user exists to
+assign, and creating one is out of scope). The three pre-existing posts' category chip is empty on
+their cards (a pre-existing Milestone 4 gap, deliberately left unfixed to avoid changing Home's
+already-shipped output — see Seed section above).
+
+## 18. Milestone 15 record — SEO (zero schema/migration changes; wires up already-existing, previously-underused SEO architecture)
+
+**Audit first.** Every field this milestone needed already existed: the `SEO` collection
+(tenant-scoped 1:1: `metaTitlePattern`, `metaDescription`, `keywords`, `canonicalUrl`, `robots`,
+`ogTitle`/`ogDescription`/`defaultOGImage`/`ogSiteName`, `twitterCard`/`twitterSite`/`twitterCreator`,
+`jsonLd`, `googleSiteVerification`/`bingSiteVerification`), the `Pages` collection's own SEO tab
+(`metaTitle`, `metaDescription`, `metaImage`, `canonicalUrl`, `noIndex` — present on every page since
+Milestone 3, populated with real per-page copy on all 10 pages, but never once read by any Curious
+Ladoo code path before this milestone), and `Tenant.branding.favicon`/`logo` (present in schema,
+wired into rendering for neither Ghee Roast nor Curious Ladoo before this milestone). **No migration
+was created** — confirmed nothing needed to change at the schema level, so none was proposed.
+Ghee Roast's own `buildGheeRoastMetadata.ts`/`GheeRoastLayout.tsx` JSON-LD pattern was used as the
+reference architecture to mirror (title-pattern interpolation, canonical, robots, OpenGraph, Twitter,
+verification, `<script type="application/ld+json">` with `<` escaped to `<` for injection
+safety) — not shared code (the two themes' content shapes differ), but the same proven approach.
+
+**A pre-existing gap this milestone closes, flagged (not silently patched) in Milestone 5's own
+record:** `/about`'s `<title>`/description previously came from the tenant-wide SEO pattern only, not
+the Page's own `metaTitle`/`metaDescription` — true of every CMS-driven page, not just About. Fixed
+by wiring `buildCuriousLadooMetadata.ts` to read the Page-level fields first.
+
+**Title-doubling avoided by design, not by copying Ghee Roast's rule verbatim.** Every Curious Ladoo
+page's seeded `metaTitle` already ends in "— Curious Ladoo" / "| Curious Ladoo" (set in Milestones
+5-14). Mirroring Ghee Roast's "always interpolate metaTitle through the tenant's `%s` pattern" rule
+here would double-brand every title (e.g. "About Us — Curious Ladoo | Curious Ladoo"). Resolved by
+treating an explicit `page.metaTitle` as the complete, final title (used verbatim); only the raw
+`page.title` fallback (never brand-suffixed) is run through the tenant's `%s` pattern. Verified live:
+`/about` → `<title>About Us — Curious Ladoo</title>` (single brand mention).
+
+**A genuine bug found and fixed, not a redesign:** Milestone 14's blog metadata/JSON-LD builder used
+the human-formatted display date (`post.date`, e.g. "June 1, 2025") for OpenGraph's `publishedTime`
+and JSON-LD's `datePublished`/`dateModified` — both require ISO 8601 per spec, so Milestone 14 was
+shipping invalid structured data. Fixed by adding `publishedDateISO`/`modifiedDate` to the blog post
+mapper (raw ISO strings) and using those in the builder instead. Verified live:
+`article:published_time` → `2025-06-01T00:00:00.000Z`, `article:modified_time` →
+`2026-08-07T07:09:50.041Z`.
+
+**New shared JSON-LD helpers** (`buildCuriousLadooJsonLd.ts`): `buildCuriousLadooBreadcrumbJsonLd`
+(generic; a single "Home" crumb alone is dropped as meaningless), `combineCuriousLadooJsonLd`
+(flattens N entries into one array, drops nulls), `serializeCuriousLadooJsonLd` (stringify + the same
+`<` escape Ghee Roast uses, single-vs-array handling). Both the Page-based renderer
+(`CuriousHubPageRenderer.tsx`) and the Blog detail route now combine their JSON-LD through these same
+three functions and render it through one shared `CuriousHubLayout` `jsonLd` prop — Milestone 14's
+ad-hoc inline `<script>` tag in the blog detail route was consolidated into this single mechanism
+rather than left as a second code path.
+
+**New page-level metadata builder** (`buildCuriousLadooMetadata.ts`, wired into the existing
+`getCuriousLadooMetadata.ts` entry point — no new entry point created) also exports
+`parseRobotsDirective`, reused by both the page-level and blog-post-level builders so the two can
+never drift apart on how a robots directive string becomes Next.js's structured `robots` field.
+
+**Seed** (`src/seed/curiousLadooSeo.ts` + `npm run db:seed:curious-ladoo-seo`) — a **partial update**
+touching only `SEO.jsonLd` and `SEO.defaultOGImage` on Curious Ladoo's existing SEO document; every
+other already-populated field (`metaTitlePattern`, `metaDescription`, `keywords`, `robots`,
+`ogTitle`, `ogSiteName`, `twitterCard`, `twitterSite`) is left completely untouched — verified via
+direct SQL before/after. `jsonLd` is set to an Organization schema (`name`, `description`, `sameAs`
+built from the tenant's 3 already-configured, enabled Site Settings social URLs — Instagram, LinkedIn,
+Twitter). `defaultOGImage` reuses the existing `hero.png` media document (found by tenant+title
+lookup via the established `findOrUploadMedia` helper — never a hardcoded ID). Verified idempotent by
+running twice: both runs reported `media: { created: 0, reused: 1 }, seo: 'updated'`.
+
+**No favicon exists to wire up.** `Tenant.branding.favicon`/`logo` are both null for Curious Ladoo (no
+admin has uploaded one) — confirmed via direct SQL. The rendering code (`site.favicon` →
+`metadata.icons`) is complete and correct; it simply renders nothing until an asset is uploaded. Not
+fixed by seeding one, since no source asset was designated as "the favicon" by any prior milestone and
+inventing one would be a design decision outside this milestone's scope.
+
+**`sitemap.ts` / `robots.ts`** (new, Next.js file-convention routes — neither existed for any tenant
+before this milestone) — host-aware via `headers()` + `resolveLocalSite`. Curious Ladoo hosts get a
+real sitemap (all published Pages + BlogPosts, tenant-scoped, `changeFrequency`/`priority` tiered by
+type) and a robots rule set referencing it. Every other host (Ghee Roast, Zuru Zuru, unresolved)
+gets an empty `<urlset>` / a generic universal `Disallow: /admin` rule with no sitemap reference,
+rather than a 404 — **flagged transparently**: this is new shared infrastructure that applies the same
+sensible crawler-hygiene default regardless of tenant, not tenant-specific behavior removed from
+anyone; Ghee Roast and Zuru Zuru never had these routes before, so nothing is being taken away.
+
+**Tests:** new `tests/curious-ladoo-seo.test.ts` (14 tests) covering `mapCuriousLadooSEO` (full field
+mapping, tenant-scoping fallback, valid/malformed/array JSON-LD parsing), `buildCuriousLadooMetadata`
+(404 empty-metadata case, metaTitle-verbatim vs `%s`-interpolated-fallback, canonical override vs
+derived, `noIndex` forcing robots regardless of the tenant directive, OG/Twitter fallback chains,
+favicon wiring), `parseRobotsDirective`, and the three JSON-LD helpers (breadcrumb minimum-length
+rule, combine flattening/null-dropping, serialize empty/single/multiple/XSS-escape cases).
+`tests/curious-ladoo-blog.test.ts`'s existing JSON-LD test was updated for the builder's new
+`CuriousLadooJsonLdEntry[]` return type (previously a pre-serialized string) — re-verified passing.
+Combined Curious Ladoo suite: **104/104**. `test:ghee-cms`: **40/40**. `test:authorization`: 23/23 ·
+`test:phase1`: 11/11 · `test:phase2`: 11/11 · `test:development-content`: 11/12 (same pre-existing
+unrelated `dev`-script-string failure noted in every earlier milestone).
+
+**Build result:** `typecheck` clean (app + tests) · `lint`: 0 new warnings/errors in any file touched
+this milestone (the single pre-existing error is in `scripts/gen-migration.cjs`, untouched; all 237
+pre-existing warnings are in `tests/security/*`, also untouched) · `npm run build` succeeds
+(`/sitemap.xml` and `/robots.txt` both compile as dynamic routes) · `git diff --check` clean (only
+benign CRLF/LF warnings).
+
+**Live verification** against the running dev server across all three tenant hostname aliases:
+Curious Ladoo `/sitemap.xml` → 11 pages + 7 blog posts with correct `lastmod`/`changefreq`/`priority`;
+`/robots.txt` → allow-all + sitemap reference; `/about` → correct `<title>`, description, canonical,
+full OpenGraph + Twitter card set, Organization + BreadcrumbList JSON-LD; `/` → correct title/canonical;
+`/blog/why-systems-beat-talent-every-time-in-restaurants` → correct canonical, `og:type=article`,
+ISO-8601 `article:published_time`/`article:modified_time`, `article:tag`, valid `BlogPosting` +
+`BreadcrumbList` JSON-LD; unknown route → 404 (unchanged). Ghee Roast and Zuru Zuru re-verified:
+homepages still 200 with titles unchanged (Ghee Roast spot-checked), `/sitemap.xml` → empty `<urlset>`,
+`/robots.txt` → generic rule with no sitemap reference for both.
+
+**Ghee Roast status:** unaffected. No Ghee Roast file was modified this milestone; its own SEO
+pipeline (`buildGheeRoastMetadata.ts`, `GheeRoastLayout.tsx`) is untouched and was only read as a
+reference. Its `/sitemap.xml`/`/robots.txt` now resolve (previously 404) with generic, non-tenant-specific
+content — the one shared-infrastructure change noted above.
+
+**Zuru Zuru status:** unaffected — no code path touched this milestone reads or renders anything
+Zuru-Zuru-specific. Live-verified `zuru-zuru.localhost/` → 200, `/sitemap.xml` → empty, `/robots.txt`
+→ generic.
+
+**Limitations:** no favicon/logo asset exists for Curious Ladoo yet (rendering code is correct but
+inert until one is uploaded). The Organization JSON-LD's `description` and `sameAs` are seeded, static
+content (not derived from a richer "About" source) — reasonable for a first pass, could later be
+enriched with `LocalBusiness`/address/phone fields once a physical-location concept is confirmed in
+scope. The Breadcrumb JSON-LD's crumb label for non-home pages uses the Page's raw `title` field
+(e.g. "Curious Ladoo About", "Curious Ladoo Services" — every page's `title` was seeded in
+Milestones 5-14 as an internal/admin-facing document label, distinct from the brand-suffixed
+`metaTitle`). This is valid, non-broken structured data (schema.org places no constraint on crumb
+wording), but the redundant "Curious Ladoo" prefix reads awkwardly. No separate "short display title"
+field exists on `Pages` to use instead, and inventing one is a schema decision outside this milestone's
+scope — flagged here rather than silently worked around.
+
+## 19. Verification commands (from `package.json`)
 
 `npm run typecheck` · `npm run lint` · `npm run build` · `npm test` (chains authorization, phase1,
 phase2, development-content, ghee-cms) · `npm run test:security`. No test runner is Ghee-Roast- or

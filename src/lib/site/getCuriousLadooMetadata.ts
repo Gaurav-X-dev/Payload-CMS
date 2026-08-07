@@ -1,6 +1,9 @@
 import type { Metadata } from 'next'
 import { getCuriousLadooContent } from './getCuriousLadooContent'
 import type { LocalSite } from './types'
+import { mapCuriousLadooHomeContent } from '../../themes/curious-hub/mappers/cmsContent'
+import { normalizePathname } from '../../themes/curious-hub/utils/normalizePathname'
+import { buildCuriousLadooMetadata } from '../../themes/curious-hub/utils/buildCuriousLadooMetadata'
 
 export async function getCuriousLadooMetadata({
   host,
@@ -11,17 +14,9 @@ export async function getCuriousLadooMetadata({
   pathname: string
   site: LocalSite
 }): Promise<Metadata> {
-  const content = await getCuriousLadooContent({ host, pathname, site })
-  if (!content.page || !content.seo) return {}
+  const rawContent = await getCuriousLadooContent({ host, pathname, site })
+  if (!rawContent.page) return {}
 
-  const titlePattern = content.seo.metaTitlePattern?.trim()
-  const pageTitle = content.page.title?.trim() || ''
-  const title = titlePattern && titlePattern.includes('%s')
-    ? titlePattern.replace('%s', pageTitle)
-    : (pageTitle || undefined)
-
-  return {
-    description: content.seo.metaDescription?.trim() || undefined,
-    title,
-  }
+  const content = mapCuriousLadooHomeContent(rawContent)
+  return buildCuriousLadooMetadata({ content, hostname: site.hostname, pathname: normalizePathname(pathname) })
 }

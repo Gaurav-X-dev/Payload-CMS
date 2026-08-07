@@ -2089,6 +2089,10 @@ export interface BlogPreviewBlock {
     alignment?: ('left' | 'center' | 'right') | null;
     maxWidth?: ('standard' | 'narrow' | 'wide') | null;
   };
+  /**
+   * Controls section chrome. "Blog Index" adds a large featured-article banner above the grid, sourced from the pinned post.
+   */
+  presentation?: ('preview' | 'index') | null;
   source?: ('collection' | 'manual') | null;
   posts?: (number | BlogPost)[] | null;
   featuredOnly?: boolean | null;
@@ -5265,6 +5269,7 @@ export interface BlogPreviewBlockSelect<T extends boolean = true> {
         alignment?: T;
         maxWidth?: T;
       };
+  presentation?: T;
   source?: T;
   posts?: T;
   featuredOnly?: T;

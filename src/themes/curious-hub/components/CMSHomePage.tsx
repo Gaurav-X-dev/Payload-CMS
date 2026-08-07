@@ -14,6 +14,7 @@ import type {
   CuriousLadooHeroBlockData,
   CuriousLadooHomeBlockData,
   CuriousLadooHomeContent,
+  CuriousLadooNewsletterData,
   CuriousLadooOfficeMapBlockData,
   CuriousLadooPipelineBlockData,
   CuriousLadooPortfolioShowcaseBlockData,
@@ -25,6 +26,7 @@ import type {
   CuriousLadooTickerBlockData,
 } from '../mappers/dynamicTypes'
 import { AnimatedCounter } from './AnimatedCounter'
+import { BlogNewsletter } from './BlogNewsletter'
 import { ContactForm } from './ContactForm'
 import { FAQAccordion } from './FAQAccordion'
 import { PortfolioFilterGrid } from './PortfolioFilterGrid'
@@ -1010,6 +1012,67 @@ function JournalSection({ block }: { block: CuriousLadooBlogPreviewBlockData }) 
   )
 }
 
+function BlogIndexSection({ block, newsletter }: { block: CuriousLadooBlogPreviewBlockData; newsletter: CuriousLadooNewsletterData }) {
+  if (!block.featured && block.items.length === 0) return null
+  return (
+    <section className={styles.innerSection}>
+      {block.featured && (
+        <ScrollReveal>
+          <SmartLink className={styles.blogFeaturedBanner} href={`/blog/${block.featured.slug}`}>
+            <div className={styles.blogFeaturedImg}>
+              {block.featured.image && (
+                <Image alt={block.featured.image.alt} fill loading="lazy" src={block.featured.image.src} style={{ objectFit: 'cover' }} />
+              )}
+            </div>
+            <div className={styles.blogFeaturedContent}>
+              <span className={styles.sectionEyebrow}>Featured Article{block.featured.tag ? ` · ${block.featured.tag}` : ''}</span>
+              <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: '2rem', margin: '1rem 0', lineHeight: 1.2, color: 'var(--ch-dark)' }}>
+                {block.featured.title}
+              </h3>
+              <p className={styles.sectionBody} style={{ fontSize: '0.92rem', marginBottom: '1.5rem' }}>
+                {block.featured.excerpt}
+              </p>
+              <span style={{ fontSize: '0.75rem', letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--ch-accent)', fontWeight: 600 }}>
+                Read report{block.featured.readMinutes ? ` (${block.featured.readMinutes} min)` : ''} →
+              </span>
+            </div>
+          </SmartLink>
+        </ScrollReveal>
+      )}
+
+      {block.items.length > 0 && (
+        <div className={styles.blogMainGrid}>
+          {block.items.map((article, i) => (
+            <ScrollReveal delay={revealDelay(i, 3)} key={article.id}>
+              <SmartLink className={styles.journalCard} href={`/blog/${article.slug}`}>
+                <div className={styles.journalCardImage}>
+                  {article.image && (
+                    <Image alt={article.image.alt} fill loading="lazy" src={article.image.src} style={{ objectFit: 'cover' }} />
+                  )}
+                </div>
+                <div className={styles.journalCardBody}>
+                  {article.tag && (
+                    <div className={styles.journalCardTag}>
+                      {article.tag}{article.readMinutes ? ` · ${article.readMinutes} min read` : ''}
+                    </div>
+                  )}
+                  <h4 className={styles.journalCardTitle}>{article.title}</h4>
+                  <p className={styles.journalCardExcerpt}>{article.excerpt}</p>
+                  <div className={styles.journalCardMeta}>{article.date}</div>
+                </div>
+              </SmartLink>
+            </ScrollReveal>
+          ))}
+        </div>
+      )}
+
+      <ScrollReveal>
+        <BlogNewsletter newsletter={newsletter} />
+      </ScrollReveal>
+    </section>
+  )
+}
+
 function TeamSection({ block }: { block: CuriousLadooTeamBlockData }) {
   if (block.members.length === 0) return null
   return (
@@ -1474,7 +1537,7 @@ function OfficeMapSection({ block }: { block: CuriousLadooOfficeMapBlockData }) 
   )
 }
 
-function CMSHomeBlock({ block, pageType, siteName }: { block: CuriousLadooHomeBlockData; pageType: string; siteName: string }) {
+function CMSHomeBlock({ block, newsletter, pageType, siteName }: { block: CuriousLadooHomeBlockData; newsletter: CuriousLadooNewsletterData; pageType: string; siteName: string }) {
   switch (block.type) {
     case 'hero': return pageType === 'home' ? <HeroSection block={block} /> : <InnerHeroSection block={block} />
     case 'ticker': return <TickerSection block={block} />
@@ -1492,7 +1555,9 @@ function CMSHomeBlock({ block, pageType, siteName }: { block: CuriousLadooHomeBl
     case 'careers': return <CareersSection block={block} />
     case 'form': return <ContactFormSection block={block} />
     case 'officemap': return <OfficeMapSection block={block} />
-    case 'blogpreview': return <JournalSection block={block} />
+    case 'blogpreview': return block.presentation === 'index'
+      ? <BlogIndexSection block={block} newsletter={newsletter} />
+      : <JournalSection block={block} />
     case 'team': return <TeamSection block={block} />
     case 'cta': return <CTASection block={block} siteName={siteName} />
     default: return null
@@ -1505,7 +1570,7 @@ export function CMSHomePage({ content }: { content: CuriousLadooHomeContent }) {
   return (
     <>
       {content.layout.map((block, index) => (
-        <CMSHomeBlock block={block} key={`${block.type}-${index}`} pageType={page.pageType} siteName={content.site.name} />
+        <CMSHomeBlock block={block} key={`${block.type}-${index}`} newsletter={content.site.newsletter} pageType={page.pageType} siteName={content.site.name} />
       ))}
     </>
   )

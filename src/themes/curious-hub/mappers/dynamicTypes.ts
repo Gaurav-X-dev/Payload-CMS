@@ -147,14 +147,17 @@ export type CuriousLadooJournalItemData = {
   excerpt: string
   id: number
   image: CuriousLadooMediaData
+  readMinutes: number
   slug: string
   tag: string
   title: string
 }
 
 export type CuriousLadooBlogPreviewBlockData = {
+  featured: CuriousLadooJournalItemData | null
   header: CuriousLadooSectionHeaderData
   items: CuriousLadooJournalItemData[]
+  presentation: 'index' | 'preview'
   type: 'blogpreview'
 }
 
@@ -367,17 +370,53 @@ export type CuriousLadooFooterData = {
   copyright: string
 }
 
+export type CuriousLadooNewsletterData = {
+  buttonLabel: string
+  description: string
+  enabled: boolean
+  errorMessage: string
+  placeholder: string
+  successMessage: string
+  title: string
+}
+
 export type CuriousLadooSiteData = {
   address: string
   description: string
   email: string
+  favicon: CuriousLadooMediaData
   name: string
+  newsletter: CuriousLadooNewsletterData
   social: { href: string; label: string }[]
   tagline: string
 }
 
 export type CuriousLadooSEOData = {
+  bingSiteVerification: string
+  canonicalUrl: string
   description: string
+  googleSiteVerification: string
+  jsonLd: Array<Record<string, unknown>> | Record<string, unknown> | null
+  keywords: string[]
+  ogDescription: string
+  ogImage: CuriousLadooMediaData
+  ogSiteName: string
+  ogTitle: string
+  robots: string
+  title: string
+  twitterCard: 'app' | 'player' | 'summary' | 'summary_large_image'
+  twitterCreator: string
+  twitterSite: string
+}
+
+export type CuriousLadooPageMetaData = {
+  canonicalUrl: string
+  id: number
+  metaDescription: string
+  metaImage: CuriousLadooMediaData
+  metaTitle: string
+  noIndex: boolean
+  pageType: string
   title: string
 }
 
@@ -391,7 +430,36 @@ export type CuriousLadooHomeContent = {
   footer: CuriousLadooFooterData
   layout: CuriousLadooHomeBlockData[]
   navigation: CuriousLadooNavigationData
-  page: { id: number; pageType: string; title: string } | null
+  page: CuriousLadooPageMetaData | null
+  seo: CuriousLadooSEOData
+  site: CuriousLadooSiteData
+}
+
+export type CuriousLadooBlogPostDetailData = {
+  authorName: string
+  categories: string[]
+  content: unknown
+  coverImage: CuriousLadooMediaData
+  date: string
+  excerpt: string
+  id: number
+  metaDescription: string
+  metaImage: CuriousLadooMediaData
+  metaTitle: string
+  modifiedDate: string
+  publishedDateISO: string
+  readMinutes: number
+  relatedPosts: CuriousLadooJournalItemData[]
+  showTableOfContents: boolean
+  slug: string
+  tags: string[]
+  title: string
+}
+
+export type CuriousLadooBlogPostPageData = {
+  footer: CuriousLadooFooterData
+  navigation: CuriousLadooNavigationData
+  post: CuriousLadooBlogPostDetailData | null
   seo: CuriousLadooSEOData
   site: CuriousLadooSiteData
 }

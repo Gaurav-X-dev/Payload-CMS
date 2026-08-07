@@ -34,6 +34,8 @@ import type {
   TeamBlock as TeamBlockType,
 } from '../../../payload-types'
 import type {
+  CuriousLadooBlogPostDetailData,
+  CuriousLadooBlogPostPageData,
   CuriousLadooBlogPreviewBlockData,
   CuriousLadooBrandItemData,
   CuriousLadooBrandsShowcaseBlockData,
@@ -51,9 +53,11 @@ import type {
   CuriousLadooHeroBlockData,
   CuriousLadooHomeBlockData,
   CuriousLadooHomeContent,
+  CuriousLadooJournalItemData,
   CuriousLadooLinkData,
   CuriousLadooMediaData,
   CuriousLadooNavigationData,
+  CuriousLadooNewsletterData,
   CuriousLadooOfficeMapBlockData,
   CuriousLadooPipelineBlockData,
   CuriousLadooPortfolioItemData,
@@ -449,6 +453,21 @@ function mapTestimonialsBlock(
   }
 }
 
+function mapJournalItem(p: BlogPost, tenantID: number): CuriousLadooJournalItemData {
+  return {
+    date: p.publishedDate
+      ? new Date(p.publishedDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+      : '',
+    excerpt: text(p.excerpt),
+    id: p.id,
+    image: mapMedia(p.heroImage, tenantID),
+    readMinutes: typeof p.readingTimeMinutes === 'number' ? p.readingTimeMinutes : 0,
+    slug: text(p.slug),
+    tag: (p.categories ?? [])[0] ?? '',
+    title: text(p.title),
+  }
+}
+
 function mapBlogPreviewBlock(
   block: BlogPreviewBlockType,
   tenantID: number,
@@ -463,23 +482,31 @@ function mapBlogPreviewBlock(
   const filtered = manual
     ? source
     : source.filter((p) => (block.featuredOnly ? p.isFeatured === true : true))
-  const limit = manual ? filtered.length : (block.limit ?? filtered.length)
+  const visible = filtered.filter((p) => belongsToTenant(p.tenantId, tenantID) && p.status === 'published')
+  const header = mapSectionHeader(block.sectionHeader)
+
+  if (block.presentation === 'index') {
+    // No `limit` applied — the index page shows every visible post; the original design has no
+    // pagination to preserve. The pinned post (or the first post, if none is pinned) is pulled out
+    // as the featured banner; every other visible post fills the grid.
+    const pinned = visible.find((p) => p.isPinned === true)
+    const featuredPost = pinned ?? visible[0]
+    const rest = featuredPost ? visible.filter((p) => p.id !== featuredPost.id) : []
+    return {
+      featured: featuredPost ? mapJournalItem(featuredPost, tenantID) : null,
+      header,
+      items: rest.map((p) => mapJournalItem(p, tenantID)),
+      presentation: 'index',
+      type: 'blogpreview',
+    }
+  }
+
+  const limit = manual ? visible.length : (block.limit ?? visible.length)
   return {
-    header: mapSectionHeader(block.sectionHeader),
-    items: filtered
-      .filter((p) => belongsToTenant(p.tenantId, tenantID) && p.status === 'published')
-      .slice(0, limit)
-      .map((p) => ({
-        date: p.publishedDate
-          ? new Date(p.publishedDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
-          : '',
-        excerpt: text(p.excerpt),
-        id: p.id,
-        image: mapMedia(p.heroImage, tenantID),
-        slug: text(p.slug),
-        tag: (p.categories ?? [])[0] ?? '',
-        title: text(p.title),
-      })),
+    featured: null,
+    header,
+    items: visible.slice(0, limit).map((p) => mapJournalItem(p, tenantID)),
+    presentation: 'preview',
     type: 'blogpreview',
   }
 }
@@ -741,11 +768,21 @@ export function mapCuriousLadooFooter(footer: Footer | null, tenantID: number): 
   }
 }
 
+const emptyNewsletter: CuriousLadooNewsletterData = {
+  buttonLabel: '',
+  description: '',
+  enabled: false,
+  errorMessage: '',
+  placeholder: '',
+  successMessage: '',
+  title: '',
+}
+
 export function mapCuriousLadooSite(
   tenant: Tenant | null,
   siteSettings: SiteSetting | null,
 ): CuriousLadooSiteData {
-  const empty: CuriousLadooSiteData = { address: '', description: '', email: '', name: '', social: [], tagline: '' }
+  const empty: CuriousLadooSiteData = { address: '', description: '', email: '', favicon: null, name: '', newsletter: emptyNewsletter, social: [], tagline: '' }
   if (!tenant) return empty
   const tenantID = tenant.id
   const settings = siteSettings && belongsToTenant(siteSettings.tenantId, tenantID) ? siteSettings : null
@@ -753,7 +790,19 @@ export function mapCuriousLadooSite(
     address: text(settings?.contactAddress),
     description: text(settings?.siteDescription),
     email: text(tenant.contact?.contactEmail),
+    favicon: mapMedia(tenant.branding?.favicon, tenantID),
     name: text(settings?.businessName) || text(tenant.name),
+    newsletter: settings?.newsletter
+      ? {
+          buttonLabel: text(settings.newsletter.buttonLabel),
+          description: text(settings.newsletter.description),
+          enabled: settings.newsletter.enabled !== false,
+          errorMessage: text(settings.newsletter.errorMessage),
+          placeholder: text(settings.newsletter.placeholder),
+          successMessage: text(settings.newsletter.successMessage),
+          title: text(settings.newsletter.title),
+        }
+      : emptyNewsletter,
     social: (settings?.socials ?? [])
       .filter((social) => social.enabled !== false && social.url)
       .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
@@ -762,12 +811,63 @@ export function mapCuriousLadooSite(
   }
 }
 
+const emptySEO: CuriousLadooSEOData = {
+  bingSiteVerification: '',
+  canonicalUrl: '',
+  description: '',
+  googleSiteVerification: '',
+  jsonLd: null,
+  keywords: [],
+  ogDescription: '',
+  ogImage: null,
+  ogSiteName: '',
+  ogTitle: '',
+  robots: '',
+  title: '',
+  twitterCard: 'summary_large_image',
+  twitterCreator: '',
+  twitterSite: '',
+}
+
+/** Mirrors the Ghee Roast mapper's parse-with-fallback exactly: malformed or non-object JSON never crashes metadata generation, it just degrades to null. */
+function parseSEOJsonLd(source: string): CuriousLadooSEOData['jsonLd'] {
+  if (!source) return null
+  try {
+    const parsed: unknown = JSON.parse(source)
+    if (Array.isArray(parsed)) {
+      return parsed.every((entry) => Boolean(entry && typeof entry === 'object' && !Array.isArray(entry)))
+        ? parsed as Array<Record<string, unknown>>
+        : null
+    }
+    return parsed && typeof parsed === 'object' ? parsed as Record<string, unknown> : null
+  } catch {
+    return null
+  }
+}
+
 export function mapCuriousLadooSEO(seo: Seo | null, tenant: Tenant | null): CuriousLadooSEOData {
-  const empty: CuriousLadooSEOData = { description: '', title: '' }
-  if (!seo || !tenant || !belongsToTenant(seo.tenantId, tenant.id)) return empty
+  if (!tenant) return emptySEO
+  const tenantID = tenant.id
+  const scoped = seo && belongsToTenant(seo.tenantId, tenantID) ? seo : null
+  if (!scoped) return emptySEO
   return {
-    description: text(seo.metaDescription),
-    title: text(seo.metaTitlePattern),
+    bingSiteVerification: text(scoped.bingSiteVerification),
+    canonicalUrl: text(scoped.canonicalUrl),
+    description: text(scoped.metaDescription),
+    googleSiteVerification: text(scoped.googleSiteVerification),
+    jsonLd: parseSEOJsonLd(text(scoped.jsonLd)),
+    keywords: text(scoped.keywords).split(',').map((keyword) => keyword.trim()).filter(Boolean),
+    ogDescription: text(scoped.ogDescription),
+    ogImage: mapMedia(scoped.defaultOGImage, tenantID),
+    ogSiteName: text(scoped.ogSiteName),
+    ogTitle: text(scoped.ogTitle),
+    robots: text(scoped.robots),
+    title: text(scoped.metaTitlePattern),
+    twitterCard: scoped.twitterCard === 'app' || scoped.twitterCard === 'player' || scoped.twitterCard === 'summary'
+      ? scoped.twitterCard
+      : 'summary_large_image',
+    twitterCreator: text(scoped.twitterCreator),
+    twitterSite: text(scoped.twitterSite),
   }
 }
 
@@ -807,7 +907,74 @@ export function mapCuriousLadooHomeContent({
       ? mapCuriousLadooLayout(page.layout, tenantID, { blogPosts, brands, faqs, locations, portfolio, teamMembers, testimonials }, tenant, siteSettings)
       : [],
     navigation: mapCuriousLadooNavigation(nav, tenantID),
-    page: page ? { id: page.id, pageType: text(page.pageType) || 'generic', title: text(page.title) } : null,
+    page: page
+      ? {
+          canonicalUrl: text(page.canonicalUrl),
+          id: page.id,
+          metaDescription: text(page.metaDescription),
+          metaImage: mapMedia(page.metaImage, tenantID),
+          metaTitle: text(page.metaTitle),
+          noIndex: page.noIndex === true,
+          pageType: text(page.pageType) || 'generic',
+          title: text(page.title),
+        }
+      : null,
+    seo: mapCuriousLadooSEO(seo, tenant),
+    site: mapCuriousLadooSite(tenant, siteSettings),
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Blog post detail page-level mapper
+// ---------------------------------------------------------------------------
+
+export function mapCuriousLadooBlogPost({
+  footer,
+  nav,
+  post,
+  relatedPosts,
+  seo,
+  siteSettings,
+  tenant,
+}: {
+  footer: Footer | null
+  nav: Nav | null
+  post: BlogPost | null
+  relatedPosts: BlogPost[]
+  seo: Seo | null
+  siteSettings: SiteSetting | null
+  tenant: Tenant | null
+}): CuriousLadooBlogPostPageData {
+  const tenantID = tenant?.id ?? 0
+  const mappedPost: CuriousLadooBlogPostDetailData | null = post
+    ? {
+        authorName: isPopulated<{ id: number; name?: string | null }>(post.author) ? text(post.author.name) : '',
+        categories: (post.categories ?? []).filter((category): category is string => Boolean(category)),
+        content: post.content,
+        coverImage: mapMedia(post.heroImage, tenantID),
+        date: post.publishedDate
+          ? new Date(post.publishedDate).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })
+          : '',
+        excerpt: text(post.excerpt),
+        id: post.id,
+        metaDescription: text(post.metaDescription) || text(post.excerpt),
+        metaImage: mapMedia(post.metaImage, tenantID) ?? mapMedia(post.heroImage, tenantID),
+        metaTitle: text(post.metaTitle) || text(post.title),
+        modifiedDate: text(post.updatedAt),
+        publishedDateISO: text(post.publishedDate),
+        readMinutes: typeof post.readingTimeMinutes === 'number' ? post.readingTimeMinutes : 0,
+        relatedPosts: relatedPosts.map((related) => mapJournalItem(related, tenantID)),
+        showTableOfContents: post.showTableOfContents === true,
+        slug: text(post.slug),
+        tags: (post.tags ?? []).filter((tag): tag is string => Boolean(tag)),
+        title: text(post.title),
+      }
+    : null
+
+  return {
+    footer: mapCuriousLadooFooter(footer, tenantID),
+    navigation: mapCuriousLadooNavigation(nav, tenantID),
+    post: mappedPost,
     seo: mapCuriousLadooSEO(seo, tenant),
     site: mapCuriousLadooSite(tenant, siteSettings),
   }

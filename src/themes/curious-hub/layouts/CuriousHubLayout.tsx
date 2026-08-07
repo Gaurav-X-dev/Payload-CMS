@@ -6,6 +6,7 @@ import { Header } from '../components/Header'
 import { NoiseOverlay } from '../components/NoiseOverlay'
 import { PageLoader } from '../components/PageLoader'
 import type { CuriousLadooFooterData, CuriousLadooNavigationData, CuriousLadooSiteData } from '../mappers/dynamicTypes'
+import { serializeCuriousLadooJsonLd, type CuriousLadooJsonLdEntry } from '../utils/buildCuriousLadooJsonLd'
 import styles from '../components/Theme.module.css'
 import '../styles/theme.css'
 
@@ -13,6 +14,7 @@ import '../styles/theme.css'
 export function CuriousHubLayout({
   children,
   footer,
+  jsonLd,
   nav,
   pathname,
   site,
@@ -20,13 +22,16 @@ export function CuriousHubLayout({
 }: {
   children: ReactNode
   footer?: CuriousLadooFooterData
+  jsonLd?: CuriousLadooJsonLdEntry[]
   nav?: CuriousLadooNavigationData
   pathname: string
   site?: CuriousLadooSiteData
   tagline?: string
 }) {
+  const jsonLdScript = jsonLd ? serializeCuriousLadooJsonLd(jsonLd) : null
   return (
     <div className={styles.themeRoot} data-theme-site="curious-hub">
+      {jsonLdScript && <script dangerouslySetInnerHTML={{ __html: jsonLdScript }} type="application/ld+json" />}
       <NoiseOverlay />
       <CustomCursor />
       <PageLoader />

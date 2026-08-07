@@ -17,6 +17,18 @@ export const BlogPreviewBlock: Block = {
     { name: 'subtitle', type: 'text', admin: { hidden: true } },
     sectionHeader({ admin: { description: 'Optional heading displayed above the blog preview grid.' } }),
     {
+      name: 'presentation',
+      type: 'select',
+      defaultValue: 'preview',
+      options: [
+        { label: 'Preview Grid (e.g. Home)', value: 'preview' },
+        { label: 'Blog Index (featured banner + grid)', value: 'index' },
+      ],
+      admin: {
+        description: 'Controls section chrome. "Blog Index" adds a large featured-article banner above the grid, sourced from the pinned post.',
+      },
+    },
+    {
       name: 'source',
       type: 'radio',
       defaultValue: 'collection',

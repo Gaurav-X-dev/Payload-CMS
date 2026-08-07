@@ -373,3 +373,158 @@ export async function loadCuriousLadooContentWithPayload({
     testimonials,
   }
 }
+
+// ---------------------------------------------------------------------------
+// Blog post detail — blog posts are not Pages, so they're resolved independently
+// of the layout/block pipeline above: fetched directly by tenant + slug.
+// ---------------------------------------------------------------------------
+
+export type CuriousLadooBlogPostResult = {
+  footer: Footer | null
+  nav: Nav | null
+  post: BlogPost | null
+  relatedPosts: BlogPost[]
+  seo: Seo | null
+  siteSettings: SiteSetting | null
+  tenant: Tenant | null
+  tenantState: CuriousLadooTenantState
+}
+
+export function emptyCuriousLadooBlogPost(
+  tenantState: CuriousLadooTenantState = 'missing',
+): CuriousLadooBlogPostResult {
+  return {
+    footer: null,
+    nav: null,
+    post: null,
+    relatedPosts: [],
+    seo: null,
+    siteSettings: null,
+    tenant: null,
+    tenantState,
+  }
+}
+
+export async function loadCuriousLadooBlogPostWithPayload({
+  find,
+  host,
+  site,
+  slug,
+}: {
+  find: CuriousLadooFind
+  host: string | null
+  site: LocalSite
+  slug: string
+}): Promise<CuriousLadooBlogPostResult> {
+  const resolvedSite = resolveLocalSite(host)
+  if (
+    !resolvedSite
+    || resolvedSite.key !== site.key
+    || resolvedSite.theme !== site.theme
+    || site.theme !== 'curious-hub'
+  ) {
+    return emptyCuriousLadooBlogPost('missing')
+  }
+
+  const normalizedSlug = slug.trim().toLowerCase()
+  if (!normalizedSlug) return emptyCuriousLadooBlogPost('missing')
+
+  const tenantResult = await find<Tenant>({
+    collection: 'tenants',
+    depth: 0,
+    draft: false,
+    limit: 2,
+    overrideAccess: true,
+    pagination: false,
+    sort: 'id',
+    where: { slug: { equals: site.key } },
+  })
+  const tenant = requireAtMostOne('tenant resolution', tenantResult.docs)
+  if (!tenant) return emptyCuriousLadooBlogPost('missing')
+  if (!tenantCanRenderCuriousLadoo(tenant)) return emptyCuriousLadooBlogPost('inactive')
+
+  const tenantID = tenant.id
+
+  const [navResult, settingsResult, footerResult, seoResult, postResult] = await Promise.all([
+    find<Nav>({
+      collection: 'nav',
+      depth: 2,
+      draft: false,
+      limit: 2,
+      overrideAccess: true,
+      pagination: false,
+      where: tenantWhere(tenantID, [{ location: { equals: 'header' } }, { _status: { equals: 'published' } }]),
+    }),
+    find<SiteSetting>({
+      collection: 'site-settings',
+      depth: 1,
+      draft: false,
+      limit: 2,
+      overrideAccess: true,
+      pagination: false,
+      where: tenantWhere(tenantID, [{ _status: { equals: 'published' } }]),
+    }),
+    find<Footer>({
+      collection: 'footer',
+      depth: 1,
+      draft: false,
+      limit: 2,
+      overrideAccess: true,
+      pagination: false,
+      where: tenantWhere(tenantID, [{ _status: { equals: 'published' } }]),
+    }),
+    find<Seo>({
+      collection: 'seo',
+      depth: 2,
+      draft: false,
+      limit: 2,
+      overrideAccess: true,
+      pagination: false,
+      where: tenantWhere(tenantID),
+    }),
+    // Bounded to 2 (not 1) so an accidental duplicate slug is treated as ambiguous and rejected
+    // by requireAtMostOne below, rather than silently picking whichever document sorts first.
+    find<BlogPost>({
+      collection: 'blog-posts',
+      depth: 2,
+      draft: false,
+      limit: 2,
+      overrideAccess: true,
+      pagination: false,
+      where: tenantWhere(tenantID, [{ slug: { equals: normalizedSlug } }, { status: { equals: 'published' } }]),
+    }),
+  ])
+
+  const nav = requireAtMostOne('header navigation', navResult.docs) ?? null
+  const siteSettings = requireAtMostOne('site settings', settingsResult.docs) ?? null
+  const footer = requireAtMostOne('footer', footerResult.docs) ?? null
+  const seo = requireAtMostOne('SEO settings', seoResult.docs) ?? null
+
+  // Defense in depth: don't rely solely on the query's `where` clause, mirroring every other
+  // Curious Ladoo loader in this file. tenantId may be a raw ID or a populated Tenant depending
+  // on query depth, so check both shapes. This is also what makes cross-tenant slug guessing
+  // impossible: a slug that exists only under a different tenant never survives this filter.
+  const publishedTenantPosts = postResult.docs.filter((document) => {
+    const documentTenantID = typeof document.tenantId === 'number' ? document.tenantId : document.tenantId?.id
+    return documentTenantID === tenantID && document.status === 'published' && document.slug === normalizedSlug
+  })
+  const post = requireAtMostOne('blog post resolution', publishedTenantPosts) ?? null
+
+  const relatedPosts = (post?.relatedPosts ?? [])
+    .filter((entry): entry is BlogPost => typeof entry === 'object' && entry !== null)
+    .filter((related) => {
+      const relatedTenantID = typeof related.tenantId === 'number' ? related.tenantId : related.tenantId?.id
+      return relatedTenantID === tenantID && related.status === 'published'
+    })
+
+  return {
+    footer,
+    nav,
+    post,
+    relatedPosts,
+    seo,
+    siteSettings,
+    tenant,
+    tenantState: post ? 'active' : 'empty',
+  }
+}
