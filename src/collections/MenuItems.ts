@@ -194,6 +194,7 @@ export const MenuItems: CollectionConfig = {
                 { name: 'isFeatured', type: 'checkbox', defaultValue: false, index: true },
               ]
             },
+            { name: 'badge', type: 'select', defaultValue: 'none', options: ['none', 'chef', 'popular', 'new'], admin: { description: 'Optional promotional tag shown on the dish card (e.g. Menu Showcase). "None" shows no badge.' } },
             { name: 'stockStatus', type: 'select', defaultValue: 'in_stock', options: ['in_stock', 'low_stock', 'out_of_stock'] },
             { name: 'availabilityTime', type: 'text', admin: { description: 'e.g., "Lunch Only (11am - 3pm)"' } },
             {

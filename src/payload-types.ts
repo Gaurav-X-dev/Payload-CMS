@@ -2240,6 +2240,10 @@ export interface MenuItem {
   gallery?: (number | Media)[] | null;
   isAvailable?: boolean | null;
   isFeatured?: boolean | null;
+  /**
+   * Optional promotional tag shown on the dish card (e.g. Menu Showcase). "None" shows no badge.
+   */
+  badge?: ('none' | 'chef' | 'popular' | 'new') | null;
   stockStatus?: ('in_stock' | 'low_stock' | 'out_of_stock') | null;
   /**
    * e.g., "Lunch Only (11am - 3pm)"
@@ -6044,6 +6048,7 @@ export interface MenuItemsSelect<T extends boolean = true> {
   gallery?: T;
   isAvailable?: T;
   isFeatured?: T;
+  badge?: T;
   stockStatus?: T;
   availabilityTime?: T;
   recommendedItems?: T;

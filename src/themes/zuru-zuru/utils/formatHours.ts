@@ -24,3 +24,32 @@ export function formatHoursSummary(hours: ZuruZuruHoursRowData[]): string {
   }
   return `${sorted[0].day}: ${sorted[0].openTime} – ${sorted[0].closeTime}`
 }
+
+/**
+ * Groups a full weekly hours array into consecutive-day ranges (e.g. "Monday – Thursday: 12:00 PM
+ * – 10:30 PM"), matching the Visit Us section's exact 3-line hours format. Unlike
+ * formatHoursSummary (a single collapsed line for the header/footer), this preserves every
+ * distinct shift rather than falling back to just the first one.
+ */
+export function groupBusinessHours(hours: ZuruZuruHoursRowData[]): string[] {
+  const sorted = [...hours]
+    .filter((row) => row.day)
+    .sort((a, b) => DAY_ORDER.indexOf(a.day) - DAY_ORDER.indexOf(b.day))
+
+  const groups: { closeTime: string; days: string[]; isClosed: boolean; openTime: string }[] = []
+  for (const row of sorted) {
+    const last = groups[groups.length - 1]
+    if (last && last.openTime === row.openTime && last.closeTime === row.closeTime && last.isClosed === row.isClosed) {
+      last.days.push(row.day)
+    } else {
+      groups.push({ closeTime: row.closeTime, days: [row.day], isClosed: row.isClosed, openTime: row.openTime })
+    }
+  }
+
+  return groups.map((group) => {
+    const label = group.days.length > 1
+      ? `${group.days[0]} – ${group.days[group.days.length - 1]}`
+      : group.days[0]
+    return group.isClosed ? `${label}: Closed` : `${label}: ${group.openTime} – ${group.closeTime}`
+  })
+}

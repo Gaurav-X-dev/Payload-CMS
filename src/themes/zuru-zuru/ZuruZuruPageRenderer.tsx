@@ -1,23 +1,47 @@
 import { notFound } from 'next/navigation'
 import type { ThemePageRendererProps } from '../types'
+import { getZuruZuruHome } from '@/lib/site/getZuruZuruHome'
 import { getZuruZuruShell } from '@/lib/site/getZuruZuruShell'
+import { CMSHomePage } from './components/CMSHomePage'
 import { ZuruZuruLayout } from './layouts/ZuruZuruLayout'
-import { mapZuruZuruShell } from './mappers/cmsContent'
+import { mapZuruZuruHomeLayout, mapZuruZuruShell } from './mappers/cmsContent'
 import { getZuruZuruPage } from './utils/getPageComponent'
+import { normalizePathname } from './utils/normalizePathname'
+
+// Milestone Z3: only Home ("/") is CMS-driven so far. Every other route still renders from the
+// existing static React page components — they're converted in later milestones.
+const CMS_DRIVEN_PATHS = new Set(['/'])
 
 export async function ZuruZuruPageRenderer({ hostname, pathname, site }: ThemePageRendererProps) {
-  const page = getZuruZuruPage(pathname)
-  if (!page) notFound()
+  const normalizedPathname = normalizePathname(pathname)
+  const isCMSDriven = CMS_DRIVEN_PATHS.has(normalizedPathname)
+  const staticPage = isCMSDriven ? null : getZuruZuruPage(pathname)
+  if (!isCMSDriven && !staticPage) notFound()
 
-  // Milestone Z2 scope: only the global shell (Header/Footer/announcement bar/newsletter) is
-  // CMS-driven. The page body above still comes from the existing static React components —
-  // pages are converted starting Milestone Z3.
   const shell = await getZuruZuruShell({ host: hostname ?? null, site })
   const content = mapZuruZuruShell(shell)
 
+  if (isCMSDriven) {
+    const home = await getZuruZuruHome({ host: hostname ?? null, site })
+    if (!home.page) notFound()
+
+    const blocks = mapZuruZuruHomeLayout(home.page.layout, {
+      locations: home.locations,
+      menuItems: home.menuItems,
+      testimonials: home.testimonials,
+      tenantID: home.tenant?.id ?? 0,
+    })
+
+    return (
+      <ZuruZuruLayout footer={content.footer} nav={content.navigation} pathname={pathname} site={content.site}>
+        <CMSHomePage blocks={blocks} site={content.site} />
+      </ZuruZuruLayout>
+    )
+  }
+
   return (
     <ZuruZuruLayout footer={content.footer} nav={content.navigation} pathname={pathname} site={content.site}>
-      {page}
+      {staticPage}
     </ZuruZuruLayout>
   )
 }
