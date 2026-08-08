@@ -1,16 +1,17 @@
 import { notFound } from 'next/navigation'
 import type { ThemePageRendererProps } from '../types'
-import { getZuruZuruHome } from '@/lib/site/getZuruZuruHome'
+import { getZuruZuruPageContent } from '@/lib/site/getZuruZuruPageContent'
 import { getZuruZuruShell } from '@/lib/site/getZuruZuruShell'
 import { CMSHomePage } from './components/CMSHomePage'
+import { CMSMenuPage } from './components/CMSMenuPage'
 import { ZuruZuruLayout } from './layouts/ZuruZuruLayout'
-import { mapZuruZuruHomeLayout, mapZuruZuruShell } from './mappers/cmsContent'
+import { mapZuruZuruPageLayout, mapZuruZuruShell } from './mappers/cmsContent'
 import { getZuruZuruPage } from './utils/getPageComponent'
 import { normalizePathname } from './utils/normalizePathname'
 
-// Milestone Z3: only Home ("/") is CMS-driven so far. Every other route still renders from the
-// existing static React page components — they're converted in later milestones.
-const CMS_DRIVEN_PATHS = new Set(['/'])
+// Milestone Z4: Home ("/") and Menu ("/menu") are CMS-driven so far. Every other route still
+// renders from the existing static React page components — they're converted in later milestones.
+const CMS_DRIVEN_PATHS = new Set(['/', '/menu'])
 
 export async function ZuruZuruPageRenderer({ hostname, pathname, site }: ThemePageRendererProps) {
   const normalizedPathname = normalizePathname(pathname)
@@ -22,19 +23,21 @@ export async function ZuruZuruPageRenderer({ hostname, pathname, site }: ThemePa
   const content = mapZuruZuruShell(shell)
 
   if (isCMSDriven) {
-    const home = await getZuruZuruHome({ host: hostname ?? null, site })
-    if (!home.page) notFound()
+    const page = await getZuruZuruPageContent({ host: hostname ?? null, pathname: normalizedPathname, site })
+    if (!page.page) notFound()
 
-    const blocks = mapZuruZuruHomeLayout(home.page.layout, {
-      locations: home.locations,
-      menuItems: home.menuItems,
-      testimonials: home.testimonials,
-      tenantID: home.tenant?.id ?? 0,
+    const blocks = mapZuruZuruPageLayout(page.page.layout, {
+      locations: page.locations,
+      menuItems: page.menuItems,
+      testimonials: page.testimonials,
+      tenantID: page.tenant?.id ?? 0,
     })
 
     return (
       <ZuruZuruLayout footer={content.footer} nav={content.navigation} pathname={pathname} site={content.site}>
-        <CMSHomePage blocks={blocks} site={content.site} />
+        {normalizedPathname === '/'
+          ? <CMSHomePage blocks={blocks} site={content.site} />
+          : <CMSMenuPage blocks={blocks} />}
       </ZuruZuruLayout>
     )
   }

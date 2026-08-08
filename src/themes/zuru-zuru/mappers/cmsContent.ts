@@ -7,6 +7,7 @@ import type {
   Location,
   LocationsBlock,
   Media,
+  MenuCategory,
   MenuItem,
   MenuShowcaseBlock,
   Nav,
@@ -22,15 +23,16 @@ import type {
   ZuruZuruCardGridVariant,
   ZuruZuruContentGridBlockData,
   ZuruZuruDishBadge,
+  ZuruZuruDishCategoryData,
   ZuruZuruFeatureStripBlockData,
   ZuruZuruFooterData,
   ZuruZuruHeroBlockData,
-  ZuruZuruHomeBlockData,
   ZuruZuruLinkData,
   ZuruZuruLocationsBlockData,
   ZuruZuruMediaData,
   ZuruZuruMenuShowcaseBlockData,
   ZuruZuruNavigationData,
+  ZuruZuruPageBlockData,
   ZuruZuruSectionHeaderData,
   ZuruZuruShellData,
   ZuruZuruSiteData,
@@ -247,9 +249,16 @@ function badgeFromMenuItem(badge: MenuItem['badge']): ZuruZuruDishBadge | null {
   return badge === 'chef' || badge === 'popular' || badge === 'new' ? badge : null
 }
 
+function mapDishCategory(category: MenuItem['category']): ZuruZuruDishCategoryData {
+  if (!isPopulated<MenuCategory>(category)) return null
+  return { slug: text(category.slug), title: text(category.title) }
+}
+
 export function mapZuruZuruHero(block: HeroBlock, tenantID: number): ZuruZuruHeroBlockData {
   return {
+    backgroundImage: mapMedia(block.desktopBackgroundImage, tenantID),
     description: text(block.description),
+    eyebrow: text(block.eyebrow),
     heading: text(block.heading),
     highlightedHeading: text(block.highlightedHeading),
     image: mapMedia(block.foregroundImage, tenantID),
@@ -339,6 +348,7 @@ export function mapZuruZuruMenuShowcase(
     .map((item) => ({
       badge: badgeFromMenuItem(item.badge),
       calories: item.calories ?? null,
+      category: mapDishCategory(item.category),
       description: text(item.description),
       heat: heatFromSpiceLevel(item.spiceLevel),
       id: item.id,
@@ -409,7 +419,8 @@ export function mapZuruZuruLocationsBlock(
   }
 }
 
-export function mapZuruZuruHomeLayout(
+/** Generic Page.layout -> block-data mapper, shared by every CMS-driven Zuru Zuru page. Each page's own renderer decides how to visually interpret the same block-data shapes. */
+export function mapZuruZuruPageLayout(
   layout: Page['layout'],
   {
     locations,
@@ -422,8 +433,8 @@ export function mapZuruZuruHomeLayout(
     testimonials: Testimonial[]
     tenantID: number
   },
-): ZuruZuruHomeBlockData[] {
-  const blocks: ZuruZuruHomeBlockData[] = []
+): ZuruZuruPageBlockData[] {
+  const blocks: ZuruZuruPageBlockData[] = []
   for (const block of layout ?? []) {
     switch (block.blockType) {
       case 'heroBlock':

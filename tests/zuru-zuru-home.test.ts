@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import {
-  loadZuruZuruHomeWithPayload,
+  loadZuruZuruPageWithPayload,
   type ZuruZuruCollectionSlug,
   type ZuruZuruFind,
   type ZuruZuruFindArgs,
@@ -9,9 +9,9 @@ import {
 import {
   mapZuruZuruCardGrid,
   mapZuruZuruHero,
-  mapZuruZuruHomeLayout,
   mapZuruZuruLocationsBlock,
   mapZuruZuruMenuShowcase,
+  mapZuruZuruPageLayout,
   mapZuruZuruStory,
   mapZuruZuruTestimonialsBlock,
 } from '../src/themes/zuru-zuru/mappers/cmsContent.ts'
@@ -71,6 +71,20 @@ test('mapZuruZuruHero maps heading/CTAs/image and treats a disabled hero as unre
   assert.deepEqual(mapped.secondaryCTA, { label: 'Reserve a Table', url: '/reservation' })
   assert.equal(mapped.image?.src, '/media/chef.png')
   assert.equal(mapped.stampText, '印')
+})
+
+test('mapZuruZuruHero maps eyebrow and desktopBackgroundImage (used by the Menu page\'s inner-hero treatment)', () => {
+  const block = {
+    blockType: 'heroBlock',
+    description: 'Authentic Japanese dishes prepared with premium ingredients.',
+    desktopBackgroundImage: { alt: '', id: 9, tenantId: tenantID, url: '/media/chef-bg.png' },
+    enabled: true,
+    eyebrow: 'Home / Menu',
+    heading: 'Our Menu',
+  }
+  const mapped = mapZuruZuruHero(block as never, tenantID)
+  assert.equal(mapped.eyebrow, 'Home / Menu')
+  assert.equal(mapped.backgroundImage?.src, '/media/chef-bg.png')
 })
 
 // ---------------------------------------------------------------------------
@@ -178,6 +192,18 @@ test('mapZuruZuruMenuShowcase maps badge "none", null, undefined, missing, and a
   assert.deepEqual(mapped.items.map((item) => item.badge), [null, null, null, null, 'new'])
 })
 
+test('mapZuruZuruMenuShowcase resolves each dish\'s category (slug/title) when populated, and null when only an ID is present (used by the Menu page\'s category filter buttons)', () => {
+  const sushiCategory = { id: 14, isActive: true, slug: 'sushi', sortOrder: 0, tenantId: tenantID, title: 'Sushi & Sashimi' }
+  const menuItems = [
+    { calories: 100, category: sushiCategory, description: 'd', displayOrder: 0, id: 1, isAvailable: true, isFeatured: false, price: 850, spiceLevel: 'none', tenantId: tenantID, title: 'Spicy Tuna Roll' },
+    { calories: 100, category: 14, description: 'd', displayOrder: 1, id: 2, isAvailable: true, isFeatured: false, price: 750, spiceLevel: 'none', tenantId: tenantID, title: 'California Roll' },
+  ]
+  const block = { featuredOnly: false, limit: 10, sectionHeader: { title: 'Our Menu' } }
+  const mapped = mapZuruZuruMenuShowcase(block as never, menuItems as never, tenantID)
+  assert.deepEqual(mapped.items[0].category, { slug: 'sushi', title: 'Sushi & Sashimi' })
+  assert.equal(mapped.items[1].category, null)
+})
+
 // ---------------------------------------------------------------------------
 // Mapper — Testimonials (single featured testimonial)
 // ---------------------------------------------------------------------------
@@ -219,13 +245,13 @@ test('mapZuruZuruLocationsBlock picks the explicitly-related primary location an
 // Mapper — full Home layout dispatch (disabled hero omitted, unknown block types ignored)
 // ---------------------------------------------------------------------------
 
-test('mapZuruZuruHomeLayout dispatches each block type and omits a disabled hero', () => {
+test('mapZuruZuruPageLayout dispatches each block type and omits a disabled hero', () => {
   const layout = [
     { blockType: 'heroBlock', description: 'd', enabled: false, heading: 'Hidden Hero' },
     { blockType: 'featurestripBlock', items: [{ description: 'd', icon: 'bowl', title: 'Izakaya Culture' }] },
     { blockType: 'someFutureBlockType' },
   ]
-  const blocks = mapZuruZuruHomeLayout(layout as never, { locations: [], menuItems: [], testimonials: [], tenantID })
+  const blocks = mapZuruZuruPageLayout(layout as never, { locations: [], menuItems: [], testimonials: [], tenantID })
   assert.deepEqual(blocks.map((b) => b.type), ['featureStrip'])
 })
 
@@ -251,10 +277,10 @@ test('groupBusinessHours collapses consecutive identical days into a single rang
 })
 
 // ---------------------------------------------------------------------------
-// Loader — Home page + dependent collections
+// Loader — any CMS-driven page (Home via isHomePage, Menu via slug) + dependent collections
 // ---------------------------------------------------------------------------
 
-test('loadZuruZuruHomeWithPayload resolves the published Home page and only fetches collections the layout actually uses', () => {
+test('loadZuruZuruPageWithPayload resolves the published Home page and only fetches collections the layout actually uses', () => {
   return (async () => {
     const page = {
       _status: 'published',
@@ -265,7 +291,7 @@ test('loadZuruZuruHomeWithPayload resolves the published Home page and only fetc
     }
     const testimonial = { customerName: 'Rahul Sharma', id: 1, isFeatured: true, rating: 5, review: 'Great.', tenantId: tenantID }
     const { calls, find } = fakePayload({ pages: [page], tenants: [tenant], testimonials: [testimonial] })
-    const result = await loadZuruZuruHomeWithPayload({ find, host: 'zuru-zuru.localhost', site })
+    const result = await loadZuruZuruPageWithPayload({ find, host: 'zuru-zuru.localhost', pathname: '/', site })
     assert.equal(result.tenantState, 'active')
     assert.equal(result.page?.id, 1)
     assert.deepEqual(result.testimonials, [testimonial])
@@ -276,23 +302,45 @@ test('loadZuruZuruHomeWithPayload resolves the published Home page and only fetc
   })()
 })
 
-test('loadZuruZuruHomeWithPayload returns empty for a missing tenant, an unpublished Home page, or a mismatched host/theme', () => {
+test('loadZuruZuruPageWithPayload resolves a non-Home page by slug (e.g. Menu) and rejects a Home page from matching a slug lookup', () => {
   return (async () => {
-    const missingTenant = await loadZuruZuruHomeWithPayload({ find: fakePayload({}).find, host: 'zuru-zuru.localhost', site })
+    const menuPage = {
+      _status: 'published',
+      id: 2,
+      isHomePage: false,
+      layout: [{ blockType: 'menushowcaseBlock' }],
+      slug: 'menu',
+      tenantId: tenantID,
+    }
+    const homePage = { _status: 'published', id: 1, isHomePage: true, layout: [], slug: '', tenantId: tenantID }
+    const menuItem = { badge: 'none', calories: 100, category: { id: 1, slug: 'sushi', tenantId: tenantID, title: 'Sushi' }, description: 'd', displayOrder: 0, id: 1, isAvailable: true, isFeatured: false, price: 500, spiceLevel: 'none', tenantId: tenantID, title: 'Spicy Tuna Roll' }
+    const { find } = fakePayload({ 'menu-items': [menuItem], pages: [menuPage, homePage], tenants: [tenant] })
+    const result = await loadZuruZuruPageWithPayload({ find, host: 'zuru-zuru.localhost', pathname: '/menu', site })
+    assert.equal(result.tenantState, 'active')
+    assert.equal(result.page?.id, 2)
+    assert.equal(result.menuItems.length, 1)
+  })()
+})
+
+test('loadZuruZuruPageWithPayload returns empty for a missing tenant, an unpublished page, or a mismatched host/theme', () => {
+  return (async () => {
+    const missingTenant = await loadZuruZuruPageWithPayload({ find: fakePayload({}).find, host: 'zuru-zuru.localhost', pathname: '/', site })
     assert.equal(missingTenant.tenantState, 'missing')
     assert.equal(missingTenant.page, null)
 
-    const unpublished = await loadZuruZuruHomeWithPayload({
+    const unpublished = await loadZuruZuruPageWithPayload({
       find: fakePayload({ pages: [], tenants: [tenant] }).find,
       host: 'zuru-zuru.localhost',
+      pathname: '/',
       site,
     })
     assert.equal(unpublished.tenantState, 'empty')
     assert.equal(unpublished.page, null)
 
-    const mismatched = await loadZuruZuruHomeWithPayload({
+    const mismatched = await loadZuruZuruPageWithPayload({
       find: fakePayload({ tenants: [tenant] }).find,
       host: 'curious-hub.localhost',
+      pathname: '/',
       site,
     })
     assert.equal(mismatched.tenantState, 'missing')

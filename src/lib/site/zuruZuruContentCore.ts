@@ -9,6 +9,7 @@ import type {
   Tenant,
   Testimonial,
 } from '../../payload-types'
+import { normalizePathname } from '../../themes/zuru-zuru/utils/normalizePathname'
 import { resolveLocalSite } from './resolveLocalSite'
 import type { LocalSite } from './types'
 
@@ -164,12 +165,15 @@ export async function loadZuruZuruShellWithPayload({
 }
 
 // ---------------------------------------------------------------------------
-// Home page — Page document, layout blocks, and blocks' dependent collections.
-// Loaded separately from the shell above: every route needs the shell, but only
-// `/` needs the Home Page and its layout-driven collection dependencies.
+// Any CMS-driven Page — Page document, layout blocks, and blocks' dependent
+// collections. Loaded separately from the shell above: every route needs the
+// shell, but only CMS-driven routes (Home, Menu, ...) need a Page document and
+// its layout-driven collection dependencies. Mirrors the Curious Ladoo loader's
+// isHomePage-vs-slug resolution so adding another CMS-driven page later is a
+// matter of adding it to `CMS_DRIVEN_PATHS` in the renderer, not writing a new loader.
 // ---------------------------------------------------------------------------
 
-export type ZuruZuruHomeResult = {
+export type ZuruZuruPageResult = {
   locations: Location[]
   menuItems: MenuItem[]
   page: Page | null
@@ -178,7 +182,7 @@ export type ZuruZuruHomeResult = {
   testimonials: Testimonial[]
 }
 
-export function emptyZuruZuruHome(tenantState: ZuruZuruTenantState = 'missing'): ZuruZuruHomeResult {
+export function emptyZuruZuruPage(tenantState: ZuruZuruTenantState = 'missing'): ZuruZuruPageResult {
   return {
     locations: [],
     menuItems: [],
@@ -189,11 +193,12 @@ export function emptyZuruZuruHome(tenantState: ZuruZuruTenantState = 'missing'):
   }
 }
 
-export function zuruZuruHomeCacheArguments(
+export function zuruZuruPageCacheArguments(
   host: string | null,
+  pathname: string,
   site: LocalSite,
-): readonly [string | null, string, string] {
-  return [host, site.hostname, site.key] as const
+): readonly [string | null, string, string, string] {
+  return [host, normalizePathname(pathname), site.hostname, site.key] as const
 }
 
 const collectionDependenciesForZuruZuruLayout = (layout: Page['layout']) => {
@@ -205,15 +210,17 @@ const collectionDependenciesForZuruZuruLayout = (layout: Page['layout']) => {
   }
 }
 
-export async function loadZuruZuruHomeWithPayload({
+export async function loadZuruZuruPageWithPayload({
   find,
   host,
+  pathname,
   site,
 }: {
   find: ZuruZuruFind
   host: string | null
+  pathname: string
   site: LocalSite
-}): Promise<ZuruZuruHomeResult> {
+}): Promise<ZuruZuruPageResult> {
   const resolvedSite = resolveLocalSite(host)
   if (
     !resolvedSite
@@ -221,7 +228,7 @@ export async function loadZuruZuruHomeWithPayload({
     || resolvedSite.theme !== site.theme
     || site.theme !== 'zuru-zuru'
   ) {
-    return emptyZuruZuruHome('missing')
+    return emptyZuruZuruPage('missing')
   }
 
   const tenantResult = await find<Tenant>({
@@ -235,10 +242,16 @@ export async function loadZuruZuruHomeWithPayload({
     where: { slug: { equals: site.key } },
   })
   const tenant = requireAtMostOne('tenant resolution', tenantResult.docs)
-  if (!tenant) return emptyZuruZuruHome('missing')
-  if (!tenantCanRenderZuruZuru(tenant)) return emptyZuruZuruHome('inactive')
+  if (!tenant) return emptyZuruZuruPage('missing')
+  if (!tenantCanRenderZuruZuru(tenant)) return emptyZuruZuruPage('inactive')
 
   const tenantID = tenant.id
+
+  const normalizedPathname = normalizePathname(pathname)
+  const isHome = normalizedPathname === '/'
+  const pageCondition: Where = isHome
+    ? { isHomePage: { equals: true } }
+    : { slug: { equals: normalizedPathname.slice(1) } }
 
   const pageResult = await find<Page>({
     collection: 'pages',
@@ -248,16 +261,20 @@ export async function loadZuruZuruHomeWithPayload({
     overrideAccess: true,
     pagination: false,
     sort: 'id',
-    where: tenantWhere(tenantID, [{ isHomePage: { equals: true } }, { _status: { equals: 'published' } }]),
+    where: tenantWhere(tenantID, [pageCondition, { _status: { equals: 'published' } }]),
   })
 
-  // Defense in depth: re-verify tenant, publish status, and isHomePage in application code too,
-  // mirroring the Curious Ladoo and shell loaders above rather than trusting the query alone.
-  const publishedHomePages = pageResult.docs.filter((document) => {
+  // Defense in depth: re-verify tenant, publish status, and the slug/isHomePage condition in
+  // application code too, mirroring the Curious Ladoo and shell loaders above rather than
+  // trusting the query's `where` clause alone.
+  const publishedTenantPages = pageResult.docs.filter((document) => {
     const documentTenantID = typeof document.tenantId === 'number' ? document.tenantId : document.tenantId?.id
-    return documentTenantID === tenantID && document._status === 'published' && document.isHomePage === true
+    if (documentTenantID !== tenantID || document._status !== 'published') return false
+    return isHome
+      ? document.isHomePage === true
+      : document.isHomePage !== true && document.slug === normalizedPathname.slice(1)
   })
-  const page = requireAtMostOne('published Home page resolution', publishedHomePages) ?? null
+  const page = requireAtMostOne('published page resolution', publishedTenantPages) ?? null
 
   const dependencies = collectionDependenciesForZuruZuruLayout(page?.layout ?? [])
 

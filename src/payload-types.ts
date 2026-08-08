@@ -1591,6 +1591,9 @@ export interface MenuShowcaseBlock {
    */
   categories?: (number | MenuCategory)[] | null;
   featuredOnly?: boolean | null;
+  /**
+   * Curated previews (e.g. Home) typically use a low limit. A full browsable menu page can raise this up to 60.
+   */
   limit?: number | null;
   /**
    * Call to Action links.

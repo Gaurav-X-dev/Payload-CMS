@@ -2,23 +2,24 @@ import { cache } from 'react'
 import { getPayload } from 'payload'
 import configPromise from '@payload-config'
 import {
-  emptyZuruZuruHome,
-  loadZuruZuruHomeWithPayload,
-  zuruZuruHomeCacheArguments,
+  emptyZuruZuruPage,
+  loadZuruZuruPageWithPayload,
+  zuruZuruPageCacheArguments,
   type ZuruZuruFind,
-  type ZuruZuruHomeResult,
+  type ZuruZuruPageResult,
 } from './zuruZuruContentCore'
 import type { LocalSite } from './types'
 
-export type { ZuruZuruHomeResult } from './zuruZuruContentCore'
+export type { ZuruZuruPageResult } from './zuruZuruContentCore'
 
-const loadZuruZuruHome = cache(async (
+const loadZuruZuruPage = cache(async (
   host: string | null,
+  pathname: string,
   siteHostname: string,
   siteKey: string,
-): Promise<ZuruZuruHomeResult> => {
+): Promise<ZuruZuruPageResult> => {
   if (!process.env.DATABASE_URI) {
-    return emptyZuruZuruHome('missing')
+    return emptyZuruZuruPage('missing')
   }
 
   const payload = await getPayload({ config: configPromise })
@@ -27,15 +28,17 @@ const loadZuruZuruHome = cache(async (
     const result = await payload.find(args)
     return { docs: result.docs as never }
   }
-  return loadZuruZuruHomeWithPayload({ find, host, site })
+  return loadZuruZuruPageWithPayload({ find, host, pathname, site })
 })
 
-export async function getZuruZuruHome({
+export async function getZuruZuruPageContent({
   host,
+  pathname,
   site,
 }: {
   host: string | null
+  pathname: string
   site: LocalSite
-}): Promise<ZuruZuruHomeResult> {
-  return loadZuruZuruHome(...zuruZuruHomeCacheArguments(host, site))
+}): Promise<ZuruZuruPageResult> {
+  return loadZuruZuruPage(...zuruZuruPageCacheArguments(host, pathname, site))
 }

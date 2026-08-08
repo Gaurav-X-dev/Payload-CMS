@@ -1,4 +1,5 @@
 import type { MenuItem } from '../components/Interactive'
+import { image } from './site'
 
 export const menuItems: MenuItem[] = [
   ['sushi','Spicy Tuna Roll','₹850','スパイシーツナロール','Fresh yellowfin tuna minced with our house-made spicy mayo, cucumber, topped with sesame seeds and scallions.','hero_sushi.png'],
@@ -27,4 +28,4 @@ export const menuItems: MenuItem[] = [
   ['drinks','Matcha Yuzu Lemonade','₹350','抹茶柚子レモネード','A refreshing mocktail blending ceremonial grade matcha, fresh yuzu juice, sparkling water, and a touch of honey.','hero_ramen.png'],
   ['ramen','Truffle Shoyu Ramen','₹1250','トリュフ醤油ラーメン','Our signature clear broth infused with white truffle oil, topped with chashu, bamboo shoots, and a perfectly soft-boiled egg.','hero_ramen.png'],
   ['sushi','Cyber Hub Roll','₹1400','サイバーハブロール','Premium wagyu beef, asparagus tempura, truffle mayo, and gold flakes in a breathtaking presentation.','hero_sushi.png'],
-].map(([category,name,price,japanese,description,file]) => ({ category, description, image: file, japanese, name, price }))
+].map(([category,name,price,japanese,description,file]) => ({ category, description, image: image(file), japanese, name, price }))

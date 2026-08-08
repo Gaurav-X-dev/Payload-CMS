@@ -44,9 +44,33 @@ export function GalleryLightbox() {
 
 export type MenuItem = { category: string; description: string; image: string; japanese: string; name: string; price: string }
 
-export function MenuBrowser({ items }: { items: MenuItem[] }) {
+export type MenuBrowserCategory = { label: string; value: string }
+
+const DEFAULT_MENU_CATEGORIES: MenuBrowserCategory[] = [
+  { label: 'All', value: 'all' },
+  { label: 'Sushi & Sashimi', value: 'sushi' },
+  { label: 'Ramen', value: 'ramen' },
+  { label: 'Tempura', value: 'tempura' },
+  { label: 'Yakitori', value: 'yakitori' },
+  { label: 'Desserts', value: 'dessert' },
+  { label: 'Drinks', value: 'drinks' },
+]
+
+/**
+ * `item.image` must already be a complete src (a function prop can't cross the server/client
+ * boundary, since this is a Client Component). The static theme's own usage resolves its bare
+ * filenames through `image()` in `data/menu.ts` before they ever reach this component; CMS-driven
+ * callers pass Payload media URLs, which are already complete.
+ */
+export function MenuBrowser({
+  categories = DEFAULT_MENU_CATEGORIES,
+  items,
+}: {
+  categories?: MenuBrowserCategory[]
+  items: MenuItem[]
+}) {
   const [filter, setFilter] = useState('all')
   const [query, setQuery] = useState('')
   const visible = useMemo(() => items.filter((item) => (filter === 'all' || item.category === filter) && `${item.name} ${item.description}`.toLowerCase().includes(query.toLowerCase())), [filter, items, query])
-  return <><div className="zz-menu-controls"><label className="zz-menu-search"><Icon name="search" /><input aria-label="Search menu" onChange={(event) => setQuery(event.target.value)} placeholder="Search dishes..." value={query} /></label><div className="zz-filter-buttons">{[['all','All'],['sushi','Sushi & Sashimi'],['ramen','Ramen'],['tempura','Tempura'],['yakitori','Yakitori'],['dessert','Desserts'],['drinks','Drinks']].map(([value,label]) => <button className={filter === value ? 'zz-active' : ''} key={value} onClick={() => setFilter(value)} type="button">{label}</button>)}</div></div><section className="zz-menu-section"><div className="zz-menu-grid">{visible.map((item) => <article className="zz-menu-item" key={`${item.name}-${item.price}`}><div className="zz-menu-item-img"><Image alt={item.name} fill sizes="(max-width: 700px) 100vw, 33vw" src={image(item.image)} /></div><div className="zz-menu-item-content"><div className="zz-menu-item-header"><h3>{item.name}</h3><strong>{item.price}</strong></div><span className="zz-japanese-name">{item.japanese}</span><p>{item.description}</p></div></article>)}</div>{visible.length === 0 && <p className="zz-no-results">No menu items match your search.</p>}</section></>
+  return <><div className="zz-menu-controls"><label className="zz-menu-search"><Icon name="search" /><input aria-label="Search menu" onChange={(event) => setQuery(event.target.value)} placeholder="Search dishes..." value={query} /></label><div className="zz-filter-buttons">{categories.map(({ value, label }) => <button className={filter === value ? 'zz-active' : ''} key={value} onClick={() => setFilter(value)} type="button">{label}</button>)}</div></div><section className="zz-menu-section"><div className="zz-menu-grid">{visible.map((item) => <article className="zz-menu-item" key={`${item.name}-${item.price}`}><div className="zz-menu-item-img"><Image alt={item.name} fill sizes="(max-width: 700px) 100vw, 33vw" src={item.image} /></div><div className="zz-menu-item-content"><div className="zz-menu-item-header"><h3>{item.name}</h3><strong>{item.price}</strong></div><span className="zz-japanese-name">{item.japanese}</span><p>{item.description}</p></div></article>)}</div>{visible.length === 0 && <p className="zz-no-results">No menu items match your search.</p>}</section></>
 }

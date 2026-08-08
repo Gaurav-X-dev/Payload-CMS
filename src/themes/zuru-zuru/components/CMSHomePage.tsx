@@ -8,9 +8,9 @@ import type {
   ZuruZuruDishBadge,
   ZuruZuruFeatureStripBlockData,
   ZuruZuruHeroBlockData,
-  ZuruZuruHomeBlockData,
   ZuruZuruLocationsBlockData,
   ZuruZuruMenuShowcaseBlockData,
+  ZuruZuruPageBlockData,
   ZuruZuruSectionHeaderData,
   ZuruZuruSiteData,
   ZuruZuruStoryBlockData,
@@ -321,7 +321,7 @@ function LocationsSection({ block, site }: { block: ZuruZuruLocationsBlockData; 
   )
 }
 
-export function ZuruZuruHomeSection({ block, site }: { block: ZuruZuruHomeBlockData; site: ZuruZuruSiteData }) {
+export function ZuruZuruHomeSection({ block, site }: { block: ZuruZuruPageBlockData; site: ZuruZuruSiteData }) {
   switch (block.type) {
     case 'hero': return <HeroSection block={block.data} />
     case 'featureStrip': return <FeatureStripSection block={block.data} />
@@ -335,7 +335,7 @@ export function ZuruZuruHomeSection({ block, site }: { block: ZuruZuruHomeBlockD
   }
 }
 
-export function CMSHomePage({ blocks, site }: { blocks: ZuruZuruHomeBlockData[]; site: ZuruZuruSiteData }) {
+export function CMSHomePage({ blocks, site }: { blocks: ZuruZuruPageBlockData[]; site: ZuruZuruSiteData }) {
   return (
     <>
       {blocks.map((block, i) => <ZuruZuruHomeSection block={block} key={i} site={site} />)}

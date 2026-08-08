@@ -105,7 +105,9 @@ export type ZuruZuruSectionHeaderData = {
 }
 
 export type ZuruZuruHeroBlockData = {
+  backgroundImage: ZuruZuruMediaData
   description: string
+  eyebrow: string
   heading: string
   highlightedHeading: string
   image: ZuruZuruMediaData
@@ -159,9 +161,15 @@ export type ZuruZuruContentGridBlockData = {
 
 export type ZuruZuruDishBadge = 'chef' | 'new' | 'popular'
 
+export type ZuruZuruDishCategoryData = {
+  slug: string
+  title: string
+} | null
+
 export type ZuruZuruDishData = {
   badge: ZuruZuruDishBadge | null
   calories: number | null
+  category: ZuruZuruDishCategoryData
   description: string
   heat: number
   id: number
@@ -203,7 +211,8 @@ export type ZuruZuruLocationsBlockData = {
   showMap: boolean
 }
 
-export type ZuruZuruHomeBlockData =
+/** Generic per-block-type mapping output, shared by every CMS-driven Zuru Zuru page (Home, Menu, ...). Each page has its own renderer that interprets these the same underlying data differently. */
+export type ZuruZuruPageBlockData =
   | { data: ZuruZuruHeroBlockData; type: 'hero' }
   | { data: ZuruZuruFeatureStripBlockData; type: 'featureStrip' }
   | { data: ZuruZuruCardGridBlockData; type: 'cardGrid' }
@@ -213,7 +222,7 @@ export type ZuruZuruHomeBlockData =
   | { data: ZuruZuruTestimonialsBlockData; type: 'testimonials' }
   | { data: ZuruZuruLocationsBlockData; type: 'locations' }
 
-export type ZuruZuruHomeContent = {
-  blocks: ZuruZuruHomeBlockData[]
+export type ZuruZuruPageBlocksContent = {
+  blocks: ZuruZuruPageBlockData[]
   shell: ZuruZuruShellData
 }
