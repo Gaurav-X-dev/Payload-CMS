@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import type { ThemePageRendererProps } from '../types'
 import { getZuruZuruPageContent } from '@/lib/site/getZuruZuruPageContent'
 import { getZuruZuruShell } from '@/lib/site/getZuruZuruShell'
+import { CMSAboutPage } from './components/CMSAboutPage'
 import { CMSHomePage } from './components/CMSHomePage'
 import { CMSMenuPage } from './components/CMSMenuPage'
 import { ZuruZuruLayout } from './layouts/ZuruZuruLayout'
@@ -9,9 +10,10 @@ import { mapZuruZuruPageLayout, mapZuruZuruShell } from './mappers/cmsContent'
 import { getZuruZuruPage } from './utils/getPageComponent'
 import { normalizePathname } from './utils/normalizePathname'
 
-// Milestone Z4: Home ("/") and Menu ("/menu") are CMS-driven so far. Every other route still
-// renders from the existing static React page components — they're converted in later milestones.
-const CMS_DRIVEN_PATHS = new Set(['/', '/menu'])
+// Milestone Z5: Home ("/"), Menu ("/menu"), and About ("/about") are CMS-driven so far. Every
+// other route still renders from the existing static React page components — they're converted
+// in later milestones.
+const CMS_DRIVEN_PATHS = new Set(['/', '/menu', '/about'])
 
 export async function ZuruZuruPageRenderer({ hostname, pathname, site }: ThemePageRendererProps) {
   const normalizedPathname = normalizePathname(pathname)
@@ -35,9 +37,9 @@ export async function ZuruZuruPageRenderer({ hostname, pathname, site }: ThemePa
 
     return (
       <ZuruZuruLayout footer={content.footer} nav={content.navigation} pathname={pathname} site={content.site}>
-        {normalizedPathname === '/'
-          ? <CMSHomePage blocks={blocks} site={content.site} />
-          : <CMSMenuPage blocks={blocks} />}
+        {normalizedPathname === '/' && <CMSHomePage blocks={blocks} site={content.site} />}
+        {normalizedPathname === '/menu' && <CMSMenuPage blocks={blocks} />}
+        {normalizedPathname === '/about' && <CMSAboutPage blocks={blocks} />}
       </ZuruZuruLayout>
     )
   }

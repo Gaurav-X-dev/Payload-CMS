@@ -13,6 +13,8 @@ import type {
   Nav,
   Page,
   SiteSetting,
+  StatsBlock,
+  StepsBlock,
   StoryBlock,
   Tenant,
   Testimonial,
@@ -36,6 +38,8 @@ import type {
   ZuruZuruSectionHeaderData,
   ZuruZuruShellData,
   ZuruZuruSiteData,
+  ZuruZuruStatsBlockData,
+  ZuruZuruStepsBlockData,
   ZuruZuruStoryBlockData,
   ZuruZuruTestimonialsBlockData,
 } from './dynamicTypes'
@@ -310,12 +314,18 @@ export function mapZuruZuruStory(block: StoryBlock, tenantID: number): ZuruZuruS
     eyebrow: text(block.eyebrow),
     image: mapMedia(block.media, tenantID),
     imageAlt: text(block.mediaAlt),
+    imagePosition: text(block.imagePosition),
     title: text(block.title),
   }
 }
 
+type ZuruZuruBlockSettings = { backgroundColor?: string | null } | null | undefined
+
+const isDarkBackground = (settings: ZuruZuruBlockSettings): boolean => settings?.backgroundColor === 'dark'
+
 export function mapZuruZuruContentGrid(block: ContentGridBlock): ZuruZuruContentGridBlockData {
   return {
+    dark: isDarkBackground(block.settings),
     header: mapZuruZuruSectionHeader(block.sectionHeader),
     items: (block.items ?? []).map((item) => ({
       description: text(item.description),
@@ -323,6 +333,30 @@ export function mapZuruZuruContentGrid(block: ContentGridBlock): ZuruZuruContent
       title: text(item.title),
     })),
     presentation: text(block.presentation) || 'grid',
+  }
+}
+
+export function mapZuruZuruSteps(block: StepsBlock): ZuruZuruStepsBlockData {
+  return {
+    dark: isDarkBackground(block.settings),
+    header: mapZuruZuruSectionHeader(block.sectionHeader),
+    layoutVariant: text(block.layoutVariant) || 'numbered-steps',
+    steps: (block.steps ?? []).map((step) => ({
+      description: text(step.description),
+      label: text(step.label),
+      title: text(step.title),
+    })),
+  }
+}
+
+export function mapZuruZuruStats(block: StatsBlock): ZuruZuruStatsBlockData {
+  return {
+    dark: isDarkBackground(block.settings),
+    header: mapZuruZuruSectionHeader(block.sectionHeader),
+    stats: (block.stats ?? []).map((stat) => ({
+      label: text(stat.label),
+      value: text(stat.value),
+    })),
   }
 }
 
@@ -460,6 +494,12 @@ export function mapZuruZuruPageLayout(
         break
       case 'locationsBlock':
         blocks.push({ data: mapZuruZuruLocationsBlock(block, locations, tenantID), type: 'locations' })
+        break
+      case 'stepsBlock':
+        blocks.push({ data: mapZuruZuruSteps(block), type: 'steps' })
+        break
+      case 'statsBlock':
+        blocks.push({ data: mapZuruZuruStats(block), type: 'stats' })
         break
       default:
         break

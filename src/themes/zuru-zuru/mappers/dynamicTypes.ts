@@ -150,13 +150,39 @@ export type ZuruZuruStoryBlockData = {
   eyebrow: string
   image: ZuruZuruMediaData
   imageAlt: string
+  imagePosition: string
   title: string
 }
 
 export type ZuruZuruContentGridBlockData = {
+  dark: boolean
   header: ZuruZuruSectionHeaderData
   items: ZuruZuruIconTextItemData[]
   presentation: string
+}
+
+export type ZuruZuruStepItemData = {
+  description: string
+  label: string
+  title: string
+}
+
+export type ZuruZuruStepsBlockData = {
+  dark: boolean
+  header: ZuruZuruSectionHeaderData
+  layoutVariant: string
+  steps: ZuruZuruStepItemData[]
+}
+
+export type ZuruZuruStatItemData = {
+  label: string
+  value: string
+}
+
+export type ZuruZuruStatsBlockData = {
+  dark: boolean
+  header: ZuruZuruSectionHeaderData
+  stats: ZuruZuruStatItemData[]
 }
 
 export type ZuruZuruDishBadge = 'chef' | 'new' | 'popular'
@@ -221,6 +247,8 @@ export type ZuruZuruPageBlockData =
   | { data: ZuruZuruContentGridBlockData; type: 'contentGrid' }
   | { data: ZuruZuruTestimonialsBlockData; type: 'testimonials' }
   | { data: ZuruZuruLocationsBlockData; type: 'locations' }
+  | { data: ZuruZuruStepsBlockData; type: 'steps' }
+  | { data: ZuruZuruStatsBlockData; type: 'stats' }
 
 export type ZuruZuruPageBlocksContent = {
   blocks: ZuruZuruPageBlockData[]

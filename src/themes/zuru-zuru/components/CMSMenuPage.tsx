@@ -1,31 +1,9 @@
+import { CMSPageHero } from './CMSInnerPageShared'
 import { MenuBrowser, type MenuBrowserCategory, type MenuItem as MenuBrowserItem } from './Interactive'
 import type {
-  ZuruZuruHeroBlockData,
   ZuruZuruMenuShowcaseBlockData,
   ZuruZuruPageBlockData,
 } from '../mappers/dynamicTypes'
-
-/**
- * Matches Shared.tsx's `PageHero` markup/classes exactly (background-image hero used by every
- * inner page), but sources its background from a CMS Media URL instead of the static `image()`
- * asset-path helper, since Payload media URLs are already complete paths.
- */
-function CMSPageHero({ block }: { block: ZuruZuruHeroBlockData }) {
-  if (!block.heading) return null
-  const backgroundSrc = block.backgroundImage?.src
-  const style = backgroundSrc
-    ? { backgroundImage: `linear-gradient(rgba(17,17,17,.7),rgba(17,17,17,.7)),url('${backgroundSrc}')` }
-    : undefined
-  return (
-    <section className="zz-page-hero" style={style}>
-      <div className="zz-container">
-        {block.eyebrow && <span>{block.eyebrow}</span>}
-        <h1>{block.heading}</h1>
-        <p>{block.description}</p>
-      </div>
-    </section>
-  )
-}
 
 /**
  * Wraps the existing `MenuBrowser` client component (search + category filter + grid — unchanged
