@@ -26,6 +26,7 @@
     "db:seed:curious-ladoo-contact": "node --env-file=.env --experimental-strip-types --import ./scripts/register-ts-loader.mjs scripts/seed-curious-ladoo-contact.ts",
     "db:seed:curious-ladoo-blog": "node --env-file=.env --experimental-strip-types --import ./scripts/register-ts-loader.mjs scripts/seed-curious-ladoo-blog.ts",
     "db:seed:curious-ladoo-seo": "node --env-file=.env --experimental-strip-types --import ./scripts/register-ts-loader.mjs scripts/seed-curious-ladoo-seo.ts",
+    "db:seed:zuru-zuru-shell": "node --env-file=.env --experimental-strip-types --import ./scripts/register-ts-loader.mjs scripts/seed-zuru-zuru-shell.ts",
     "typecheck": "npm run typecheck:app && npm run typecheck:tests",
     "typecheck:app": "tsc --noEmit -p tsconfig.json",
     "typecheck:tests": "tsc --noEmit -p tsconfig.tests.json",

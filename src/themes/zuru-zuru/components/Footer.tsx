@@ -1,37 +1,98 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { footerColumns, image } from '../data/site'
+import type { ZuruZuruFooterData, ZuruZuruNewsletterData, ZuruZuruSiteData } from '../mappers/dynamicTypes'
+import { formatHoursSummary } from '../utils/formatHours'
 import { Icon } from './Icon'
 
-export function Newsletter() {
+/** CMS Site Settings newsletter config is optional: absent/disabled falls back to today's static copy. */
+export function Newsletter({ newsletter }: { newsletter?: ZuruZuruNewsletterData }) {
+  if (newsletter && !newsletter.enabled) return null
+  const title = newsletter?.title || 'Join Our Inner Circle'
+  const description = newsletter?.description || 'Receive exclusive recipes, event invitations, and special offers directly in your inbox. No spam, just Japanese inspiration.'
+  const placeholder = newsletter?.placeholder || 'Enter your email address'
+  const buttonLabel = newsletter?.buttonLabel || 'Subscribe'
   return (
     <section className="zz-nl-section zz-section-alt">
       <div className="zz-container">
         <div className="zz-section-subtitle zz-centered">Stay Connected</div>
-        <h2 className="zz-heading-section zz-text-center">Join Our Inner Circle</h2>
-        <p className="zz-section-desc zz-text-center zz-newsletter-copy">Receive exclusive recipes, event invitations, and special offers directly in your inbox. No spam, just Japanese inspiration.</p>
-        <form className="zz-nl-form"><label className="zz-visually-hidden" htmlFor="zz-newsletter">Email address</label><input id="zz-newsletter" placeholder="Enter your email address" type="email" /><button type="button">Subscribe</button></form>
+        <h2 className="zz-heading-section zz-text-center">{title}</h2>
+        <p className="zz-section-desc zz-text-center zz-newsletter-copy">{description}</p>
+        <form className="zz-nl-form"><label className="zz-visually-hidden" htmlFor="zz-newsletter">Email address</label><input id="zz-newsletter" placeholder={placeholder} type="email" /><button type="button">{buttonLabel}</button></form>
       </div>
     </section>
   )
 }
 
-export function Footer() {
+/** CMS Footer/Site Settings are optional: absent data keeps today's static footer content. */
+export function Footer({
+  footer,
+  site,
+}: {
+  footer?: ZuruZuruFooterData
+  site?: ZuruZuruSiteData
+}) {
+  const columns = footer && footer.columns.length > 0
+    ? footer.columns
+    : footerColumns.map(([heading, links]) => ({
+        links: links.map(([href, label]) => ({ label, url: href })),
+        title: heading,
+      }))
+  const brandName = site?.name || 'Zuru Zuru'
+  const description = site?.description || 'A premium Japanese Izakaya experience bringing the authentic flavours of Tokyo to New Delhi. Every dish tells a story of tradition, passion, and culinary excellence.'
+  const logoSrc = site?.logo?.src || image('zuruzuru_logo.png')
+  const logoAlt = site?.logo?.alt || 'Zuru Zuru'
+  const social = site && site.social.length > 0
+    ? site.social
+    : [
+        { href: 'https://www.instagram.com/zuruzuru.in/?hl=en', icon: 'instagram', label: 'Instagram' },
+        { href: '#', icon: 'facebook', label: 'Facebook' },
+        { href: '#', icon: 'twitter', label: 'Twitter' },
+        { href: '#', icon: 'youtube', label: 'YouTube' },
+      ]
+  const address = site?.address || 'Zuru Zuru, Delhi, India 110049'
+  const phone = site?.phone || '+91 11 4052 7373'
+  const email = site?.email || 'hello@zuruzuru.in'
+  const hoursSummary = site ? formatHoursSummary(site.hours) : ''
+  const copyright = footer?.copyright || '© 2026 Zuru Zuru Izakaya. All Rights Reserved.'
+  const bottomLinks = footer && footer.bottomLinks.length > 0
+    ? footer.bottomLinks
+    : [
+        { label: 'Privacy Policy', url: '/privacy-policy' },
+        { label: 'Terms of Service', url: '/terms' },
+        { label: 'FAQ', url: '/faq' },
+      ]
+
   return (
     <footer className="zz-footer">
       <div className="zz-container">
         <div className="zz-footer-grid">
           <div className="zz-footer-about">
-            <div className="zz-footer-brand-container"><Image alt="Zuru Zuru" className="zz-footer-logo" height={62} src={image('zuruzuru_logo.png')} width={62} /><span className="zz-brand-name">Zuru Zuru</span></div>
-            <p>A premium Japanese Izakaya experience bringing the authentic flavours of Tokyo to New Delhi. Every dish tells a story of tradition, passion, and culinary excellence.</p>
+            <div className="zz-footer-brand-container"><Image alt={logoAlt} className="zz-footer-logo" height={62} src={logoSrc} width={62} /><span className="zz-brand-name">{brandName}</span></div>
+            <p>{description}</p>
             <div className="zz-footer-social">
-              <a aria-label="Instagram" href="https://www.instagram.com/zuruzuru.in/?hl=en"><Icon name="instagram" /></a><a aria-label="Facebook" href="#"><Icon name="facebook" /></a><a aria-label="Twitter" href="#"><Icon name="twitter" /></a><a aria-label="YouTube" href="#"><Icon name="youtube" /></a>
+              {social.map((entry) => (
+                <a aria-label={entry.label} href={entry.href} key={entry.label}><Icon name={entry.icon.toLowerCase()} /></a>
+              ))}
             </div>
           </div>
-          {footerColumns.map(([heading, links]) => <div className="zz-footer-links" key={heading}><h4>{heading}</h4>{links.map(([href, label]) => <Link href={href} key={href}>{label}</Link>)}</div>)}
-          <div><h4>Contact</h4><ul className="zz-footer-contact"><li><Icon name="map" /> Zuru Zuru, Delhi, India 110049</li><li><Icon name="phone" /> +91 11 4052 7373</li><li><Icon name="email" /> hello@zuruzuru.in</li></ul><h4 className="zz-hours-heading">Hours</h4><ul className="zz-footer-hours"><li><strong>1:00 PM - 4:00 PM &amp; 7:00 PM - 10:30 PM</strong><span>Lunch &amp; Dinner (Full Menu)</span></li><li><strong>4:00 PM - 7:00 PM</strong><span>Tempura, Gyoza &amp; Cold Ramen</span></li></ul></div>
+          {columns.map((column) => <div className="zz-footer-links" key={column.title}><h4>{column.title}</h4>{column.links.map((link) => <Link href={link.url} key={link.url}>{link.label}</Link>)}</div>)}
+          <div>
+            <h4>Contact</h4>
+            <ul className="zz-footer-contact">
+              <li><Icon name="map" /> {address}</li>
+              {phone && <li><Icon name="phone" /> {phone}</li>}
+              {email && <li><Icon name="email" /> {email}</li>}
+            </ul>
+            {hoursSummary && (
+              <>
+                <h4 className="zz-hours-heading">Hours</h4>
+                <ul className="zz-footer-hours"><li><strong>{hoursSummary}</strong></li></ul>
+              </>
+            )}
+          </div>
         </div>
-        <div className="zz-footer-bottom"><p>© 2026 Zuru Zuru Izakaya. All Rights Reserved.</p><div><Link href="/privacy-policy">Privacy Policy</Link><Link href="/terms">Terms of Service</Link><Link href="/faq">FAQ</Link></div></div>
+        <div className="zz-footer-bottom"><p>{copyright}</p><div>{bottomLinks.map((link) => <Link href={link.url} key={link.url}>{link.label}</Link>)}</div></div>
       </div>
     </footer>
   )
