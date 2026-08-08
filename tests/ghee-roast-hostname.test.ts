@@ -18,10 +18,14 @@ const gheeRoastHosts = [
 
 test('documented Ghee Roast development hosts resolve deterministically', () => {
   for (const host of gheeRoastHosts) {
+    // `hostname` on the resolved site is the actual normalized request hostname (used verbatim
+    // for canonical URLs/sitemap/robots in production, so it must reflect the real incoming
+    // domain rather than a fixed dev value) — re-derive it the same way resolveLocalSite does,
+    // rather than asserting one hardcoded string across every alias in this list.
     assert.deepEqual(
       resolveLocalSite(host),
       {
-        hostname: 'ghee-roast.localhost',
+        hostname: resolveHostname(host),
         key: 'ghee-roast',
         theme: 'ghee-roast',
       },
@@ -47,10 +51,11 @@ const curiousLadooHosts = [
 
 test('bare localhost and Curious Ladoo development hosts resolve to Curious Ladoo (default tenant)', () => {
   for (const host of curiousLadooHosts) {
+    // See the Ghee Roast test above: `hostname` mirrors the actual normalized request hostname.
     assert.deepEqual(
       resolveLocalSite(host),
       {
-        hostname: 'curious-hub.localhost',
+        hostname: resolveHostname(host),
         key: 'curious-ladoo',
         theme: 'curious-hub',
       },

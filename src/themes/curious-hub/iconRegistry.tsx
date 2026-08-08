@@ -73,3 +73,44 @@ export function CuriousHubIcon({
     </svg>
   )
 }
+
+/**
+ * Social platform badges (Footer, `SiteSettings.socials`). A separate, small registry from
+ * CURIOUS_HUB_ICONS above — that one is for decorative content-grid/ticker icons; this one keys
+ * off the `socials.icon` field (defaults to `socials.platform`) and covers exactly that field's
+ * option set. Simplified outline glyphs in the same stroke style as the rest of the theme's SVG
+ * icons, not literal brand marks.
+ */
+const SOCIAL_ICONS: Record<string, IconDef> = {
+  facebook: svgIcon('0 0 24 24', <path d="M15 4h-2a4 4 0 0 0-4 4v3H6v3h3v6h3v-6h2.5l.5-3h-3V8a1 1 0 0 1 1-1h2z" />),
+  instagram: svgIcon('0 0 24 24', <><rect height="16" rx="4" width="16" x="4" y="4" /><circle cx="12" cy="12" r="3.5" /><circle cx="17" cy="7" fill="currentColor" r="0.8" stroke="none" /></>),
+  link: svgIcon('0 0 24 24', <><path d="M9 15l6-6" /><path d="M10 6l1.5-1.5a3.5 3.5 0 0 1 5 5L15 11" /><path d="M14 18l-1.5 1.5a3.5 3.5 0 0 1-5-5L9 13" /></>),
+  linkedin: svgIcon('0 0 24 24', <><rect height="16" rx="2" width="16" x="4" y="4" /><path d="M8 10.5v6M8 8v0.01" /><path d="M12 16.5v-3.5a2 2 0 0 1 4 0v3.5M12 13v3.5" /></>),
+  twitter: svgIcon('0 0 24 24', <path d="M20 6.5c-.7.4-1.4.6-2.2.7a3.4 3.4 0 0 0 1.5-1.9c-.8.5-1.6.8-2.5 1a3.4 3.4 0 0 0-5.8 3.1A9.7 9.7 0 0 1 4 6.1a3.4 3.4 0 0 0 1 4.5c-.6 0-1.2-.2-1.7-.5v.1a3.4 3.4 0 0 0 2.7 3.3 3.4 3.4 0 0 1-1.5.1 3.4 3.4 0 0 0 3.2 2.4A6.9 6.9 0 0 1 3 17.4a9.7 9.7 0 0 0 5.3 1.6c6.3 0 9.8-5.3 9.8-9.8v-.4c.7-.5 1.3-1.1 1.8-1.8z" />),
+  whatsapp: svgIcon('0 0 24 24', <><circle cx="12" cy="12" r="8.5" /><path d="M8.5 9.5c0 3.5 2.5 6 6 6l.5-2-2-1-1 1a5 5 0 0 1-2.5-2.5l1-1-1-2z" /></>),
+  youtube: svgIcon('0 0 24 24', <><rect height="14" rx="3" width="20" x="2" y="5" /><path d="M10 9l5 3-5 3z" /></>),
+}
+
+export function CuriousHubSocialIcon({
+  className,
+  name,
+}: {
+  className?: string
+  name: string
+}) {
+  const icon = SOCIAL_ICONS[name.toLowerCase()] ?? SOCIAL_ICONS.link
+  return (
+    <svg
+      aria-hidden="true"
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="1.5"
+      viewBox={icon.viewBox}
+    >
+      {icon.paths}
+    </svg>
+  )
+}

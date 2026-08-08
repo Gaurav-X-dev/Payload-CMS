@@ -33,6 +33,7 @@ export type NavItemData = {
 export type SocialLinkData = {
   ariaLabel: string
   href: string
+  icon?: string
   label: string
 }
 

@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import type { ReactNode } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
 import type {
   CuriousLadooBlogPreviewBlockData,
   CuriousLadooBrandsShowcaseBlockData,
@@ -38,12 +38,12 @@ import styles from './Theme.module.css'
 const revealDelay = (index: number, mod = 5) => (index % mod) as 0 | 1 | 2 | 3 | 4
 
 /** mailto:/tel:/http(s) links need a plain <a>; internal paths use <Link> for client-side nav. */
-export function SmartLink({ children, className, href, id }: { children: ReactNode; className?: string; href: string; id?: string }) {
+export function SmartLink({ children, className, href, id, style }: { children: ReactNode; className?: string; href: string; id?: string; style?: CSSProperties }) {
   const isExternalStyle = /^(mailto:|tel:|https?:)/.test(href)
   if (isExternalStyle) {
-    return <a className={className} href={href} id={id}>{children}</a>
+    return <a className={className} href={href} id={id} style={style}>{children}</a>
   }
-  return <Link className={className} href={href} id={id}>{children}</Link>
+  return <Link className={className} href={href} id={id} style={style}>{children}</Link>
 }
 
 function HeroSection({ block }: { block: CuriousLadooHeroBlockData }) {
@@ -904,10 +904,35 @@ function StepsVisualTimeline({ block }: { block: CuriousLadooStepsBlockData }) {
   )
 }
 
-function StepsSection({ block }: { block: CuriousLadooStepsBlockData }) {
+/** Plain light-section timeline used by every non-Home page (About) — matches the original About page's Journey section exactly: no dark background, no eyebrow row, no journeyHeader wrapper, centered title with a fixed 4rem bottom margin. */
+function StepsTimelineLight({ block }: { block: CuriousLadooStepsBlockData }) {
+  return (
+    <section className={styles.innerSection} id="journey">
+      <ScrollReveal>
+        <h2 className={styles.sectionTitle} style={{ marginBottom: '4rem', textAlign: 'center' }}>
+          {renderHeading(block.header.title, block.header.subtitle)}
+        </h2>
+      </ScrollReveal>
+      <div className={styles.journeyTimeline}>
+        {block.steps.map((step, i) => (
+          <ScrollReveal delay={revealDelay(i)} key={step.title}>
+            <div className={styles.journeyMilestone}>
+              <div className={styles.journeyYear}>{step.label}</div>
+              <div className={styles.journeyEvent}>{step.title}</div>
+              <p className={styles.journeyDesc}>{step.description}</p>
+            </div>
+          </ScrollReveal>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+function StepsSection({ block, pageType }: { block: CuriousLadooStepsBlockData; pageType: string }) {
   if (block.steps.length === 0) return null
   if (block.layoutVariant === 'visual-timeline') return <StepsVisualTimeline block={block} />
-  return block.layoutVariant === 'timeline' ? <StepsTimeline block={block} /> : <StepsNumbered block={block} />
+  if (block.layoutVariant === 'timeline') return pageType === 'home' ? <StepsTimeline block={block} /> : <StepsTimelineLight block={block} />
+  return <StepsNumbered block={block} />
 }
 
 function StatsSection({ block }: { block: CuriousLadooStatsBlockData }) {
@@ -1044,7 +1069,11 @@ function BlogIndexSection({ block, newsletter }: { block: CuriousLadooBlogPrevie
         <div className={styles.blogMainGrid}>
           {block.items.map((article, i) => (
             <ScrollReveal delay={revealDelay(i, 3)} key={article.id}>
-              <SmartLink className={styles.journalCard} href={`/blog/${article.slug}`}>
+              <SmartLink
+                className={styles.journalCard}
+                href={`/blog/${article.slug}`}
+                style={{ border: '1px solid var(--ch-border)', borderRadius: 'var(--ch-radius-lg)' }}
+              >
                 <div className={styles.journalCardImage}>
                   {article.image && (
                     <Image alt={article.image.alt} fill loading="lazy" src={article.image.src} style={{ objectFit: 'cover' }} />
@@ -1544,7 +1573,7 @@ function CMSHomeBlock({ block, newsletter, pageType, siteName }: { block: Curiou
     case 'story': return <StorySection block={block} />
     case 'contentgrid': return <ContentGridSection block={block} />
     case 'brandsshowcase': return <BrandsShowcaseSection block={block} />
-    case 'steps': return <StepsSection block={block} />
+    case 'steps': return <StepsSection block={block} pageType={pageType} />
     case 'stats': return <StatsSection block={block} />
     case 'testimonials': return <TestimonialsSection block={block} />
     case 'capability': return <CapabilitySection block={block} />

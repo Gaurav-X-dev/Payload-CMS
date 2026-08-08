@@ -1,28 +1,37 @@
 import { resolveHostname } from './resolveHostname'
 import type { LocalSite } from './types'
 
+type LocalSiteMatch = Omit<LocalSite, 'hostname'>
+
 const gheeRoastSite = {
-  hostname: 'ghee-roast.localhost',
   key: 'ghee-roast',
   theme: 'ghee-roast',
-} as const satisfies LocalSite
+} as const satisfies LocalSiteMatch
 
 const zuruZuruSite = {
-  hostname: 'zuru-zuru.localhost',
   key: 'zuru-zuru',
   theme: 'zuru-zuru',
-} as const satisfies LocalSite
+} as const satisfies LocalSiteMatch
 
 const curiousHubSite = {
-  hostname: 'curious-hub.localhost',
   // Matches the seeded Tenant.slug ('curious-ladoo'), not the internal theme key — see
   // resolvePublicTenantID, which looks up the tenant by this value. The theme key below stays
   // 'curious-hub' deliberately (documented in docs/CURIOUS_LADOO_MIGRATION.md).
   key: 'curious-ladoo',
   theme: 'curious-hub',
-} as const satisfies LocalSite
+} as const satisfies LocalSiteMatch
 
-export const localSiteRegistry: Readonly<Record<string, LocalSite>> = {
+/**
+ * Every hostname (dev alias or real production domain) that should resolve to each theme.
+ * `resolveLocalSite` returns the *actual* matched hostname as `LocalSite.hostname` (not a fixed
+ * value from this table) — that field feeds canonical URLs, sitemap.xml, robots.txt, and JSON-LD
+ * (see CuriousHubPageRenderer.tsx, app/sitemap.ts, app/robots.ts), so it must always be the real
+ * domain the request came in on, or those URLs would point at a dev-only hostname in production.
+ *
+ * To add a real production domain: add its hostname (and its `www.` variant, if used) as a new
+ * key below, pointing at the matching site constant. No other file needs to change.
+ */
+export const localSiteRegistry: Readonly<Record<string, LocalSiteMatch>> = {
   'curious-hub.local': curiousHubSite,
   'curious-hub.localhost': curiousHubSite,
   'curious-ladoo.local': curiousHubSite,
@@ -38,5 +47,6 @@ export const localSiteRegistry: Readonly<Record<string, LocalSite>> = {
 
 export function resolveLocalSite(host: string | null | undefined): LocalSite | null {
   const hostname = resolveHostname(host)
-  return localSiteRegistry[hostname] ?? null
+  const match = localSiteRegistry[hostname]
+  return match ? { ...match, hostname } : null
 }

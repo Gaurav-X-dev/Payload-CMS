@@ -806,7 +806,11 @@ export function mapCuriousLadooSite(
     social: (settings?.socials ?? [])
       .filter((social) => social.enabled !== false && social.url)
       .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
-      .map((social) => ({ href: text(social.url), label: social.platform })),
+      .map((social) => ({
+        href: text(social.url),
+        icon: !social.icon || social.icon === 'platform' ? social.platform : social.icon,
+        label: social.platform,
+      })),
     tagline: text(settings?.tagline),
   }
 }

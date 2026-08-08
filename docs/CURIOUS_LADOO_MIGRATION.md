@@ -235,8 +235,8 @@ needed**, must be preserved exactly as-is.
 | 13 | Contact | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Done — see §16 |
 | 14 | Blog/Journal | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Done — see §17 |
 | 15 | SEO | – | – | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Done — see §18 |
-| 16 | Final design parity | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | Pending |
-| 17 | Regression testing | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | Pending |
+| 16 | Final design parity | – | – | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Done — see §19 |
+| 17 | Regression testing | – | – | – | – | – | – | ✅ | ⚠️ Done, 2 findings need a decision — see §20 |
 
 ---
 
@@ -1714,7 +1714,294 @@ wording), but the redundant "Curious Ladoo" prefix reads awkwardly. No separate 
 field exists on `Pages` to use instead, and inventing one is a schema decision outside this milestone's
 scope — flagged here rather than silently worked around.
 
-## 19. Verification commands (from `package.json`)
+## 19. Milestone 16 record — Final Design Parity (audit-driven; 3 confirmed visual/behavioral mismatches found and fixed, zero schema/architecture changes)
+
+**Method.** No browser/screenshot tooling is available in this environment, so pixel-level
+breakpoint testing (1920 down to 360px) was not literally performed. Instead, parity was verified
+by the most rigorous static-analysis approach available: (1) confirming the CMS route and the
+still-present static `pages/*.tsx` originals share the exact same `Theme.module.css` module — so
+as long as both sides apply the same class names, computed styles (including every `@media` rule)
+are byte-for-byte identical by construction, eliminating an entire class of possible drift; (2) an
+exhaustive class-usage diff (every `styles.xxx` referenced by each static original vs. every class
+referenced anywhere in CMS-reachable code) — result: **zero classes used by any static page are
+missing from the CMS rendering path**; (3) a full side-by-side read of all 11 static page files
+against their CMS block-renderer counterparts in `CMSHomePage.tsx`, cross-checked against live
+`curl` output (section order, ids, classes, and seeded content) across all 11 CMS-driven routes;
+(4) confirming shared chrome (`NoiseOverlay`, `CustomCursor`, `PageLoader`, `Header`, `Footer`,
+`BackToTop`) is wired through exactly one shared `CuriousHubLayout`, used identically by both the
+CMS route and the (now-unreachable, still-present) static fallback route — structurally guaranteeing
+this chrome can never have drifted between the two. This is flagged transparently as a real
+limitation of this pass, not glossed over: true responsive rendering (actual browser layout at each
+of the 10 requested widths) was not visually confirmed, only that no `@media` rule or responsive
+class was touched by any fix below.
+
+**Mismatch 1 — About page's Journey section rendered with Home's dark theme.** `StepsSection`'s
+`layoutVariant: 'timeline'` branch unconditionally rendered `StepsTimeline` — Home's dark
+`.journeySection`/`.journeyHeader`/`sectionTitleLight` treatment (`background: var(--ch-dark)`).
+The original About page's own Journey section is a plain light `.innerSection` with no eyebrow row
+and no header wrapper. Live-verified before the fix: `curious-hub.localhost/about`'s `#journey`
+section rendered with `class="...journeySection..."` (dark) instead of `class="...innerSection..."`
+(light) — a highly visible, page-wide background-color mismatch. **Root cause:** only Home and About
+use journey-timeline classes (confirmed via `grep -l "journeySection\|journeyMilestone" pages/*.tsx`
+→ exactly those two files); `numbered-steps` is Home-only and `visual-timeline` is How-We-Work-only,
+so no other page could be affected by a fix here. **Fix:** added `StepsTimelineLight` (matches
+About's exact original markup — no eyebrow, no header wrapper, centered title, fixed `4rem` bottom
+margin) and dispatch on the same `pageType === 'home'` check already used for the Hero block — zero
+new schema, zero new fields, reusing an established pattern. Re-verified live:
+`/about#journey` → `class="Theme_innerSection..."`; `/` (Home) `#journey` still →
+`class="Theme_journeySection..."` (dark, unaffected).
+
+**Mismatch 2 — Services/Contact FAQ tab items skipped their scroll-reveal animation.** Both
+original pages wrap each `.faqTabAccordion` item in `<ScrollReveal delay={(i % 3)}>`; the shared
+`FAQAccordion.tsx`'s `FAQTabAccordion` (built at Milestone 12, primarily for the FAQs page's
+`plusminus` mode, which correctly does wrap its items) omitted the wrapper entirely for the `tabs`
+mode — so on Services and Contact, FAQ items appeared instantly instead of fading in as the user
+scrolls, unlike every other section on those pages. **Fix:** wrapped each `.faqTabAccordion` item in
+`<ScrollReveal delay={(i % 3) as 0 | 1 | 2}>`, matching both originals' exact modulo/delay pattern.
+The FAQs page's own `plusminus` mode (`FAQPlusMinusAccordion`) was already correct and untouched.
+
+**Mismatch 3 — Blog index cards were missing their border and rounded corners.** The original Blog
+page's article-grid cards apply explicit inline overrides (`border: 1px solid var(--ch-border)`,
+`borderRadius: var(--ch-radius-lg)`, plus several near-identical-to-base-class font-size tweaks) on
+top of the shared `.journalCard` class. `BlogIndexSection` reused the bare `.journalCard` class with
+no additions — identical to Home's borderless Journal-preview cards, which is correct for Home but
+loses the Blog-specific bordered/rounded card chrome the original always had there. Comparing every
+inline value against the base CSS module class showed only the border/radius as a genuine, visible
+gap (the font-size/padding/image-height deltas were all sub-pixel-scale, e.g. 220px vs the base
+class's 240px — not a fixable "mismatch" worth a special-case override). **Fix:** added an optional
+`style` prop to the shared `SmartLink` component (additive, backward-compatible — every other caller
+is unaffected) and applied `border`/`borderRadius` inline specifically on `BlogIndexSection`'s grid
+cards only; `JournalSection` (Home's preview, correctly borderless) was left untouched. Verified live
+via the RSC payload (6 occurrences of `ch-border`/`ch-radius-lg`, matching the 6 seeded blog posts).
+
+**Investigated and confirmed NOT a mismatch (documented for transparency, not fixed):** (a) several
+per-element hardcoded `id`s from the original static markup (`careers-cta-btn`, `cta-email-btn`,
+`brand-zuruzuru-link`, the How-We-Work Pipeline section's `id="future"` inherited from the Brands
+page's block reuse) are absent from the CMS output — confirmed via repo-wide grep that **none** of
+these ids are targeted by any CSS selector or JS/analytics code anywhere in the codebase, so their
+absence has zero visual or behavioral effect; (b) the Testimonials page's CTA section (no eyebrow, no
+body copy in the original) gets slightly different `ScrollReveal` delay values than the original's
+tightly-packed 0/1 sequence, because `CTASection` assigns fixed delay slots (eyebrow=0, title=1,
+body=2, buttons=3) rather than compacting around whichever optional fields are present — a genuine
+but very minor (0.1-0.2s) animation-timing difference, affecting only this one page's CTA. Not fixed:
+`CTASection` is shared by every page's CTA, and switching to dynamic delay compaction risks changing
+timing on pages where the fixed-slot behavior currently happens to be correct — a real but low-value
+fix not worth that shared-component risk under this milestone's conservative-change mandate.
+Documented here as a remaining, deliberately-unfixed difference. (c) `ContactForm`'s `?interest=`
+query-param preselect (referenced by CTA links across Portfolio/How-We-Work/etc., e.g.
+`/contact?interest=consulting`) was verified already correctly implemented (Milestone 13) — even
+improved over the original (validates against real subject options; submits for real instead of the
+original's `alert()` stub, consistent with the same precedent already documented in the Milestone 14
+blog-newsletter decision) — no action needed.
+
+**Blog detail page:** per the Milestone 14 record, this route "never rendered anything for any local
+theme before" that milestone — there is no static original to compare against, so per this
+milestone's own scope ("Blog detail where an original design exists") it was excluded from the
+comparison, not silently skipped.
+
+**Test results:** Curious Ladoo suite 104/104 (unchanged — these fixes are presentational, not
+covered by new assertions, and no existing test's expected output was affected). `test:ghee-cms`:
+40/40. **Build result:** `typecheck` clean · `lint`: 0 new warnings/errors (only the 2 touched files,
+`CMSHomePage.tsx` and `FAQAccordion.tsx`, show zero findings; the pre-existing 1 error / 237 warnings
+elsewhere are unchanged and untouched) · `npm run build` succeeds · `git diff --check` clean (only
+benign CRLF/LF warnings).
+
+**Ghee Roast / Zuru Zuru status:** unaffected — no file outside `src/themes/curious-hub/` was
+touched. `test:ghee-cms` 40/40 re-confirms zero regression; both tenants' homepages were not
+re-fetched live this milestone since no shared/global file changed (only two Curious-Hub-scoped
+component files were edited).
+
+**Files modified:** `src/themes/curious-hub/components/CMSHomePage.tsx` (new `StepsTimelineLight`
+component + `pageType`-based dispatch for the `timeline` Steps variant; `SmartLink` gained an
+optional `style` prop; Blog index cards gained inline border/radius),
+`src/themes/curious-hub/components/FAQAccordion.tsx` (added the missing per-item `ScrollReveal`
+wrapper to `FAQTabAccordion`). No files created; no schema, migration, or CMS architecture changes.
+
+## 20. Milestone 17 record — Final Regression Testing (verification-only; zero files modified; two findings surfaced and left unfixed pending approval, per this milestone's explicit "stop and explain" rule)
+
+**Scope discipline.** This milestone made **no code changes**. Every item below is either a passing
+live/test verification or a finding documented for a decision, not silently patched — per the
+milestone's own rules ("do not fix unrelated infrastructure unless it blocks release," "modify Ghee
+Roast/Zuru Zuru only if a regression is proven and you stop to explain first") and the standing
+visual-parity-fix-scope-rules memory from Milestone 16.
+
+**Routes:** all 13 (11 pages + blog detail + unknown-route 404) verified live, all correct. **Host
+routing:** `localhost`/`127.0.0.1`/`curious-hub.localhost`/`curious-ladoo.localhost` all → Curious
+Ladoo (title-verified, not just status-code); `ghee-roast.localhost` → Ghee Roast; `zuru-zuru.localhost`
+→ Zuru Zuru **body** content (title leak — see Finding 1); unknown host → 404; `/admin` → 200.
+
+**CMS/publishing (verified via direct code read of the actual hooks, not just tests — see Finding 2
+for why):** `validatePageModel` (`Pages.ts`) enforces exactly one `isHomePage: true` row per tenant
+via a `beforeValidate` throw. `tenantScopedUnique` (used by Pages/BlogPosts/Brands/Portfolio/
+MenuItems/MenuCategories) enforces per-tenant slug uniqueness — confirmed its `fallbackField` param
+is only the auto-generation source, not the uniqueness target (initially misread as a bug, then
+disproven by reading the hook's actual query, which always checks `slug`). `SINGLETON_BLOCK_LABELS`
+(`validation/pageLayout.ts`) rejects duplicate singleton blocks — already covered by a passing
+Curious Ladoo unit test. Pages and BlogPosts both declare `versions: { drafts: true }` +
+`readVersions: tenantVersionRead`, the same Payload-native mechanism Ghee Roast already relies on.
+
+**Content tenant-scoping (direct SQL across every relevant table):** pages/blog_posts/brands/
+portfolio/testimonials/faqs/locations/media/nav/footer/site_settings/seo/contact_submissions all
+group cleanly by `tenant_id_id` with zero ambiguous rows; every "one per tenant" singleton
+(nav/footer/site_settings/seo) has exactly one row for Curious Ladoo. 15 tenant rows exist in the
+dev DB total — Ghee Roast, Zuru Zuru, Curious Ladoo, plus 12 orphaned `tenant-1-*`/`tenant-2-*` rows
+left over from previous, uncleaned `test:security` runs (see Finding 2) — noted, not deleted (not
+this milestone's data to clean up).
+
+**Forms (live HTTP against the real Curious Ladoo tenant):** valid contact submission → 201,
+correctly `tenantId: 3181`; invalid email → 400; missing required field → 400; invalid/unconfigured
+subject → 400; tenant-spoofing attempt (client-supplied `tenantId: 3167` while `Host` resolves to
+Curious Ladoo) → 400 "The submitted tenant does not match the public site."; newsletter valid → 201;
+newsletter invalid email → 400. Duplicate-submission "protection" is confirmed to be a **client-side**
+double-click guard (`createSubmissionGuard`, already unit-tested) — two independent, out-of-band curl
+requests both succeeded (201/201), which is correct, expected behavior, not a gap.
+
+**Finding 1 (blocking-adjacent, needs a decision — not fixed): Zuru Zuru's `<title>` and meta
+description are Curious-Ladoo-branded on every page.** Live-verified: `zuru-zuru.localhost`'s page
+*body* is 100% correct Zuru Zuru content (622 "zuru" mentions, 0 "curious" in the rendered HTML), but
+`<title>` and `<meta name="description">` show "Curious Ladoo — We Build Hospitality That Lasts" /
+its description. **Root cause:** `generateMetadata` in the shared `[[...slug]]/page.tsx` has explicit
+branches for `site.theme === 'ghee-roast'` and `'curious-hub'`, but none for `'zuru-zuru'` — it falls
+through to `return {}`, so Next.js's metadata merge falls back to the shared root layout's
+(`src/app/(app)/layout.tsx`) default `title`/`description`. **This is not a new regression from this
+migration**, confirmed via `git log -S`: the very first version of that file's default title was
+`'Very Good Ghee Roast'` (commit `09f4084`) — meaning Zuru Zuru has *never* had its own page title;
+it has always silently inherited whichever brand happened to be the shared default. Milestone 2's
+brand-rename changed that default from Ghee-Roast-branded to Curious-Ladoo-branded, which is why it
+now reads as a Curious Ladoo leak rather than a Ghee Roast one — same underlying gap, different
+cosmetic symptom. **Not fixed this milestone**, because the only fix (adding a `zuru-zuru` branch to
+`generateMetadata`, or giving Zuru Zuru its own metadata module) touches
+`src/app/(app)/[[...slug]]/page.tsx` and/or `src/app/(app)/layout.tsx` — both shared across all three
+tenants — which this milestone's own rule requires stopping and explaining before touching. Surfaced
+here for a decision; not applied.
+
+**Finding 2 (documented, not blocking, not fixed): `npm run test:security` currently cannot run to
+completion — 100% of its 14 files fail/cancel, exit code 1.** Root cause identified precisely: nearly
+every file's fixture setup (`tests/security/fixtures.ts`'s `setupSecurityFixtures`) creates tenants
+with names like `` `Tenant A Active ${deterministicId()}` `` where `deterministicId()` always appends
+digits (a running counter). `validateTenantIdentity`'s `validateName` (`validation/shared.ts`) enforces
+`SAFE_NAME_PATTERN` (letters/marks/spaces/apostrophes/periods/hyphens only, **no digits**) — so every
+fixture-created tenant name is categorically rejected before any actual security assertion runs.
+Confirmed via `git log -S`/`git log --follow` that both `fixtures.ts` and `SAFE_NAME_PATTERN` predate
+the Curious Ladoo branch entirely (present since the Ghee Roast/Zuru Zuru foundation commits) — this
+is pre-existing test-infrastructure breakage, not something introduced by any of the 17 milestones in
+this migration, and it affects the *generic* tenant-isolation harness (parametrized Tenant-A/Tenant-B
+fixtures), not anything Curious-Ladoo-specific. **Not fixed** — `tests/security/fixtures.ts` and
+`validation/shared.ts` are unrelated shared test infrastructure, explicitly out of scope ("do not fix
+unrelated infrastructure unless it blocks release"). Judged **not blocking**: the tenant-isolation
+guarantees this suite would have exercised are independently demonstrated by (a) direct code review of
+the same access-control hooks it would have called, (b) the SQL tenant-scoping check above, (c)
+live-verified tenant-spoofing rejection on the real contact-submissions endpoint, and (d) every *other*
+currently-runnable suite (curious-ladoo/ghee-cms/authorization/phase1/phase2, all passing) which
+already exercises tenant isolation through non-`fixtures.ts` paths.
+
+**Media:** direct `/api/media/file/*` GETs return correct binary content and `content-type` (spot-
+checked `hero.png` → real JPEG bytes, `image/jpeg`, 805,238 bytes) — HEAD requests return
+`application/json` instead, but that's a HEAD-specific quirk browsers never trigger for `<img>`/
+`<Image>` loads. **Separately noted (not blocking, not fixed): the Next.js `/_next/image` optimization
+proxy returns 400 "The requested resource isn't a valid image" for every local media file tested,**
+including a Ghee Roast file (`hero_ghee_roast.png`) confirmed identically broken — proving this is an
+environment-wide dev-server characteristic, not a Curious Ladoo regression or anything touched by this
+migration. `sharp` is installed; `next.config.mjs`'s `images.remotePatterns` config looks correct for
+same-origin local paths. Root cause not conclusively identified (time-boxed); flagged as a known
+environment issue worth checking against an actual `next start` production server before shipping,
+since dev-mode Turbopack image optimization can behave differently than production.
+
+**SEO:** re-verified unaffected by Milestone 16's changes — sitemap.xml/robots.txt both 200, JSON-LD
+present on About and the blog detail page, canonical tag correct.
+
+**Frontend:** shared chrome (`data-theme-site`, header, footer) present on Curious Ladoo pages; FAQ
+accordion and Portfolio filter markup present; `/admin` reachable (200).
+
+**Test results:** `typecheck` clean · Curious Ladoo suite 104/104 · `test:ghee-cms` 40/40 ·
+`test:authorization` 23/23 · `test:phase1` 11/11 · `test:phase2` 11/11 · `test:security` **fails
+entirely (0 pass / 168 fail-or-cancelled, exit 1)** — see Finding 2, pre-existing and not
+Curious-Ladoo-specific. `lint`: 0 new issues (same pre-existing 1 error / 237 warnings, all in files
+untouched by any milestone in this migration). `npm run build` succeeds. `git diff --check` clean.
+
+**Ghee Roast regression:** Home/Menu/Contact routes 200 (menu took ~40s on first hit — cold Turbopack
+compile, not a defect, confirmed by an immediate 200 on retry); title and `data-theme-site="ghee-roast"`
+correct; contact-submission subject validation correctly rejects an unconfigured subject value (proof
+the validation layer runs, not a bug); `test:ghee-cms` 40/40. Unaffected by this milestone (zero files
+modified).
+
+**Zuru Zuru regression:** homepage 200, body content 100% correct, own `zz-`-prefixed header/footer
+render correctly, unknown route 404s correctly. Title/description leak is Finding 1 above — pre-
+existing (see root-cause analysis), not introduced by this milestone.
+
+**Files modified:** none.
+
+## 21. Post-Milestone-17 fixes — three live-browser-reported bugs (user-reported, verified, fixed)
+
+Immediately after the Milestone 17 report, the user reported three visible bugs from an actual
+browser session (not a curl artifact) on `localhost:3000`: the Back To Top button rendering as an
+unstyled circle, footer social links showing raw platform-name text instead of icons, and — matching
+this milestone's own "not conclusively identified" finding above — no images loading anywhere on the
+site. All three were root-caused and fixed:
+
+1. **Images (root cause now identified).** Next.js 16's image optimizer proxies same-origin
+   (`/api/media/...`) image URLs through an *internal* request-mock (`fetchInternalImage` in
+   `next/dist/server/image-optimizer.js`), not a real network fetch. That internal proxy call
+   receives a non-image response back from Payload's custom media route handler, so
+   `detectContentType` rejects it — every `<Image>` on the site failed identically, confirmed
+   reproducible for Ghee Roast too (`hero_ghee_roast.png`), proving it's not Curious-Ladoo-specific.
+   **Fix:** `next.config.mjs` → `images.unoptimized: true`. This is a project-root file shared by
+   all three tenants; flagged here rather than applied silently, but the change is a pure
+   improvement for everyone — direct `/api/media/file/*` GETs already return correct binary content
+   (verified: real JPEG bytes, correct `content-type`), so bypassing the broken optimizer restores
+   images for Curious Ladoo *and* fixes the same pre-existing bug for Ghee Roast, at the cost of
+   automatic resize/format-conversion (images now serve at original size/format).
+2. **Back To Top button.** `.backToTop`/`.backToTopVisible` classes referenced by
+   `BackToTop.tsx` never existed in `Theme.module.css` — confirmed via git history this has been
+   true since the theme's very first commit, pre-existing and untouched by any of the 17 milestones.
+   **Fix:** added conventional fixed-position circular button styling using only already-established
+   design tokens (`--ch-dark`, `--ch-accent`, `--ch-text-light`, `--ch-shadow`), matching the
+   component's existing show-on-scroll toggle logic — not a new design, just supplying the missing
+   implementation of the existing intent.
+3. **Footer social icons.** `SiteSettings.socials` already has a dedicated `icon` select field
+   (options: instagram/facebook/youtube/twitter/linkedin/whatsapp/link, defaulting to the platform
+   value) — schema-complete since Milestone 3, but `mapCuriousLadooSite` never read it, and
+   `Footer.tsx` rendered the raw `platform` string as link text. **Fix:** wired the existing `icon`
+   field through the mapper (zero schema change — field already existed), added a small
+   `CuriousHubSocialIcon` registry (simplified outline glyphs in the same stroke style as the
+   existing `CuriousHubIcon` registry, not literal brand-logo reproductions) in `iconRegistry.tsx`,
+   and swapped `Footer.tsx`'s `{s.label}` text for the icon component.
+
+**Verified live** (all three, across Curious Ladoo and, for the shared image fix, Ghee Roast):
+images load (200, real binary) on Home/About; Back To Top button carries `.backToTop`; footer social
+links render real `<svg>` icons keyed by platform. **Tests:** Curious Ladoo 104/104 · `test:ghee-cms`
+40/40 · `typecheck` clean · `lint` 0 new issues · `npm run build` succeeds · `git diff --check` clean.
+
+**Correction — the images fix above was incomplete; the actual root cause was different.** The user
+reported images were still broken in a real browser at `localhost:3000` after the `unoptimized: true`
+change. Investigation found the true cause: `resolvePublicTenantID` (`access/tenantContext.ts`),
+which backs `tenantPublicRead` access control on every public collection including Media, resolves
+the tenant for `localhost`/`127.0.0.1`/`::1` requests via the `DEFAULT_TENANT_SLUG` environment
+variable — **not** via `resolveLocalSite`'s hardcoded registry, which is a separate code path used
+only for page/theme routing. `.env` still had `DEFAULT_TENANT_SLUG=ghee-roast`, a stale value from
+before Curious Ladoo existed. Milestone 2's own record explicitly flagged this exact gap and deferred
+moving it to Milestone 3 ("Until that lands, Payload's public-API tenant resolution... still defaults
+to Ghee Roast on bare localhost") — but the env var was apparently never actually updated. Net effect:
+page rendering correctly showed Curious Ladoo on bare `localhost` (via `resolveLocalSite`), but every
+direct request for tenant-scoped public data — Media files included — resolved against *Ghee Roast's*
+tenant ID instead, causing a 403 on every image request. **Fix:** `.env` → `DEFAULT_TENANT_SLUG=curious-ladoo`.
+Verified end-to-end (page HTML fetched via `Host: localhost`, then the exact image `src` it contains
+fetched with the same `Host: localhost` → 200) for both `localhost` and `127.0.0.1`; Ghee Roast/Zuru
+Zuru unaffected (they're never accessed via bare localhost, only their own dedicated hostnames, which
+take a different branch in the same function unaffected by this variable). Re-ran the full test suite
+after this change: Curious Ladoo 104/104, `test:ghee-cms` 40/40 — no regression. The `next.config.mjs`
+`unoptimized: true` change is left in place as a reasonable, low-risk defensive measure (Next's image
+optimizer's internal request-mocking may not reliably preserve the original Host header either, which
+would independently break optimization even with the tenant default now correct) rather than spending
+more time re-verifying whether it's now strictly redundant.
+
+**Files modified:** `.env` (`DEFAULT_TENANT_SLUG`), `next.config.mjs`,
+`src/themes/curious-hub/components/Theme.module.css`,
+`src/themes/curious-hub/components/Footer.tsx`, `src/themes/curious-hub/iconRegistry.tsx`,
+`src/themes/curious-hub/mappers/{cmsContent,dynamicTypes}.ts`, `src/themes/curious-hub/types.ts`.
+No files created; no schema/migration changes (the `icon` field already existed).
+
+## 22. Verification commands (from `package.json`)
 
 `npm run typecheck` · `npm run lint` · `npm run build` · `npm test` (chains authorization, phase1,
 phase2, development-content, ghee-cms) · `npm run test:security`. No test runner is Ghee-Roast- or

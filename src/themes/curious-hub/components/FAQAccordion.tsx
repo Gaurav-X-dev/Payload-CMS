@@ -62,18 +62,20 @@ function FAQTabAccordion({ items }: { items: FAQAccordionItemData[] }) {
       {items.map((item, i) => {
         const isActive = openIndex === i
         return (
-          <div className={`${styles.faqTabAccordion} ${isActive ? styles.faqTabAccordionActive : ''}`} key={item.id}>
-            <div
-              className={styles.faqTabHeader}
-              onClick={() => setOpenIndex(isActive ? null : i)}
-            >
-              <h4>{item.question}</h4>
-              <span className={styles.faqTabIcon}>+</span>
+          <ScrollReveal delay={(i % 3) as 0 | 1 | 2} key={item.id}>
+            <div className={`${styles.faqTabAccordion} ${isActive ? styles.faqTabAccordionActive : ''}`}>
+              <div
+                className={styles.faqTabHeader}
+                onClick={() => setOpenIndex(isActive ? null : i)}
+              >
+                <h4>{item.question}</h4>
+                <span className={styles.faqTabIcon}>+</span>
+              </div>
+              <div className={styles.faqTabContent}>
+                <p>{item.answer}</p>
+              </div>
             </div>
-            <div className={styles.faqTabContent}>
-              <p>{item.answer}</p>
-            </div>
-          </div>
+          </ScrollReveal>
         )
       })}
     </div>

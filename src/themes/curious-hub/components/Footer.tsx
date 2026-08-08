@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { footerData } from '../data/footer'
 import { curiousHubSiteData } from '../data/site'
+import { CuriousHubSocialIcon } from '../iconRegistry'
 import type { CuriousLadooFooterData, CuriousLadooSiteData } from '../mappers/dynamicTypes'
 import styles from './Theme.module.css'
 
@@ -42,7 +43,7 @@ export function Footer({
                 href={s.href}
                 key={s.label}
               >
-                {s.label}
+                <CuriousHubSocialIcon name={s.icon ?? s.label} />
               </a>
             ))}
           </div>

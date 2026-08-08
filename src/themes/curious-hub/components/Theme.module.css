@@ -299,6 +299,7 @@
 .footerBrand .footerDesc { font-size: 0.82rem; line-height: 1.75; color: rgba(245,240,224,0.5); margin-bottom: 2rem; max-width: 280px; }
 .footerSocial { display: flex; gap: 1rem; }
 .footerSocialLink { width: 36px; height: 36px; border: 1px solid rgba(255,255,255,0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: rgba(245,240,224,0.6); font-size: 0.75rem; transition: border-color 0.2s, color 0.2s, background 0.2s; }
+.footerSocialLink svg { width: 16px; height: 16px; }
 .footerSocialLink:hover { border-color: var(--ch-accent); color: var(--ch-accent); background: rgba(184,168,120,0.1); }
 .footerColTitle { font-size: 0.7rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--ch-accent); margin-bottom: 1.5rem; font-weight: 600; }
 .footerCol ul { display: flex; flex-direction: column; gap: 0.8rem; list-style: none; padding: 0; margin: 0; }
@@ -1165,4 +1166,43 @@
   background: var(--ch-surface-2);
   border-radius: var(--ch-radius);
   padding: 0.35rem 0.8rem;
+}
+.backToTop {
+  position: fixed;
+  right: 2rem;
+  bottom: 2rem;
+  z-index: 500;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: var(--ch-dark);
+  color: var(--ch-text-light);
+  font-size: 1.1rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--ch-shadow);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px);
+  transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease, background 0.2s ease;
+}
+.backToTop:hover {
+  background: var(--ch-accent);
+}
+.backToTopVisible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+@media (max-width: 600px) {
+  .backToTop {
+    right: 1.25rem;
+    bottom: 1.25rem;
+    width: 40px;
+    height: 40px;
+  }
 }
