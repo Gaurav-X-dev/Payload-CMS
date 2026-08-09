@@ -30,11 +30,11 @@ export const Gallery: CollectionConfig = {
       fields: [
         { name: 'title', type: 'text', required: true, maxLength: 160, admin: { placeholder: 'Signature ghee roast' } },
         { 
-          name: 'category', 
-          type: 'select', 
+          name: 'category',
+          type: 'select',
           defaultValue: 'food',
           index: true,
-          options: ['food', 'ambiance', 'events', 'kitchen', 'exterior']
+          options: ['food', 'ambiance', 'events', 'kitchen', 'exterior', 'chefs']
         },
       ]
     },

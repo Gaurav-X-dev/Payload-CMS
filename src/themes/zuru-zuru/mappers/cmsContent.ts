@@ -1,11 +1,19 @@
 import type {
+  BlogPost,
+  BlogPreviewBlock,
   CardGridBlock,
+  CareersBlock,
   ContentGridBlock,
+  CTABlock,
+  Event,
+  EventsBlock,
   Faq,
   FAQBlock,
   FeatureStripBlock,
   Footer,
   FormBlock,
+  Gallery as GalleryItem,
+  GalleryBlock,
   HeroBlock,
   Location,
   LocationsBlock,
@@ -15,37 +23,50 @@ import type {
   MenuShowcaseBlock,
   Nav,
   Page,
+  RichTextBlock,
   SiteSetting,
   StatsBlock,
   StepsBlock,
   StoryBlock,
+  TeamBlock,
+  Teammember,
   Tenant,
   Testimonial,
   TestimonialsBlock,
+  User,
 } from '../../../payload-types'
 import type {
+  ZuruZuruBlogPreviewBlockData,
   ZuruZuruCardGridBlockData,
   ZuruZuruCardGridVariant,
+  ZuruZuruCareersBlockData,
   ZuruZuruContentGridBlockData,
+  ZuruZuruCTABlockData,
   ZuruZuruDishBadge,
   ZuruZuruDishCategoryData,
+  ZuruZuruEventsBlockData,
   ZuruZuruFAQBlockData,
   ZuruZuruFeatureStripBlockData,
   ZuruZuruFooterData,
   ZuruZuruFormBlockData,
+  ZuruZuruGalleryBlockData,
+  ZuruZuruGalleryItemData,
   ZuruZuruHeroBlockData,
   ZuruZuruLinkData,
+  ZuruZuruLocationData,
   ZuruZuruLocationsBlockData,
   ZuruZuruMediaData,
   ZuruZuruMenuShowcaseBlockData,
   ZuruZuruNavigationData,
   ZuruZuruPageBlockData,
+  ZuruZuruRichTextBlockData,
   ZuruZuruSectionHeaderData,
   ZuruZuruShellData,
   ZuruZuruSiteData,
   ZuruZuruStatsBlockData,
   ZuruZuruStepsBlockData,
   ZuruZuruStoryBlockData,
+  ZuruZuruTeamBlockData,
   ZuruZuruTestimonialsBlockData,
 } from './dynamicTypes'
 
@@ -307,6 +328,7 @@ export function mapZuruZuruCardGrid(block: CardGridBlock, tenantID: number): Zur
       link: card.enableLink ? mapZuruZuruLinkField(card.link, tenantID) : null,
       title: text(card.title),
     })),
+    columns: Number(block.columns) || 3,
     header: mapZuruZuruSectionHeader(block.sectionHeader),
     variant: cardGridVariant(block.settings?.customClasses),
   }
@@ -314,12 +336,16 @@ export function mapZuruZuruCardGrid(block: CardGridBlock, tenantID: number): Zur
 
 export function mapZuruZuruStory(block: StoryBlock, tenantID: number): ZuruZuruStoryBlockData {
   return {
+    accentPhrase: text(block.accentPhrase),
+    attribution: text(block.attribution),
     body: text(block.body),
     cta: block.enableCta ? mapZuruZuruLinkField(block.cta, tenantID) : null,
     eyebrow: text(block.eyebrow),
     image: mapMedia(block.media, tenantID),
     imageAlt: text(block.mediaAlt),
     imagePosition: text(block.imagePosition),
+    layout: text(block.layout) || 'simple',
+    quote: text(block.quote),
     title: text(block.title),
   }
 }
@@ -428,6 +454,24 @@ export function mapZuruZuruTestimonialsBlock(
   return { header: mapZuruZuruSectionHeader(block.sectionHeader), items }
 }
 
+function mapLocation(location: Location): ZuruZuruLocationData {
+  return {
+    address: text(location.address),
+    city: text(location.city),
+    hours: (location.businessHours ?? []).map((row) => ({
+      closeTime: text(row.closeTime),
+      day: text(row.day),
+      isClosed: row.isClosed === true,
+      openTime: text(row.openTime),
+    })),
+    id: location.id,
+    mapsEmbedUrl: text(location.mapsEmbedUrl),
+    parking: text(location.description),
+    phone: text(location.phone),
+    title: text(location.title),
+  }
+}
+
 export function mapZuruZuruLocationsBlock(
   block: LocationsBlock,
   locations: Location[],
@@ -438,24 +482,12 @@ export function mapZuruZuruLocationsBlock(
   )
   const pool = locations.filter((location) => belongsToTenant(location.tenantId, tenantID) && location.isActive !== false)
   const candidates = explicitIds.size > 0 ? pool.filter((location) => explicitIds.has(location.id)) : pool
-  const primary = candidates.find((location) => location.isPrimary) ?? candidates[0] ?? null
+  const sorted = [...candidates].sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
+  const primary = sorted.find((location) => location.isPrimary) ?? sorted[0] ?? null
   return {
     header: mapZuruZuruSectionHeader(block.sectionHeader),
-    location: primary
-      ? {
-          address: text(primary.address),
-          city: text(primary.city),
-          hours: (primary.businessHours ?? []).map((row) => ({
-            closeTime: text(row.closeTime),
-            day: text(row.day),
-            isClosed: row.isClosed === true,
-            openTime: text(row.openTime),
-          })),
-          id: primary.id,
-          mapsEmbedUrl: text(primary.mapsEmbedUrl),
-          parking: text(primary.description),
-        }
-      : null,
+    location: primary ? mapLocation(primary) : null,
+    locations: sorted.map(mapLocation),
     showMap: block.showMap !== false,
   }
 }
@@ -494,19 +526,164 @@ export function mapZuruZuruFAQ(block: FAQBlock, faqs: Faq[], tenantID: number): 
   return { header: mapZuruZuruSectionHeader(block.sectionHeader), items }
 }
 
+export function mapZuruZuruRichText(block: RichTextBlock): ZuruZuruRichTextBlockData {
+  return { content: block.content ?? null }
+}
+
+export function mapZuruZuruCareers(block: CareersBlock): ZuruZuruCareersBlockData {
+  return {
+    header: mapZuruZuruSectionHeader(block.sectionHeader),
+    positions: (block.positions ?? []).map((position) => ({
+      department: text(position.department),
+      description: text(position.description),
+      location: text(position.location),
+      title: text(position.title),
+      type: text(position.type),
+    })),
+  }
+}
+
+export function mapZuruZuruTeam(
+  block: TeamBlock,
+  members: Teammember[],
+  tenantID: number,
+): ZuruZuruTeamBlockData {
+  const explicitIds = new Set(
+    (block.members ?? []).map((member) => (typeof member === 'number' ? member : member.id)),
+  )
+  const pool = members.filter((member) => belongsToTenant(member.tenantId, tenantID) && member.isActive !== false)
+  const selected = explicitIds.size > 0 ? pool.filter((member) => explicitIds.has(member.id)) : pool
+  const items = selected
+    .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
+    .slice(0, block.limit ?? 8)
+    .map((member) => ({
+      bio: text(member.bio),
+      id: member.id,
+      name: text(member.title),
+      photo: mapMedia(member.photo, tenantID),
+      role: text(member.role),
+    }))
+  return { header: mapZuruZuruSectionHeader(block.sectionHeader), members: items }
+}
+
+export function mapZuruZuruCTA(block: CTABlock, tenantID: number): ZuruZuruCTABlockData {
+  return {
+    header: mapZuruZuruSectionHeader(block.sectionHeader),
+    primaryCTA: block.ctaGroup?.enablePrimary ? mapZuruZuruLinkField(block.ctaGroup.primaryCTA, tenantID) : null,
+  }
+}
+
+export function mapZuruZuruEvents(
+  block: EventsBlock,
+  events: Event[],
+  tenantID: number,
+): ZuruZuruEventsBlockData {
+  const explicitIds = new Set(
+    (block.events ?? []).map((event) => (typeof event === 'number' ? event : event.id)),
+  )
+  const pool = events.filter((event) => belongsToTenant(event.tenantId, tenantID) && event.status === 'published')
+  const selected = explicitIds.size > 0
+    ? pool.filter((event) => explicitIds.has(event.id))
+    : pool.filter((event) => (block.featuredOnly ? event.isFeatured === true : true))
+  const items = selected
+    .sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime())
+    .slice(0, block.limit ?? 6)
+    .map((event) => ({
+      bookingUrl: text(event.bookingUrl),
+      description: text(event.description),
+      id: event.id,
+      image: mapMedia(event.image, tenantID),
+      location: text(event.locationName),
+      startsAt: text(event.startsAt),
+      summary: text(event.summary),
+      title: text(event.title),
+    }))
+  return { events: items, header: mapZuruZuruSectionHeader(block.sectionHeader) }
+}
+
+export function mapZuruZuruBlogPreview(
+  block: BlogPreviewBlock,
+  posts: BlogPost[],
+  tenantID: number,
+): ZuruZuruBlogPreviewBlockData {
+  const explicitIds = new Set(
+    (block.posts ?? []).map((post) => (typeof post === 'number' ? post : post.id)),
+  )
+  const pool = posts.filter((post) => belongsToTenant(post.tenantId, tenantID) && post._status === 'published')
+  const selected = block.source === 'manual'
+    ? pool.filter((post) => explicitIds.has(post.id))
+    : pool.filter((post) => (block.featuredOnly ? post.isFeatured === true : true))
+  const items = selected
+    .sort((a, b) => {
+      if (Boolean(a.isPinned) !== Boolean(b.isPinned)) return a.isPinned ? -1 : 1
+      return new Date(b.publishedDate ?? b.createdAt).getTime() - new Date(a.publishedDate ?? a.createdAt).getTime()
+    })
+    .slice(0, block.limit ?? 3)
+    .map((post) => ({
+      author: isPopulated<User>(post.author) ? text(post.author.name) : '',
+      categories: (post.categories ?? []).map((category) => text(category)).filter(Boolean),
+      excerpt: text(post.excerpt),
+      id: post.id,
+      image: mapMedia(post.heroImage, tenantID),
+      isPinned: post.isPinned === true,
+      publishedDate: text(post.publishedDate),
+      slug: text(post.slug),
+      title: text(post.title),
+    }))
+  return { header: mapZuruZuruSectionHeader(block.sectionHeader), posts: items }
+}
+
+/**
+ * Reads `galleryBlock` with `category: 'all'` (the default) so every active item is fetched in one
+ * request — filtering by category happens client-side in `CMSGalleryPage.tsx`, exactly matching the
+ * original static `GalleryLightbox`'s own client-side filter behavior, rather than needing a
+ * separate CMS-configured block instance per category. An item whose `media` is missing, inactive,
+ * or cross-tenant maps to `image: null` via `mapMedia` and is filtered out here so it can never
+ * leak or crash the page.
+ */
+export function mapZuruZuruGallery(
+  block: GalleryBlock,
+  galleryItems: GalleryItem[],
+  tenantID: number,
+): ZuruZuruGalleryBlockData {
+  const explicitIds = new Set(
+    (block.items ?? []).map((item) => (typeof item === 'number' ? item : item.id)),
+  )
+  const pool = galleryItems.filter((item) => belongsToTenant(item.tenantId, tenantID))
+  const selected = block.source === 'manual'
+    ? pool.filter((item) => explicitIds.has(item.id))
+    : pool
+      .filter((item) => (block.category && block.category !== 'all' ? item.category === block.category : true))
+      .filter((item) => (block.featuredOnly ? item.isFeatured === true : true))
+  const items: ZuruZuruGalleryItemData[] = []
+  for (const item of selected.sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0)).slice(0, block.limit ?? 8)) {
+    const image = mapMedia(item.media, tenantID)
+    if (image) items.push({ category: text(item.category) || 'food', id: item.id, image })
+  }
+  return { header: mapZuruZuruSectionHeader(block.sectionHeader), items }
+}
+
 /** Generic Page.layout -> block-data mapper, shared by every CMS-driven Zuru Zuru page. Each page's own renderer decides how to visually interpret the same block-data shapes. */
 export function mapZuruZuruPageLayout(
   layout: Page['layout'],
   {
+    blogPosts,
+    events,
     faqs,
+    galleryItems,
     locations,
     menuItems,
+    teamMembers,
     testimonials,
     tenantID,
   }: {
+    blogPosts?: BlogPost[]
+    events?: Event[]
     faqs: Faq[]
+    galleryItems?: GalleryItem[]
     locations: Location[]
     menuItems: MenuItem[]
+    teamMembers?: Teammember[]
     testimonials: Testimonial[]
     tenantID: number
   },
@@ -549,6 +726,27 @@ export function mapZuruZuruPageLayout(
         break
       case 'faqBlock':
         blocks.push({ data: mapZuruZuruFAQ(block, faqs, tenantID), type: 'faq' })
+        break
+      case 'richtextBlock':
+        blocks.push({ data: mapZuruZuruRichText(block), type: 'richText' })
+        break
+      case 'careersBlock':
+        blocks.push({ data: mapZuruZuruCareers(block), type: 'careers' })
+        break
+      case 'teamBlock':
+        blocks.push({ data: mapZuruZuruTeam(block, teamMembers ?? [], tenantID), type: 'team' })
+        break
+      case 'ctaBlock':
+        blocks.push({ data: mapZuruZuruCTA(block, tenantID), type: 'cta' })
+        break
+      case 'eventsBlock':
+        blocks.push({ data: mapZuruZuruEvents(block, events ?? [], tenantID), type: 'events' })
+        break
+      case 'blogpreviewBlock':
+        blocks.push({ data: mapZuruZuruBlogPreview(block, blogPosts ?? [], tenantID), type: 'blogPreview' })
+        break
+      case 'galleryBlock':
+        blocks.push({ data: mapZuruZuruGallery(block, galleryItems ?? [], tenantID), type: 'gallery' })
         break
       default:
         break

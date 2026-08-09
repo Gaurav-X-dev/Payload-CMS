@@ -1,12 +1,16 @@
 import type { Where } from 'payload'
 import type {
+  BlogPost,
+  Event,
   Faq,
   Footer,
+  Gallery as GalleryItem,
   Location,
   MenuItem,
   Nav,
   Page,
   SiteSetting,
+  Teammember,
   Tenant,
   Testimonial,
 } from '../../payload-types'
@@ -25,13 +29,17 @@ export type ZuruZuruShellResult = {
 }
 
 export type ZuruZuruCollectionSlug =
+  | 'blog-posts'
+  | 'events'
   | 'faqs'
   | 'footer'
+  | 'gallery'
   | 'locations'
   | 'menu-items'
   | 'nav'
   | 'pages'
   | 'site-settings'
+  | 'teammembers'
   | 'tenants'
   | 'testimonials'
 
@@ -176,10 +184,14 @@ export async function loadZuruZuruShellWithPayload({
 // ---------------------------------------------------------------------------
 
 export type ZuruZuruPageResult = {
+  blogPosts: BlogPost[]
+  events: Event[]
   faqs: Faq[]
+  galleryItems: GalleryItem[]
   locations: Location[]
   menuItems: MenuItem[]
   page: Page | null
+  teamMembers: Teammember[]
   tenant: Tenant | null
   tenantState: ZuruZuruTenantState
   testimonials: Testimonial[]
@@ -187,10 +199,14 @@ export type ZuruZuruPageResult = {
 
 export function emptyZuruZuruPage(tenantState: ZuruZuruTenantState = 'missing'): ZuruZuruPageResult {
   return {
+    blogPosts: [],
+    events: [],
     faqs: [],
+    galleryItems: [],
     locations: [],
     menuItems: [],
     page: null,
+    teamMembers: [],
     tenant: null,
     tenantState,
     testimonials: [],
@@ -208,9 +224,13 @@ export function zuruZuruPageCacheArguments(
 const collectionDependenciesForZuruZuruLayout = (layout: Page['layout']) => {
   const blockTypes = new Set((layout ?? []).map((block) => block.blockType))
   return {
+    blogPosts: blockTypes.has('blogpreviewBlock'),
+    events: blockTypes.has('eventsBlock'),
     faqs: blockTypes.has('faqBlock'),
+    galleryItems: blockTypes.has('galleryBlock'),
     locations: blockTypes.has('locationsBlock'),
     menuItems: blockTypes.has('menushowcaseBlock'),
+    teamMembers: blockTypes.has('teamBlock'),
     testimonials: blockTypes.has('testimonialsBlock'),
   }
 }
@@ -283,7 +303,7 @@ export async function loadZuruZuruPageWithPayload({
 
   const dependencies = collectionDependenciesForZuruZuruLayout(page?.layout ?? [])
 
-  const [menuItems, testimonials, locations, faqs] = await Promise.all([
+  const [menuItems, testimonials, locations, faqs, teamMembers, events, blogPosts, galleryItems] = await Promise.all([
     dependencies.menuItems
       ? find<MenuItem>({
           collection: 'menu-items',
@@ -335,13 +355,65 @@ export async function loadZuruZuruPageWithPayload({
           where: tenantWhere(tenantID, [{ isActive: { equals: true } }]),
         }).then((result) => result.docs)
       : Promise.resolve([]),
+    dependencies.teamMembers
+      ? find<Teammember>({
+          collection: 'teammembers',
+          depth: 1,
+          draft: false,
+          limit: 50,
+          overrideAccess: true,
+          pagination: false,
+          sort: 'sortOrder',
+          where: tenantWhere(tenantID, [{ isActive: { equals: true } }]),
+        }).then((result) => result.docs)
+      : Promise.resolve([]),
+    dependencies.events
+      ? find<Event>({
+          collection: 'events',
+          depth: 1,
+          draft: false,
+          limit: 50,
+          overrideAccess: true,
+          pagination: false,
+          sort: 'startsAt',
+          where: tenantWhere(tenantID, [{ status: { equals: 'published' } }]),
+        }).then((result) => result.docs)
+      : Promise.resolve([]),
+    dependencies.blogPosts
+      ? find<BlogPost>({
+          collection: 'blog-posts',
+          depth: 1,
+          draft: false,
+          limit: 50,
+          overrideAccess: true,
+          pagination: false,
+          sort: '-publishedDate',
+          where: tenantWhere(tenantID, [{ _status: { equals: 'published' } }]),
+        }).then((result) => result.docs)
+      : Promise.resolve([]),
+    dependencies.galleryItems
+      ? find<GalleryItem>({
+          collection: 'gallery',
+          depth: 1,
+          draft: false,
+          limit: 50,
+          overrideAccess: true,
+          pagination: false,
+          sort: 'sortOrder',
+          where: tenantWhere(tenantID),
+        }).then((result) => result.docs)
+      : Promise.resolve([]),
   ])
 
   return {
+    blogPosts,
+    events,
     faqs,
+    galleryItems,
     locations,
     menuItems,
     page,
+    teamMembers,
     tenant,
     tenantState: page ? 'active' : 'empty',
     testimonials,

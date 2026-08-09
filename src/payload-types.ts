@@ -1475,7 +1475,7 @@ export interface Gallery {
    */
   tenantId: number | Tenant;
   title: string;
-  category?: ('food' | 'ambiance' | 'events' | 'kitchen' | 'exterior') | null;
+  category?: ('food' | 'ambiance' | 'events' | 'kitchen' | 'exterior' | 'chefs') | null;
   media: number | Media;
   isFeatured?: boolean | null;
   sortOrder?: number | null;

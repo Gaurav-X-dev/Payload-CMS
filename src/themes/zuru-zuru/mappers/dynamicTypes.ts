@@ -140,17 +140,22 @@ export type ZuruZuruCardGridVariant = 'cuisine' | 'dining' | 'seasons'
 
 export type ZuruZuruCardGridBlockData = {
   cards: ZuruZuruCardItemData[]
+  columns: number
   header: ZuruZuruSectionHeaderData
   variant: ZuruZuruCardGridVariant
 }
 
 export type ZuruZuruStoryBlockData = {
+  accentPhrase: string
+  attribution: string
   body: string
   cta: ZuruZuruLinkData
   eyebrow: string
   image: ZuruZuruMediaData
   imageAlt: string
   imagePosition: string
+  layout: string
+  quote: string
   title: string
 }
 
@@ -231,10 +236,15 @@ export type ZuruZuruLocationData = {
   id: number
   mapsEmbedUrl: string
   parking: string
+  phone: string
+  title: string
 }
 
 export type ZuruZuruLocationsBlockData = {
   header: ZuruZuruSectionHeaderData
+  /** All matched, active locations — used by the Locations page's own grid listing. */
+  locations: ZuruZuruLocationData[]
+  /** The single primary (or first) location — used by Home's Visit Us and the Contact page's map/info card. */
   location: ZuruZuruLocationData | null
   showMap: boolean
 }
@@ -265,6 +275,89 @@ export type ZuruZuruFAQBlockData = {
   items: ZuruZuruFAQItemData[]
 }
 
+/** Lexical JSON document, as produced by `@payloadcms/richtext-lexical` and rendered via its own `<RichText>` React component — never hand-parsed. */
+export type ZuruZuruRichTextValue = object | null
+
+export type ZuruZuruRichTextBlockData = {
+  content: ZuruZuruRichTextValue
+}
+
+export type ZuruZuruCareerPositionData = {
+  department: string
+  description: string
+  location: string
+  title: string
+  type: string
+}
+
+export type ZuruZuruCareersBlockData = {
+  header: ZuruZuruSectionHeaderData
+  positions: ZuruZuruCareerPositionData[]
+}
+
+export type ZuruZuruTeamMemberData = {
+  bio: string
+  id: number
+  name: string
+  photo: ZuruZuruMediaData
+  role: string
+}
+
+export type ZuruZuruTeamBlockData = {
+  header: ZuruZuruSectionHeaderData
+  members: ZuruZuruTeamMemberData[]
+}
+
+export type ZuruZuruCTABlockData = {
+  header: ZuruZuruSectionHeaderData
+  primaryCTA: ZuruZuruLinkData
+}
+
+export type ZuruZuruEventItemData = {
+  bookingUrl: string
+  description: string
+  id: number
+  image: ZuruZuruMediaData
+  location: string
+  startsAt: string
+  summary: string
+  title: string
+}
+
+export type ZuruZuruEventsBlockData = {
+  events: ZuruZuruEventItemData[]
+  header: ZuruZuruSectionHeaderData
+}
+
+export type ZuruZuruBlogPostItemData = {
+  author: string
+  categories: string[]
+  excerpt: string
+  id: number
+  image: ZuruZuruMediaData
+  isPinned: boolean
+  publishedDate: string
+  slug: string
+  title: string
+}
+
+export type ZuruZuruBlogPreviewBlockData = {
+  header: ZuruZuruSectionHeaderData
+  posts: ZuruZuruBlogPostItemData[]
+}
+
+/** `image` is guaranteed non-null: the mapper filters out any item whose media is missing, inactive, or cross-tenant before this shape is ever produced. */
+export type ZuruZuruGalleryItemData = {
+  category: string
+  id: number
+  image: { alt: string; id: number; src: string }
+}
+
+export type ZuruZuruGalleryBlockData = {
+  header: ZuruZuruSectionHeaderData
+  items: ZuruZuruGalleryItemData[]
+}
+
 /** Generic per-block-type mapping output, shared by every CMS-driven Zuru Zuru page (Home, Menu, ...). Each page has its own renderer that interprets these the same underlying data differently. */
 export type ZuruZuruPageBlockData =
   | { data: ZuruZuruHeroBlockData; type: 'hero' }
@@ -279,6 +372,13 @@ export type ZuruZuruPageBlockData =
   | { data: ZuruZuruStatsBlockData; type: 'stats' }
   | { data: ZuruZuruFormBlockData; type: 'form' }
   | { data: ZuruZuruFAQBlockData; type: 'faq' }
+  | { data: ZuruZuruRichTextBlockData; type: 'richText' }
+  | { data: ZuruZuruCareersBlockData; type: 'careers' }
+  | { data: ZuruZuruTeamBlockData; type: 'team' }
+  | { data: ZuruZuruCTABlockData; type: 'cta' }
+  | { data: ZuruZuruEventsBlockData; type: 'events' }
+  | { data: ZuruZuruBlogPreviewBlockData; type: 'blogPreview' }
+  | { data: ZuruZuruGalleryBlockData; type: 'gallery' }
 
 export type ZuruZuruPageBlocksContent = {
   blocks: ZuruZuruPageBlockData[]

@@ -1,36 +1,11 @@
-import Image from 'next/image'
-import { CMSPageHero, CMSSectionHeader } from './CMSInnerPageShared'
+import { CMSPageHero, CMSSectionHeader, StorySimplePanel } from './CMSInnerPageShared'
 import { Icon } from './Icon'
 import type {
   ZuruZuruContentGridBlockData,
   ZuruZuruPageBlockData,
   ZuruZuruStatsBlockData,
   ZuruZuruStepsBlockData,
-  ZuruZuruStoryBlockData,
 } from '../mappers/dynamicTypes'
-
-/** Matches the About page's "Our Roots" section — a simple two-column story panel, no CTA/quote/stat-badge. */
-function StorySimpleSection({ block }: { block: ZuruZuruStoryBlockData }) {
-  if (!block.title) return null
-  const imageFirst = block.imagePosition === 'left'
-  const textCol = (
-    <div>
-      {block.eyebrow && <span className="zz-section-subtitle">{block.eyebrow}</span>}
-      <h2>{block.title}</h2>
-      {block.body.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean).map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
-    </div>
-  )
-  const imageCol = block.image && (
-    <div className="zz-story-image">
-      <Image alt={block.imageAlt || block.title} fill sizes="(max-width:800px) 100vw,50vw" src={block.image.src} />
-    </div>
-  )
-  return (
-    <section className="zz-section-alt"><div className="zz-container zz-split-layout">
-      {imageFirst ? <>{imageCol}{textCol}</> : <>{textCol}{imageCol}</>}
-    </div></section>
-  )
-}
 
 /** Matches the About page's Mission & Vision section exactly: a dark 2-column icon-card grid (no shared CardGrid component involved in the original markup). */
 function MissionVisionSection({ block }: { block: ZuruZuruContentGridBlockData }) {
@@ -125,7 +100,7 @@ function StatsSection({ block }: { block: ZuruZuruStatsBlockData }) {
 function CMSAboutPageSection({ block }: { block: ZuruZuruPageBlockData }) {
   switch (block.type) {
     case 'hero': return <CMSPageHero block={block.data} />
-    case 'story': return <StorySimpleSection block={block.data} />
+    case 'story': return <StorySimplePanel block={block.data} />
     case 'contentGrid': return <ContentGridSection block={block.data} />
     case 'steps': return <TimelineSection block={block.data} />
     case 'stats': return <StatsSection block={block.data} />
