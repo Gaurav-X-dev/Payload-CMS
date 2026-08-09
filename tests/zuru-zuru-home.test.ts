@@ -251,7 +251,7 @@ test('mapZuruZuruPageLayout dispatches each block type and omits a disabled hero
     { blockType: 'featurestripBlock', items: [{ description: 'd', icon: 'bowl', title: 'Izakaya Culture' }] },
     { blockType: 'someFutureBlockType' },
   ]
-  const blocks = mapZuruZuruPageLayout(layout as never, { locations: [], menuItems: [], testimonials: [], tenantID })
+  const blocks = mapZuruZuruPageLayout(layout as never, { faqs: [], locations: [], menuItems: [], testimonials: [], tenantID })
   assert.deepEqual(blocks.map((b) => b.type), ['featureStrip'])
 })
 

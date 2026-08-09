@@ -3,6 +3,7 @@ import type { ThemePageRendererProps } from '../types'
 import { getZuruZuruPageContent } from '@/lib/site/getZuruZuruPageContent'
 import { getZuruZuruShell } from '@/lib/site/getZuruZuruShell'
 import { CMSAboutPage } from './components/CMSAboutPage'
+import { CMSContactPage } from './components/CMSContactPage'
 import { CMSHomePage } from './components/CMSHomePage'
 import { CMSMenuPage } from './components/CMSMenuPage'
 import { ZuruZuruLayout } from './layouts/ZuruZuruLayout'
@@ -10,10 +11,10 @@ import { mapZuruZuruPageLayout, mapZuruZuruShell } from './mappers/cmsContent'
 import { getZuruZuruPage } from './utils/getPageComponent'
 import { normalizePathname } from './utils/normalizePathname'
 
-// Milestone Z5: Home ("/"), Menu ("/menu"), and About ("/about") are CMS-driven so far. Every
-// other route still renders from the existing static React page components — they're converted
-// in later milestones.
-const CMS_DRIVEN_PATHS = new Set(['/', '/menu', '/about'])
+// Milestone Z6: Home ("/"), Menu ("/menu"), About ("/about"), and Contact ("/contact") are
+// CMS-driven so far. Every other route still renders from the existing static React page
+// components — they're converted in later milestones.
+const CMS_DRIVEN_PATHS = new Set(['/', '/menu', '/about', '/contact'])
 
 export async function ZuruZuruPageRenderer({ hostname, pathname, site }: ThemePageRendererProps) {
   const normalizedPathname = normalizePathname(pathname)
@@ -29,6 +30,7 @@ export async function ZuruZuruPageRenderer({ hostname, pathname, site }: ThemePa
     if (!page.page) notFound()
 
     const blocks = mapZuruZuruPageLayout(page.page.layout, {
+      faqs: page.faqs,
       locations: page.locations,
       menuItems: page.menuItems,
       testimonials: page.testimonials,
@@ -40,6 +42,7 @@ export async function ZuruZuruPageRenderer({ hostname, pathname, site }: ThemePa
         {normalizedPathname === '/' && <CMSHomePage blocks={blocks} site={content.site} />}
         {normalizedPathname === '/menu' && <CMSMenuPage blocks={blocks} />}
         {normalizedPathname === '/about' && <CMSAboutPage blocks={blocks} />}
+        {normalizedPathname === '/contact' && <CMSContactPage blocks={blocks} site={content.site} />}
       </ZuruZuruLayout>
     )
   }

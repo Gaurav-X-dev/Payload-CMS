@@ -1,5 +1,6 @@
 import type { Where } from 'payload'
 import type {
+  Faq,
   Footer,
   Location,
   MenuItem,
@@ -24,6 +25,7 @@ export type ZuruZuruShellResult = {
 }
 
 export type ZuruZuruCollectionSlug =
+  | 'faqs'
   | 'footer'
   | 'locations'
   | 'menu-items'
@@ -174,6 +176,7 @@ export async function loadZuruZuruShellWithPayload({
 // ---------------------------------------------------------------------------
 
 export type ZuruZuruPageResult = {
+  faqs: Faq[]
   locations: Location[]
   menuItems: MenuItem[]
   page: Page | null
@@ -184,6 +187,7 @@ export type ZuruZuruPageResult = {
 
 export function emptyZuruZuruPage(tenantState: ZuruZuruTenantState = 'missing'): ZuruZuruPageResult {
   return {
+    faqs: [],
     locations: [],
     menuItems: [],
     page: null,
@@ -204,6 +208,7 @@ export function zuruZuruPageCacheArguments(
 const collectionDependenciesForZuruZuruLayout = (layout: Page['layout']) => {
   const blockTypes = new Set((layout ?? []).map((block) => block.blockType))
   return {
+    faqs: blockTypes.has('faqBlock'),
     locations: blockTypes.has('locationsBlock'),
     menuItems: blockTypes.has('menushowcaseBlock'),
     testimonials: blockTypes.has('testimonialsBlock'),
@@ -278,7 +283,7 @@ export async function loadZuruZuruPageWithPayload({
 
   const dependencies = collectionDependenciesForZuruZuruLayout(page?.layout ?? [])
 
-  const [menuItems, testimonials, locations] = await Promise.all([
+  const [menuItems, testimonials, locations, faqs] = await Promise.all([
     dependencies.menuItems
       ? find<MenuItem>({
           collection: 'menu-items',
@@ -312,12 +317,28 @@ export async function loadZuruZuruPageWithPayload({
           overrideAccess: true,
           pagination: false,
           sort: 'sortOrder',
-          where: tenantWhere(tenantID, [{ isActive: { equals: true } }, { showOnHome: { equals: true } }]),
+          // Not filtered to a specific page's "showOn..." flag: each page's locationsBlock
+          // selects its own location(s) via an explicit relationship (or falls back to the
+          // primary one), so the same active-locations pool safely serves every page.
+          where: tenantWhere(tenantID, [{ isActive: { equals: true } }]),
+        }).then((result) => result.docs)
+      : Promise.resolve([]),
+    dependencies.faqs
+      ? find<Faq>({
+          collection: 'faqs',
+          depth: 0,
+          draft: false,
+          limit: 50,
+          overrideAccess: true,
+          pagination: false,
+          sort: 'sortOrder',
+          where: tenantWhere(tenantID, [{ isActive: { equals: true } }]),
         }).then((result) => result.docs)
       : Promise.resolve([]),
   ])
 
   return {
+    faqs,
     locations,
     menuItems,
     page,

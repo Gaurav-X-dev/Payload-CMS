@@ -1,8 +1,11 @@
 import type {
   CardGridBlock,
   ContentGridBlock,
+  Faq,
+  FAQBlock,
   FeatureStripBlock,
   Footer,
+  FormBlock,
   HeroBlock,
   Location,
   LocationsBlock,
@@ -26,8 +29,10 @@ import type {
   ZuruZuruContentGridBlockData,
   ZuruZuruDishBadge,
   ZuruZuruDishCategoryData,
+  ZuruZuruFAQBlockData,
   ZuruZuruFeatureStripBlockData,
   ZuruZuruFooterData,
+  ZuruZuruFormBlockData,
   ZuruZuruHeroBlockData,
   ZuruZuruLinkData,
   ZuruZuruLocationsBlockData,
@@ -439,6 +444,7 @@ export function mapZuruZuruLocationsBlock(
     location: primary
       ? {
           address: text(primary.address),
+          city: text(primary.city),
           hours: (primary.businessHours ?? []).map((row) => ({
             closeTime: text(row.closeTime),
             day: text(row.day),
@@ -446,6 +452,7 @@ export function mapZuruZuruLocationsBlock(
             openTime: text(row.openTime),
           })),
           id: primary.id,
+          mapsEmbedUrl: text(primary.mapsEmbedUrl),
           parking: text(primary.description),
         }
       : null,
@@ -453,15 +460,51 @@ export function mapZuruZuruLocationsBlock(
   }
 }
 
+export function mapZuruZuruForm(block: FormBlock): ZuruZuruFormBlockData {
+  return {
+    errorMessage: text(block.errorMessage),
+    formType: text(block.formType) || 'contact',
+    headerDescription: text(block.sectionHeader?.description),
+    headerTitle: text(block.sectionHeader?.title),
+    submitLabel: text(block.submitLabel),
+    subjectOptions: (block.subjectOptions ?? []).map((option) => ({
+      label: text(option.label),
+      value: text(option.value),
+    })),
+    successMessage: text(block.successMessage),
+  }
+}
+
+export function mapZuruZuruFAQ(block: FAQBlock, faqs: Faq[], tenantID: number): ZuruZuruFAQBlockData {
+  const explicitIds = new Set(
+    (block.items ?? []).map((item) => (typeof item === 'number' ? item : item.id)),
+  )
+  const pool = faqs.filter((faq) => belongsToTenant(faq.tenantId, tenantID) && faq.isActive !== false)
+  const selected = explicitIds.size > 0
+    ? pool.filter((faq) => explicitIds.has(faq.id))
+    : pool.filter((faq) => (block.featuredOnly ? faq.isFeatured === true : true))
+  const items = selected
+    .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
+    .slice(0, block.limit ?? 10)
+    .map((faq) => ({
+      answer: text(faq.answer),
+      id: faq.id,
+      question: text(faq.title),
+    }))
+  return { header: mapZuruZuruSectionHeader(block.sectionHeader), items }
+}
+
 /** Generic Page.layout -> block-data mapper, shared by every CMS-driven Zuru Zuru page. Each page's own renderer decides how to visually interpret the same block-data shapes. */
 export function mapZuruZuruPageLayout(
   layout: Page['layout'],
   {
+    faqs,
     locations,
     menuItems,
     testimonials,
     tenantID,
   }: {
+    faqs: Faq[]
     locations: Location[]
     menuItems: MenuItem[]
     testimonials: Testimonial[]
@@ -500,6 +543,12 @@ export function mapZuruZuruPageLayout(
         break
       case 'statsBlock':
         blocks.push({ data: mapZuruZuruStats(block), type: 'stats' })
+        break
+      case 'formBlock':
+        if (block.enabled !== false) blocks.push({ data: mapZuruZuruForm(block), type: 'form' })
+        break
+      case 'faqBlock':
+        blocks.push({ data: mapZuruZuruFAQ(block, faqs, tenantID), type: 'faq' })
         break
       default:
         break

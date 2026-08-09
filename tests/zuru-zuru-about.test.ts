@@ -104,7 +104,7 @@ test('mapZuruZuruPageLayout dispatches storyBlock, contentgridBlock, stepsBlock,
     { blockType: 'stepsBlock', layoutVariant: 'timeline', sectionHeader: { title: 'The Zuru Zuru Story' }, steps: [{ description: 'd', label: '2015', title: 'The Founding' }] },
     { blockType: 'statsBlock', sectionHeader: { title: 'Our Achievements' }, stats: [{ label: 'Locations Globally', value: '3' }] },
   ]
-  const blocks = mapZuruZuruPageLayout(layout as never, { locations: [], menuItems: [], testimonials: [], tenantID })
+  const blocks = mapZuruZuruPageLayout(layout as never, { faqs: [], locations: [], menuItems: [], testimonials: [], tenantID })
   assert.deepEqual(blocks.map((b) => b.type), ['hero', 'story', 'contentGrid', 'contentGrid', 'steps', 'stats'])
 })
 

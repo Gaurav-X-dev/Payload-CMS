@@ -226,8 +226,10 @@ export type ZuruZuruTestimonialsBlockData = {
 
 export type ZuruZuruLocationData = {
   address: string
+  city: string
   hours: ZuruZuruHoursRowData[]
   id: number
+  mapsEmbedUrl: string
   parking: string
 }
 
@@ -235,6 +237,32 @@ export type ZuruZuruLocationsBlockData = {
   header: ZuruZuruSectionHeaderData
   location: ZuruZuruLocationData | null
   showMap: boolean
+}
+
+export type ZuruZuruFormSubjectOptionData = {
+  label: string
+  value: string
+}
+
+export type ZuruZuruFormBlockData = {
+  errorMessage: string
+  formType: string
+  headerDescription: string
+  headerTitle: string
+  submitLabel: string
+  subjectOptions: ZuruZuruFormSubjectOptionData[]
+  successMessage: string
+}
+
+export type ZuruZuruFAQItemData = {
+  answer: string
+  id: number
+  question: string
+}
+
+export type ZuruZuruFAQBlockData = {
+  header: ZuruZuruSectionHeaderData
+  items: ZuruZuruFAQItemData[]
 }
 
 /** Generic per-block-type mapping output, shared by every CMS-driven Zuru Zuru page (Home, Menu, ...). Each page has its own renderer that interprets these the same underlying data differently. */
@@ -249,6 +277,8 @@ export type ZuruZuruPageBlockData =
   | { data: ZuruZuruLocationsBlockData; type: 'locations' }
   | { data: ZuruZuruStepsBlockData; type: 'steps' }
   | { data: ZuruZuruStatsBlockData; type: 'stats' }
+  | { data: ZuruZuruFormBlockData; type: 'form' }
+  | { data: ZuruZuruFAQBlockData; type: 'faq' }
 
 export type ZuruZuruPageBlocksContent = {
   blocks: ZuruZuruPageBlockData[]
