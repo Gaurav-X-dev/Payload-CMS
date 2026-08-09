@@ -1,7 +1,9 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import type { ReactNode } from 'react'
 import { Icon } from './Icon'
 import { groupBusinessHours } from '../utils/formatHours'
+import { splitOmotenashiEmphasis, splitSeasonTitle } from '../utils/foldedTitles'
 import type {
   ZuruZuruCardGridBlockData,
   ZuruZuruContentGridBlockData,
@@ -33,11 +35,17 @@ function withLineBreaks(text: string) {
   ))
 }
 
+function withOmotenashiEmphasis(text: string): ReactNode {
+  const parts = splitOmotenashiEmphasis(text)
+  if (parts.length === 1) return text
+  return parts.map((part, i) => (part === 'Omotenashi' ? <em key={i}>{part}</em> : part))
+}
+
 /** Splits on blank lines into separate <p> tags; the first paragraph keeps the "lead" treatment. */
 function renderStoryParagraphs(body: string) {
   const paragraphs = body.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean)
   return paragraphs.map((paragraph, i) => (
-    <p className={i === 0 ? 'zz-story-lead' : 'zz-story-muted'} key={paragraph}>{paragraph}</p>
+    <p className={i === 0 ? 'zz-story-lead' : 'zz-story-muted'} key={paragraph}>{withOmotenashiEmphasis(paragraph)}</p>
   ))
 }
 
@@ -152,18 +160,21 @@ function SeasonsCardGrid({ block }: { block: ZuruZuruCardGridBlockData }) {
     <section className="zz-section-alt"><div className="zz-container">
       <SectionHeader header={block.header} />
       <div className="zz-home-seasons">
-        {block.cards.map((card) => (
-          <article key={card.title}>
-            <div className="zz-home-season-image">
-              {card.image && <Image alt={card.title} fill sizes="(max-width: 768px) 92vw, 23vw" src={card.image.src} />}
-            </div>
-            <div className="zz-home-season-body">
-              <h4>{card.title}</h4>
-              <p>{card.description}</p>
-              {card.link && <Link href={card.link.url}>{card.link.label}</Link>}
-            </div>
-          </article>
-        ))}
+        {block.cards.map((card) => {
+          const { name, season } = splitSeasonTitle(card.title)
+          return (
+            <article key={card.title}>
+              <div className="zz-home-season-image">
+                {card.image && <Image alt={season} fill sizes="(max-width: 768px) 92vw, 23vw" src={card.image.src} />}
+              </div>
+              <div className="zz-home-season-body">
+                <h4>{season} {name && <small>{name}</small>}</h4>
+                <p>{card.description}</p>
+                {card.link && <Link href={card.link.url}>{card.link.label}</Link>}
+              </div>
+            </article>
+          )
+        })}
       </div>
     </div></section>
   )

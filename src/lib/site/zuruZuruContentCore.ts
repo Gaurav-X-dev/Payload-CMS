@@ -9,6 +9,7 @@ import type {
   MenuItem,
   Nav,
   Page,
+  Seo,
   SiteSetting,
   Teammember,
   Tenant,
@@ -23,6 +24,7 @@ export type ZuruZuruTenantState = 'active' | 'empty' | 'inactive' | 'missing'
 export type ZuruZuruShellResult = {
   footer: Footer | null
   nav: Nav | null
+  seo: Seo | null
   siteSettings: SiteSetting | null
   tenant: Tenant | null
   tenantState: ZuruZuruTenantState
@@ -38,6 +40,7 @@ export type ZuruZuruCollectionSlug =
   | 'menu-items'
   | 'nav'
   | 'pages'
+  | 'seo'
   | 'site-settings'
   | 'teammembers'
   | 'tenants'
@@ -61,6 +64,7 @@ export function emptyZuruZuruShell(tenantState: ZuruZuruTenantState = 'missing')
   return {
     footer: null,
     nav: null,
+    seo: null,
     siteSettings: null,
     tenant: null,
     tenantState,
@@ -129,7 +133,7 @@ export async function loadZuruZuruShellWithPayload({
 
   const tenantID = tenant.id
 
-  const [navResult, settingsResult, footerResult] = await Promise.all([
+  const [navResult, settingsResult, footerResult, seoResult] = await Promise.all([
     find<Nav>({
       collection: 'nav',
       depth: 2,
@@ -157,17 +161,30 @@ export async function loadZuruZuruShellWithPayload({
       pagination: false,
       where: tenantWhere(tenantID, [{ _status: { equals: 'published' } }]),
     }),
+    // Tenant-wide SEO fallback document — not gated behind any block/page condition since every
+    // route's metadata generation needs it, mirroring Nav/Footer/SiteSettings above.
+    find<Seo>({
+      collection: 'seo',
+      depth: 2,
+      draft: false,
+      limit: 2,
+      overrideAccess: true,
+      pagination: false,
+      where: tenantWhere(tenantID),
+    }),
   ])
 
   const nav = requireAtMostOne('header navigation', navResult.docs) ?? null
   const siteSettings = requireAtMostOne('site settings', settingsResult.docs) ?? null
   const footer = requireAtMostOne('footer', footerResult.docs) ?? null
+  const seo = requireAtMostOne('SEO settings', seoResult.docs) ?? null
 
-  const hasCMSContent = Boolean(nav || siteSettings || footer)
+  const hasCMSContent = Boolean(nav || siteSettings || footer || seo)
 
   return {
     footer,
     nav,
+    seo,
     siteSettings,
     tenant,
     tenantState: hasCMSContent ? 'active' : 'empty',

@@ -1,5 +1,6 @@
 import { CMSPageHero } from './CMSInnerPageShared'
 import { MenuBrowser, type MenuBrowserCategory, type MenuItem as MenuBrowserItem } from './Interactive'
+import { splitDishName } from '../utils/foldedTitles'
 import type {
   ZuruZuruMenuShowcaseBlockData,
   ZuruZuruPageBlockData,
@@ -7,10 +8,7 @@ import type {
 
 /**
  * Wraps the existing `MenuBrowser` client component (search + category filter + grid — unchanged
- * markup/behavior) with CMS-resolved items instead of the static `data/menu.ts` import. The
- * Japanese dish name (e.g. "スパイシーツナロール") has no dedicated MenuItems field; it's folded
- * into `dish.name` (matching the Home page's Seasonal Collections precedent), so MenuBrowser's own
- * separate `japanese` slot renders empty here — see the Milestone Z4 report.
+ * markup/behavior) with CMS-resolved items instead of the static `data/menu.ts` import.
  */
 function FullMenuSection({ block }: { block: ZuruZuruMenuShowcaseBlockData }) {
   if (block.items.length === 0) return null
@@ -24,14 +22,17 @@ function FullMenuSection({ block }: { block: ZuruZuruMenuShowcaseBlockData }) {
     }
   }
 
-  const items: MenuBrowserItem[] = block.items.map((dish) => ({
-    category: dish.category?.slug ?? 'all',
-    description: dish.description,
-    image: dish.image?.src ?? '',
-    japanese: '',
-    name: dish.name,
-    price: `₹${dish.price}`,
-  }))
+  const items: MenuBrowserItem[] = block.items.map((dish) => {
+    const { japanese, name } = splitDishName(dish.name)
+    return {
+      category: dish.category?.slug ?? 'all',
+      description: dish.description,
+      image: dish.image?.src ?? '',
+      japanese,
+      name,
+      price: `₹${dish.price}`,
+    }
+  })
 
   return <MenuBrowser categories={categories} items={items} />
 }

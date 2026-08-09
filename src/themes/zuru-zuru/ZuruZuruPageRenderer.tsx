@@ -19,8 +19,9 @@ import { CMSMenuPage } from './components/CMSMenuPage'
 import { CMSPrivateDiningPage } from './components/CMSPrivateDiningPage'
 import { CMSReservationPage } from './components/CMSReservationPage'
 import { ZuruZuruLayout } from './layouts/ZuruZuruLayout'
-import { mapZuruZuruPageLayout, mapZuruZuruShell } from './mappers/cmsContent'
+import { mapZuruZuruPageLayout, mapZuruZuruSEO, mapZuruZuruShell } from './mappers/cmsContent'
 import type { ZuruZuruPageBlockData, ZuruZuruSiteData } from './mappers/dynamicTypes'
+import { buildZuruZuruBreadcrumbJsonLd, combineZuruZuruJsonLd } from './utils/buildZuruZuruJsonLd'
 import { getZuruZuruPage } from './utils/getPageComponent'
 import { normalizePathname } from './utils/normalizePathname'
 
@@ -74,8 +75,20 @@ export async function ZuruZuruPageRenderer({ hostname, pathname, site }: ThemePa
       tenantID: page.tenant?.id ?? 0,
     })
 
+    const seo = mapZuruZuruSEO(shell.seo, shell.tenant)
+    const breadcrumbItems = page.page.isHomePage
+      ? []
+      : [
+          { name: 'Home', url: `https://${site.hostname}/` },
+          { name: page.page.title, url: `https://${site.hostname}${normalizedPathname}` },
+        ]
+    const jsonLd = combineZuruZuruJsonLd(
+      seo.jsonLd,
+      buildZuruZuruBreadcrumbJsonLd(breadcrumbItems),
+    )
+
     return (
-      <ZuruZuruLayout footer={content.footer} nav={content.navigation} pathname={pathname} site={content.site}>
+      <ZuruZuruLayout footer={content.footer} jsonLd={jsonLd} nav={content.navigation} pathname={pathname} site={content.site}>
         {cmsRenderer(blocks, content.site)}
       </ZuruZuruLayout>
     )

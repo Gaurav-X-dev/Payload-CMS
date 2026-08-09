@@ -1,5 +1,6 @@
 import { BenefitsPills, CMSPageHero, CMSSectionHeader } from './CMSInnerPageShared'
 import { groupBusinessHours } from '../utils/formatHours'
+import { splitLocationBadge } from '../utils/foldedTitles'
 import type {
   ZuruZuruContentGridBlockData,
   ZuruZuruLocationData,
@@ -8,21 +9,20 @@ import type {
 } from '../mappers/dynamicTypes'
 
 /**
- * No `meta` field exists on Location for the original's status badge ("Flagship Store" /
- * "Open Now" / "Coming Soon - Dec 2026") — there is no schema field to source it from at all, so
- * (per the established content-configuration precedent) it's folded into the title. The Location
- * collection also has no image relationship, so these cards render without photos — a disclosed
- * schema gap, see the Milestone Z7 report; approving a `Locations.image` field would restore them.
- * Hours are summarized via the existing `groupBusinessHours` utility (already used by the Contact
- * page's Visit Us section) rather than a new formatter.
+ * The Location collection also has no image relationship, so these cards render without photos —
+ * a disclosed schema gap, see the Milestone Z7 report; approving a `Locations.image` field would
+ * restore them. Hours are summarized via the existing `groupBusinessHours` utility (already used
+ * by the Contact page's Visit Us section) rather than a new formatter.
  */
 function LocationCard({ location }: { location: ZuruZuruLocationData }) {
   const hoursSummary = groupBusinessHours(location.hours).join(' · ') || 'Opening Soon'
   const description = [location.address, location.phone, hoursSummary].filter(Boolean).join(' · ')
+  const { badge, name } = splitLocationBadge(location.title)
   return (
     <article className="zz-content-card">
       <div className="zz-card-copy">
-        <h3>{location.title}</h3>
+        {badge && <span className="zz-card-meta">{badge}</span>}
+        <h3>{name}</h3>
         <p>{description}</p>
       </div>
     </article>

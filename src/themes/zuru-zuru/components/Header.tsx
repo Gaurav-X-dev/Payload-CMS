@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react'
 import { mobileNavigation, navigation, image } from '../data/site'
 import type { ZuruZuruNavigationData, ZuruZuruSiteData } from '../mappers/dynamicTypes'
 import { formatHoursSummary } from '../utils/formatHours'
+import { buildMobileNavOrder } from '../utils/foldedTitles'
 import { Icon } from './Icon'
 
 type NavItem = { children: { label: string; url: string }[]; label: string; url: string }
@@ -67,7 +68,7 @@ export function Header({
     : navigation.map(([href, label]) => ({ children: [], label, url: href }))
   const desktopLinks = allLinks.slice(0, DESKTOP_LINK_COUNT)
   const mobileLinks: { label: string; url: string }[] = nav && nav.links.length > 0
-    ? allLinks
+    ? buildMobileNavOrder(allLinks, DESKTOP_LINK_COUNT)
     : mobileNavigation.map(([href, label]) => ({ label, url: href }))
 
   const brandName = nav?.brandName || 'Zuru Zuru'

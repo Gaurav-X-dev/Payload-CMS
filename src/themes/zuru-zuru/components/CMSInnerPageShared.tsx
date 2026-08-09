@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import { Icon } from './Icon'
+import { splitTitleMeta } from '../utils/foldedTitles'
 import type { ZuruZuruHeroBlockData, ZuruZuruMediaData, ZuruZuruSectionHeaderData, ZuruZuruStoryBlockData } from '../mappers/dynamicTypes'
 
 /**
@@ -50,33 +51,35 @@ export type PlainCardGridItem = {
 
 /**
  * Matches Shared.tsx's `CardGrid` markup/classes exactly (`zz-content-grid zz-grid-N` /
- * `zz-content-card` / `zz-card-copy`). Used by every inner page whose original design shows a
- * plain title+description card grid (with or without an image/icon) — the original component has
- * no stored `columns` field on `contentgridBlock`, so the column count is derived from the item
- * count (4 items -> 4 columns, matching every current usage; otherwise the same 3-column default
- * `CardGrid` itself falls back to). `meta` subtitles some original cards show (e.g. price ranges)
- * have no matching field on any reusable block's items and are folded into `title` — see the
- * Milestone Z7 report.
+ * `zz-content-card` / `zz-card-copy` / `zz-card-meta`). Used by every inner page whose original
+ * design shows a plain title+description card grid (with or without an image/icon) — the original
+ * component has no stored `columns` field on `contentgridBlock`, so the column count is derived
+ * from the item count (4 items -> 4 columns, matching every current usage; otherwise the same
+ * 3-column default `CardGrid` itself falls back to).
  */
 export function PlainCardGrid({ items }: { items: PlainCardGridItem[] }) {
   if (items.length === 0) return null
   const columns = items.length === 4 ? 4 : 3
   return (
     <div className={`zz-content-grid zz-grid-${columns}`}>
-      {items.map((item) => (
-        <article className="zz-content-card" key={item.title}>
-          {item.image && (
-            <div className="zz-card-image">
-              <Image alt={item.title} fill sizes="(max-width: 768px) 100vw, 33vw" src={item.image.src} />
+      {items.map((item) => {
+        const { meta, title } = splitTitleMeta(item.title)
+        return (
+          <article className="zz-content-card" key={item.title}>
+            {item.image && (
+              <div className="zz-card-image">
+                <Image alt={item.title} fill sizes="(max-width: 768px) 100vw, 33vw" src={item.image.src} />
+              </div>
+            )}
+            <div className="zz-card-copy">
+              {item.icon && <Icon name={item.icon} size={38} weight="regular" />}
+              {meta && <span className="zz-card-meta">{meta}</span>}
+              <h3>{title}</h3>
+              <p>{item.description}</p>
             </div>
-          )}
-          <div className="zz-card-copy">
-            {item.icon && <Icon name={item.icon} size={38} weight="regular" />}
-            <h3>{item.title}</h3>
-            <p>{item.description}</p>
-          </div>
-        </article>
-      ))}
+          </article>
+        )
+      })}
     </div>
   )
 }

@@ -3,6 +3,7 @@ import { headers } from 'next/headers'
 
 import { getCuriousLadooMetadata } from '@/lib/site/getCuriousLadooMetadata'
 import { getGheeRoastMetadata } from '@/lib/site/getGheeRoastMetadata'
+import { getZuruZuruMetadata } from '@/lib/site/getZuruZuruMetadata'
 import { renderLocalThemePage } from '@/lib/site/renderLocalThemePage'
 import { resolveLocalSite } from '@/lib/site/resolveLocalSite'
 import { CMS_DRIVEN_PATHS } from '@/themes/curious-hub/CuriousHubPageRenderer'
@@ -45,6 +46,10 @@ export async function generateMetadata({
       return Object.keys(cmsMetadata).length > 0 ? cmsMetadata : {}
     }
     return getCuriousHubPage(pathname)?.metadata ?? {}
+  }
+
+  if (site.theme === 'zuru-zuru') {
+    return getZuruZuruMetadata({ host, pathname, site })
   }
 
   return {}

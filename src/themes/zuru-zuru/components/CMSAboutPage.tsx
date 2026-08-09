@@ -1,5 +1,6 @@
 import { CMSPageHero, CMSSectionHeader, StorySimplePanel } from './CMSInnerPageShared'
 import { Icon } from './Icon'
+import { splitTitleMeta } from '../utils/foldedTitles'
 import type {
   ZuruZuruContentGridBlockData,
   ZuruZuruPageBlockData,
@@ -27,11 +28,11 @@ function MissionVisionSection({ block }: { block: ZuruZuruContentGridBlockData }
 
 /**
  * Matches the About page's "Japanese Philosophy" section, which uses the shared `CardGrid`
- * component's markup/classes (`zz-content-grid zz-grid-3` / `zz-content-card` / `zz-card-copy`).
- * The original pillars have a per-item meta subtitle (e.g. "(Hospitality from the Heart)") with no
- * matching field on any reusable block; it's folded into `title`, matching the established
- * precedent (Home's Seasonal Collections, the Menu page's Japanese dish names) — see the
- * Milestone Z5 report.
+ * component's markup/classes (`zz-content-grid zz-grid-3` / `zz-content-card` / `zz-card-copy` /
+ * `zz-card-meta`). The original pillars have a per-item meta subtitle (e.g. "(Hospitality from the
+ * Heart)") with no matching field on any reusable block; it was folded into `title` as
+ * "Title (meta)" at seed time (Milestone Z5) and is split back out via the same
+ * `splitTitleMeta` helper `PlainCardGrid` uses (Franchise/Private Dining) — Milestone Z9.
  */
 function PillarsCardGridSection({ block }: { block: ZuruZuruContentGridBlockData }) {
   if (block.items.length === 0) return null
@@ -39,15 +40,19 @@ function PillarsCardGridSection({ block }: { block: ZuruZuruContentGridBlockData
     <section><div className="zz-container">
       <CMSSectionHeader header={block.header} />
       <div className="zz-content-grid zz-grid-3">
-        {block.items.map((item) => (
-          <article className="zz-content-card" key={item.title}>
-            <div className="zz-card-copy">
-              {item.icon && <Icon name={item.icon} size={38} weight="regular" />}
-              <h3>{item.title}</h3>
-              <p>{item.description}</p>
-            </div>
-          </article>
-        ))}
+        {block.items.map((item) => {
+          const { meta, title } = splitTitleMeta(item.title)
+          return (
+            <article className="zz-content-card" key={item.title}>
+              <div className="zz-card-copy">
+                {item.icon && <Icon name={item.icon} size={38} weight="regular" />}
+                {meta && <span className="zz-card-meta">{meta}</span>}
+                <h3>{title}</h3>
+                <p>{item.description}</p>
+              </div>
+            </article>
+          )
+        })}
       </div>
     </div></section>
   )

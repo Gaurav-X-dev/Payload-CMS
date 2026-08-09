@@ -24,6 +24,7 @@ import type {
   Nav,
   Page,
   RichTextBlock,
+  Seo,
   SiteSetting,
   StatsBlock,
   StepsBlock,
@@ -59,8 +60,10 @@ import type {
   ZuruZuruMenuShowcaseBlockData,
   ZuruZuruNavigationData,
   ZuruZuruPageBlockData,
+  ZuruZuruPageMetaData,
   ZuruZuruRichTextBlockData,
   ZuruZuruSectionHeaderData,
+  ZuruZuruSEOData,
   ZuruZuruShellData,
   ZuruZuruSiteData,
   ZuruZuruStatsBlockData,
@@ -154,6 +157,7 @@ const emptySite: ZuruZuruSiteData = {
   announcement: { enabled: false, text: '' },
   description: '',
   email: '',
+  favicon: null,
   hours: [],
   logo: null,
   name: '',
@@ -178,6 +182,7 @@ export function mapZuruZuruSite(
     },
     description: text(settings?.siteDescription),
     email: text(tenant.contact?.contactEmail),
+    favicon: mapMedia(tenant.branding?.favicon, tenantID),
     hours: (settings?.hours ?? []).map((row) => ({
       closeTime: text(row.closeTime),
       day: text(row.day),
@@ -226,6 +231,80 @@ export function mapZuruZuruShell({
     footer: mapZuruZuruFooter(footer, tenantID),
     navigation: mapZuruZuruNavigation(nav, tenantID),
     site: mapZuruZuruSite(tenant, siteSettings),
+  }
+}
+
+const emptySEO: ZuruZuruSEOData = {
+  bingSiteVerification: '',
+  canonicalUrl: '',
+  description: '',
+  googleSiteVerification: '',
+  jsonLd: null,
+  keywords: [],
+  ogDescription: '',
+  ogImage: null,
+  ogSiteName: '',
+  ogTitle: '',
+  robots: '',
+  titlePattern: '',
+  twitterCard: 'summary_large_image',
+  twitterCreator: '',
+  twitterSite: '',
+}
+
+/** Malformed or non-object JSON never crashes metadata generation — it just degrades to null, mirroring the Curious Ladoo mapper's identical parse-with-fallback. */
+function parseSEOJsonLd(source: string): ZuruZuruSEOData['jsonLd'] {
+  if (!source) return null
+  try {
+    const parsed: unknown = JSON.parse(source)
+    if (Array.isArray(parsed)) {
+      return parsed.every((entry) => Boolean(entry && typeof entry === 'object' && !Array.isArray(entry)))
+        ? parsed as Array<Record<string, unknown>>
+        : null
+    }
+    return parsed && typeof parsed === 'object' ? parsed as Record<string, unknown> : null
+  } catch {
+    return null
+  }
+}
+
+/** Tenant-wide SEO fallback (Milestone Z8) — every field here can be overridden per-page by the Page collection's own SEO tab (see buildZuruZuruMetadata.ts). */
+export function mapZuruZuruSEO(seo: Seo | null, tenant: Tenant | null): ZuruZuruSEOData {
+  if (!tenant) return emptySEO
+  const tenantID = tenant.id
+  const scoped = seo && belongsToTenant(seo.tenantId, tenantID) ? seo : null
+  if (!scoped) return emptySEO
+  return {
+    bingSiteVerification: text(scoped.bingSiteVerification),
+    canonicalUrl: text(scoped.canonicalUrl),
+    description: text(scoped.metaDescription),
+    googleSiteVerification: text(scoped.googleSiteVerification),
+    jsonLd: parseSEOJsonLd(text(scoped.jsonLd)),
+    keywords: text(scoped.keywords).split(',').map((keyword) => keyword.trim()).filter(Boolean),
+    ogDescription: text(scoped.ogDescription),
+    ogImage: mapMedia(scoped.defaultOGImage, tenantID),
+    ogSiteName: text(scoped.ogSiteName),
+    ogTitle: text(scoped.ogTitle),
+    robots: text(scoped.robots),
+    titlePattern: text(scoped.metaTitlePattern),
+    twitterCard: scoped.twitterCard === 'app' || scoped.twitterCard === 'player' || scoped.twitterCard === 'summary'
+      ? scoped.twitterCard
+      : 'summary_large_image',
+    twitterCreator: text(scoped.twitterCreator),
+    twitterSite: text(scoped.twitterSite),
+  }
+}
+
+/** A page's own SEO tab (Milestone Z8) — kept separate from the block-layout mapper above since metadata generation (`generateMetadata`) never needs the page's `layout` blocks at all. */
+export function mapZuruZuruPageMeta(page: Page | null, tenantID: number): ZuruZuruPageMetaData | null {
+  if (!page) return null
+  return {
+    canonicalUrl: text(page.canonicalUrl),
+    metaDescription: text(page.metaDescription),
+    metaImage: mapMedia(page.metaImage, tenantID),
+    metaTitle: text(page.metaTitle),
+    noIndex: page.noIndex === true,
+    title: text(page.title),
   }
 }
 

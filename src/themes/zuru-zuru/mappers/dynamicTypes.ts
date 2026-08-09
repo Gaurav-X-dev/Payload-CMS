@@ -76,6 +76,7 @@ export type ZuruZuruSiteData = {
   announcement: ZuruZuruAnnouncementData
   description: string
   email: string
+  favicon: ZuruZuruMediaData
   hours: ZuruZuruHoursRowData[]
   logo: ZuruZuruMediaData
   name: string
@@ -89,6 +90,35 @@ export type ZuruZuruShellData = {
   footer: ZuruZuruFooterData
   navigation: ZuruZuruNavigationData
   site: ZuruZuruSiteData
+}
+
+/** A single page's own SEO overrides (Milestone Z8) — falls back to the tenant-wide `ZuruZuruSEOData` for whatever isn't set here. */
+export type ZuruZuruPageMetaData = {
+  canonicalUrl: string
+  metaDescription: string
+  metaImage: ZuruZuruMediaData
+  metaTitle: string
+  noIndex: boolean
+  title: string
+}
+
+/** Tenant-wide SEO fallback, mapped from the shared `seo` collection (Milestone Z8) — the same admin-authored-JSON-LD architecture Curious Ladoo and Ghee Roast already use. */
+export type ZuruZuruSEOData = {
+  bingSiteVerification: string
+  canonicalUrl: string
+  description: string
+  googleSiteVerification: string
+  jsonLd: Array<Record<string, unknown>> | Record<string, unknown> | null
+  keywords: string[]
+  ogDescription: string
+  ogImage: ZuruZuruMediaData
+  ogSiteName: string
+  ogTitle: string
+  robots: string
+  titlePattern: string
+  twitterCard: 'app' | 'player' | 'summary' | 'summary_large_image'
+  twitterCreator: string
+  twitterSite: string
 }
 
 // ---------------------------------------------------------------------------
