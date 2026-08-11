@@ -3,6 +3,9 @@ import type { ClientCollectionConfig, ClientGlobalConfig } from 'payload'
 import type { CSSProperties } from 'react'
 import Link from 'next/link'
 
+import { getDashboardData } from '../../lib/admin/dashboard/getDashboardData'
+import type { DayBucket } from '../../lib/admin/dashboard/dateBuckets'
+import type { APIStatus, StorageUsage } from '../../lib/admin/dashboard/getSystemHealth'
 import {
   AdminBadge,
   AdminCard,
@@ -37,6 +40,57 @@ const formatIdentifier = (value: string) =>
 
 const resolveLabel = (label: unknown, fallback: string) =>
   typeof label === 'string' && label.trim() ? label : formatIdentifier(fallback)
+
+const buildCollectionLabelMap = (
+  collections: ClientCollectionConfig[],
+): Map<string, unknown> =>
+  new Map(collections.map((collection) => [collection.slug, collection.labels?.singular]))
+
+const formatTimestamp = (iso: string): string => {
+  const date = new Date(iso)
+  if (Number.isNaN(date.getTime())) return 'Unknown time'
+  return new Intl.DateTimeFormat('en-US', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  }).format(date)
+}
+
+const formatBytes = (bytes: number): string => {
+  if (bytes < 1024) return `${bytes} B`
+  const units = ['KB', 'MB', 'GB', 'TB']
+  let value = bytes
+  let unitIndex = -1
+  do {
+    value /= 1024
+    unitIndex += 1
+  } while (value >= 1024 && unitIndex < units.length - 1)
+  return `${value.toFixed(1)} ${units[unitIndex]}`
+}
+
+const apiStatusTone = (status: APIStatus): 'danger' | 'success' | 'warning' => {
+  if (status.state === 'operational') return 'success'
+  if (status.state === 'degraded') return 'warning'
+  return 'danger'
+}
+
+const apiStatusLabel = (status: APIStatus): string => {
+  const latencySuffix = status.latencyMs !== null ? ` · ${status.latencyMs}ms` : ''
+  if (status.state === 'operational') return `Operational${latencySuffix}`
+  if (status.state === 'degraded') return `Degraded${latencySuffix}`
+  return 'Unavailable'
+}
+
+const apiStatusDescription = (status: APIStatus): string =>
+  status.state === 'unavailable'
+    ? 'The most recent database query from this dashboard failed or could not run.'
+    : 'Measured from a real database query already made to render this dashboard.'
+
+const storageUsageDescription = (usage: StorageUsage): string => {
+  const countLabel = `${usage.mediaCount} media file${usage.mediaCount === 1 ? '' : 's'}`
+  return usage.totalBytes === null
+    ? `${countLabel} · size unavailable`
+    : `${countLabel} · ${formatBytes(usage.totalBytes)}`
+}
 
 const resolveWorkspaceName = (user: DashboardUser) => {
   const firstTenant = user.tenants?.[0]
@@ -157,13 +211,27 @@ function ArrowIcon() {
   )
 }
 
-function ChartPlaceholder({
+function TrendChart({
+  caveat,
+  countNoun,
+  days,
   description,
+  emptyMessage,
+  hasAnyData,
   title,
+  total,
 }: {
+  caveat?: string
+  countNoun: string
+  days: DayBucket[]
   description: string
+  emptyMessage: string
+  hasAnyData: boolean
   title: string
+  total: number
 }) {
+  const maxCount = Math.max(1, ...days.map((day) => day.count))
+
   return (
     <AdminCard className={styles.chartCard} padding="large">
       <div className={styles.chartHeader}>
@@ -171,46 +239,73 @@ function ChartPlaceholder({
           <h3 className={styles.cardTitle}>{title}</h3>
           <p className={styles.cardDescription}>{description}</p>
         </div>
-        <AdminBadge tone="neutral">Ready for data</AdminBadge>
+        <AdminBadge tone={hasAnyData ? 'success' : 'neutral'}>
+          {hasAnyData ? `${total} ${countNoun}` : 'No activity yet'}
+        </AdminBadge>
       </div>
-      <div
-        aria-label={`${title} chart placeholder`}
-        className={styles.chartPlaceholder}
-        role="img"
-      >
-        <span className={`${styles.chartLine} ${styles.chartLineQuarter}`} />
-        <span className={`${styles.chartLine} ${styles.chartLineHalf}`} />
-        <span className={`${styles.chartLine} ${styles.chartLineThreeQuarters}`} />
-        <span className={`${styles.chartLine} ${styles.chartLineEnd}`} />
-        <div className={styles.chartBars}>
-          {[42, 64, 48, 78, 58, 86, 70].map((height, index) => (
-            <span
-              className={styles.chartBar}
-              key={index}
-              style={{ '--chart-height': `${height}%` } as CSSProperties}
-            />
-          ))}
+      {hasAnyData ? (
+        <>
+          <div
+            aria-label={`${title}: ${days.map((day) => `${day.label} ${day.count}`).join(', ')}`}
+            className={styles.chartPlaceholder}
+            role="img"
+          >
+            <span className={`${styles.chartLine} ${styles.chartLineQuarter}`} />
+            <span className={`${styles.chartLine} ${styles.chartLineHalf}`} />
+            <span className={`${styles.chartLine} ${styles.chartLineThreeQuarters}`} />
+            <span className={`${styles.chartLine} ${styles.chartLineEnd}`} />
+            <div className={styles.chartBars}>
+              {days.map((day) => (
+                <span
+                  className={styles.chartBar}
+                  key={day.date}
+                  style={{ '--chart-height': `${(day.count / maxCount) * 100}%` } as CSSProperties}
+                  title={`${day.label}: ${day.count}`}
+                />
+              ))}
+            </div>
+          </div>
+          <div aria-hidden="true" className={styles.chartBarLabels}>
+            {days.map((day) => (
+              <span key={day.date}>{day.label}</span>
+            ))}
+          </div>
+        </>
+      ) : (
+        <div className={styles.chartEmpty}>
+          <p className={styles.cardDescription}>{emptyMessage}</p>
         </div>
-        <span className={styles.srOnly}>
-          Connect an analytics source to display this chart.
-        </span>
-      </div>
+      )}
+      {caveat ? <p className={styles.chartCaveat}>{caveat}</p> : null}
     </AdminCard>
   )
+}
+
+type SystemCardTone = 'danger' | 'neutral' | 'success' | 'warning'
+
+const SYSTEM_DOT_TONE_CLASS: Record<SystemCardTone, string> = {
+  danger: styles.statusDotDanger,
+  neutral: styles.statusDot,
+  success: styles.statusDotSuccess,
+  warning: styles.statusDotWarning,
 }
 
 function SystemCard({
   description,
   label,
+  statusLabel,
+  tone,
 }: {
   description: string
   label: string
+  statusLabel: string
+  tone: SystemCardTone
 }) {
   return (
     <AdminCard className={styles.systemCard}>
       <div className={styles.systemStatus}>
-        <span aria-hidden="true" className={styles.statusDot} />
-        <AdminBadge tone="neutral">Not connected</AdminBadge>
+        <span aria-hidden="true" className={SYSTEM_DOT_TONE_CLASS[tone]} />
+        <AdminBadge tone={tone}>{statusLabel}</AdminBadge>
       </div>
       <h3 className={styles.cardTitle}>{label}</h3>
       <p className={styles.cardDescription}>{description}</p>
@@ -218,22 +313,30 @@ function SystemCard({
   )
 }
 
-export function EnterpriseDashboard({
+export async function EnterpriseDashboard({
   clientConfig,
+  payload,
   permissions,
   user,
   visibleEntities,
 }: DashboardViewServerProps) {
   const dashboardUser = (user ?? {}) as DashboardUser
   const adminRoute = clientConfig.routes.admin
+  const visibleCollectionSlugs = new Set(visibleEntities?.collections ?? [])
+  const dashboardData = await getDashboardData({
+    payload,
+    user,
+    visibleCollectionSlugs,
+  })
   const entities = getEntities({
     adminRoute,
     collections: clientConfig.collections,
     globals: clientConfig.globals,
     permissions,
-    visibleCollectionSlugs: new Set(visibleEntities?.collections ?? []),
+    visibleCollectionSlugs,
     visibleGlobalSlugs: new Set(visibleEntities?.globals ?? []),
   })
+  const collectionLabelBySlug = buildCollectionLabelMap(clientConfig.collections)
   const collections = entities.filter((entity) => entity.type === 'collection')
   const globals = entities.filter((entity) => entity.type === 'global')
   const createActions = collections
@@ -455,18 +558,29 @@ export function EnterpriseDashboard({
 
       <section aria-labelledby="insights-heading">
         <SectionHeading
-          description="Presentation-ready containers for future analytics integrations."
+          description="Real activity from your account's content over the last 7 days."
           id="insights-heading"
           title="Content insights"
         />
         <div className={styles.chartGrid}>
-          <ChartPlaceholder
-            description="Track documents created and updated over time."
+          <TrendChart
+            countNoun="created"
+            days={dashboardData.contentGrowth.days}
+            description="Documents created across your visible collections, last 7 days."
+            emptyMessage="No content was created in the last 7 days."
+            hasAnyData={dashboardData.contentGrowth.hasAnyData}
             title="Content growth"
+            total={dashboardData.contentGrowth.total}
           />
-          <ChartPlaceholder
-            description="Visualize publishing cadence across collections."
+          <TrendChart
+            caveat={dashboardData.publishingTrend.caveat || undefined}
+            countNoun="published"
+            days={dashboardData.publishingTrend.days}
+            description="Documents genuinely marked published, last 7 days."
+            emptyMessage="Nothing was published in the last 7 days."
+            hasAnyData={dashboardData.publishingTrend.hasAnyData}
             title="Publishing trend"
+            total={dashboardData.publishingTrend.total}
           />
         </div>
       </section>
@@ -475,7 +589,7 @@ export function EnterpriseDashboard({
         <div className={styles.activityStack}>
           <section aria-labelledby="activity-heading">
             <SectionHeading
-              description="A timeline slot for future audit and activity integrations."
+              description="Actor-attributed activity is not currently stored by this application."
               id="activity-heading"
               title="Recent activity"
             />
@@ -491,55 +605,90 @@ export function EnterpriseDashboard({
                   </Link>
                 )
               }
-              description="Content creation, updates, uploads, user activity, and system events will appear here when an activity source is connected."
+              description="This project does not track who created or changed each document (no createdBy/updatedBy on most content types, no audit log). Recent Updates below shows real update timestamps instead."
               icon={<EmptyIcon />}
-              title="No activity source connected"
+              title="Activity tracking is not configured"
             />
           </section>
 
           <section aria-labelledby="updates-heading">
             <SectionHeading
-              description="A presentation slot for recently changed resources."
+              description="The most recently updated documents you have access to."
               id="updates-heading"
               title="Recent updates"
             />
-            <AdminEmptyState
-              action={
-                collections[0] ? (
-                  <Link className={styles.primaryAction} href={collections[0].href}>
-                    Browse content
-                  </Link>
-                ) : (
-                  <Link className={styles.primaryAction} href={`${adminRoute}/account`}>
-                    Review account access
-                  </Link>
-                )
-              }
-              description="Updated content will appear when a permission-aware activity source is connected."
-              icon={<EmptyIcon />}
-              title="No updates to display"
-            />
+            {dashboardData.recentUpdates.length ? (
+              <div className={styles.updatesList}>
+                {dashboardData.recentUpdates.map((update) => {
+                  const collectionLabel = resolveLabel(
+                    collectionLabelBySlug.get(update.collectionSlug),
+                    update.collectionSlug,
+                  )
+                  return (
+                    <Link
+                      className={styles.updateItem}
+                      href={`${adminRoute}/collections/${update.collectionSlug}/${update.docID}`}
+                      key={`${update.collectionSlug}-${update.docID}`}
+                    >
+                      <span className={styles.updateCopy}>
+                        <strong>{update.title}</strong>
+                        <span>
+                          {collectionLabel}
+                          {update.status ? ` · ${formatIdentifier(update.status)}` : ''}
+                          {' · '}
+                          {formatTimestamp(update.updatedAt)}
+                        </span>
+                      </span>
+                      <ArrowIcon />
+                    </Link>
+                  )
+                })}
+              </div>
+            ) : (
+              <AdminEmptyState
+                action={
+                  collections[0] ? (
+                    <Link className={styles.primaryAction} href={collections[0].href}>
+                      Browse content
+                    </Link>
+                  ) : (
+                    <Link className={styles.primaryAction} href={`${adminRoute}/account`}>
+                      Review account access
+                    </Link>
+                  )
+                }
+                description="No documents in your visible collections have been updated yet."
+                icon={<EmptyIcon />}
+                title="No updates to display"
+              />
+            )}
           </section>
         </div>
 
         <section aria-labelledby="system-heading">
           <SectionHeading
-            description="Integration-ready operational status surfaces."
+            description="Live operational status, checked on every dashboard load."
             id="system-heading"
             title="System overview"
           />
           <div className={styles.systemGrid}>
             <SystemCard
-              description="Connect monitoring to display availability and latency."
+              description={apiStatusDescription(dashboardData.apiStatus)}
               label="API status"
+              statusLabel={apiStatusLabel(dashboardData.apiStatus)}
+              tone={apiStatusTone(dashboardData.apiStatus)}
             />
             <SystemCard
-              description="Connect a queue provider to display job activity."
+              description="No job/queue provider (e.g. BullMQ, Payload Jobs) is configured in this project."
               label="Background jobs"
+              statusLabel="Not configured"
+              tone="neutral"
             />
             <SystemCard
-              description="Connect storage metrics to display current usage."
+              description={storageUsageDescription(dashboardData.storageUsage)}
               label="Storage usage"
+              statusLabel={dashboardData.storageUsage.provider === 's3' ? 'S3' : 'Local'}
+              tone="neutral"
             />
           </div>
         </section>

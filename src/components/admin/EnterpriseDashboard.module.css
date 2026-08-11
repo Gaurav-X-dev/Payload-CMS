@@ -447,6 +447,94 @@
   opacity: 0.72;
 }
 
+.chartBarLabels {
+  display: flex;
+  margin-block-start: var(--admin-space-2);
+  padding-inline: var(--admin-space-6);
+  justify-content: space-around;
+  color: var(--admin-muted);
+  font-size: 0.6875rem;
+}
+
+.chartEmpty {
+  display: flex;
+  height: 15rem;
+  margin-block-start: var(--admin-space-6);
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: color-mix(in srgb, var(--admin-surface-secondary) 68%, transparent);
+  border: 1px dashed var(--admin-border-strong);
+  border-radius: var(--admin-radius-md);
+}
+
+.chartCaveat {
+  margin: var(--admin-space-3) 0 0;
+  color: var(--admin-muted);
+  font-size: 0.6875rem;
+  line-height: 1.5;
+}
+
+.updatesList {
+  display: grid;
+  gap: var(--admin-space-2);
+}
+
+.updateItem {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--admin-space-3);
+  padding: var(--admin-space-3) var(--admin-space-4);
+  color: var(--admin-text);
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-lg);
+  text-decoration: none;
+  transition:
+    background-color var(--admin-transition),
+    border-color var(--admin-transition),
+    transform var(--admin-transition-fast);
+}
+
+.updateItem:hover,
+.updateItem:focus-visible {
+  color: var(--admin-text);
+  background: var(--admin-surface-secondary);
+  border-color: var(--admin-border-strong);
+  text-decoration: none;
+  transform: translateY(-1px);
+}
+
+.updateItem:focus-visible {
+  outline: var(--admin-focus-ring);
+  outline-offset: var(--admin-focus-offset);
+}
+
+.updateCopy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: var(--admin-space-1);
+}
+
+.updateCopy strong,
+.updateCopy span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.updateCopy strong {
+  font-size: 0.875rem;
+}
+
+.updateCopy span {
+  color: var(--admin-muted);
+  font-size: 0.75rem;
+}
+
 .lowerGrid {
   display: grid;
   grid-template-columns: minmax(0, 1.15fr) minmax(18rem, 0.85fr);
@@ -470,13 +558,34 @@
   margin-block-end: var(--admin-space-4);
 }
 
-.statusDot {
+.statusDot,
+.statusDotSuccess,
+.statusDotWarning,
+.statusDotDanger {
   width: 0.5rem;
   height: 0.5rem;
-  background: var(--admin-muted);
   border-radius: var(--admin-radius-pill);
+}
+
+.statusDot {
+  background: var(--admin-muted);
   box-shadow: 0 0 0 0.25rem
     color-mix(in srgb, var(--admin-muted) 14%, transparent);
+}
+
+.statusDotSuccess {
+  background: var(--admin-success);
+  box-shadow: 0 0 0 0.25rem color-mix(in srgb, var(--admin-success) 18%, transparent);
+}
+
+.statusDotWarning {
+  background: var(--admin-warning);
+  box-shadow: 0 0 0 0.25rem color-mix(in srgb, var(--admin-warning) 18%, transparent);
+}
+
+.statusDotDanger {
+  background: var(--admin-danger);
+  box-shadow: 0 0 0 0.25rem color-mix(in srgb, var(--admin-danger) 18%, transparent);
 }
 
 @media (max-width: 72rem) {
