@@ -12,6 +12,7 @@ export {
   AdminStatCard,
 } from './AdminUI'
 export { EnterpriseDashboard } from './EnterpriseDashboard'
+export { ForgotPasswordCard } from './ForgotPasswordCard'
 
 export type {
   AdminBadgeProps,

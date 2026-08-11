@@ -88,6 +88,7 @@ export interface Config {
     nav: Nav;
     footer: Footer;
     seo: Seo;
+    'email-settings': EmailSetting;
     redirects: Redirect;
     rooms: Room;
     amenities: Amenity;
@@ -120,6 +121,7 @@ export interface Config {
     nav: NavSelect<false> | NavSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
     seo: SeoSelect<false> | SeoSelect<true>;
+    'email-settings': EmailSettingsSelect<false> | EmailSettingsSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     rooms: RoomsSelect<false> | RoomsSelect<true>;
     amenities: AmenitiesSelect<false> | AmenitiesSelect<true>;
@@ -3881,6 +3883,79 @@ export interface Seo {
   createdAt: string;
 }
 /**
+ * Manage SMTP delivery, Welcome Email, and Forgot Password Email content for this tenant. Limited to one document per tenant.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "email-settings".
+ */
+export interface EmailSetting {
+  id: number;
+  /**
+   * Super Admins may select a tenant. Other users are assigned from trusted tenant context.
+   */
+  tenantId: number | Tenant;
+  smtp?: {
+    enabled?: boolean | null;
+    host?: string | null;
+    port?: number | null;
+    secure?: boolean | null;
+    username?: string | null;
+    /**
+     * Leave blank to keep the existing password. Enter a new value to replace it.
+     */
+    password?: string | null;
+    passwordEncrypted?: string | null;
+    passwordConfigured?: boolean | null;
+    fromAddress?: string | null;
+    fromName?: string | null;
+    /**
+     * Optional — defaults to no reply-to header if left blank.
+     */
+    replyTo?: string | null;
+  };
+  welcomeEmail: {
+    enabled?: boolean | null;
+    /**
+     * Supports {{user_name}}, {{user_email}}, {{site_name}}, {{current_year}}.
+     */
+    subject: string;
+    /**
+     * Supports the same placeholders as the subject.
+     */
+    heading: string;
+    /**
+     * Plain text only (no HTML). Supports {{user_name}}, {{user_email}}, {{password}}, {{site_name}}, {{login_url}}, {{support_email}}, {{current_year}}.
+     */
+    body: string;
+    buttonLabel?: string | null;
+  };
+  forgotPasswordEmail: {
+    enabled?: boolean | null;
+    /**
+     * Supports {{user_name}}, {{user_email}}, {{site_name}}, {{current_year}}.
+     */
+    subject: string;
+    /**
+     * Supports the same placeholders as the subject.
+     */
+    heading: string;
+    /**
+     * Plain text only (no HTML). Supports {{user_name}}, {{user_email}}, {{site_name}}, {{reset_url}}, {{support_email}}, {{current_year}}. {{password}} is never available here.
+     */
+    body: string;
+    buttonLabel?: string | null;
+  };
+  footer?: {
+    /**
+     * Defaults to Contact Email (Tenant Settings) if left blank.
+     */
+    supportEmail?: string | null;
+    footerText?: string | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
@@ -4043,6 +4118,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'seo';
         value: number | Seo;
+      } | null)
+    | ({
+        relationTo: 'email-settings';
+        value: number | EmailSetting;
       } | null)
     | ({
         relationTo: 'redirects';
@@ -6550,6 +6629,54 @@ export interface SeoSelect<T extends boolean = true> {
   jsonLd?: T;
   googleSiteVerification?: T;
   bingSiteVerification?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "email-settings_select".
+ */
+export interface EmailSettingsSelect<T extends boolean = true> {
+  tenantId?: T;
+  smtp?:
+    | T
+    | {
+        enabled?: T;
+        host?: T;
+        port?: T;
+        secure?: T;
+        username?: T;
+        password?: T;
+        passwordEncrypted?: T;
+        passwordConfigured?: T;
+        fromAddress?: T;
+        fromName?: T;
+        replyTo?: T;
+      };
+  welcomeEmail?:
+    | T
+    | {
+        enabled?: T;
+        subject?: T;
+        heading?: T;
+        body?: T;
+        buttonLabel?: T;
+      };
+  forgotPasswordEmail?:
+    | T
+    | {
+        enabled?: T;
+        subject?: T;
+        heading?: T;
+        body?: T;
+        buttonLabel?: T;
+      };
+  footer?:
+    | T
+    | {
+        supportEmail?: T;
+        footerText?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }

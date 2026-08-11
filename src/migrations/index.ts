@@ -19,6 +19,8 @@ import * as migration_20260807_050855_curious_ladoo_contact from './20260807_050
 import * as migration_20260807_061312_curious_ladoo_blog from './20260807_061312_curious_ladoo_blog';
 import * as migration_20260808_185935_menu_items_badge from './20260808_185935_menu_items_badge';
 import * as migration_20260809_055542_zuru_zuru_gallery_category_chefs from './20260809_055542_zuru_zuru_gallery_category_chefs';
+import * as migration_20260810_092638_add_email_settings from './20260810_092638_add_email_settings';
+import * as migration_20260810_110739_add_email_settings_smtp from './20260810_110739_add_email_settings_smtp';
 
 export const migrations = [
   {
@@ -124,6 +126,16 @@ export const migrations = [
   {
     up: migration_20260809_055542_zuru_zuru_gallery_category_chefs.up,
     down: migration_20260809_055542_zuru_zuru_gallery_category_chefs.down,
-    name: '20260809_055542_zuru_zuru_gallery_category_chefs'
+    name: '20260809_055542_zuru_zuru_gallery_category_chefs',
+  },
+  {
+    up: migration_20260810_092638_add_email_settings.up,
+    down: migration_20260810_092638_add_email_settings.down,
+    name: '20260810_092638_add_email_settings',
+  },
+  {
+    up: migration_20260810_110739_add_email_settings_smtp.up,
+    down: migration_20260810_110739_add_email_settings_smtp.down,
+    name: '20260810_110739_add_email_settings_smtp'
   },
 ];

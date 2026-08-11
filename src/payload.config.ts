@@ -31,6 +31,7 @@ import { SiteSettings } from './collections/SiteSettings'
 import { Nav } from './collections/Nav'
 import { Footer } from './collections/Footer'
 import { SEO } from './collections/SEO'
+import { EmailSettings } from './collections/EmailSettings'
 import { Redirects } from './collections/Redirects'
 import { Rooms } from './collections/Rooms'
 import { Amenities } from './collections/Amenities'
@@ -102,12 +103,19 @@ export default buildConfig({
     Nav,
     Footer,
     SEO,
+    EmailSettings,
     Redirects,
     Rooms,
     Amenities,
     Packages,
   ].map(withTrustedTenantAssignment),
   editor: lexicalEditor({}),
+  // No global email adapter is registered. Real delivery is entirely tenant-scoped, resolved
+  // and sent per-tenant via src/lib/mail/smtpTransport.ts (their own SMTP account, e.g.
+  // Hostinger) — never one shared global transport. Payload still performs one internal,
+  // unavoidable `email.sendEmail(...)` call as part of its official forgotPassword operation;
+  // leaving this unset means that call lands on Payload's built-in console adapter (a log line
+  // only, no external delivery), which is intentional — see forgotPasswordEmailContent.ts.
   plugins: [
     ...(process.env.S3_ACCESS_KEY && process.env.S3_ENDPOINT
       ? [

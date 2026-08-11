@@ -13,6 +13,7 @@
     "payload:generate-importmap": "payload generate:importmap",
     "db:reset:dev": "node --env-file=.env --experimental-strip-types --import ./scripts/register-ts-loader.mjs scripts/reset-development-data.ts",
     "db:seed:dev": "node --env-file=.env --experimental-strip-types --import ./scripts/register-ts-loader.mjs scripts/seed-development-data.ts",
+    "db:seed:email-settings": "node --env-file=.env --experimental-strip-types --import ./scripts/register-ts-loader.mjs scripts/seed-email-settings.ts",
     "db:seed:curious-ladoo": "node --env-file=.env --experimental-strip-types --import ./scripts/register-ts-loader.mjs scripts/seed-curious-ladoo.ts",
     "db:seed:curious-ladoo-home": "node --env-file=.env --experimental-strip-types --import ./scripts/register-ts-loader.mjs scripts/seed-curious-ladoo-home.ts",
     "db:seed:curious-ladoo-about": "node --env-file=.env --experimental-strip-types --import ./scripts/register-ts-loader.mjs scripts/seed-curious-ladoo-about.ts",
@@ -63,6 +64,7 @@
     "@phosphor-icons/react": "^2.1.10",
     "graphql": "^16.14.2",
     "next": "^16.2.11",
+    "nodemailer": "^9.0.5",
     "payload": "^3.86.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
@@ -70,6 +72,7 @@
   },
   "devDependencies": {
     "@types/node": "^26.1.1",
+    "@types/nodemailer": "^8.0.1",
     "@types/react": "^19.2.17",
     "eslint": "^9.39.5",
     "eslint-config-next": "^16.2.11",

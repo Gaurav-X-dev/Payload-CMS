@@ -18,6 +18,7 @@ import {
   getUserTenantIDs,
   isSuperAdminUser,
   isTenantAdminUser,
+  resolvePublicTenantID,
   USER_ROLES,
   USER_ROLE_OPTIONS,
 } from '../access/tenantContext'
@@ -27,6 +28,14 @@ import {
   validateEmail,
   validateName,
 } from '../validation/shared'
+import {
+  generateForgotPasswordEmailHTML,
+  generateForgotPasswordEmailSubject,
+} from '../lib/mail/forgotPasswordEmailContent'
+import {
+  captureWelcomeEmailPassword,
+  sendWelcomeEmailAfterCreate,
+} from '../lib/mail/sendWelcomeEmail'
 
 const userSecurityError = (
   message: string,
@@ -170,6 +179,69 @@ export const captureProtectedUserInput: CollectionBeforeOperationHook = ({
   return args
 }
 
+/**
+ * EXPLICIT BUSINESS REQUIREMENT (documented security tradeoff): unlike Payload's default
+ * silent-null behavior, an unknown email must produce a distinguishable "Email not found"
+ * response, and a known email that doesn't belong to the resolved tenant must be treated
+ * identically to unknown. This deliberately allows a caller to learn whether an email is
+ * registered — see the M2.9 checkpoint report for the accepted tradeoff.
+ *
+ * Runs as a beforeOperation hook (the same official extension point captureProtectedUserInput
+ * already uses), which Payload's own forgotPasswordOperation calls before any token is
+ * generated (payload/dist/auth/operations/forgotPassword.js, via buildBeforeOperation). Throwing
+ * here aborts the operation entirely — no token write, no email send, no SMTP call — using
+ * Payload's own error-to-HTTP-response handling, not a custom endpoint or a reimplementation of
+ * any part of the official reset-token mechanism.
+ *
+ * Tenant resolution reuses resolvePublicTenantID — the same trusted, hostname-derived resolver
+ * already used for Forgot Password's tenant-branded content (never a client-submitted value).
+ * A Super Admin (who by design belongs to no tenant) is always eligible, matching how tenant
+ * membership already works everywhere else in this codebase.
+ */
+export const validateForgotPasswordEligibility: CollectionBeforeOperationHook = async ({
+  args,
+  operation,
+  req,
+}) => {
+  if (operation !== 'forgotPassword' || !('data' in args) || !args.data) {
+    return args
+  }
+
+  const rawEmail = (args.data as { email?: unknown }).email
+  const email = typeof rawEmail === 'string' ? normalizeEmail(rawEmail) : ''
+  if (!email) return args // malformed/missing email — Payload's own operation rejects this normally
+
+  const tenantID = await resolvePublicTenantID(req)
+
+  const eligibility: Where[] = [{ roles: { contains: USER_ROLES.superAdmin } }]
+  if (tenantID) {
+    eligibility.push({ tenants: { in: [tenantID] } })
+  }
+
+  const match = await req.payload.find({
+    collection: 'users',
+    depth: 0,
+    limit: 1,
+    overrideAccess: true,
+    pagination: false,
+    where: {
+      and: [
+        { email: { equals: email } },
+        { or: eligibility },
+      ],
+    },
+  })
+
+  if (!match.docs.length) {
+    req.payload.logger.info(
+      `Forgot Password rejected: no eligible user for the resolved tenant (tenant ${tenantID ?? 'unresolved'}).`,
+    )
+    userSecurityError('Email not found.', 'email')
+  }
+
+  return args
+}
+
 const ensureTenantReferences = async ({
   req,
   tenantIDs,
@@ -197,6 +269,73 @@ const ensureTenantReferences = async ({
   }
 }
 
+// crypto.randomBytes(20).toString('hex') — the exact, only way Payload's forgotPassword
+// operation ever produces this value (payload/dist/auth/operations/forgotPassword.js).
+const RESET_TOKEN_PATTERN = /^[0-9a-f]{40}$/
+
+/**
+ * Payload's own official forgotPassword operation writes the reset token via the normal Local
+ * API `update()` (payload/dist/auth/operations/forgotPassword.js), which defaults
+ * `overrideAccess` to `true` and is never explicitly overridden there — so this collection's
+ * `access.update` is bypassed for that internal call the same way it is for any other Local API
+ * write, and this beforeValidate hook (never bypassed by overrideAccess) is the only thing that
+ * still runs. Without this allowance every forgot-password request fails with "User management
+ * is not permitted" before a token can ever be stored, because req.user is legitimately absent
+ * (the whole point of forgot-password) and none of the existing branches below account for it.
+ *
+ * Verified empirically (not assumed) that `data` here is the FULL current document — field-level
+ * beforeValidate, which runs before this collection-level hook, merges in every existing field
+ * (name, roles, tenants, ...), not just the two patched ones — so this can't be detected by an
+ * exact or narrow key set. Instead it's detected by the one thing that's genuinely unique to this
+ * exact call: a `resetPasswordToken` matching the precise 40-hex-character shape Payload's own
+ * `crypto.randomBytes(20).toString('hex')` always produces, paired with a fresh expiration.
+ *
+ * This is safe to allow through unchanged: the token itself is generated server-side inside
+ * Payload's own operation and never taken from request data, so a caller cannot forge a value
+ * that matches this pattern; `data.roles`/`data.tenants`/etc. are present but are the user's own
+ * existing, unmodified values (this update never changes them, whether this check allows it
+ * through or not); and no external HTTP request can reach this exact code path — a
+ * directly-submitted PATCH to /api/users/:id is already rejected by access.update before any
+ * hook runs, since that path does not default to overrideAccess the way this internal Local API
+ * call does.
+ */
+const isForgotPasswordTokenWrite = (
+  data: Record<string, unknown>,
+  operation: string,
+  req: PayloadRequest,
+): boolean => {
+  if (req.user || operation !== 'update') return false
+  return (
+    typeof data.resetPasswordToken === 'string' &&
+    RESET_TOKEN_PATTERN.test(data.resetPasswordToken) &&
+    typeof data.resetPasswordExpiration === 'string' &&
+    !Number.isNaN(Date.parse(data.resetPasswordExpiration))
+  )
+}
+
+/**
+ * Payload's official resetPassword operation (payload/dist/auth/operations/resetPassword.js)
+ * invokes this collection's beforeValidate hooks directly — bypassing beforeOperation entirely
+ * and, notably, never passing `originalDoc` — then writes the new hash/salt with a direct
+ * `payload.db.updateOne()` call that never goes through access control at all. req.user is not
+ * yet set at this point (login happens after). Recognized narrowly by the presence of `hash`
+ * and `salt` (fields no external request can ever set directly — they exist only via Payload's
+ * own password-hashing strategy) combined with a missing `originalDoc`, which only happens on
+ * this exact internal path. Reachable only after Payload has already validated a non-expired,
+ * matching reset token — this hook does not weaken that check, it only stops it from crashing.
+ */
+const isResetPasswordHashWrite = (
+  data: Record<string, unknown>,
+  operation: string,
+  originalDoc: unknown,
+  req: PayloadRequest,
+): boolean =>
+  !req.user &&
+  operation === 'update' &&
+  !originalDoc &&
+  typeof data.hash === 'string' &&
+  typeof data.salt === 'string'
+
 export const enforceUserRBAC: CollectionBeforeValidateHook = async ({
   data,
   operation,
@@ -205,6 +344,12 @@ export const enforceUserRBAC: CollectionBeforeValidateHook = async ({
 }) => {
   if (!data) return data
   if (req.context?.developmentReset === true) return data
+  if (
+    isForgotPasswordTokenWrite(data, operation, req) ||
+    isResetPasswordHashWrite(data, operation, originalDoc, req)
+  ) {
+    return data
+  }
 
   if (data.name !== undefined) {
     data.name = normalizeName(data.name)
@@ -374,6 +519,10 @@ export const Users: CollectionConfig = {
   slug: 'users',
   auth: {
     useAPIKey: true,
+    forgotPassword: {
+      generateEmailHTML: generateForgotPasswordEmailHTML,
+      generateEmailSubject: generateForgotPasswordEmailSubject,
+    },
   },
   admin: {
     useAsTitle: 'name',
@@ -463,8 +612,9 @@ export const Users: CollectionConfig = {
     }
   ],
   hooks: {
-    beforeOperation: [captureProtectedUserInput],
+    beforeOperation: [captureProtectedUserInput, validateForgotPasswordEligibility],
     beforeValidate: [enforceUserRBAC],
-    beforeChange: [stampUserAuditFields],
+    beforeChange: [captureWelcomeEmailPassword, stampUserAuditFields],
+    afterChange: [sendWelcomeEmailAfterCreate],
   }
 }
