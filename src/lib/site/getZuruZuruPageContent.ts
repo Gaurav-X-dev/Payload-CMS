@@ -8,6 +8,7 @@ import {
   type ZuruZuruFind,
   type ZuruZuruPageResult,
 } from './zuruZuruContentCore'
+import { resolveZuruZuruTenantDocument } from './resolveZuruZuruTenant'
 import type { LocalSite } from './types'
 
 export type { ZuruZuruPageResult } from './zuruZuruContentCore'
@@ -28,7 +29,11 @@ const loadZuruZuruPage = cache(async (
     const result = await payload.find(args)
     return { docs: result.docs as never }
   }
-  return loadZuruZuruPageWithPayload({ find, host, pathname, site })
+  // Shared, request-memoized tenant lookup — see resolveZuruZuruTenant.ts. When
+  // getZuruZuruShell also resolves the same request, React's cache() collapses both calls into
+  // a single physical tenant-table query instead of two.
+  const tenant = await resolveZuruZuruTenantDocument(siteKey)
+  return loadZuruZuruPageWithPayload({ find, host, pathname, site, tenant })
 })
 
 export async function getZuruZuruPageContent({

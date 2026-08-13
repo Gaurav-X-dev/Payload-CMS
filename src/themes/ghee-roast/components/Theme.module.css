@@ -1982,6 +1982,139 @@
   margin-bottom: 3rem;
 }
 
+.locationBar {
+  background: var(--gr-bg-alt);
+  border-bottom: 1px solid var(--gr-border);
+  padding: 1rem 5%;
+}
+
+.locationBarInner {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: .75rem;
+  justify-content: center;
+  margin: 0 auto;
+  max-width: 1400px;
+}
+
+.locationBarInner>span {
+  align-items: center;
+  color: var(--gr-primary);
+  display: inline-flex;
+  font-family: var(--gr-heading);
+  font-size: .85rem;
+  font-weight: 700;
+  gap: .4rem;
+  text-transform: uppercase;
+}
+
+.locationBarInner button {
+  align-items: center;
+  background: transparent;
+  border: 1px solid var(--gr-border);
+  border-radius: 30px;
+  color: var(--gr-primary);
+  cursor: pointer;
+  display: inline-flex;
+  font-family: var(--gr-heading);
+  font-size: .85rem;
+  font-weight: 700;
+  gap: .4rem;
+  padding: .5rem 1.1rem;
+  text-transform: uppercase;
+  transition: var(--gr-transition);
+}
+
+.locationBarInner button[aria-pressed='true'] {
+  background: var(--gr-primary);
+  color: var(--gr-white);
+}
+
+.menuSection {
+  padding: 3rem 0;
+}
+
+.menuLocationHeader {
+  align-items: flex-end;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+
+.menuLocationHeader>div:first-child span {
+  color: var(--gr-accent);
+  display: block;
+  font-family: var(--gr-heading);
+  font-size: .85rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  margin-bottom: .4rem;
+  text-transform: uppercase;
+}
+
+.menuLocationHeader h2 {
+  color: var(--gr-primary);
+  font-family: var(--gr-heading);
+  margin: 0;
+}
+
+.menuLocationHeader>div:last-child {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: .75rem;
+}
+
+.menuLocationHeader>div:last-child a {
+  background: var(--gr-primary);
+  border-radius: 30px;
+  color: var(--gr-white);
+  font-family: var(--gr-heading);
+  font-size: .8rem;
+  font-weight: 700;
+  padding: .6rem 1.3rem;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: var(--gr-transition);
+}
+
+.menuLocationHeader>div:last-child a:hover {
+  background: var(--gr-primary-dark);
+}
+
+@media (max-width: 900px) {
+  .locationBarInner>span {
+    width: 100%;
+  }
+}
+
+@media (max-width: 800px) {
+  .locationBar {
+    padding: 1rem 8%;
+  }
+
+  .locationBarInner {
+    justify-content: flex-start;
+  }
+
+  .menuSection {
+    padding: 2rem 0;
+  }
+
+  .menuLocationHeader {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .menuLocationHeader>div:last-child {
+    width: 100%;
+  }
+}
+
 .menuList {
   display: grid;
   gap: 1.5rem;

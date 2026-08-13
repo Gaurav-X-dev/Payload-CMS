@@ -141,18 +141,11 @@ async function findDocuments<TDoc extends { id: number }>(
     where: Where
   },
 ): Promise<TDoc[]> {
-  const probe = await find<{ id: number }>({
-    collection,
-    depth: 0,
-    draft: false,
-    limit,
-    overrideAccess: true,
-    pagination: false,
-    where,
-  })
-  const ids = probe.docs.map((document) => document.id).filter((id) => typeof id === 'number')
-  if (ids.length === 0) return []
-
+  // Previously issued an ID-only probe query before the real query (same historical reason as
+  // Ghee Roast's identical pattern — see gheeRoastContentCore.ts's findDocuments). Verified
+  // empirically against the live schema that a single direct query behaves correctly for both
+  // populated and genuinely empty tenant-scoped collections; collapsed to one query as the
+  // normal path (M3 performance work).
   const result = await find<TDoc>({
     collection,
     depth,
@@ -161,7 +154,7 @@ async function findDocuments<TDoc extends { id: number }>(
     overrideAccess: true,
     pagination: false,
     ...(sort ? { sort } : {}),
-    where: { and: [where, { id: { in: ids } }] },
+    where,
   })
   return result.docs
 }

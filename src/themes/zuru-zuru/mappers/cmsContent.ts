@@ -72,6 +72,7 @@ import type {
   ZuruZuruTeamBlockData,
   ZuruZuruTestimonialsBlockData,
 } from './dynamicTypes'
+import { resolveMediaVariantUrl, type MediaLikeValue, type MediaSizeContext } from '../../../lib/media/resolveMediaVariant'
 
 const text = (value: string | null | undefined): string => (typeof value === 'string' ? value.trim() : '')
 
@@ -87,11 +88,18 @@ const belongsToTenant = (
   return false
 }
 
-function mapMedia(value: number | Media | null | undefined, tenantID: number): ZuruZuruMediaData {
+function mapMedia(
+  value: number | Media | null | undefined,
+  tenantID: number,
+  sizeContext?: MediaSizeContext,
+): ZuruZuruMediaData {
   if (!isPopulated<Media>(value)) return null
   if (!belongsToTenant(value.tenantId, tenantID)) return null
-  const src = text(value.url)
-  if (!src) return null
+  const originalSrc = text(value.url)
+  if (!originalSrc) return null
+  const src = sizeContext
+    ? resolveMediaVariantUrl(value as unknown as MediaLikeValue, sizeContext) || originalSrc
+    : originalSrc
   return {
     alt: text(value.alt) || 'Zuru Zuru',
     id: value.id,
@@ -282,7 +290,7 @@ export function mapZuruZuruSEO(seo: Seo | null, tenant: Tenant | null): ZuruZuru
     jsonLd: parseSEOJsonLd(text(scoped.jsonLd)),
     keywords: text(scoped.keywords).split(',').map((keyword) => keyword.trim()).filter(Boolean),
     ogDescription: text(scoped.ogDescription),
-    ogImage: mapMedia(scoped.defaultOGImage, tenantID),
+    ogImage: mapMedia(scoped.defaultOGImage, tenantID, 'og'),
     ogSiteName: text(scoped.ogSiteName),
     ogTitle: text(scoped.ogTitle),
     robots: text(scoped.robots),
@@ -301,7 +309,7 @@ export function mapZuruZuruPageMeta(page: Page | null, tenantID: number): ZuruZu
   return {
     canonicalUrl: text(page.canonicalUrl),
     metaDescription: text(page.metaDescription),
-    metaImage: mapMedia(page.metaImage, tenantID),
+    metaImage: mapMedia(page.metaImage, tenantID, 'og'),
     metaTitle: text(page.metaTitle),
     noIndex: page.noIndex === true,
     title: text(page.title),
@@ -365,7 +373,9 @@ function mapDishCategory(category: MenuItem['category']): ZuruZuruDishCategoryDa
 
 export function mapZuruZuruHero(block: HeroBlock, tenantID: number): ZuruZuruHeroBlockData {
   return {
-    backgroundImage: mapMedia(block.desktopBackgroundImage, tenantID),
+    // Full-bleed CSS background (.zz-page-hero { background-size: cover }, Shared.tsx /
+    // CMSInnerPageShared.tsx) — a pre-cropped 16:9 "hero" variant is a safe fit.
+    backgroundImage: mapMedia(block.desktopBackgroundImage, tenantID, 'hero'),
     description: text(block.description),
     eyebrow: text(block.eyebrow),
     heading: text(block.heading),
@@ -403,7 +413,7 @@ export function mapZuruZuruCardGrid(block: CardGridBlock, tenantID: number): Zur
     cards: (block.cards ?? []).map((card) => ({
       description: text(card.description),
       enableLink: card.enableLink === true,
-      image: mapMedia(card.image?.item, tenantID),
+      image: mapMedia(card.image?.item, tenantID, 'card'),
       link: card.enableLink ? mapZuruZuruLinkField(card.link, tenantID) : null,
       title: text(card.title),
     })),
@@ -420,7 +430,7 @@ export function mapZuruZuruStory(block: StoryBlock, tenantID: number): ZuruZuruS
     body: text(block.body),
     cta: block.enableCta ? mapZuruZuruLinkField(block.cta, tenantID) : null,
     eyebrow: text(block.eyebrow),
-    image: mapMedia(block.media, tenantID),
+    image: mapMedia(block.media, tenantID, 'card'),
     imageAlt: text(block.mediaAlt),
     imagePosition: text(block.imagePosition),
     layout: text(block.layout) || 'simple',
@@ -496,7 +506,7 @@ export function mapZuruZuruMenuShowcase(
       description: text(item.description),
       heat: heatFromSpiceLevel(item.spiceLevel),
       id: item.id,
-      image: mapMedia(item.image, tenantID),
+      image: mapMedia(item.image, tenantID, 'card'),
       name: text(item.title),
       price: item.price,
     }))
@@ -639,7 +649,7 @@ export function mapZuruZuruTeam(
       bio: text(member.bio),
       id: member.id,
       name: text(member.title),
-      photo: mapMedia(member.photo, tenantID),
+      photo: mapMedia(member.photo, tenantID, 'card'),
       role: text(member.role),
     }))
   return { header: mapZuruZuruSectionHeader(block.sectionHeader), members: items }
@@ -671,7 +681,7 @@ export function mapZuruZuruEvents(
       bookingUrl: text(event.bookingUrl),
       description: text(event.description),
       id: event.id,
-      image: mapMedia(event.image, tenantID),
+      image: mapMedia(event.image, tenantID, 'card'),
       location: text(event.locationName),
       startsAt: text(event.startsAt),
       summary: text(event.summary),

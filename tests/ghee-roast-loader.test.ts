@@ -77,10 +77,14 @@ test('empty real-world CMS shape stays empty after resolving the valid tenant', 
     'site-settings',
     'tenants',
   ])
-  assert.equal(
-    payload.calls.filter((call) => call.collection !== 'tenants' && !call.select).length,
-    0,
-    'empty collections must stop after the compatibility-safe ID probe',
+  const callCountByCollection = new Map<string, number>()
+  for (const call of payload.calls) {
+    if (call.collection === 'tenants') continue
+    callCountByCollection.set(call.collection, (callCountByCollection.get(call.collection) ?? 0) + 1)
+  }
+  assert.ok(
+    [...callCountByCollection.values()].every((count) => count === 1),
+    'each collection must be queried exactly once — no duplicate probe + full query pattern',
   )
   assert.ok(
     payload.calls

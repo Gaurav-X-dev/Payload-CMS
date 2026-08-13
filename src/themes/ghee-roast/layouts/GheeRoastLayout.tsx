@@ -5,6 +5,7 @@ import { Header } from '../components/Header'
 import { Newsletter } from '../components/Newsletter'
 import type { GheeRoastDynamicContent } from '../dynamicTypes'
 import styles from '../components/Theme.module.css'
+import '../styles/theme.css'
 
 export function GheeRoastLayout({
   children,
@@ -41,14 +42,21 @@ export function GheeRoastLayout({
     : null
 
   return (
-    <div className={styles.themeRoot} data-theme-site="ghee-roast" style={themeStyle}>
-      {jsonLd && <script dangerouslySetInnerHTML={{ __html: jsonLd }} type="application/ld+json" />}
-      {showChrome && showAnnouncement && <aside className={styles.announcementBar}>{site.announcement.text}</aside>}
-      {showChrome && <Header hasAnnouncement={showAnnouncement} navigation={headerNavigation} pathname={pathname} />}
-      <main>{children}</main>
-      {showChrome && showNewsletter && <Newsletter override={site.newsletter} />}
-      {showChrome && <Footer footer={footer} navigation={headerNavigation} site={site} />}
-      {showChrome && <BackToTop />}
-    </div>
+    <>
+      {/* Next.js hoists <link> elements found anywhere in the tree into the document <head> —
+          rendering these here (rather than the shared root layout) means only Ghee Roast
+          visitors download Ghee Roast's fonts (Oswald + Inter), not all 3 tenants' fonts. Same
+          families/weights the site previously loaded from the shared link, just scoped. */}
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet" />
+      <div className={styles.themeRoot} data-theme-site="ghee-roast" style={themeStyle}>
+        {jsonLd && <script dangerouslySetInnerHTML={{ __html: jsonLd }} type="application/ld+json" />}
+        {showChrome && showAnnouncement && <aside className={styles.announcementBar}>{site.announcement.text}</aside>}
+        {showChrome && <Header hasAnnouncement={showAnnouncement} navigation={headerNavigation} pathname={pathname} />}
+        <main>{children}</main>
+        {showChrome && showNewsletter && <Newsletter override={site.newsletter} />}
+        {showChrome && <Footer footer={footer} navigation={headerNavigation} site={site} />}
+        {showChrome && <BackToTop />}
+      </div>
+    </>
   )
 }

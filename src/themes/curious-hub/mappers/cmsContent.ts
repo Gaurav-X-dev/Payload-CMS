@@ -72,6 +72,7 @@ import type {
   CuriousLadooTestimonialsBlockData,
   CuriousLadooTickerBlockData,
 } from './dynamicTypes'
+import { resolveMediaVariantUrl, type MediaLikeValue, type MediaSizeContext } from '../../../lib/media/resolveMediaVariant'
 
 type LinkLike = {
   label?: string
@@ -104,11 +105,15 @@ const belongsToTenant = (
 function mapMedia(
   value: number | Media | null | undefined,
   tenantID: number,
+  sizeContext?: MediaSizeContext,
 ): CuriousLadooMediaData {
   if (!isPopulated<Media>(value)) return null
   if (!belongsToTenant(value.tenantId, tenantID)) return null
-  const src = text(value.url)
-  if (!src) return null
+  const originalSrc = text(value.url)
+  if (!originalSrc) return null
+  const src = sizeContext
+    ? resolveMediaVariantUrl(value as unknown as MediaLikeValue, sizeContext) || originalSrc
+    : originalSrc
   return {
     alt: text(value.alt) || 'Curious Ladoo',
     focalPoint: value.focalPoint?.x != null && value.focalPoint?.y != null
@@ -164,7 +169,7 @@ function mapHeroBlock(block: HeroBlock, tenantID: number): CuriousLadooHeroBlock
     eyebrow: text(block.eyebrow),
     heading: text(block.heading),
     highlightedHeading: text(block.highlightedHeading),
-    image: mapMedia(block.foregroundImage, tenantID),
+    image: mapMedia(block.foregroundImage, tenantID, 'hero'),
     primaryCTA: block.primaryCTALabel && block.primaryCTAURL
       ? { label: text(block.primaryCTALabel), newTab: false, url: text(block.primaryCTAURL) }
       : null,
@@ -195,11 +200,13 @@ function mapStoryBlock(block: StoryBlock, tenantID: number): CuriousLadooStoryBl
     body: text(block.body),
     cta: block.enableCta ? mapLink(block.cta) : null,
     eyebrow: text(block.eyebrow),
-    image: layout === 'overlay' ? mapMedia(block.overlayMedia, tenantID) : mapMedia(block.media, tenantID),
+    image: layout === 'overlay'
+      ? mapMedia(block.overlayMedia, tenantID, 'hero') // full-bleed section background (StoryOverlaySection)
+      : mapMedia(block.media, tenantID, 'card'), // contained panel image (StoryPanelSection)
     imagePosition: block.imagePosition === 'left' ? 'left' : 'right',
     layout,
     quote: text(block.quote),
-    secondaryImage: mapMedia(block.secondaryMedia, tenantID),
+    secondaryImage: mapMedia(block.secondaryMedia, tenantID, 'card'),
     statBadge: block.statBadge?.enabled && block.statBadge.value
       ? { label: text(block.statBadge.label), value: text(block.statBadge.value) }
       : null,
@@ -312,7 +319,7 @@ function mapBrand(brand: Brand, tenantID: number): CuriousLadooBrandItemData {
     fullDescription: text(brand.fullDescription),
     href: text(brand.websiteUrl) || '/brands',
     id: brand.id,
-    image: mapMedia(brand.image, tenantID),
+    image: mapMedia(brand.image, tenantID, 'card'),
     links: (brand.links ?? []).map((link) => ({ label: text(link.label), url: text(link.url) })).filter((link) => link.label && link.url),
     mark: text(brand.mark),
     name: text(brand.name),
@@ -351,7 +358,7 @@ function mapPortfolioItem(item: Portfolio, tenantID: number): CuriousLadooPortfo
     category: text(item.category),
     description: text(item.description),
     id: item.id,
-    image: mapMedia(item.coverImage, tenantID),
+    image: mapMedia(item.coverImage, tenantID, 'card'),
     link: item.enableCTA ? mapLink(item.cta) : null,
     slug: text(item.slug),
     title: text(item.title),
@@ -445,7 +452,7 @@ function mapTestimonialsBlock(
         id: t.id,
         initials: initialsFromName(text(t.customerName)),
         name: text(t.customerName),
-        photo: mapMedia(t.photo, tenantID),
+        photo: mapMedia(t.photo, tenantID, 'thumbnail'),
         quote: text(t.review),
         role: text(t.customerRole),
       })),
@@ -460,7 +467,7 @@ function mapJournalItem(p: BlogPost, tenantID: number): CuriousLadooJournalItemD
       : '',
     excerpt: text(p.excerpt),
     id: p.id,
-    image: mapMedia(p.heroImage, tenantID),
+    image: mapMedia(p.heroImage, tenantID, 'card'),
     readMinutes: typeof p.readingTimeMinutes === 'number' ? p.readingTimeMinutes : 0,
     slug: text(p.slug),
     tag: (p.categories ?? [])[0] ?? '',
@@ -531,7 +538,7 @@ function mapTeamBlock(
         bio: text(m.bio),
         id: m.id,
         name: text(m.title),
-        photo: mapMedia(m.photo, tenantID),
+        photo: mapMedia(m.photo, tenantID, 'card'),
         role: text(m.role),
       })),
     type: 'team',
@@ -790,7 +797,7 @@ export function mapCuriousLadooSite(
     address: text(settings?.contactAddress),
     description: text(settings?.siteDescription),
     email: text(tenant.contact?.contactEmail),
-    favicon: mapMedia(tenant.branding?.favicon, tenantID),
+    favicon: mapMedia(tenant.branding?.favicon, tenantID, 'thumbnail'),
     name: text(settings?.businessName) || text(tenant.name),
     newsletter: settings?.newsletter
       ? {
@@ -862,7 +869,7 @@ export function mapCuriousLadooSEO(seo: Seo | null, tenant: Tenant | null): Curi
     jsonLd: parseSEOJsonLd(text(scoped.jsonLd)),
     keywords: text(scoped.keywords).split(',').map((keyword) => keyword.trim()).filter(Boolean),
     ogDescription: text(scoped.ogDescription),
-    ogImage: mapMedia(scoped.defaultOGImage, tenantID),
+    ogImage: mapMedia(scoped.defaultOGImage, tenantID, 'og'),
     ogSiteName: text(scoped.ogSiteName),
     ogTitle: text(scoped.ogTitle),
     robots: text(scoped.robots),
@@ -916,7 +923,7 @@ export function mapCuriousLadooHomeContent({
           canonicalUrl: text(page.canonicalUrl),
           id: page.id,
           metaDescription: text(page.metaDescription),
-          metaImage: mapMedia(page.metaImage, tenantID),
+          metaImage: mapMedia(page.metaImage, tenantID, 'og'),
           metaTitle: text(page.metaTitle),
           noIndex: page.noIndex === true,
           pageType: text(page.pageType) || 'generic',
@@ -955,14 +962,14 @@ export function mapCuriousLadooBlogPost({
         authorName: isPopulated<{ id: number; name?: string | null }>(post.author) ? text(post.author.name) : '',
         categories: (post.categories ?? []).filter((category): category is string => Boolean(category)),
         content: post.content,
-        coverImage: mapMedia(post.heroImage, tenantID),
+        coverImage: mapMedia(post.heroImage, tenantID, 'hero'),
         date: post.publishedDate
           ? new Date(post.publishedDate).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })
           : '',
         excerpt: text(post.excerpt),
         id: post.id,
         metaDescription: text(post.metaDescription) || text(post.excerpt),
-        metaImage: mapMedia(post.metaImage, tenantID) ?? mapMedia(post.heroImage, tenantID),
+        metaImage: mapMedia(post.metaImage, tenantID, 'og') ?? mapMedia(post.heroImage, tenantID, 'og'),
         metaTitle: text(post.metaTitle) || text(post.title),
         modifiedDate: text(post.updatedAt),
         publishedDateISO: text(post.publishedDate),

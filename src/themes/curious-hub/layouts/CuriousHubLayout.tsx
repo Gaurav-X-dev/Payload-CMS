@@ -30,15 +30,22 @@ export function CuriousHubLayout({
 }) {
   const jsonLdScript = jsonLd ? serializeCuriousLadooJsonLd(jsonLd) : null
   return (
-    <div className={styles.themeRoot} data-theme-site="curious-hub">
-      {jsonLdScript && <script dangerouslySetInnerHTML={{ __html: jsonLdScript }} type="application/ld+json" />}
-      <NoiseOverlay />
-      <CustomCursor />
-      <PageLoader />
-      <Header nav={nav} pathname={pathname} tagline={tagline} />
-      <main>{children}</main>
-      <Footer footer={footer} site={site} />
-      <BackToTop />
-    </div>
+    <>
+      {/* See GheeRoastLayout.tsx for why this lives here rather than the shared root layout —
+          scopes font loading to Curious Ladoo's own families (Inter, Playfair Display, Courier
+          Prime, Cormorant Garamond, Noto Serif JP — all referenced as literal font-family
+          strings throughout Theme.module.css, not via a CSS variable like the other 2 themes). */}
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Courier+Prime:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Noto+Serif+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
+      <div className={styles.themeRoot} data-theme-site="curious-hub">
+        {jsonLdScript && <script dangerouslySetInnerHTML={{ __html: jsonLdScript }} type="application/ld+json" />}
+        <NoiseOverlay />
+        <CustomCursor />
+        <PageLoader />
+        <Header nav={nav} pathname={pathname} tagline={tagline} />
+        <main>{children}</main>
+        <Footer footer={footer} site={site} />
+        <BackToTop />
+      </div>
+    </>
   )
 }
