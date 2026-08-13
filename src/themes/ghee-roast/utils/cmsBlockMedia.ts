@@ -1,3 +1,4 @@
+import { resolveMediaVariantUrl, type MediaLikeValue, type MediaSizeContext } from '../../../lib/media/resolveMediaVariant'
 import type { ImageData } from '../types'
 
 type UnknownRecord = Record<string, unknown>
@@ -23,6 +24,7 @@ export function resolveGheeRoastBlockMedia(
   tenantID?: number | string,
   altOverride?: unknown,
   mediaValues: unknown[] = [],
+  sizeContext?: MediaSizeContext,
 ): ImageData | undefined {
   const wrapper = record(value)
   const relationship = wrapper?.item ?? wrapper?.media ?? value
@@ -36,8 +38,11 @@ export function resolveGheeRoastBlockMedia(
     tenantID !== undefined
     && relationshipID(media.tenantId ?? media.tenantID) !== String(tenantID)
   ) return undefined
-  const src = text(media.url) || text(media.src)
-  if (!src || (!src.startsWith('/') && !/^https?:\/\//i.test(src))) return undefined
+  const originalSrc = text(media.url) || text(media.src)
+  if (!originalSrc || (!originalSrc.startsWith('/') && !/^https?:\/\//i.test(originalSrc))) return undefined
+  const src = sizeContext
+    ? resolveMediaVariantUrl(media as unknown as MediaLikeValue, sizeContext) || originalSrc
+    : originalSrc
   const focalPoint = record(media.focalPoint)
   return {
     alt: text(altOverride) || text(wrapper?.altOverride) || text(media.alt) || text(media.title),

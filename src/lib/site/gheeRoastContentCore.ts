@@ -13,7 +13,7 @@ import type {
   GheeRoastCMSPage,
   GheeRoastDynamicContent,
 } from '../../themes/ghee-roast/dynamicTypes'
-import { normalizePathname } from '../../themes/ghee-roast/utils/normalizePathname'
+import { normalizePathname } from './normalizePathname'
 import type { CMSPageType } from '../../validation/pageLayout'
 import { resolveLocalSite } from './resolveLocalSite'
 import { tenantCanRenderGheeRoast } from './themeFallbacks'
@@ -178,36 +178,24 @@ async function findDocuments(
     collection,
     depth,
     limit,
-    probeWhere,
     sort,
     where,
   }: {
     collection: Exclude<GheeRoastCollectionSlug, 'tenants'>
     depth: number
     limit: number
-    probeWhere?: Where
     sort?: string
     where: Where
   },
 ): Promise<unknown[]> {
-  // The ID-only probe keeps the legacy zero-content database readable even
-  // while newer optional CMS fields await an explicitly approved migration.
-  // Populated databases perform the full query immediately afterwards.
-  const probe = await find({
-    collection,
-    depth: 0,
-    draft: false,
-    limit,
-    overrideAccess: true,
-    pagination: false,
-    select: { id: true, tenantId: true },
-    where: probeWhere ?? where,
-  })
-  const ids = probe.docs
-    .map((document) => relationshipID(document))
-    .filter((id): id is number | string => id !== null)
-  if (ids.length === 0) return []
-
+  // Historically this issued an ID-only probe query before the real query, to keep a
+  // not-yet-migrated database readable while newer optional CMS fields awaited an approved
+  // migration (see M3 performance audit). That migration has long since landed — verified
+  // empirically against the live schema that a direct query behaves correctly for both
+  // populated and genuinely empty tenant-scoped collections (an empty match just returns no
+  // docs, exactly like the probe's "return [] early" path did). A single query is now
+  // sufficient; a genuine query failure propagates to the caller like any other query in this
+  // loader, rather than being silently treated as "no data."
   const result = await find({
     collection,
     depth,
@@ -216,12 +204,7 @@ async function findDocuments(
     overrideAccess: true,
     pagination: false,
     ...(sort ? { sort } : {}),
-    where: {
-      and: [
-        where,
-        { id: { in: ids } },
-      ],
-    },
+    where,
   })
   return result.docs
 }
@@ -267,12 +250,18 @@ export async function loadGheeRoastContentWithPayload({
   find,
   host,
   pathname,
+  preResolvedTenant,
   site,
 }: {
   fallbacksEnabled: boolean
   find: GheeRoastFind
   host: string | null
   pathname: string
+  // Optional tenant already resolved by the caller (e.g. getGheeRoastContent.ts's Phase-1
+  // tag lookup) to avoid a second tenants query on a cache miss. Must be depth:2 — see
+  // resolveGheeRoastTenant.ts. When omitted, falls back to the original self-contained lookup
+  // below, so existing callers/tests are unaffected.
+  preResolvedTenant?: Document | null
   site: LocalSite
 }): Promise<GheeRoastContentResult> {
   const resolvedSite = resolveLocalSite(host)
@@ -288,19 +277,24 @@ export async function loadGheeRoastContentWithPayload({
     })
   }
 
-  const tenantResult = await find({
-    collection: 'tenants',
-    depth: 2,
-    limit: 2,
-    overrideAccess: true,
-    pagination: false,
-    sort: 'id',
-    where: { slug: { equals: site.key } },
-  })
-  const tenantMatches = tenantResult.docs
-    .map(asDocument)
-    .filter((tenant): tenant is Document => tenant?.slug === site.key)
-  const tenant = requireAtMostOne('tenant resolution', tenantMatches)
+  let tenant: Document | undefined
+  if (preResolvedTenant !== undefined) {
+    tenant = preResolvedTenant && preResolvedTenant.slug === site.key ? preResolvedTenant : undefined
+  } else {
+    const tenantResult = await find({
+      collection: 'tenants',
+      depth: 2,
+      limit: 2,
+      overrideAccess: true,
+      pagination: false,
+      sort: 'id',
+      where: { slug: { equals: site.key } },
+    })
+    const tenantMatches = tenantResult.docs
+      .map(asDocument)
+      .filter((tenant): tenant is Document => tenant?.slug === site.key)
+    tenant = requireAtMostOne('tenant resolution', tenantMatches)
+  }
   if (!tenant) {
     return emptyGheeRoastContent({
       fallbacksEnabled: false,
@@ -413,7 +407,6 @@ export async function loadGheeRoastContentWithPayload({
         collection,
         depth: 2,
         limit: 100,
-        probeWhere: tenantWhere(tenantID),
         sort,
         where: tenantWhere(tenantID, conditions),
       })

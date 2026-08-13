@@ -15,7 +15,7 @@ import type {
   Tenant,
   Testimonial,
 } from '../../payload-types'
-import { normalizePathname } from '../../themes/zuru-zuru/utils/normalizePathname'
+import { normalizePathname } from './normalizePathname'
 import { resolveLocalSite } from './resolveLocalSite'
 import type { LocalSite } from './types'
 
@@ -102,10 +102,17 @@ export async function loadZuruZuruShellWithPayload({
   find,
   host,
   site,
+  tenant: preResolvedTenant,
 }: {
   find: ZuruZuruFind
   host: string | null
   site: LocalSite
+  /**
+   * Optional pre-resolved tenant (see resolveZuruZuruTenant.ts) — when provided, skips the
+   * internal `find` lookup below entirely instead of re-querying. Omit (as every existing test
+   * does) to keep the original self-contained, injected-`find`-only behavior.
+   */
+  tenant?: Tenant | null
 }): Promise<ZuruZuruShellResult> {
   const resolvedSite = resolveLocalSite(host)
   if (
@@ -117,17 +124,22 @@ export async function loadZuruZuruShellWithPayload({
     return emptyZuruZuruShell('missing')
   }
 
-  const tenantResult = await find<Tenant>({
-    collection: 'tenants',
-    depth: 1,
-    draft: false,
-    limit: 2,
-    overrideAccess: true,
-    pagination: false,
-    sort: 'id',
-    where: { slug: { equals: site.key } },
-  })
-  const tenant = requireAtMostOne('tenant resolution', tenantResult.docs)
+  let tenant: Tenant | undefined
+  if (preResolvedTenant !== undefined) {
+    tenant = preResolvedTenant ?? undefined
+  } else {
+    const tenantResult = await find<Tenant>({
+      collection: 'tenants',
+      depth: 1,
+      draft: false,
+      limit: 2,
+      overrideAccess: true,
+      pagination: false,
+      sort: 'id',
+      where: { slug: { equals: site.key } },
+    })
+    tenant = requireAtMostOne('tenant resolution', tenantResult.docs)
+  }
   if (!tenant) return emptyZuruZuruShell('missing')
   if (!tenantCanRenderZuruZuru(tenant)) return emptyZuruZuruShell('inactive')
 
@@ -257,11 +269,18 @@ export async function loadZuruZuruPageWithPayload({
   host,
   pathname,
   site,
+  tenant: preResolvedTenant,
 }: {
   find: ZuruZuruFind
   host: string | null
   pathname: string
   site: LocalSite
+  /**
+   * Optional pre-resolved tenant (see resolveZuruZuruTenant.ts) — when provided, skips the
+   * internal `find` lookup below entirely instead of re-querying. Omit (as every existing test
+   * does) to keep the original self-contained, injected-`find`-only behavior.
+   */
+  tenant?: Tenant | null
 }): Promise<ZuruZuruPageResult> {
   const resolvedSite = resolveLocalSite(host)
   if (
@@ -273,17 +292,22 @@ export async function loadZuruZuruPageWithPayload({
     return emptyZuruZuruPage('missing')
   }
 
-  const tenantResult = await find<Tenant>({
-    collection: 'tenants',
-    depth: 0,
-    draft: false,
-    limit: 2,
-    overrideAccess: true,
-    pagination: false,
-    sort: 'id',
-    where: { slug: { equals: site.key } },
-  })
-  const tenant = requireAtMostOne('tenant resolution', tenantResult.docs)
+  let tenant: Tenant | undefined
+  if (preResolvedTenant !== undefined) {
+    tenant = preResolvedTenant ?? undefined
+  } else {
+    const tenantResult = await find<Tenant>({
+      collection: 'tenants',
+      depth: 0,
+      draft: false,
+      limit: 2,
+      overrideAccess: true,
+      pagination: false,
+      sort: 'id',
+      where: { slug: { equals: site.key } },
+    })
+    tenant = requireAtMostOne('tenant resolution', tenantResult.docs)
+  }
   if (!tenant) return emptyZuruZuruPage('missing')
   if (!tenantCanRenderZuruZuru(tenant)) return emptyZuruZuruPage('inactive')
 

@@ -1,6 +1,7 @@
 import { normalizeGheeRoastIconName } from '../iconRegistry'
 import { isSanitizedSVGMedia } from '../../../validation/svgSafety'
 import { normalizeCMSPageType } from '../../../validation/pageLayout'
+import { resolveMediaVariantUrl, type MediaLikeValue, type MediaSizeContext } from '../../../lib/media/resolveMediaVariant'
 import type { HeroBlock, Page } from '../../../payload-types'
 import {
   validateConfiguredLink,
@@ -175,13 +176,17 @@ const mediaData = (
   tenantID: number | string,
   fallback?: { alt: string, src: string },
   altOverride?: string | null,
+  sizeContext?: MediaSizeContext,
 ) => {
   if (!value || typeof value !== 'object' || !belongsToTenant(value.tenantId as Relationship, tenantID)) {
     return fallback
   }
 
-  const url = typeof value.url === 'string' ? value.url : ''
-  if (!url) return fallback
+  const originalUrl = typeof value.url === 'string' ? value.url : ''
+  if (!originalUrl) return fallback
+  const url = sizeContext
+    ? resolveMediaVariantUrl(value as unknown as MediaLikeValue, sizeContext) || originalUrl
+    : originalUrl
   const mediaRecord = value as unknown as Record<string, unknown>
   const focalPoint = mediaRecord.focalPoint && typeof mediaRecord.focalPoint === 'object'
     ? mediaRecord.focalPoint as Record<string, unknown>
@@ -353,7 +358,8 @@ const mapMedia = (
   value: unknown,
   tenantID: number | string,
   fallback?: { alt: string; src: string },
-) => mediaData(value as Relationship, tenantID, fallback)
+  sizeContext?: MediaSizeContext,
+) => mediaData(value as Relationship, tenantID, fallback, undefined, sizeContext)
 
 export function mapGheeRoastSite(
   tenantValue: unknown,
@@ -414,7 +420,7 @@ export function mapGheeRoastSite(
       phone: text(contact.contactPhone) || fallback.contact.phone || undefined,
     },
     description: text(settings.siteDescription) || fallback.description,
-    logo: mapMedia(branding.logo, tenantID, fallback.logo),
+    logo: mapMedia(branding.logo, tenantID, fallback.logo, 'thumbnail'),
     newsletter: {
       buttonLabel: text(newsletter.buttonLabel) || 'Subscribe',
       description: text(newsletter.description) || fallback.newsletter.description,
@@ -612,7 +618,7 @@ export function mapGheeRoastSEO(
     jsonLd,
     keywords: text(value.keywords).split(',').map((keyword) => keyword.trim()).filter(Boolean),
     ogDescription: text(value.ogDescription) || undefined,
-    ogImage: mapMedia(value.defaultOGImage, tenantID),
+    ogImage: mapMedia(value.defaultOGImage, tenantID, undefined, 'og'),
     ogSiteName: text(value.ogSiteName) || undefined,
     ogTitle: text(value.ogTitle) || undefined,
     robots: text(value.robots) || undefined,
@@ -640,7 +646,8 @@ export function mapGheeRoastPage(
     canonicalUrl: safeGheeRoastHref(value.canonicalUrl) || undefined,
     hero: hero ? {
       eyebrow: text(hero.eyebrow) || undefined,
-      image: mapMedia(hero.foregroundImage || hero.desktopBackgroundImage, tenantID),
+      image: mapMedia(hero.foregroundImage || hero.desktopBackgroundImage, tenantID, undefined, 'hero'),
+      overlayOpacity: normalizedOverlayOpacity(hero.overlayOpacity),
       subtitle: text(hero.description),
       title: [text(hero.heading), text(hero.highlightedHeading)].filter(Boolean).join(' '),
     } : undefined,
@@ -648,7 +655,7 @@ export function mapGheeRoastPage(
     isHomePage: value.isHomePage === true,
     layout: blocks,
     metaDescription: text(value.metaDescription) || undefined,
-    metaImage: mapMedia(value.metaImage, tenantID),
+    metaImage: mapMedia(value.metaImage, tenantID, undefined, 'og'),
     metaTitle: text(value.metaTitle) || undefined,
     noIndex: value.noIndex === true,
     pageType: normalizeCMSPageType(value.pageType, value.isHomePage === true),
@@ -710,6 +717,8 @@ export function mapGheeRoastCollections(
       const mappedImage = mapMedia(
         item.image,
         tenantID,
+        undefined,
+        'card',
       )
       return {
         badge: boolean(item.isFeatured) ? "Chef's Pick" : undefined,
@@ -741,7 +750,7 @@ export function mapGheeRoastCollections(
   const gallery = tenantDocuments(documents.gallery, tenantID)
     .sort((left, right) => Number(left.sortOrder || 0) - Number(right.sortOrder || 0))
     .map((item) => {
-      const mappedMedia = mapMedia(item.media, tenantID)
+      const mappedMedia = mapMedia(item.media, tenantID, undefined, 'card')
       return mappedMedia
         ? {
             ...mappedMedia,
@@ -795,6 +804,10 @@ export function mapGheeRoastCollections(
       state: text(item.state) || undefined,
       title: text(item.title),
     }))
+  // Used today only for formBlock's large near-full-width side image
+  // (sizes="(max-width: 800px) 95vw, 42vw" in CMSPage.tsx) — none of the 4 semantic size
+  // contexts cleanly fit that usage (card/thumbnail are too small, hero/og are the wrong aspect
+  // ratio for a portrait side image), so this intentionally keeps serving the original file.
   const media = tenantDocuments(documents.media, tenantID)
     .map((item) => mapMedia(item, tenantID))
     .filter((item): item is NonNullable<typeof item> => item !== undefined)
@@ -805,7 +818,7 @@ export function mapGheeRoastCollections(
       bio: text(item.bio) || undefined,
       id: item.id as number | string,
       name: text(item.title),
-      photo: mapMedia(item.photo, tenantID),
+      photo: mapMedia(item.photo, tenantID, undefined, 'card'),
       quote: text(item.quote) || undefined,
       role: text(item.role),
     }))
@@ -816,7 +829,7 @@ export function mapGheeRoastCollections(
       description: text(item.description) || undefined,
       endsAt: text(item.endsAt) || undefined,
       id: item.id as number | string,
-      image: mapMedia(item.image, tenantID),
+      image: mapMedia(item.image, tenantID, undefined, 'card'),
       isFeatured: boolean(item.isFeatured),
       locationName: text(item.locationName) || undefined,
       startsAt: text(item.startsAt),
@@ -874,9 +887,13 @@ export function mapGheeRoastHero(
   )
   if (!hero) return missingContent
 
+  // foreground is a contained product/"dish" cutout shot, not a full-bleed background — the
+  // hero variant's fixed 16:9 crop risks clipping it, so it intentionally keeps the original.
+  // desktopBackground/mobile genuinely render full-bleed via CSS background-size: cover
+  // (HomeHero.tsx), where a pre-cropped 16:9 "hero" variant is a safe, equivalent fit.
   const foreground = mediaData(hero.foregroundImage, tenantID, undefined, hero.imageAlt)
-  const desktopBackground = mediaData(hero.desktopBackgroundImage, tenantID, undefined, hero.imageAlt)
-  const mobile = mediaData(hero.mobileBackgroundImage, tenantID, undefined, hero.imageAlt)
+  const desktopBackground = mediaData(hero.desktopBackgroundImage, tenantID, undefined, hero.imageAlt, 'hero')
+  const mobile = mediaData(hero.mobileBackgroundImage, tenantID, undefined, hero.imageAlt, 'hero')
   // Older Ghee Roast records used Desktop Background Image for the foreground
   // dish. Preserve those records while allowing a separate background and
   // foreground without rendering the same asset twice.

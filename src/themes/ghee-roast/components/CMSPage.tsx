@@ -16,6 +16,7 @@ import {
 import type { FeatureData, ImageData, LinkData, TestimonialData } from '../types'
 import { GHEE_ROAST_SIMPLE_SECTION_BLOCK_TYPES } from '../utils/blockSupport'
 import { resolveGheeRoastBlockMedia } from '../utils/cmsBlockMedia'
+import type { MediaSizeContext } from '../../../lib/media/resolveMediaVariant'
 import { resolveGheeRoastHomeLayout } from '../utils/homeLayout'
 import {
   gheeRoastLocationMapHref,
@@ -61,7 +62,8 @@ const image = (
   value: unknown,
   tenantID?: number | string,
   mediaValues: unknown[] = [],
-): ImageData | undefined => resolveGheeRoastBlockMedia(value, tenantID, undefined, mediaValues)
+  sizeContext?: MediaSizeContext,
+): ImageData | undefined => resolveGheeRoastBlockMedia(value, tenantID, undefined, mediaValues, sizeContext)
 
 const pageHref = (
   value: unknown,
@@ -122,7 +124,7 @@ const blockStyle = (
   tenantID?: number | string,
 ): CSSProperties => {
   const settings = record(block.settings)
-  const media = image(settings?.backgroundImage, tenantID)
+  const media = image(settings?.backgroundImage, tenantID, [], 'hero')
   return media
     ? {
         backgroundImage: `linear-gradient(rgb(38 51 34 / ${Math.min(100, Math.max(0, number(settings?.overlayOpacity, 70))) / 100}), rgb(38 51 34 / ${Math.min(100, Math.max(0, number(settings?.overlayOpacity, 70))) / 100})), url("${media.src.replace(/["\\]/g, '')}")`,
@@ -318,7 +320,7 @@ function CMSBlock({
       { alt: images?.primaryImageAlt, key: 'primary', value: images?.primaryImage },
       { alt: images?.secondaryImageAlt, key: 'secondary', value: images?.secondaryImage },
       { alt: images?.tertiaryImageAlt, key: 'tertiary', value: images?.tertiaryImage },
-    ].map((entry) => ({ ...entry, image: image({ altOverride: entry.alt, item: entry.value }, tenantID) }))
+    ].map((entry) => ({ ...entry, image: image({ altOverride: entry.alt, item: entry.value }, tenantID, [], 'card') }))
       .filter((entry): entry is typeof entry & { image: ImageData } => Boolean(entry.image))
     const points = (Array.isArray(block.bulletPoints) ? block.bulletPoints : [])
       .map((entry) => ({ id: text(record(entry)?.id), text: text(record(entry)?.text) }))
@@ -353,7 +355,7 @@ function CMSBlock({
   }
 
   if (type === 'gheeHomeQualityBlock') {
-    const qualityImage = image({ altOverride: block.imageAlt, item: block.image }, tenantID)
+    const qualityImage = image({ altOverride: block.imageAlt, item: block.image }, tenantID, [], 'card')
     const points = (Array.isArray(block.points) ? block.points : [])
       .map((entry) => record(entry))
       .filter((entry): entry is UnknownRecord => entry !== null && Boolean(text(entry.text)))
@@ -468,7 +470,7 @@ function CMSBlock({
       .map((entry) => record(entry))
       .filter((entry): entry is UnknownRecord => entry !== null)
     return wrapper(cards.length ? <div className={styles.cmsCardGrid}>{cards.map((card, cardIndex) => {
-      const cardImage = image(card.image, tenantID)
+      const cardImage = image(card.image, tenantID, [], 'card')
       const cardLink = card.enableLink ? link(card.link, tenantID) : undefined
       return <article className={styles.cmsCard} key={text(card.id) || `${text(card.title)}-${cardIndex}`}>
         {cardImage && <Image alt={cardImage.alt} height={360} src={cardImage.src} unoptimized width={560} />}
@@ -480,7 +482,7 @@ function CMSBlock({
   }
 
   if (type === 'splitBlock') {
-    const splitImage = image(block.image, tenantID)
+    const splitImage = image(block.image, tenantID, [], 'card')
     const points = (Array.isArray(block.points) ? block.points : [])
       .map((entry) => text(record(entry)?.text))
       .filter(Boolean)
@@ -489,7 +491,7 @@ function CMSBlock({
     const secondary = ctas?.enableSecondary ? link(ctas?.secondaryCTA, tenantID) : undefined
     const copy = <div>
       {section.title && <SectionHeading {...section} />}
-      <p>{text(block.body)}</p>
+      {paragraphs(block.body).map((paragraph, paragraphIndex) => <p key={`split-paragraph-${paragraphIndex}`}>{paragraph}</p>)}
       {points.length > 0 && <ul className={styles.checkList}>{points.map((point) => <li key={point}>{point}</li>)}</ul>}
       {(primary || secondary) && <div className={styles.actions}>
         {primary && <ActionLink {...primary} />}
@@ -775,6 +777,8 @@ export function CMSPage({
   return <>
     {includeHero && !page.isHomePage && <PageHero
       eyebrow={page.hero?.eyebrow}
+      image={page.hero?.image}
+      overlayOpacity={page.hero?.overlayOpacity}
       subtitle={page.hero?.subtitle || page.metaDescription || ''}
       title={page.hero?.title || page.title}
       variant={heroVariant}

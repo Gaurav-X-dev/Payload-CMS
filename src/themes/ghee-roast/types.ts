@@ -23,6 +23,8 @@ export type PageMetadataData = {
 
 export type PageHeroData = {
   eyebrow?: string
+  image?: ImageData
+  overlayOpacity?: number
   subtitle: string
   title: string
 }

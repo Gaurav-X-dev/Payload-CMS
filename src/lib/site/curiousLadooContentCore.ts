@@ -14,7 +14,7 @@ import type {
   Tenant,
   Testimonial,
 } from '../../payload-types'
-import { normalizePathname } from '../../themes/curious-hub/utils/normalizePathname'
+import { normalizePathname } from './normalizePathname'
 import { resolveLocalSite } from './resolveLocalSite'
 import type { LocalSite } from './types'
 
@@ -141,18 +141,11 @@ async function findDocuments<TDoc extends { id: number }>(
     where: Where
   },
 ): Promise<TDoc[]> {
-  const probe = await find<{ id: number }>({
-    collection,
-    depth: 0,
-    draft: false,
-    limit,
-    overrideAccess: true,
-    pagination: false,
-    where,
-  })
-  const ids = probe.docs.map((document) => document.id).filter((id) => typeof id === 'number')
-  if (ids.length === 0) return []
-
+  // Previously issued an ID-only probe query before the real query (same historical reason as
+  // Ghee Roast's identical pattern — see gheeRoastContentCore.ts's findDocuments). Verified
+  // empirically against the live schema that a single direct query behaves correctly for both
+  // populated and genuinely empty tenant-scoped collections; collapsed to one query as the
+  // normal path (M3 performance work).
   const result = await find<TDoc>({
     collection,
     depth,
@@ -161,7 +154,7 @@ async function findDocuments<TDoc extends { id: number }>(
     overrideAccess: true,
     pagination: false,
     ...(sort ? { sort } : {}),
-    where: { and: [where, { id: { in: ids } }] },
+    where,
   })
   return result.docs
 }
@@ -183,11 +176,17 @@ export async function loadCuriousLadooContentWithPayload({
   find,
   host,
   pathname,
+  preResolvedTenant,
   site,
 }: {
   find: CuriousLadooFind
   host: string | null
   pathname: string
+  // Optional tenant already resolved by the caller (e.g. getCuriousLadooContent.ts's Phase-1 tag
+  // lookup) to avoid a second tenants query on a cache miss. Must be depth:0, matching this
+  // function's own lookup below — see resolveCuriousLadooTenant.ts. When omitted, falls back to
+  // the original self-contained lookup, so existing callers/tests are unaffected.
+  preResolvedTenant?: null | Tenant
   site: LocalSite
 }): Promise<CuriousLadooContentResult> {
   const resolvedSite = resolveLocalSite(host)
@@ -200,17 +199,22 @@ export async function loadCuriousLadooContentWithPayload({
     return emptyCuriousLadooContent('missing')
   }
 
-  const tenantResult = await find<Tenant>({
-    collection: 'tenants',
-    depth: 0,
-    draft: false,
-    limit: 2,
-    overrideAccess: true,
-    pagination: false,
-    sort: 'id',
-    where: { slug: { equals: site.key } },
-  })
-  const tenant = requireAtMostOne('tenant resolution', tenantResult.docs)
+  let tenant: Tenant | undefined
+  if (preResolvedTenant !== undefined) {
+    tenant = preResolvedTenant && preResolvedTenant.slug === site.key ? preResolvedTenant : undefined
+  } else {
+    const tenantResult = await find<Tenant>({
+      collection: 'tenants',
+      depth: 0,
+      draft: false,
+      limit: 2,
+      overrideAccess: true,
+      pagination: false,
+      sort: 'id',
+      where: { slug: { equals: site.key } },
+    })
+    tenant = requireAtMostOne('tenant resolution', tenantResult.docs)
+  }
   if (!tenant) return emptyCuriousLadooContent('missing')
   if (!tenantCanRenderCuriousLadoo(tenant)) return emptyCuriousLadooContent('inactive')
 
@@ -408,11 +412,14 @@ export function emptyCuriousLadooBlogPost(
 export async function loadCuriousLadooBlogPostWithPayload({
   find,
   host,
+  preResolvedTenant,
   site,
   slug,
 }: {
   find: CuriousLadooFind
   host: string | null
+  // See loadCuriousLadooContentWithPayload's preResolvedTenant doc — identical contract.
+  preResolvedTenant?: null | Tenant
   site: LocalSite
   slug: string
 }): Promise<CuriousLadooBlogPostResult> {
@@ -429,17 +436,22 @@ export async function loadCuriousLadooBlogPostWithPayload({
   const normalizedSlug = slug.trim().toLowerCase()
   if (!normalizedSlug) return emptyCuriousLadooBlogPost('missing')
 
-  const tenantResult = await find<Tenant>({
-    collection: 'tenants',
-    depth: 0,
-    draft: false,
-    limit: 2,
-    overrideAccess: true,
-    pagination: false,
-    sort: 'id',
-    where: { slug: { equals: site.key } },
-  })
-  const tenant = requireAtMostOne('tenant resolution', tenantResult.docs)
+  let tenant: Tenant | undefined
+  if (preResolvedTenant !== undefined) {
+    tenant = preResolvedTenant && preResolvedTenant.slug === site.key ? preResolvedTenant : undefined
+  } else {
+    const tenantResult = await find<Tenant>({
+      collection: 'tenants',
+      depth: 0,
+      draft: false,
+      limit: 2,
+      overrideAccess: true,
+      pagination: false,
+      sort: 'id',
+      where: { slug: { equals: site.key } },
+    })
+    tenant = requireAtMostOne('tenant resolution', tenantResult.docs)
+  }
   if (!tenant) return emptyCuriousLadooBlogPost('missing')
   if (!tenantCanRenderCuriousLadoo(tenant)) return emptyCuriousLadooBlogPost('inactive')
 

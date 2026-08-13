@@ -5,11 +5,10 @@ import type {
 import { revalidateTag } from 'next/cache'
 import { normalizeTenantID } from '../access/tenantContext'
 
-const invalidate = (
-  doc: Record<string, unknown>,
+const invalidateByTenantId = (
+  tenantId: null | number | string,
   payload: Parameters<CollectionAfterChangeHook>[0]['req']['payload'],
 ): void => {
-  const tenantId = normalizeTenantID(doc.tenantId)
   if (!tenantId) {
     payload.logger.warn('Skipped tenant cache invalidation because tenant context was missing.')
     return
@@ -24,6 +23,11 @@ const invalidate = (
   }
 }
 
+const invalidate = (
+  doc: Record<string, unknown>,
+  payload: Parameters<CollectionAfterChangeHook>[0]['req']['payload'],
+): void => invalidateByTenantId(normalizeTenantID(doc.tenantId), payload)
+
 export const invalidateTenantCache: CollectionAfterChangeHook = async ({
   doc,
   req: { payload },
@@ -37,5 +41,25 @@ export const invalidateTenantCacheAfterDelete: CollectionAfterDeleteHook = async
   req: { payload },
 }) => {
   invalidate(doc, payload)
+  return doc
+}
+
+// Tenant documents are their own tenant identity (doc.id, not doc.tenantId) — e.g. editing
+// branding.logo, name, isActive, or theme. P7 added persistent cross-request caches (Ghee Roast/
+// Curious Ladoo/Zuru Zuru) that read those fields directly, so tenant document changes must
+// invalidate the same `tenant-${id}` tag as any tenant-scoped content collection.
+export const invalidateTenantCacheForTenantDocument: CollectionAfterChangeHook = async ({
+  doc,
+  req: { payload },
+}) => {
+  invalidateByTenantId(normalizeTenantID(doc.id), payload)
+  return doc
+}
+
+export const invalidateTenantCacheForTenantDocumentAfterDelete: CollectionAfterDeleteHook = async ({
+  doc,
+  req: { payload },
+}) => {
+  invalidateByTenantId(normalizeTenantID(doc.id), payload)
   return doc
 }

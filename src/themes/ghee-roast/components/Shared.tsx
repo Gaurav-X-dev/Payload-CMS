@@ -1,12 +1,24 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import type { CSSProperties } from 'react'
 import type { FeatureData, FoodItemData, ImageData, PageHeroData, TestimonialData } from '../types'
 import { Icon } from './Icon'
 import styles from './Theme.module.css'
 
-export function PageHero({ eyebrow, subtitle, title, variant = 'inner' }: PageHeroData & { variant?: 'catering' | 'contact' | 'inner' }) {
+export function PageHero({ eyebrow, image, overlayOpacity, subtitle, title, variant = 'inner' }: PageHeroData & { variant?: 'catering' | 'contact' | 'inner' }) {
+  // When a CMS-editor-set hero image exists, it takes over the background via inline style
+  // (same dark overlay convention CMSPage.tsx's blockStyle() uses elsewhere). Without one, the
+  // section falls back to its existing CSS background (solid color, or the catering variant's
+  // hardcoded image) exactly as before — never a broken/missing background.
+  const style: CSSProperties | undefined = image
+    ? {
+        backgroundImage: `linear-gradient(rgb(38 51 34 / ${Math.min(100, Math.max(0, overlayOpacity ?? 70)) / 100}), rgb(38 51 34 / ${Math.min(100, Math.max(0, overlayOpacity ?? 70)) / 100})), url("${image.src.replace(/["\\]/g, '')}")`,
+        backgroundPosition: 'center',
+        backgroundSize: 'cover',
+      }
+    : undefined
   return (
-    <section className={`${styles.pageHero} ${variant === 'catering' ? styles.cateringHero : ''} ${variant === 'contact' ? styles.contactHero : ''}`}>
+    <section className={`${styles.pageHero} ${variant === 'catering' ? styles.cateringHero : ''} ${variant === 'contact' ? styles.contactHero : ''}`} style={style}>
       <div className={styles.container}>
         <div className={styles.breadcrumb}><Link href="/">Home</Link><span>/</span>{eyebrow ?? title}</div>
         <h1>{title}</h1>
