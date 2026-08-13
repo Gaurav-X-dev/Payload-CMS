@@ -13,7 +13,7 @@ import type {
   GheeRoastCMSPage,
   GheeRoastDynamicContent,
 } from '../../themes/ghee-roast/dynamicTypes'
-import { normalizePathname } from '../../themes/ghee-roast/utils/normalizePathname'
+import { normalizePathname } from './normalizePathname'
 import type { CMSPageType } from '../../validation/pageLayout'
 import { resolveLocalSite } from './resolveLocalSite'
 import { tenantCanRenderGheeRoast } from './themeFallbacks'
@@ -250,12 +250,18 @@ export async function loadGheeRoastContentWithPayload({
   find,
   host,
   pathname,
+  preResolvedTenant,
   site,
 }: {
   fallbacksEnabled: boolean
   find: GheeRoastFind
   host: string | null
   pathname: string
+  // Optional tenant already resolved by the caller (e.g. getGheeRoastContent.ts's Phase-1
+  // tag lookup) to avoid a second tenants query on a cache miss. Must be depth:2 — see
+  // resolveGheeRoastTenant.ts. When omitted, falls back to the original self-contained lookup
+  // below, so existing callers/tests are unaffected.
+  preResolvedTenant?: Document | null
   site: LocalSite
 }): Promise<GheeRoastContentResult> {
   const resolvedSite = resolveLocalSite(host)
@@ -271,19 +277,24 @@ export async function loadGheeRoastContentWithPayload({
     })
   }
 
-  const tenantResult = await find({
-    collection: 'tenants',
-    depth: 2,
-    limit: 2,
-    overrideAccess: true,
-    pagination: false,
-    sort: 'id',
-    where: { slug: { equals: site.key } },
-  })
-  const tenantMatches = tenantResult.docs
-    .map(asDocument)
-    .filter((tenant): tenant is Document => tenant?.slug === site.key)
-  const tenant = requireAtMostOne('tenant resolution', tenantMatches)
+  let tenant: Document | undefined
+  if (preResolvedTenant !== undefined) {
+    tenant = preResolvedTenant && preResolvedTenant.slug === site.key ? preResolvedTenant : undefined
+  } else {
+    const tenantResult = await find({
+      collection: 'tenants',
+      depth: 2,
+      limit: 2,
+      overrideAccess: true,
+      pagination: false,
+      sort: 'id',
+      where: { slug: { equals: site.key } },
+    })
+    const tenantMatches = tenantResult.docs
+      .map(asDocument)
+      .filter((tenant): tenant is Document => tenant?.slug === site.key)
+    tenant = requireAtMostOne('tenant resolution', tenantMatches)
+  }
   if (!tenant) {
     return emptyGheeRoastContent({
       fallbacksEnabled: false,

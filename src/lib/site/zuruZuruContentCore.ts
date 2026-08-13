@@ -15,7 +15,7 @@ import type {
   Tenant,
   Testimonial,
 } from '../../payload-types'
-import { normalizePathname } from '../../themes/zuru-zuru/utils/normalizePathname'
+import { normalizePathname } from './normalizePathname'
 import { resolveLocalSite } from './resolveLocalSite'
 import type { LocalSite } from './types'
 

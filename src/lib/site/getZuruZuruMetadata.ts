@@ -4,7 +4,7 @@ import { getZuruZuruShell } from './getZuruZuruShell'
 import type { LocalSite } from './types'
 import { mapZuruZuruPageMeta, mapZuruZuruSEO, mapZuruZuruSite } from '../../themes/zuru-zuru/mappers/cmsContent'
 import { buildZuruZuruMetadata } from '../../themes/zuru-zuru/utils/buildZuruZuruMetadata'
-import { normalizePathname } from '../../themes/zuru-zuru/utils/normalizePathname'
+import { normalizePathname } from './normalizePathname'
 
 export async function getZuruZuruMetadata({
   host,

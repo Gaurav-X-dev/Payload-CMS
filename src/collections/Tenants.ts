@@ -8,6 +8,10 @@ import {
 import { validateTenantParent } from '../hooks/tenantHierarchy'
 import { validateTenantIdentity } from '../hooks/validateTenantIdentity'
 import {
+  invalidateTenantCacheForTenantDocument,
+  invalidateTenantCacheForTenantDocumentAfterDelete,
+} from '../hooks/invalidateTenantCache'
+import {
   isSuperAdminUser,
   isTenantAdminUser,
 } from '../access/tenantContext'
@@ -304,6 +308,8 @@ export const Tenants: CollectionConfig = {
         data.updatedBy = req.user?.id ?? originalDoc?.updatedBy
         return data
       }
-    ]
+    ],
+    afterChange: [invalidateTenantCacheForTenantDocument],
+    afterDelete: [invalidateTenantCacheForTenantDocumentAfterDelete],
   }
 }

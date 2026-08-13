@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { getCuriousLadooContent } from './getCuriousLadooContent'
 import type { LocalSite } from './types'
 import { mapCuriousLadooHomeContent } from '../../themes/curious-hub/mappers/cmsContent'
-import { normalizePathname } from '../../themes/curious-hub/utils/normalizePathname'
+import { normalizePathname } from './normalizePathname'
 import { buildCuriousLadooMetadata } from '../../themes/curious-hub/utils/buildCuriousLadooMetadata'
 
 export async function getCuriousLadooMetadata({
