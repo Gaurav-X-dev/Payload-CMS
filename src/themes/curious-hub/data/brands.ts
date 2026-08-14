@@ -22,8 +22,8 @@ export const brandsData = {
       statLabel: 'Active Rollout',
       image: { src: '/themes/curious-hub/images/zuru_zuru.png', alt: 'Zuru Zuru Japanese Izakaya interior concept' },
       links: [
-        { label: 'ig', href: '#' },
-        { label: 'web', href: '#' }
+        { label: 'ig', url: '#' },
+        { label: 'web', url: '#' }
       ],
       reverse: false
     },
@@ -37,8 +37,8 @@ export const brandsData = {
       statLabel: 'Customer Rating',
       image: { src: '/themes/curious-hub/images/ghee_roast.png', alt: 'Ghee Roast South Indian coastal restaurant design' },
       links: [
-        { label: 'ig', href: '#' },
-        { label: 'web', href: '#' }
+        { label: 'ig', url: '#' },
+        { label: 'web', url: '#' }
       ],
       reverse: true
     },
@@ -52,8 +52,8 @@ export const brandsData = {
       statLabel: 'Avg Delivery Time',
       image: { src: '/themes/curious-hub/images/zquick.png', alt: 'Z-Quick premium delivery and QSR packaging design' },
       links: [
-        { label: 'ig', href: '#' },
-        { label: 'web', href: '#' }
+        { label: 'ig', url: '#' },
+        { label: 'web', url: '#' }
       ],
       reverse: false
     }
