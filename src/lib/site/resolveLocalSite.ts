@@ -45,6 +45,7 @@ export const localSiteRegistry: Readonly<Record<string, LocalSiteMatch>> = {
   '::1': curiousHubSite,
   'payload-cms-production-6ff4.up.railway.app': curiousHubSite,
   'payload-cms-production-486a.up.railway.app': zuruZuruSite,
+  'payload-cms-production-cdf3.up.railway.app': curiousHubSite,
 }
 
 export function resolveLocalSite(host: string | null | undefined): LocalSite | null {
