@@ -5,9 +5,10 @@ import { resolveLocalSite } from './resolveLocalSite'
 
 export async function renderLocalThemePage(pathname: string) {
   const requestHeaders = await headers()
-  const site = resolveLocalSite(requestHeaders.get('host'))
+  const rawHost = requestHeaders.get('x-forwarded-host') || requestHeaders.get('host')
+  const site = resolveLocalSite(rawHost)
   if (!site) notFound()
 
   const { PageRenderer } = themeRegistry[site.theme]
-  return <PageRenderer hostname={requestHeaders.get('host')} pathname={pathname} site={site} />
+  return <PageRenderer hostname={rawHost} pathname={pathname} site={site} />
 }
