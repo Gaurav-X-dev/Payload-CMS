@@ -41,7 +41,7 @@ export function BrandsPage() {
                       <p className={styles.brandTestimonialQuote}>{brand.quote}</p>
                       <div className={styles.footerSocial} style={{ marginTop: '1.5rem', justifyContent: 'flex-start' }}>
                         {brand.links.map((link, idx) => (
-                          <Link key={idx} href={link.href} className={styles.footerSocialLink}>
+                          <Link key={idx} href={link.url} className={styles.footerSocialLink}>
                             {link.label}
                           </Link>
                         ))}
@@ -61,7 +61,7 @@ export function BrandsPage() {
                       <p className={styles.brandTestimonialQuote}>{brand.quote}</p>
                       <div className={styles.footerSocial} style={{ marginTop: '1.5rem', justifyContent: 'flex-start' }}>
                         {brand.links.map((link, idx) => (
-                          <Link key={idx} href={link.href} className={styles.footerSocialLink}>
+                          <Link key={idx} href={link.url} className={styles.footerSocialLink}>
                             {link.label}
                           </Link>
                         ))}
