@@ -38,12 +38,12 @@ import styles from './Theme.module.css'
 const revealDelay = (index: number, mod = 5) => (index % mod) as 0 | 1 | 2 | 3 | 4
 
 /** mailto:/tel:/http(s) links need a plain <a>; internal paths use <Link> for client-side nav. */
-export function SmartLink({ children, className, href, id, style }: { children: ReactNode; className?: string; href: string; id?: string; style?: CSSProperties }) {
+export function SmartLink({ children, className, href, id, style, target, rel }: { children: ReactNode; className?: string; href: string; id?: string; style?: CSSProperties; target?: string; rel?: string }) {
   const isExternalStyle = /^(mailto:|tel:|https?:)/.test(href)
   if (isExternalStyle) {
-    return <a className={className} href={href} id={id} style={style}>{children}</a>
+    return <a className={className} href={href} id={id} style={style} target={target} rel={rel}>{children}</a>
   }
-  return <Link className={className} href={href} id={id} style={style}>{children}</Link>
+  return <Link className={className} href={href} id={id} style={style} target={target} rel={rel}>{children}</Link>
 }
 
 function HeroSection({ block }: { block: CuriousLadooHeroBlockData }) {
@@ -788,7 +788,7 @@ function BrandSpotlightGrid({ block }: { block: CuriousLadooBrandsShowcaseBlockD
                 {brand.links.length > 0 && (
                   <div className={styles.footerSocial} style={{ justifyContent: 'flex-start', marginTop: '1.5rem' }}>
                     {brand.links.map((link) => (
-                      <SmartLink className={styles.footerSocialLink} href={link.url} key={link.label}>{link.label}</SmartLink>
+                      <SmartLink className={styles.footerSocialLink} href={link.url} key={link.label} target="_blank" rel="noopener noreferrer">{link.label}</SmartLink>
                     ))}
                   </div>
                 )}
