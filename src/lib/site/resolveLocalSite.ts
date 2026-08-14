@@ -51,5 +51,20 @@ export const localSiteRegistry: Readonly<Record<string, LocalSiteMatch>> = {
 export function resolveLocalSite(host: string | null | undefined): LocalSite | null {
   const hostname = resolveHostname(host)
   const match = localSiteRegistry[hostname]
-  return match ? { ...match, hostname } : null
+  if (match) return { ...match, hostname }
+
+  // Fallback for Railway deployments or preview domains
+  if (hostname.includes('zuru')) {
+    return { ...zuruZuruSite, hostname }
+  }
+  if (hostname.includes('ghee')) {
+    return { ...gheeRoastSite, hostname }
+  }
+  if (hostname.endsWith('.railway.app') || hostname.endsWith('.up.railway.app')) {
+    return { ...curiousHubSite, hostname }
+  }
+
+  // Default fallback to curiousHubSite
+  return { ...curiousHubSite, hostname: hostname || 'localhost' }
 }
+
