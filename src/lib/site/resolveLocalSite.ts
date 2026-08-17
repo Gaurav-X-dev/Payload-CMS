@@ -53,18 +53,24 @@ export function resolveLocalSite(host: string | null | undefined): LocalSite | n
   const match = localSiteRegistry[hostname]
   if (match) return { ...match, hostname }
 
-  // Fallback for Railway deployments or preview domains
-  if (hostname.includes('zuru')) {
-    return { ...zuruZuruSite, hostname }
-  }
-  if (hostname.includes('ghee')) {
-    return { ...gheeRoastSite, hostname }
-  }
-  if (hostname.endsWith('.railway.app') || hostname.endsWith('.up.railway.app')) {
+  // Railway-generated deployment/preview subdomains only. These are hostnames Railway itself
+  // issues for this project, so treating them as the Curious Hub site is a deliberate operator
+  // choice, not a guess about an arbitrary caller's Host header.
+  if (hostname.endsWith('.railway.app')) {
     return { ...curiousHubSite, hostname }
   }
 
-  // Default fallback to curiousHubSite
-  return { ...curiousHubSite, hostname: hostname || 'localhost' }
+  // Everything else must fail safe. Substring matching (`hostname.includes('ghee')`) and a
+  // blanket default to one tenant were both tried here and are wrong for the same reason: the
+  // Host header is caller-controlled, so any permissive rule lets an unrecognized — or forged —
+  // host select a real tenant. That leaks one tenant's public content onto an unknown domain and,
+  // via resolvePublicTenantID, attributes public form submissions to a tenant the request never
+  // legitimately identified.
+  //
+  // Returning null is also what keeps the CMS-managed domain allowlist alive: resolvePublicTenantID
+  // only falls through to its `domains.domain` tenant lookup when this returns null. A permanent
+  // production domain belongs in `localSiteRegistry` above (for rendering) and in that tenant's
+  // `domains` array (for tenant resolution) — never in a heuristic here.
+  return null
 }
 

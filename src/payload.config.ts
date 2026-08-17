@@ -38,9 +38,17 @@ import { Amenities } from './collections/Amenities'
 import { Packages } from './collections/Packages'
 import { assignTenant } from './hooks/assignTenant'
 import { validateTenantTransfer } from './hooks/tenantTransferIntegrity'
+import { buildTrustedOrigins } from './lib/security/trustedOrigins'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
+
+/**
+ * One explicit allowlist shared by CORS and CSRF — never `*`, which would defeat CSRF protection
+ * on the cookie-authenticated Admin panel. See lib/security/trustedOrigins.ts for how it is built
+ * and which environment variables feed it.
+ */
+const trustedOrigins = buildTrustedOrigins()
 
 const withTrustedTenantAssignment = (
   collection: CollectionConfig,
@@ -65,6 +73,23 @@ const withTrustedTenantAssignment = (
 }
 
 export default buildConfig({
+  // `serverURL` is deliberately left unset, even though Payload's own warning suggests setting it.
+  //
+  // getRequestOrigin (payload/dist/utilities/getRequestOrigin.js) has two ways to produce a
+  // trusted origin: return `serverURL` verbatim, or validate the Host-derived origin against the
+  // cors/csrf allowlist and return that. The allowlist path is the correct one for a multi-tenant
+  // deployment — each tenant domain then yields its own request origin instead of every tenant
+  // being pinned to one canonical URL.
+  //
+  // Setting `serverURL` would also change media URLs. The `url` field's afterRead hook calls
+  // generateFilePathOrURL with `relative: false`, so a non-empty serverURL turns every read of a
+  // locally-stored file from `/api/media/file/x.jpg` into `https://<serverURL>/api/media/file/x.jpg`
+  // — meaning a tenant browsing their own domain would load images from the Railway domain, and a
+  // stale NEXT_PUBLIC_SERVER_URL would break every image at once. (Stored values are unaffected:
+  // the beforeChange hook uses `relative: true`.) Not worth the blast radius when the allowlist
+  // silences the warning on its own.
+  cors: trustedOrigins,
+  csrf: trustedOrigins,
   admin: {
     user: 'users',
     importMap: {

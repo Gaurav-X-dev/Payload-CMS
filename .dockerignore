@@ -1,0 +1,26 @@
+# Regenerated inside the image by the deps/builder stages. Without this, `COPY . .` in the
+# builder stage overwrites the Linux node_modules installed by `npm ci` with whatever the host
+# happens to have (Windows-native binaries for sharp, for example), and copies a stale local
+# .next over the one the build is about to produce.
+node_modules
+.next
+
+# Never belongs in an image.
+.env
+.env.*
+!.env.example
+.git
+.gitignore
+
+# Local-only artefacts.
+backups
+*.log
+*.tsbuildinfo
+*.dump
+payload_backup_pre_globals.sql
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# NOTE: `media/` and `public/` are deliberately NOT ignored. The runner stage copies
+# /app/media out of the builder, so excluding it here would break the image build.

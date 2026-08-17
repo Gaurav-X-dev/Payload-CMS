@@ -127,3 +127,33 @@ test('ambiguous and malformed Host values are rejected', () => {
     assert.equal(resolveLocalSite(host), null, host)
   }
 })
+
+/**
+ * Regression guard for the ed4b2c9 "resilient" fallback that made resolveLocalSite return a real
+ * tenant for EVERY hostname. Because the Host header is caller-controlled, that turned an
+ * allowlist into a guess: an unrecognized or forged host selected a live tenant, and — through
+ * resolvePublicTenantID, which only consults the CMS `domains.domain` allowlist when this returns
+ * null — public form submissions were attributed to that tenant.
+ */
+test('registered Railway hostnames resolve, look-alike hostnames never do', () => {
+  assert.deepEqual(resolveLocalSite('payload-cms-production-486a.up.railway.app'), {
+    hostname: 'payload-cms-production-486a.up.railway.app',
+    key: 'zuru-zuru',
+    theme: 'zuru-zuru',
+  })
+
+  // Railway-issued subdomains are an explicit operator choice and still resolve.
+  assert.equal(resolveLocalSite('some-new-service.up.railway.app')?.key, 'curious-ladoo')
+  assert.equal(resolveLocalSite('some-new-service.railway.app')?.key, 'curious-ladoo')
+
+  // Substring look-alikes on domains nobody in this project controls must never select a tenant.
+  for (const forged of [
+    'ghee-roast.attacker.example',
+    'zuru-zuru.attacker.example',
+    'ghee.example.com',
+    'notrailway.app',
+    'up.railway.app.attacker.example',
+  ]) {
+    assert.equal(resolveLocalSite(forged), null, forged)
+  }
+})
