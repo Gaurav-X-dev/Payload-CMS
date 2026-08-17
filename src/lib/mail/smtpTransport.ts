@@ -86,12 +86,15 @@ export const sendTenantEmail = async (
   const { config, password } = resolved
 
   try {
-    const transport = nodemailer.createTransport({
+    const options: any = {
       auth: { pass: password, user: config.username },
       host: config.host,
       port: config.port,
       secure: config.secure,
-    })
+      // Workaround for Railway IPv6 ENETUNREACH issues when resolving smtp.gmail.com
+      family: 4,
+    }
+    const transport = nodemailer.createTransport(options)
 
     await transport.sendMail({
       from: `"${config.fromName}" <${config.fromAddress}>`,
