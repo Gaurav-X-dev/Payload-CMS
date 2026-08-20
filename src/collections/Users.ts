@@ -539,6 +539,38 @@ export const Users: CollectionConfig = {
   },
   fields: [
     {
+      name: 'email',
+      type: 'email',
+      required: true,
+      unique: true,
+      hooks: {
+        beforeChange: [
+          ({ value }) => (typeof value === 'string' ? value.toLowerCase().trim() : value),
+        ],
+      },
+      validate: async (value, { operation, id, req }) => {
+        if (!value || typeof value !== 'string') return true
+
+        const existing = await req.payload.find({
+          collection: 'users',
+          where: {
+            and: [
+              { email: { equals: value } },
+              ...(operation === 'update' && id ? [{ id: { not_equals: id } }] : []),
+            ],
+          },
+          limit: 1,
+          overrideAccess: true,
+        })
+
+        if (existing.docs.length) {
+          return 'A user with this email is already registered.'
+        }
+
+        return true
+      },
+    },
+    {
       name: 'name',
       type: 'text',
       required: true,
