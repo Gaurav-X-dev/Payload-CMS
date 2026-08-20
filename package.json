@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "dev": "next dev --webpack",
-    "build": "npm run typecheck && next build",
-    "start": "next start",
+    "build": "npm run typecheck && next build && npm run copy-standalone-assets",
+    "copy-standalone-assets": "node -e \"const fs=require('fs');fs.cpSync('public','.next/standalone/public',{recursive:true});fs.cpSync('.next/static','.next/standalone/.next/static',{recursive:true})\"",
+    "start": "node .next/standalone/server.js",
     "lint": "eslint src tests scripts next.config.mjs eslint.config.mjs",
     "lint:fix": "npm run lint -- --fix",
     "payload": "payload",
