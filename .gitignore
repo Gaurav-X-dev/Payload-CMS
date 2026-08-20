@@ -16,6 +16,10 @@ out/
 
 # Local database backups
 backups/
+*.sql
+
+# Uploaded media (local-disk storage — never belongs in git)
+/media/
 
 # TypeScript cache
 *.tsbuildinfo

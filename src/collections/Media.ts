@@ -14,6 +14,13 @@ import {
 
 export const MAX_MEDIA_FILE_SIZE = 10 * 1024 * 1024
 
+// An explicit absolute path, set via env var, always wins. This matters specifically for the
+// standalone server.js build: once bundled, a relative 'media' string (or any path derived from
+// import.meta.url / process.cwd() at runtime) can resolve inside .next/standalone instead of the
+// real project root — a folder that gets wiped on every `next build`, silently losing uploads.
+// Falls back to the plain relative string for local dev / any environment without this set.
+const mediaStaticDir = process.env.MEDIA_UPLOAD_DIR || 'media'
+
 export const validateMediaUploadSize: CollectionBeforeOperationHook = ({
   args,
   operation,
@@ -80,7 +87,7 @@ export const validateSVGMediaUpload: CollectionBeforeOperationHook = async ({
 export const Media: CollectionConfig = {
   slug: 'media',
   upload: {
-    staticDir: 'media',
+    staticDir: mediaStaticDir,
     imageSizes: [
       { name: 'thumbnail', width: 400, height: 300, position: 'centre' },
       { name: 'card', width: 768, height: 1024, position: 'centre' },
