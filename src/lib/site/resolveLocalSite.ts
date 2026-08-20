@@ -43,9 +43,9 @@ export const localSiteRegistry: Readonly<Record<string, LocalSiteMatch>> = {
   localhost: curiousHubSite,
   '127.0.0.1': curiousHubSite,
   '::1': curiousHubSite,
-  'payload-cms-production-6ff4.up.railway.app': curiousHubSite,
-  'payload-cms-production-486a.up.railway.app': zuruZuruSite,
-  'payload-cms-production-cdf3.up.railway.app': curiousHubSite,
+  // Production Domains
+  'curiousladdoo.com': curiousHubSite,
+  'www.curiousladdoo.com': curiousHubSite,
   'zuruzuru.in': zuruZuruSite,
   'www.zuruzuru.in': zuruZuruSite,
   'verygoodgheeroast.in': gheeRoastSite,
