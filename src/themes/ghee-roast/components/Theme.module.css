@@ -3224,6 +3224,13 @@
     max-width: 280px;
   }
 
+  .featureStrip .featureGrid[data-feature-count='3'],
+  .featureStrip .featureGrid[data-feature-count='4'],
+  .featureStrip .featureGrid[data-feature-count='5'] {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 700px;
+  }
+
   .featureStrip .featureGrid[data-feature-count='3'] .featureCard:last-child,
   .featureStrip .featureGrid[data-feature-count='5'] .featureCard:last-child {
     border-right: 0;
@@ -3382,6 +3389,13 @@
   }
 
   .featureStrip .featureGrid {
+    grid-template-columns: 1fr;
+    max-width: 420px;
+  }
+
+  .featureStrip .featureGrid[data-feature-count='3'],
+  .featureStrip .featureGrid[data-feature-count='4'],
+  .featureStrip .featureGrid[data-feature-count='5'] {
     grid-template-columns: 1fr;
     max-width: 420px;
   }
