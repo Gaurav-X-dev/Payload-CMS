@@ -115,6 +115,7 @@ export function Header({
       </header>
       <nav aria-label="Mobile navigation" className={`zz-mobile-menu ${open ? 'zz-active' : ''}`}>
         {mobileLinks.map((item) => <Link href={item.url} key={item.url} onClick={() => setOpen(false)}>{item.label}</Link>)}
+        <Link className="zz-btn zz-btn-primary zz-mobile-cta" href={ctaUrl} onClick={() => setOpen(false)}><span>{ctaLabel}</span></Link>
       </nav>
     </>
   )
