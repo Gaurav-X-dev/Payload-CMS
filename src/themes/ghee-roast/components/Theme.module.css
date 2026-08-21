@@ -3280,6 +3280,14 @@
     grid-template-columns: 1fr;
   }
 
+  .founderImage>span {
+    left: 0;
+  }
+
+  .aboutStats .stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
   .valuesGrid {
     grid-template-columns: 1fr;
   }
