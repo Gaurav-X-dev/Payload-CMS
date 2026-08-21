@@ -6,10 +6,7 @@ export function PageLoader() {
   const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoaded(true)
-      document.body.style.overflowY = 'auto'
-    }, 2200)
+    const timer = setTimeout(() => setLoaded(true), 2200)
     return () => clearTimeout(timer)
   }, [])
 
