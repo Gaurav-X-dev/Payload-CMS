@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { Footer, Newsletter } from '../components/Footer'
 import { Header } from '../components/Header'
 import { BackToTop } from '../components/Interactive'
+import { PageLoader } from '../components/PageLoader'
 import type { ZuruZuruFooterData, ZuruZuruNavigationData, ZuruZuruSiteData } from '../mappers/dynamicTypes'
 import { serializeZuruZuruJsonLd, type ZuruZuruJsonLdEntry } from '../utils/buildZuruZuruJsonLd'
 import '../styles/theme.css'
@@ -31,6 +32,7 @@ export function ZuruZuruLayout({
       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Noto+Serif+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
       <div className="zuru-zuru-theme">
         {jsonLdScript && <script dangerouslySetInnerHTML={{ __html: jsonLdScript }} type="application/ld+json" />}
+        <PageLoader />
         <Header nav={nav} pathname={pathname} site={site} />
         <main>{children}</main>
         <Newsletter newsletter={site?.newsletter} />
