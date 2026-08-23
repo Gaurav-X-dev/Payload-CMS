@@ -51,7 +51,7 @@ export function Footer({
         { href: '#', icon: 'youtube', label: 'YouTube' },
       ]
   const address = site?.address || 'Zuru Zuru, Delhi, India 110049'
-  const phone = site?.phone || '+91 11 4052 7373'
+  const phone = site?.phone
   const email = site?.email || 'hello@zuruzuru.in'
   const hoursSummary = site ? formatHoursSummary(site.hours) : ''
   const copyright = footer?.copyright || '© 2026 Zuru Zuru Izakaya. All Rights Reserved.'

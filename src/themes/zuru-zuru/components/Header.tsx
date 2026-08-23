@@ -82,7 +82,7 @@ export function Header({
   const hoursSummary = site ? formatHoursSummary(site.hours) : 'Mon – Sun: 12:00 PM – 11:00 PM'
   const announcementEnabled = site ? site.announcement.enabled : true
   const announcementText = site?.announcement.text || 'Grand Summer Festival — 20% Off This Weekend'
-  const phone = site?.phone || '+91 11 4052 7373'
+  const phone = site?.phone
 
   return (
     <>
