@@ -74,8 +74,10 @@ export function Header({
   const brandName = nav?.brandName || 'Zuru Zuru'
   const logoSrc = nav?.logo?.src || site?.logo?.src || image('zuruzuru_logo.png')
   const logoAlt = nav?.logo?.alt || site?.logo?.alt || 'Zuru Zuru Izakaya'
-  const ctaLabel = nav?.cta?.label || 'Reserve'
-  const ctaUrl = nav?.cta?.url || '/reservation'
+  // `nav.cta` is explicitly `null` when the CMS Cta block exists but its "Enabled" checkbox is
+  // off — that must hide the button. Only fall back to the default when there is no CMS nav
+  // document at all (nav itself is undefined), not merely when its cta is disabled.
+  const cta = nav ? nav.cta : { label: 'Reserve', url: '/reservation' }
 
   const hoursSummary = site ? formatHoursSummary(site.hours) : 'Mon – Sun: 12:00 PM – 11:00 PM'
   const announcementEnabled = site ? site.announcement.enabled : true
@@ -88,7 +90,7 @@ export function Header({
         <div className="zz-announcement-bar">
           <div className="zz-container">
             <div className="zz-announcement-left"><span className="zz-inline-icon"><Icon name="flag" size={13} /> {announcementText}</span>{hoursSummary && <><i /><span>{hoursSummary}</span></>}</div>
-            <div className="zz-announcement-right">{phone && <span className="zz-inline-icon"><Icon name="phone" size={13} /> {phone}</span>}<i /><Link href={ctaUrl}>{ctaLabel}</Link></div>
+            <div className="zz-announcement-right">{phone && <span className="zz-inline-icon"><Icon name="phone" size={13} /> {phone}</span>}<i />{cta && <Link href={cta.url}>{cta.label}</Link>}</div>
           </div>
         </div>
       )}
@@ -108,14 +110,14 @@ export function Header({
             ))}
           </ul>
           <div className="zz-nav-right">
-            <Link className="zz-btn zz-btn-primary zz-btn-sm" href={ctaUrl}><span>{ctaLabel}</span></Link>
+            {cta && <Link className="zz-btn zz-btn-primary zz-btn-sm" href={cta.url}><span>{cta.label}</span></Link>}
             <button aria-expanded={open} aria-label={open ? 'Close Menu' : 'Open Menu'} className={`zz-hamburger ${open ? 'zz-active' : ''}`} onClick={() => setOpen(!open)} type="button"><span /><span /><span /></button>
           </div>
         </div>
       </header>
       <nav aria-label="Mobile navigation" className={`zz-mobile-menu ${open ? 'zz-active' : ''}`}>
         {mobileLinks.map((item) => <Link href={item.url} key={item.url} onClick={() => setOpen(false)}>{item.label}</Link>)}
-        <Link className="zz-btn zz-btn-primary zz-mobile-cta" href={ctaUrl} onClick={() => setOpen(false)}><span>{ctaLabel}</span></Link>
+        {cta && <Link className="zz-btn zz-btn-primary zz-mobile-cta" href={cta.url} onClick={() => setOpen(false)}><span>{cta.label}</span></Link>}
       </nav>
     </>
   )
