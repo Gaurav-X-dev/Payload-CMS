@@ -166,7 +166,7 @@ export function AboutPage() {
         <ScrollReveal delay={3}>
           <div className={styles.ctaButtons}>
             {aboutData.cta.buttons.map((btn, i) => (
-              <Link key={i} href={btn.href} className={styles[btn.type]}>
+              <Link key={i} href={btn.href} className={styles[btn.type]} rel="noopener noreferrer" target="_blank">
                 {btn.label}
               </Link>
             ))}

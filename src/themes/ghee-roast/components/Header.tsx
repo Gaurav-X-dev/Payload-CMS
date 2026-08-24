@@ -94,7 +94,7 @@ export function Header({
               </Link>
             ))}
           </nav>
-          {navigation.cta.enabled && <Link className={styles.orderButton} href={navigation.cta.href}>{navigation.cta.label}</Link>}
+          {navigation.cta.enabled && <Link className={styles.orderButton} href={navigation.cta.href} rel="noopener noreferrer" target="_blank">{navigation.cta.label}</Link>}
           {navigation.items.length > 0 && <button
             aria-controls="ghee-roast-mobile-menu"
             aria-expanded={menuOpen}

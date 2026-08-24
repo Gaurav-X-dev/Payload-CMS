@@ -90,7 +90,7 @@ export function Header({
         <div className="zz-announcement-bar">
           <div className="zz-container">
             <div className="zz-announcement-left"><span className="zz-inline-icon"><Icon name="flag" size={13} /> {announcementText}</span>{hoursSummary && <><i /><span>{hoursSummary}</span></>}</div>
-            <div className="zz-announcement-right">{phone && <span className="zz-inline-icon"><Icon name="phone" size={13} /> {phone}</span>}<i />{cta && <Link href={cta.url}>{cta.label}</Link>}</div>
+            <div className="zz-announcement-right">{phone && <span className="zz-inline-icon"><Icon name="phone" size={13} /> {phone}</span>}<i />{cta && <Link href={cta.url} rel="noopener noreferrer" target="_blank">{cta.label}</Link>}</div>
           </div>
         </div>
       )}
@@ -110,14 +110,14 @@ export function Header({
             ))}
           </ul>
           <div className="zz-nav-right">
-            {cta && <Link className="zz-btn zz-btn-primary zz-btn-sm" href={cta.url}><span>{cta.label}</span></Link>}
+            {cta && <Link className="zz-btn zz-btn-primary zz-btn-sm" href={cta.url} rel="noopener noreferrer" target="_blank"><span>{cta.label}</span></Link>}
             <button aria-expanded={open} aria-label={open ? 'Close Menu' : 'Open Menu'} className={`zz-hamburger ${open ? 'zz-active' : ''}`} onClick={() => setOpen(!open)} type="button"><span /><span /><span /></button>
           </div>
         </div>
       </header>
       <nav aria-label="Mobile navigation" className={`zz-mobile-menu ${open ? 'zz-active' : ''}`}>
         {mobileLinks.map((item) => <Link href={item.url} key={item.url} onClick={() => setOpen(false)}>{item.label}</Link>)}
-        {cta && <Link className="zz-btn zz-btn-primary zz-mobile-cta" href={cta.url} onClick={() => setOpen(false)}><span>{cta.label}</span></Link>}
+        {cta && <Link className="zz-btn zz-btn-primary zz-mobile-cta" href={cta.url} onClick={() => setOpen(false)} rel="noopener noreferrer" target="_blank"><span>{cta.label}</span></Link>}
       </nav>
     </>
   )

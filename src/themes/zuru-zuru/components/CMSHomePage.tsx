@@ -78,10 +78,10 @@ function HeroSection({ block }: { block: ZuruZuruHeroBlockData }) {
           {block.description && <p className="zz-hero-subtitle">{block.description}</p>}
           <div className="zz-hero-cta">
             {block.primaryCTA && (
-              <Link className="zz-btn zz-btn-primary" href={block.primaryCTA.url}><span>{block.primaryCTA.label}</span></Link>
+              <Link className="zz-btn zz-btn-primary" href={block.primaryCTA.url} rel="noopener noreferrer" target="_blank"><span>{block.primaryCTA.label}</span></Link>
             )}
             {block.secondaryCTA && (
-              <Link className="zz-btn zz-btn-outline" href={block.secondaryCTA.url}><span>{block.secondaryCTA.label}</span></Link>
+              <Link className="zz-btn zz-btn-outline" href={block.secondaryCTA.url} rel="noopener noreferrer" target="_blank"><span>{block.secondaryCTA.label}</span></Link>
             )}
           </div>
         </div>
@@ -199,7 +199,7 @@ function StorySection({ block }: { block: ZuruZuruStoryBlockData }) {
         <h2>{block.title}</h2>
         {block.body && renderStoryParagraphs(block.body)}
         <div className="zz-story-japanese">おもてなし</div>
-        {block.cta && <Link className="zz-btn zz-btn-outline" href={block.cta.url}><span>{block.cta.label}</span></Link>}
+        {block.cta && <Link className="zz-btn zz-btn-outline" href={block.cta.url} rel="noopener noreferrer" target="_blank"><span>{block.cta.label}</span></Link>}
       </div>
     </div></section>
   )
@@ -230,7 +230,7 @@ function MenuShowcaseSection({ block }: { block: ZuruZuruMenuShowcaseBlockData }
           </article>
         ))}
       </div>
-      {block.cta && <div className="zz-home-center"><Link className="zz-btn zz-btn-outline" href={block.cta.url}><span>{block.cta.label}</span></Link></div>}
+      {block.cta && <div className="zz-home-center"><Link className="zz-btn zz-btn-outline" href={block.cta.url} rel="noopener noreferrer" target="_blank"><span>{block.cta.label}</span></Link></div>}
     </div></section>
   )
 }
@@ -325,7 +325,7 @@ function LocationsSection({ block, site }: { block: ZuruZuruLocationsBlockData; 
               </p>
             </>
           )}
-          <Link className="zz-btn zz-btn-outline" href="/locations"><span>All Locations</span></Link>
+          <Link className="zz-btn zz-btn-outline" href="/locations" rel="noopener noreferrer" target="_blank"><span>All Locations</span></Link>
         </div>
       </div>
     </div></section>

@@ -76,7 +76,7 @@ export function FaqsPage() {
         </ScrollReveal>
         <ScrollReveal delay={1}>
           <div className={styles.ctaButtons}>
-            <Link className={styles.btnWhite} href="/contact" id="faqs-cta-btn">
+            <Link className={styles.btnWhite} href="/contact" id="faqs-cta-btn" rel="noopener noreferrer" target="_blank">
               Contact Us →
             </Link>
           </div>

@@ -389,7 +389,9 @@ function mapPortfolioShowcaseBlock(
 }
 
 function mapStepsBlock(block: StepsBlock, tenantID: number): CuriousLadooStepsBlockData {
+  const backgroundColor = block.settings?.backgroundColor
   return {
+    backgroundColor: backgroundColor && backgroundColor !== 'transparent' ? backgroundColor : undefined,
     header: mapSectionHeader(block.sectionHeader),
     layoutVariant: block.layoutVariant === 'timeline'
       ? 'timeline'

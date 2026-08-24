@@ -45,7 +45,7 @@ export function CareersPage() {
                 <p className={styles.careerDesc}>{pos.description}</p>
                 <div className={styles.careerFooter}>
                   <span className={styles.careerLocation}>📍 {pos.location}</span>
-                  <Link className={styles.careerApply} href="/contact">
+                  <Link className={styles.careerApply} href="/contact" rel="noopener noreferrer" target="_blank">
                     Apply →
                   </Link>
                 </div>
@@ -99,7 +99,7 @@ export function CareersPage() {
         </ScrollReveal>
         <ScrollReveal delay={2}>
           <div className={styles.ctaButtons}>
-            <a className={styles.btnWhite} href="mailto:hello@curiousladoo.com" id="careers-cta-btn">
+            <a className={styles.btnWhite} href="mailto:hello@curiousladoo.com" id="careers-cta-btn" rel="noopener noreferrer" target="_blank">
               Send Your CV →
             </a>
           </div>

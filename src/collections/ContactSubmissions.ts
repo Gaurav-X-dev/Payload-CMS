@@ -6,6 +6,7 @@ import {
   canUpdateTenantContent,
   isSuperAdminUser,
   isTenantAdminUser,
+  normalizeTenantID,
 } from '../access/tenantContext'
 import {
   normalizeEmail,
@@ -16,6 +17,7 @@ import {
   validateName,
 } from '../validation/shared'
 import { validateContactSubmissionSubject } from '../hooks/validateContactSubmissionSubject'
+import { sendContactNotification } from '../lib/mail/sendContactNotification'
 
 const canManageSubmissionFields: FieldAccess = ({ req }) =>
   isSuperAdminUser(req.user) || isTenantAdminUser(req.user)
@@ -95,11 +97,31 @@ export const ContactSubmissions: CollectionConfig = {
   hooks: {
     beforeValidate: [validateContactSubmissionSubject],
     afterChange: [
-      ({ doc, operation }) => {
-        if (operation === 'create') {
-          // Trigger email notification based on type (e.g. Careers goes to HR)
-          console.log(`New contact submission from ${doc.name} for ${doc.type}`)
+      async ({ doc, operation, req }) => {
+        if (operation !== 'create') return doc
+
+        const tenantID = normalizeTenantID(doc.tenantId)
+        if (!tenantID) {
+          req.payload.logger.warn(`Contact notification skipped for submission ${doc.id}: no tenant on the document.`)
+          return doc
         }
+
+        const result = await sendContactNotification(req.payload, tenantID, {
+          email: doc.email,
+          message: doc.message,
+          name: doc.name,
+          phone: doc.phone,
+          subject: doc.subject,
+          type: doc.type,
+        })
+
+        if (result.ok) {
+          req.payload.logger.info(`Contact notification sent for submission ${doc.id} (tenant ${tenantID}).`)
+        } else {
+          req.payload.logger.warn(`Contact notification not sent for submission ${doc.id} (tenant ${tenantID}): ${result.reason}.`)
+        }
+
+        return doc
       }
     ]
   }

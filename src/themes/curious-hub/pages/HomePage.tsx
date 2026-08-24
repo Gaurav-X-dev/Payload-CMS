@@ -266,7 +266,7 @@ export function HomePage() {
             <svg aria-hidden="true" className={styles.serviceCardIcon} fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 40 40"><path d="M4 36V10l16-6 16 6v26"/><rect height="16" rx="1" width="12" x="14" y="20"/></svg>
             <div className={styles.serviceCardTitle}>Restaurant Brands</div>
             <p className={styles.serviceCardDesc}>We create and operate distinct restaurant brands with unique identities, menus, and guest experiences.</p>
-            <Link className={styles.serviceCardLink} href="/services">Explore →</Link>
+            <Link className={styles.serviceCardLink} href="/services" rel="noopener noreferrer" target="_blank">Explore →</Link>
           </article></ScrollReveal>
           {/* 02 — Delivery Services */}
           <ScrollReveal delay={1}><article className={styles.serviceCard}>
@@ -274,7 +274,7 @@ export function HomePage() {
             <svg aria-hidden="true" className={styles.serviceCardIcon} fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 40 40"><circle cx="20" cy="20" r="16"/><path d="M20 4v16l10 6"/></svg>
             <div className={styles.serviceCardTitle}>Delivery Services</div>
             <p className={styles.serviceCardDesc}>Premium delivery operations with efficient cloud kitchen infrastructure and logistics management.</p>
-            <Link className={styles.serviceCardLink} href="/services">Explore →</Link>
+            <Link className={styles.serviceCardLink} href="/services" rel="noopener noreferrer" target="_blank">Explore →</Link>
           </article></ScrollReveal>
           {/* 03 — Cloud Kitchen */}
           <ScrollReveal delay={2}><article className={styles.serviceCard}>
@@ -282,7 +282,7 @@ export function HomePage() {
             <svg aria-hidden="true" className={styles.serviceCardIcon} fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 40 40"><rect height="24" rx="2" width="32" x="4" y="8"/><path d="M4 16h32M14 8v24"/></svg>
             <div className={styles.serviceCardTitle}>Cloud Kitchen</div>
             <p className={styles.serviceCardDesc}>Delivery-first kitchen models designed for maximum efficiency, scalability, and brand consistency.</p>
-            <Link className={styles.serviceCardLink} href="/services">Explore →</Link>
+            <Link className={styles.serviceCardLink} href="/services" rel="noopener noreferrer" target="_blank">Explore →</Link>
           </article></ScrollReveal>
           {/* 04 — Hospitality Consulting */}
           <ScrollReveal delay={3}><article className={styles.serviceCard}>
@@ -290,7 +290,7 @@ export function HomePage() {
             <svg aria-hidden="true" className={styles.serviceCardIcon} fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 40 40"><path d="M8 32l6-6 6 6 12-16"/><circle cx="32" cy="12" r="4"/></svg>
             <div className={styles.serviceCardTitle}>Hospitality Consulting</div>
             <p className={styles.serviceCardDesc}>Strategic consulting for restaurant launches, turnarounds, SOP development, and growth planning.</p>
-            <Link className={styles.serviceCardLink} href="/services">Explore →</Link>
+            <Link className={styles.serviceCardLink} href="/services" rel="noopener noreferrer" target="_blank">Explore →</Link>
           </article></ScrollReveal>
           {/* 05 — Menu Engineering */}
           <ScrollReveal delay={0}><article className={styles.serviceCard}>
@@ -298,7 +298,7 @@ export function HomePage() {
             <svg aria-hidden="true" className={styles.serviceCardIcon} fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 40 40"><rect height="28" rx="2" width="28" x="6" y="6"/><path d="M6 18h28M18 6v28"/></svg>
             <div className={styles.serviceCardTitle}>Menu Engineering</div>
             <p className={styles.serviceCardDesc}>Data-driven menu design that balances profitability, guest preference, and culinary excellence.</p>
-            <Link className={styles.serviceCardLink} href="/services">Explore →</Link>
+            <Link className={styles.serviceCardLink} href="/services" rel="noopener noreferrer" target="_blank">Explore →</Link>
           </article></ScrollReveal>
           {/* 06 — Restaurant Design */}
           <ScrollReveal delay={1}><article className={styles.serviceCard}>
@@ -306,7 +306,7 @@ export function HomePage() {
             <svg aria-hidden="true" className={styles.serviceCardIcon} fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 40 40"><path d="M4 20h32M20 4l10 16-10 16-10-16z"/></svg>
             <div className={styles.serviceCardTitle}>Restaurant Design</div>
             <p className={styles.serviceCardDesc}>Interior concepts and spatial planning that create environments guests return to again and again.</p>
-            <Link className={styles.serviceCardLink} href="/services">Explore →</Link>
+            <Link className={styles.serviceCardLink} href="/services" rel="noopener noreferrer" target="_blank">Explore →</Link>
           </article></ScrollReveal>
           {/* 07 — Brand Strategy */}
           <ScrollReveal delay={2}><article className={styles.serviceCard}>
@@ -314,7 +314,7 @@ export function HomePage() {
             <svg aria-hidden="true" className={styles.serviceCardIcon} fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 40 40"><circle cx="20" cy="20" r="16"/><path d="M12 20l6 6 10-12"/></svg>
             <div className={styles.serviceCardTitle}>Brand Strategy</div>
             <p className={styles.serviceCardDesc}>Full brand architecture — from naming and identity to positioning, tone of voice, and visual language.</p>
-            <Link className={styles.serviceCardLink} href="/services">Explore →</Link>
+            <Link className={styles.serviceCardLink} href="/services" rel="noopener noreferrer" target="_blank">Explore →</Link>
           </article></ScrollReveal>
           {/* 08 — Operations Management */}
           <ScrollReveal delay={3}><article className={styles.serviceCard}>
@@ -322,7 +322,7 @@ export function HomePage() {
             <svg aria-hidden="true" className={styles.serviceCardIcon} fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 40 40"><path d="M8 8h24v24H8z"/><path d="M14 16h12M14 20h8M14 24h10"/></svg>
             <div className={styles.serviceCardTitle}>Operations Management</div>
             <p className={styles.serviceCardDesc}>SOPs, training frameworks, quality control systems, and ongoing operational support for teams.</p>
-            <Link className={styles.serviceCardLink} href="/services">Explore →</Link>
+            <Link className={styles.serviceCardLink} href="/services" rel="noopener noreferrer" target="_blank">Explore →</Link>
           </article></ScrollReveal>
           {/* 09 — Franchise Development */}
           <ScrollReveal delay={0}><article className={styles.serviceCard}>
@@ -330,7 +330,7 @@ export function HomePage() {
             <svg aria-hidden="true" className={styles.serviceCardIcon} fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 40 40"><path d="M20 4C11.16 4 4 11.16 4 20s7.16 16 16 16 16-7.16 16-16"/><path d="M28 4l8 8-8 8"/></svg>
             <div className={styles.serviceCardTitle}>Franchise Development</div>
             <p className={styles.serviceCardDesc}>Complete franchise systems — model development, documentation, partner selection, and launch support.</p>
-            <Link className={styles.serviceCardLink} href="/services">Explore →</Link>
+            <Link className={styles.serviceCardLink} href="/services" rel="noopener noreferrer" target="_blank">Explore →</Link>
           </article></ScrollReveal>
           {/* 10 — Kitchen Planning */}
           <ScrollReveal delay={1}><article className={styles.serviceCard}>
@@ -338,7 +338,7 @@ export function HomePage() {
             <svg aria-hidden="true" className={styles.serviceCardIcon} fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 40 40"><rect height="14" rx="1" width="14" x="4" y="4"/><rect height="14" rx="1" width="14" x="22" y="4"/><rect height="14" rx="1" width="14" x="4" y="22"/><rect height="14" rx="1" width="14" x="22" y="22"/></svg>
             <div className={styles.serviceCardTitle}>Kitchen Planning</div>
             <p className={styles.serviceCardDesc}>Commercial kitchen design, equipment planning, workflow optimization, and compliance guidance.</p>
-            <Link className={styles.serviceCardLink} href="/services">Explore →</Link>
+            <Link className={styles.serviceCardLink} href="/services" rel="noopener noreferrer" target="_blank">Explore →</Link>
           </article></ScrollReveal>
           {/* 11 — Technology Solutions */}
           <ScrollReveal delay={2}><article className={styles.serviceCard}>
@@ -346,7 +346,7 @@ export function HomePage() {
             <svg aria-hidden="true" className={styles.serviceCardIcon} fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 40 40"><rect height="24" rx="2" width="32" x="4" y="8"/><path d="M16 20l-6 4V16l6 4zm4 0h8"/></svg>
             <div className={styles.serviceCardTitle}>Technology Solutions</div>
             <p className={styles.serviceCardDesc}>POS systems, inventory management, analytics dashboards, and digital ordering integrations.</p>
-            <Link className={styles.serviceCardLink} href="/services">Explore →</Link>
+            <Link className={styles.serviceCardLink} href="/services" rel="noopener noreferrer" target="_blank">Explore →</Link>
           </article></ScrollReveal>
           {/* 12 — Staff Training */}
           <ScrollReveal delay={3}><article className={styles.serviceCard}>
@@ -354,7 +354,7 @@ export function HomePage() {
             <svg aria-hidden="true" className={styles.serviceCardIcon} fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 40 40"><circle cx="14" cy="20" r="8"/><circle cx="28" cy="14" r="6"/><circle cx="28" cy="28" r="5"/><path d="M21 16l5-2M21 24l5 2"/></svg>
             <div className={styles.serviceCardTitle}>Staff Training</div>
             <p className={styles.serviceCardDesc}>Comprehensive training programs for FOH, BOH, management, and hospitality service standards.</p>
-            <Link className={styles.serviceCardLink} href="/services">Explore →</Link>
+            <Link className={styles.serviceCardLink} href="/services" rel="noopener noreferrer" target="_blank">Explore →</Link>
           </article></ScrollReveal>
           {/* 13 — Investment Partnerships */}
           <ScrollReveal delay={0}><article className={styles.serviceCard}>
@@ -362,7 +362,7 @@ export function HomePage() {
             <svg aria-hidden="true" className={styles.serviceCardIcon} fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 40 40"><path d="M20 4l4 8 8 2-6 6 2 8-8-4-8 4 2-8-6-6 8-2z"/></svg>
             <div className={styles.serviceCardTitle}>Investment Partnerships</div>
             <p className={styles.serviceCardDesc}>Strategic investment in promising hospitality concepts — from seed to scale with full operational support.</p>
-            <Link className={styles.serviceCardLink} href="/services">Explore →</Link>
+            <Link className={styles.serviceCardLink} href="/services" rel="noopener noreferrer" target="_blank">Explore →</Link>
           </article></ScrollReveal>
           {/* 14 — Managed Services */}
           <ScrollReveal delay={1}><article className={styles.serviceCard}>
@@ -370,7 +370,7 @@ export function HomePage() {
             <svg aria-hidden="true" className={styles.serviceCardIcon} fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 40 40"><path d="M8 12h24v16H8z"/><path d="M12 28l4 4M28 28l-4 4"/></svg>
             <div className={styles.serviceCardTitle}>Managed Services</div>
             <p className={styles.serviceCardDesc}>End-to-end restaurant management for operators who want professional systems without the overhead.</p>
-            <Link className={styles.serviceCardLink} href="/services">Explore →</Link>
+            <Link className={styles.serviceCardLink} href="/services" rel="noopener noreferrer" target="_blank">Explore →</Link>
           </article></ScrollReveal>
           {/* 15 — New Brand Development */}
           <ScrollReveal delay={2}><article className={styles.serviceCard}>
@@ -378,7 +378,7 @@ export function HomePage() {
             <svg aria-hidden="true" className={styles.serviceCardIcon} fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 40 40"><path d="M20 4v32M4 20h32"/><circle cx="20" cy="20" r="8"/></svg>
             <div className={styles.serviceCardTitle}>New Brand Development</div>
             <p className={styles.serviceCardDesc}>Full-cycle concept creation — market research, naming, identity, menu, design, and launch strategy.</p>
-            <Link className={styles.serviceCardLink} href="/services">Explore →</Link>
+            <Link className={styles.serviceCardLink} href="/services" rel="noopener noreferrer" target="_blank">Explore →</Link>
           </article></ScrollReveal>
         </div>
       </section>
@@ -399,7 +399,7 @@ export function HomePage() {
             </ScrollReveal>
           </div>
           <ScrollReveal>
-            <Link className={styles.aboutLink} href="/brands">
+            <Link className={styles.aboutLink} href="/brands" rel="noopener noreferrer" target="_blank">
               View All Brands →
             </Link>
           </ScrollReveal>
@@ -418,7 +418,7 @@ export function HomePage() {
                 <div className={styles.brandCardName}>Zuru Zuru</div>
                 <div className={styles.brandCardType}>Japanese Izakaya</div>
                 <p className={styles.brandCardDesc}>Comfort food. Reliably good times. A Japanese izakaya experience built for the Indian palate.</p>
-                <Link className={styles.brandCardExplore} href="/brands" id="brand-zuruzuru-link">Explore Brand →</Link>
+                <Link className={styles.brandCardExplore} href="/brands" id="brand-zuruzuru-link" rel="noopener noreferrer" target="_blank">Explore Brand →</Link>
               </div>
             </article>
           </ScrollReveal>
@@ -435,7 +435,7 @@ export function HomePage() {
                 <div className={styles.brandCardName}>Ghee Roast</div>
                 <div className={styles.brandCardType}>South Indian Cuisine</div>
                 <p className={styles.brandCardDesc}>Coastal flavours. Bold and soulful. South Indian cuisine celebrated with modern design and pride.</p>
-                <Link className={styles.brandCardExplore} href="/brands" id="brand-ghee-link">Explore Brand →</Link>
+                <Link className={styles.brandCardExplore} href="/brands" id="brand-ghee-link" rel="noopener noreferrer" target="_blank">Explore Brand →</Link>
               </div>
             </article>
           </ScrollReveal>
@@ -452,7 +452,7 @@ export function HomePage() {
                 <div className={styles.brandCardName}>Z-Quick</div>
                 <div className={styles.brandCardType}>Quick Service &amp; Delivery</div>
                 <p className={styles.brandCardDesc}>Great taste. Made fast. Made for now. Premium delivery-first brand built for the modern urban consumer.</p>
-                <Link className={styles.brandCardExplore} href="/brands" id="brand-zquick-link">Explore Brand →</Link>
+                <Link className={styles.brandCardExplore} href="/brands" id="brand-zquick-link" rel="noopener noreferrer" target="_blank">Explore Brand →</Link>
               </div>
             </article>
           </ScrollReveal>
@@ -498,7 +498,9 @@ export function HomePage() {
               <a
                 className={styles.aboutLink}
                 href="mailto:hello@curiousladoo.com"
+                rel="noopener noreferrer"
                 style={{ color: 'var(--ch-accent)' }}
+                target="_blank"
               >
                 hello@curiousladoo.com →
               </a>
@@ -513,7 +515,7 @@ export function HomePage() {
                 </svg>
                 <div className={styles.b2bCardTitle}>Investors</div>
                 <p className={styles.b2bCardDesc}>Strategic investment in our brands and new concepts. We co-create with partners who bring capital and conviction.</p>
-                <a className={styles.b2bCardLink} href="mailto:hello@curiousladoo.com" id="b2b-investors-link">Build With Us →</a>
+                <a className={styles.b2bCardLink} href="mailto:hello@curiousladoo.com" id="b2b-investors-link" rel="noopener noreferrer" target="_blank">Build With Us →</a>
               </article>
             </ScrollReveal>
             {/* Franchise Partners */}
@@ -525,7 +527,7 @@ export function HomePage() {
                 </svg>
                 <div className={styles.b2bCardTitle}>Franchise Partners</div>
                 <p className={styles.b2bCardDesc}>Grow with proven brands. Our franchise model comes with full systems, training, and ongoing operational support.</p>
-                <a className={styles.b2bCardLink} href="mailto:hello@curiousladoo.com" id="b2b-franchise-link">Grow With Us →</a>
+                <a className={styles.b2bCardLink} href="mailto:hello@curiousladoo.com" id="b2b-franchise-link" rel="noopener noreferrer" target="_blank">Grow With Us →</a>
               </article>
             </ScrollReveal>
             {/* Landlords & Spaces */}
@@ -537,7 +539,7 @@ export function HomePage() {
                 </svg>
                 <div className={styles.b2bCardTitle}>Landlords &amp; Spaces</div>
                 <p className={styles.b2bCardDesc}>We&apos;re looking for premium locations across India. Retail spaces, high streets, and mixed-use developments.</p>
-                <a className={styles.b2bCardLink} href="mailto:hello@curiousladoo.com" id="b2b-landlords-link">Partner With Us →</a>
+                <a className={styles.b2bCardLink} href="mailto:hello@curiousladoo.com" id="b2b-landlords-link" rel="noopener noreferrer" target="_blank">Partner With Us →</a>
               </article>
             </ScrollReveal>
             {/* Suppliers & Vendors */}
@@ -549,7 +551,7 @@ export function HomePage() {
                 </svg>
                 <div className={styles.b2bCardTitle}>Suppliers &amp; Vendors</div>
                 <p className={styles.b2bCardDesc}>Quality ingredients, equipment, and services — we work with suppliers who share our commitment to excellence.</p>
-                <a className={styles.b2bCardLink} href="mailto:hello@curiousladoo.com" id="b2b-suppliers-link">Work With Us →</a>
+                <a className={styles.b2bCardLink} href="mailto:hello@curiousladoo.com" id="b2b-suppliers-link" rel="noopener noreferrer" target="_blank">Work With Us →</a>
               </article>
             </ScrollReveal>
           </div>
@@ -744,7 +746,7 @@ export function HomePage() {
             </ScrollReveal>
           </div>
           <ScrollReveal>
-            <Link className={styles.aboutLink} href="/blog">
+            <Link className={styles.aboutLink} href="/blog" rel="noopener noreferrer" target="_blank">
               Explore All Articles →
             </Link>
           </ScrollReveal>
@@ -895,10 +897,10 @@ export function HomePage() {
         </ScrollReveal>
         <ScrollReveal delay={3}>
           <div className={styles.ctaButtons}>
-            <a className={styles.btnWhite} href="mailto:hello@curiousladoo.com" id="cta-email-btn">
+            <a className={styles.btnWhite} href="mailto:hello@curiousladoo.com" id="cta-email-btn" rel="noopener noreferrer" target="_blank">
               hello@curiousladoo.com →
             </a>
-            <Link className={styles.btnOutlineWhite} href="/how-we-work" id="cta-process-btn">
+            <Link className={styles.btnOutlineWhite} href="/how-we-work" id="cta-process-btn" rel="noopener noreferrer" target="_blank">
               Our Process ↗
             </Link>
           </div>

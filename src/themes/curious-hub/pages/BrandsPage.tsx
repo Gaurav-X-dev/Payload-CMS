@@ -120,7 +120,7 @@ export function BrandsPage() {
               </ul>
             </ScrollReveal>
             <ScrollReveal delay={3}>
-              <Link href={brandsData.future.link.href} className={styles.aboutLink}>
+              <Link href={brandsData.future.link.href} className={styles.aboutLink} rel="noopener noreferrer" target="_blank">
                 {brandsData.future.link.label}
               </Link>
             </ScrollReveal>
@@ -152,7 +152,7 @@ export function BrandsPage() {
         <ScrollReveal delay={3}>
           <div className={styles.ctaButtons}>
             {brandsData.cta.buttons.map((btn, i) => (
-              <Link key={i} href={btn.href} className={styles[btn.type]}>
+              <Link key={i} href={btn.href} className={styles[btn.type]} rel="noopener noreferrer" target="_blank">
                 {btn.label}
               </Link>
             ))}

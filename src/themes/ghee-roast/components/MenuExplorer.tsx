@@ -59,7 +59,7 @@ export function MenuExplorer({
               <h2>{heading}</h2>
             </div>
             {orderLinks.length > 0 && <div>
-              {orderLinks.map((item) => <a href={item.href} key={`${item.label}-${item.href}`}>{item.label}</a>)}
+              {orderLinks.map((item) => <a href={item.href} key={`${item.label}-${item.href}`} rel="noopener noreferrer" target="_blank">{item.label}</a>)}
             </div>}
           </div>
           {activeLocation.description && <p className={styles.locationDescription}>{activeLocation.description}</p>}

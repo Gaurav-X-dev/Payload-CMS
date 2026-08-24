@@ -91,7 +91,7 @@ export function Header({
         </ul>
 
         <div className={styles.navRight}>
-          <Link className={styles.navCta} href={ctaHref} id="nav-collaborate-btn">
+          <Link className={styles.navCta} href={ctaHref} id="nav-collaborate-btn" rel="noopener noreferrer" target="_blank">
             {ctaLabel}
           </Link>
           <button

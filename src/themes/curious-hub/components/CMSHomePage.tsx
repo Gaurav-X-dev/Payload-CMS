@@ -76,12 +76,12 @@ function HeroSection({ block }: { block: CuriousLadooHeroBlockData }) {
         {block.description && <p className={styles.t3Body}>{block.description}</p>}
         <div className={styles.t3Actions}>
           {block.primaryCTA && (
-            <Link className={styles.t3BtnDark} href={block.primaryCTA.url}>
+            <Link className={styles.t3BtnDark} href={block.primaryCTA.url} rel="noopener noreferrer" target="_blank">
               {block.primaryCTA.label.toUpperCase()} →
             </Link>
           )}
           {block.secondaryCTA && (
-            <Link className={styles.t3BtnGhost} href={block.secondaryCTA.url}>
+            <Link className={styles.t3BtnGhost} href={block.secondaryCTA.url} rel="noopener noreferrer" target="_blank">
               {block.secondaryCTA.label.toUpperCase()} →
             </Link>
           )}
@@ -167,7 +167,7 @@ function StoryPanelSection({ block }: { block: CuriousLadooStoryBlockData }) {
       )}
       {block.cta && (
         <ScrollReveal delay={4}>
-          <Link className={styles.aboutLink} href={block.cta.url}>
+          <Link className={styles.aboutLink} href={block.cta.url} rel="noopener noreferrer" target="_blank">
             {block.cta.label} <span>→</span>
           </Link>
         </ScrollReveal>
@@ -405,7 +405,7 @@ function ServicesGrid({ block }: { block: CuriousLadooContentGridBlockData }) {
               <div className={styles.serviceCardTitle}>{item.title}</div>
               <p className={styles.serviceCardDesc}>{item.description}</p>
               {item.link && (
-                <Link className={styles.serviceCardLink} href={item.link.url}>
+                <Link className={styles.serviceCardLink} href={item.link.url} rel="noopener noreferrer" target="_blank">
                   {item.link.label} →
                 </Link>
               )}
@@ -448,7 +448,7 @@ function B2BGrid({ block }: { block: CuriousLadooContentGridBlockData }) {
                 <div className={styles.b2bCardTitle}>{item.title}</div>
                 <p className={styles.b2bCardDesc}>{item.description}</p>
                 {item.link && (
-                  <Link className={styles.b2bCardLink} href={item.link.url}>
+                  <Link className={styles.b2bCardLink} href={item.link.url} rel="noopener noreferrer" target="_blank">
                     {item.link.label} →
                   </Link>
                 )}
@@ -713,7 +713,7 @@ function BrandsGrid({ block }: { block: CuriousLadooBrandsShowcaseBlockData }) {
           </ScrollReveal>
         </div>
         <ScrollReveal>
-          <Link className={styles.aboutLink} href="/brands">View All Brands →</Link>
+          <Link className={styles.aboutLink} href="/brands" rel="noopener noreferrer" target="_blank">View All Brands →</Link>
         </ScrollReveal>
       </div>
       <div className={styles.brandsGrid} data-brand-count={block.brands.length}>
@@ -744,7 +744,7 @@ function BrandsGrid({ block }: { block: CuriousLadooBrandsShowcaseBlockData }) {
                   <div className={styles.brandCardName}>{brand.name}</div>
                   <div className={styles.brandCardType}>{brand.category}</div>
                   <p className={styles.brandCardDesc}>{brand.description}</p>
-                  <Link className={styles.brandCardExplore} href={brand.href}>Explore Brand →</Link>
+                  <Link className={styles.brandCardExplore} href={brand.href} rel="noopener noreferrer" target="_blank">Explore Brand →</Link>
                 </div>
               </article>
             </ScrollReveal>
@@ -907,7 +907,7 @@ function StepsVisualTimeline({ block }: { block: CuriousLadooStepsBlockData }) {
 /** Plain light-section timeline used by every non-Home page (About) — matches the original About page's Journey section exactly: no dark background, no eyebrow row, no journeyHeader wrapper, centered title with a fixed 4rem bottom margin. */
 function StepsTimelineLight({ block }: { block: CuriousLadooStepsBlockData }) {
   return (
-    <section className={styles.innerSection} id="journey">
+    <section className={styles.innerSection} data-bg={block.backgroundColor} id="journey">
       <ScrollReveal>
         <h2 className={styles.sectionTitle} style={{ marginBottom: '4rem', textAlign: 'center' }}>
           {renderHeading(block.header.title, block.header.subtitle)}
@@ -1010,7 +1010,7 @@ function JournalSection({ block }: { block: CuriousLadooBlogPreviewBlockData }) 
           </ScrollReveal>
         </div>
         <ScrollReveal>
-          <Link className={styles.aboutLink} href="/blog">Explore All Articles →</Link>
+          <Link className={styles.aboutLink} href="/blog" rel="noopener noreferrer" target="_blank">Explore All Articles →</Link>
         </ScrollReveal>
       </div>
       <div className={styles.journalGrid}>
@@ -1166,10 +1166,10 @@ function CTASection({ block, siteName }: { block: CuriousLadooCTABlockData; site
         <ScrollReveal delay={3}>
           <div className={styles.ctaButtons}>
             {block.primaryCTA && (
-              <SmartLink className={styles.btnWhite} href={block.primaryCTA.url}>{block.primaryCTA.label} →</SmartLink>
+              <SmartLink className={styles.btnWhite} href={block.primaryCTA.url} rel="noopener noreferrer" target="_blank">{block.primaryCTA.label} →</SmartLink>
             )}
             {block.secondaryCTA && (
-              <SmartLink className={styles.btnOutlineWhite} href={block.secondaryCTA.url}>{block.secondaryCTA.label} ↗</SmartLink>
+              <SmartLink className={styles.btnOutlineWhite} href={block.secondaryCTA.url} rel="noopener noreferrer" target="_blank">{block.secondaryCTA.label} ↗</SmartLink>
             )}
           </div>
         </ScrollReveal>
@@ -1226,7 +1226,7 @@ function CapabilitySection({ block }: { block: CuriousLadooCapabilityBlockData }
               )}
               {item.link && (
                 <ScrollReveal delay={3}>
-                  <SmartLink className={styles.aboutLink} href={item.link.url}>{item.link.label}</SmartLink>
+                  <SmartLink className={styles.aboutLink} href={item.link.url} rel="noopener noreferrer" target="_blank">{item.link.label}</SmartLink>
                 </ScrollReveal>
               )}
             </div>
@@ -1316,7 +1316,7 @@ function PipelineSection({ block }: { block: CuriousLadooPipelineBlockData }) {
       </ScrollReveal>
       {block.link && (
         <ScrollReveal delay={3}>
-          <SmartLink className={styles.aboutLink} href={block.link.url}>{block.link.label}</SmartLink>
+          <SmartLink className={styles.aboutLink} href={block.link.url} rel="noopener noreferrer" target="_blank">{block.link.label}</SmartLink>
         </ScrollReveal>
       )}
     </div>
@@ -1441,7 +1441,7 @@ function CareersSection({ block }: { block: CuriousLadooCareersBlockData }) {
               <p className={styles.careerDesc}>{pos.description}</p>
               <div className={styles.careerFooter}>
                 <span className={styles.careerLocation}>📍 {pos.location}</span>
-                <SmartLink className={styles.careerApply} href="/contact">Apply →</SmartLink>
+                <SmartLink className={styles.careerApply} href="/contact" rel="noopener noreferrer" target="_blank">Apply →</SmartLink>
               </div>
             </article>
           </ScrollReveal>

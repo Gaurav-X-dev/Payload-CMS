@@ -55,9 +55,9 @@ export function ActionLink({ ariaLabel, href, icon = 'arrow', label, newTab, nof
 }) {
   const className = `${styles.action} ${styles[variant]}`
   const content = <>{label}<Icon className={styles.actionIcon} name={icon} weight="bold" /></>
-  const rel = [nofollow ? 'nofollow' : '', newTab ? 'noreferrer' : ''].filter(Boolean).join(' ') || undefined
-  return href.startsWith('/') ? <Link aria-label={ariaLabel} className={className} href={href} rel={rel} target={newTab ? '_blank' : undefined}>{content}</Link> : (
-    <a aria-label={ariaLabel} className={className} href={href} rel={rel} target={newTab ? '_blank' : undefined}>{content}</a>
+  const rel = [nofollow ? 'nofollow' : '', 'noopener', 'noreferrer'].filter(Boolean).join(' ')
+  return href.startsWith('/') ? <Link aria-label={ariaLabel} className={className} href={href} rel={rel} target="_blank">{content}</Link> : (
+    <a aria-label={ariaLabel} className={className} href={href} rel={rel} target="_blank">{content}</a>
   )
 }
 

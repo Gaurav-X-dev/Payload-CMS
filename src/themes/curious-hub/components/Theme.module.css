@@ -278,6 +278,21 @@
 .journeyEvent { font-size: 0.9rem; font-weight: 600; color: var(--ch-text-light); margin-bottom: 0.5rem; }
 .journeyDesc { font-size: 0.78rem; line-height: 1.7; color: rgba(245,240,224,0.5); }
 
+.innerSection[data-bg="surface"] { background: var(--ch-surface); }
+.innerSection[data-bg="primary"] { background: var(--ch-primary); }
+.innerSection[data-bg="accent"] { background: var(--ch-accent); }
+.innerSection[data-bg="dark"] { background: var(--ch-dark); }
+.innerSection[data-bg="primary"] .sectionTitle,
+.innerSection[data-bg="accent"] .sectionTitle,
+.innerSection[data-bg="dark"] .sectionTitle { color: var(--ch-text-light); }
+.innerSection[data-bg="primary"] .journeyYear,
+.innerSection[data-bg="accent"] .journeyYear { color: var(--ch-text-light); }
+.innerSection[data-bg="surface"] .journeyTimeline::before { background: var(--ch-border); }
+.innerSection[data-bg="surface"] .journeyMilestone { border-left-color: var(--ch-border); }
+.innerSection[data-bg="surface"] .journeyYear { color: var(--ch-primary); }
+.innerSection[data-bg="surface"] .journeyEvent { color: var(--ch-text); }
+.innerSection[data-bg="surface"] .journeyDesc { color: var(--ch-text-muted); }
+
 .partnersSection { padding: clamp(60px, 8vw, 100px) 8%; background: var(--ch-bg); text-align: center; }
 .partnersHeader { margin-bottom: clamp(40px, 5vw, 60px); }
 .partnersGrid { display: flex; flex-wrap: wrap; justify-content: center; gap: 0; border-top: 1px solid var(--ch-border); border-left: 1px solid var(--ch-border); }

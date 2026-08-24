@@ -60,10 +60,10 @@ export function TestimonialsPage() {
         </ScrollReveal>
         <ScrollReveal delay={1}>
           <div className={styles.ctaButtons}>
-            <Link className={styles.btnWhite} href="/contact" id="testimonials-cta-btn">
+            <Link className={styles.btnWhite} href="/contact" id="testimonials-cta-btn" rel="noopener noreferrer" target="_blank">
               Let&apos;s Talk →
             </Link>
-            <Link className={styles.btnOutlineWhite} href="/portfolio">
+            <Link className={styles.btnOutlineWhite} href="/portfolio" rel="noopener noreferrer" target="_blank">
               View Portfolio ↗
             </Link>
           </div>

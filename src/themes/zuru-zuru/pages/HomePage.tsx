@@ -81,7 +81,7 @@ export function HomePage() {
         <div className="zz-hero-left">
           <h1 className="zz-hero-heading">Good Food.<br />Good Times.<br /><em>Always.</em></h1>
           <p className="zz-hero-subtitle">A Japanese Izakaya experience in the heart of Shahpur Jat, New Delhi.</p>
-          <div className="zz-hero-cta"><Link className="zz-btn zz-btn-primary" href="/menu"><span>Explore Menu</span></Link><Link className="zz-btn zz-btn-outline" href="/reservation"><span>Reserve a Table</span></Link></div>
+          <div className="zz-hero-cta"><Link className="zz-btn zz-btn-primary" href="/menu" rel="noopener noreferrer" target="_blank"><span>Explore Menu</span></Link><Link className="zz-btn zz-btn-outline" href="/reservation" rel="noopener noreferrer" target="_blank"><span>Reserve a Table</span></Link></div>
         </div>
         <div className="zz-hero-visual">
           <span className="zz-brush-circle" />
@@ -103,13 +103,13 @@ export function HomePage() {
 
     <section className="zz-section-alt"><div className="zz-container zz-home-story">
       <div className="zz-home-story-image"><Image alt="Zuru Zuru Interior" height={680} sizes="(max-width: 992px) 92vw, 46vw" src={image('gyoza_tempura.png')} width={760} /></div>
-      <div><span className="zz-section-subtitle">Our Story</span><h2>A Journey Through Japanese Culinary Heritage</h2><p className="zz-story-lead">Founded in 2015 by Chef Kenji Tanaka, Zuru Zuru was born from a simple belief — that great food should bring people together. After 15 years mastering his craft in Tokyo&apos;s finest kitchens, Chef Kenji brought the authentic spirit of Japan&apos;s izakayas to New Delhi.</p><p className="zz-story-muted">Every dish, from our 48-hour simmered Tonkotsu broth to our hand-rolled gyoza, tells a story of dedication, precision, and an unwavering commitment to the Japanese philosophy of <em>Omotenashi</em> — hospitality from the heart.</p><div className="zz-story-japanese">おもてなし</div><Link className="zz-btn zz-btn-outline" href="/about"><span>Read Our Full Story</span></Link></div>
+      <div><span className="zz-section-subtitle">Our Story</span><h2>A Journey Through Japanese Culinary Heritage</h2><p className="zz-story-lead">Founded in 2015 by Chef Kenji Tanaka, Zuru Zuru was born from a simple belief — that great food should bring people together. After 15 years mastering his craft in Tokyo&apos;s finest kitchens, Chef Kenji brought the authentic spirit of Japan&apos;s izakayas to New Delhi.</p><p className="zz-story-muted">Every dish, from our 48-hour simmered Tonkotsu broth to our hand-rolled gyoza, tells a story of dedication, precision, and an unwavering commitment to the Japanese philosophy of <em>Omotenashi</em> — hospitality from the heart.</p><div className="zz-story-japanese">おもてなし</div><Link className="zz-btn zz-btn-outline" href="/about" rel="noopener noreferrer" target="_blank"><span>Read Our Full Story</span></Link></div>
     </div></section>
 
     <section><div className="zz-container">
       <SectionHeader eyebrow="Chef's Selection" japanese="看板料理" title="Signature Dishes" text="Hand-selected by our Executive Chef — the finest creations that define the Zuru Zuru experience." />
       <div className="zz-home-dishes">{dishes.map(([name, price, description, asset, badge, badgeType, calories, heat]) => <article className="zz-home-dish" key={name}><div className="zz-home-dish-image"><Image alt={name} fill sizes="(max-width: 768px) 92vw, 30vw" src={image(asset)} /><span className={`zz-dish-badge zz-${badgeType}`}>{badge}</span></div><div className="zz-home-dish-body"><div className="zz-home-dish-meta"><h3>{name}</h3><strong>{price}</strong></div><p>{description}</p><div className="zz-home-dish-info"><span>♨ {calories}</span><span className="zz-spicy-level">{[0, 1, 2].map((dot) => <i className={dot < heat ? 'zz-active' : ''} key={dot} />)}</span></div></div></article>)}</div>
-      <div className="zz-home-center"><Link className="zz-btn zz-btn-outline" href="/menu"><span>View Full Menu</span></Link></div>
+      <div className="zz-home-center"><Link className="zz-btn zz-btn-outline" href="/menu" rel="noopener noreferrer" target="_blank"><span>View Full Menu</span></Link></div>
     </div></section>
 
     <section><div className="zz-container">
@@ -139,7 +139,7 @@ export function HomePage() {
 
     <section><div className="zz-container">
       <SectionHeader eyebrow="Find Us" japanese="アクセス" title="Visit Zuru Zuru" />
-      <div className="zz-home-location"><div className="zz-home-map"><Icon name="map" size={48} /><p>Google Maps Integration<br />23 Shahpur Jat, New Delhi</p></div><div className="zz-home-location-info"><h4>Address</h4><p>23, Shahpur Jat<br />Siri Fort, New Delhi 110049<br />India</p><h4>Opening Hours</h4><ul><li>Monday – Thursday: 12:00 PM – 10:30 PM</li><li>Friday – Saturday: 12:00 PM – 11:30 PM</li><li>Sunday: 12:00 PM – 10:00 PM</li></ul><h4>Parking</h4><p>Complimentary valet parking available for all dine-in guests. Street parking also available nearby.</p><h4>Contact</h4><p>☎ +91 11 4052 7373<br />✉ hello@zuruzuru.in</p><Link className="zz-btn zz-btn-outline" href="/locations"><span>All Locations</span></Link></div></div>
+      <div className="zz-home-location"><div className="zz-home-map"><Icon name="map" size={48} /><p>Google Maps Integration<br />23 Shahpur Jat, New Delhi</p></div><div className="zz-home-location-info"><h4>Address</h4><p>23, Shahpur Jat<br />Siri Fort, New Delhi 110049<br />India</p><h4>Opening Hours</h4><ul><li>Monday – Thursday: 12:00 PM – 10:30 PM</li><li>Friday – Saturday: 12:00 PM – 11:30 PM</li><li>Sunday: 12:00 PM – 10:00 PM</li></ul><h4>Parking</h4><p>Complimentary valet parking available for all dine-in guests. Street parking also available nearby.</p><h4>Contact</h4><p>☎ +91 11 4052 7373<br />✉ hello@zuruzuru.in</p><Link className="zz-btn zz-btn-outline" href="/locations" rel="noopener noreferrer" target="_blank"><span>All Locations</span></Link></div></div>
     </div></section>
   </>
 }

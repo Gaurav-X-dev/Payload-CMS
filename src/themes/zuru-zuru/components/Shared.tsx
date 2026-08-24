@@ -17,7 +17,7 @@ export function CardGrid({ cards, className = '', columns = 3 }: { cards: CardDa
 }
 
 export function CTA({ href, label, text, title }: { href: string; label: string; text: string; title: string }) {
-  return <section className="zz-cta-section"><div className="zz-container"><h2>{title}</h2><p>{text}</p><Link className="zz-btn zz-btn-accent" href={href}>{label}<Icon name="arrow" /></Link></div></section>
+  return <section className="zz-cta-section"><div className="zz-container"><h2>{title}</h2><p>{text}</p><Link className="zz-btn zz-btn-accent" href={href} rel="noopener noreferrer" target="_blank">{label}<Icon name="arrow" /></Link></div></section>
 }
 
 export function FormField({ label, name, options, placeholder, type = 'text' }: { label: string; name: string; options?: string[]; placeholder?: string; type?: string }) {

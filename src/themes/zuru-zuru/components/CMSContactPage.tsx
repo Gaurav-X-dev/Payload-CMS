@@ -1,7 +1,7 @@
 import { CMSPageHero, CMSSectionHeader } from './CMSInnerPageShared'
 import { ContactForm } from './ContactForm'
 import { Accordion } from './Interactive'
-import { formatHoursSummary } from '../utils/formatHours'
+import { formatHoursSummary, formatMealServiceHours } from '../utils/formatHours'
 import type {
   ZuruZuruFAQBlockData,
   ZuruZuruFormBlockData,
@@ -14,19 +14,25 @@ import type {
  * Matches the original Contact page's dark 3-column info grid exactly. Sourced entirely from the
  * global shell (SiteSettings/Tenant contact data, already CMS-driven since Milestone Z2) rather
  * than a dedicated Page block — this section has no page-specific configurable content beyond
- * what the shell already provides. The original's specific meal-service-window hours text
- * ("Lunch & Dinner" / "Tempura, Gyoza & Cold Ramen") has no representable field (Locations'
- * day-based hours array is already used for two other, incompatible schedules); this card shows
- * the same uniform hours summary the header/footer/announcement bar already use — a disclosed
- * simplification, see the Milestone Z6 report.
+ * what the shell already provides. Opening Hours prefers the "Lunch Service" / "Dinner Service"
+ * two-shift format (formatMealServiceHours) when the CMS hours data is shaped like a uniform
+ * two-shift schedule, falling back to the single collapsed summary otherwise.
  */
 function InfoGridSection({ site }: { site: ZuruZuruSiteData }) {
+  const mealServiceHours = formatMealServiceHours(site.hours)
   const hoursSummary = formatHoursSummary(site.hours)
   return (
     <section className="zz-section-dark"><div className="zz-container">
       <div className="zz-info-grid">
         <article><h3>Location</h3><p>{site.address}</p></article>
-        {hoursSummary && <article><h3>Opening Hours</h3><p>{hoursSummary}</p></article>}
+        {mealServiceHours ? (
+          <article>
+            <h3>Opening Hours</h3>
+            <p>{mealServiceHours.map((line, i) => <span key={line}>{i > 0 && <br />}{line}</span>)}</p>
+          </article>
+        ) : (
+          hoursSummary && <article><h3>Opening Hours</h3><p>{hoursSummary}</p></article>
+        )}
         {(site.phone || site.email) && (
           <article>
             <h3>Contact</h3>

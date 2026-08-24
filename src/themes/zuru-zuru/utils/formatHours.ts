@@ -31,6 +31,31 @@ export function formatHoursSummary(hours: ZuruZuruHoursRowData[]): string {
  * formatHoursSummary (a single collapsed line for the header/footer), this preserves every
  * distinct shift rather than falling back to just the first one.
  */
+/**
+ * Detects a two-shift schedule (e.g. a lunch window and a separate dinner window repeated across
+ * open days) by looking for exactly two distinct open/close time pairs in the hours array, and
+ * labels them "Lunch Service" / "Dinner Service" in the order they appear — matching the business's
+ * real meal-service-window hours text. Admin controls the order by entering the lunch shift's rows
+ * before the dinner shift's rows in the CMS. Returns null when the data isn't shaped like a uniform
+ * two-shift schedule (e.g. a single shift, or shifts that vary by day), so the caller can fall back
+ * to formatHoursSummary.
+ */
+export function formatMealServiceHours(hours: ZuruZuruHoursRowData[]): null | string[] {
+  const open = hours.filter((row) => !row.isClosed && row.openTime && row.closeTime)
+  if (open.length === 0) return null
+
+  const shifts: { closeTime: string; openTime: string }[] = []
+  for (const row of open) {
+    if (!shifts.some((shift) => shift.openTime === row.openTime && shift.closeTime === row.closeTime)) {
+      shifts.push({ closeTime: row.closeTime, openTime: row.openTime })
+    }
+  }
+  if (shifts.length !== 2) return null
+
+  const labels = ['Lunch Service', 'Dinner Service']
+  return shifts.map((shift, i) => `${labels[i]}: ${shift.openTime} – ${shift.closeTime}`)
+}
+
 export function groupBusinessHours(hours: ZuruZuruHoursRowData[]): string[] {
   const sorted = [...hours]
     .filter((row) => row.day)

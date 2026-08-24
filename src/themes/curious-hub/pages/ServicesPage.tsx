@@ -58,7 +58,7 @@ export function ServicesPage() {
                   </div>
                 </ScrollReveal>
                 <ScrollReveal delay={3}>
-                  <Link href={block.link.href} className={styles.aboutLink}>
+                  <Link href={block.link.href} className={styles.aboutLink} rel="noopener noreferrer" target="_blank">
                     {block.link.label}
                   </Link>
                 </ScrollReveal>
@@ -143,7 +143,7 @@ export function ServicesPage() {
         <ScrollReveal delay={3}>
           <div className={styles.ctaButtons}>
             {servicesData.cta.buttons.map((btn, i) => (
-              <Link key={i} href={btn.href} className={styles[btn.type]}>
+              <Link key={i} href={btn.href} className={styles[btn.type]} rel="noopener noreferrer" target="_blank">
                 {btn.label}
               </Link>
             ))}

@@ -108,6 +108,7 @@ export type CuriousLadooStepData = {
 }
 
 export type CuriousLadooStepsBlockData = {
+  backgroundColor?: 'accent' | 'dark' | 'primary' | 'surface'
   header: CuriousLadooSectionHeaderData
   layoutVariant: 'numbered-steps' | 'timeline' | 'visual-timeline'
   steps: CuriousLadooStepData[]

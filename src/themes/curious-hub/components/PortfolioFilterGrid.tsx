@@ -53,7 +53,7 @@ export function PortfolioFilterGrid({ items }: PortfolioFilterGridProps) {
                 {item.category && <span className={styles.portfolioItemCat}>{item.category}</span>}
                 <h3 className={styles.portfolioItemTitle}>{item.title}</h3>
                 <p className={styles.portfolioItemDesc}>{item.description}</p>
-                <SmartLink className={styles.portfolioItemLink} href={item.link?.url ?? '/contact'}>
+                <SmartLink className={styles.portfolioItemLink} href={item.link?.url ?? '/contact'} rel="noopener noreferrer" target="_blank">
                   {item.link?.label ?? 'Inquire on case'} &rarr;
                 </SmartLink>
               </div>

@@ -49,7 +49,7 @@ export function HomeHero({
           if (isSwiggy) linkContent = <><strong>S</strong> Swiggy</>
           if (isZomato) linkContent = 'zomato'
 
-          return <a className={className} href={item.href} key={`${item.label}-${item.href}`}>{linkContent}</a>
+          return <a className={className} href={item.href} key={`${item.label}-${item.href}`} rel="noopener noreferrer" target="_blank">{linkContent}</a>
         })}
       </div>}
     </div>

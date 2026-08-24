@@ -71,7 +71,7 @@ export function PortfolioPage() {
                   <span className={styles.portfolioItemCat}>{item.tags[0]}</span>
                   <h3 className={styles.portfolioItemTitle}>{item.title}</h3>
                   <p className={styles.portfolioItemDesc}>{item.description}</p>
-                  <Link href="/contact" className={styles.portfolioItemLink}>
+                  <Link href="/contact" className={styles.portfolioItemLink} rel="noopener noreferrer" target="_blank">
                     Inquire on case &rarr;
                   </Link>
                 </div>
@@ -131,10 +131,10 @@ export function PortfolioPage() {
         </ScrollReveal>
         <ScrollReveal delay={3}>
           <div className={styles.ctaButtons}>
-            <Link className={styles.btnWhite} href="/contact?interest=consulting" id="portfolio-cta-btn">
+            <Link className={styles.btnWhite} href="/contact?interest=consulting" id="portfolio-cta-btn" rel="noopener noreferrer" target="_blank">
               Book a Brand Audit &rarr;
             </Link>
-            <Link className={styles.btnOutlineWhite} href="/services">
+            <Link className={styles.btnOutlineWhite} href="/services" rel="noopener noreferrer" target="_blank">
               Our 15 Services ↗
             </Link>
           </div>
