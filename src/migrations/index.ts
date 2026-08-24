@@ -22,6 +22,7 @@ import * as migration_20260809_055542_zuru_zuru_gallery_category_chefs from './2
 import * as migration_20260810_092638_add_email_settings from './20260810_092638_add_email_settings';
 import * as migration_20260810_110739_add_email_settings_smtp from './20260810_110739_add_email_settings_smtp';
 import * as migration_20260824_120614_add_email_settings_contact_notification from './20260824_120614_add_email_settings_contact_notification';
+import * as migration_20260824_125110_add_newsletter_subscribers from './20260824_125110_add_newsletter_subscribers';
 
 export const migrations = [
   {
@@ -143,5 +144,10 @@ export const migrations = [
     up: migration_20260824_120614_add_email_settings_contact_notification.up,
     down: migration_20260824_120614_add_email_settings_contact_notification.down,
     name: '20260824_120614_add_email_settings_contact_notification'
+  },
+  {
+    up: migration_20260824_125110_add_newsletter_subscribers.up,
+    down: migration_20260824_125110_add_newsletter_subscribers.down,
+    name: '20260824_125110_add_newsletter_subscribers'
   },
 ];

@@ -1,28 +1,9 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { footerColumns, image } from '../data/site'
-import type { ZuruZuruFooterData, ZuruZuruNewsletterData, ZuruZuruSiteData } from '../mappers/dynamicTypes'
+import type { ZuruZuruFooterData, ZuruZuruSiteData } from '../mappers/dynamicTypes'
 import { formatHoursSummary } from '../utils/formatHours'
 import { Icon } from './Icon'
-
-/** CMS Site Settings newsletter config is optional: absent/disabled falls back to today's static copy. */
-export function Newsletter({ newsletter }: { newsletter?: ZuruZuruNewsletterData }) {
-  if (newsletter && !newsletter.enabled) return null
-  const title = newsletter?.title || 'Join Our Inner Circle'
-  const description = newsletter?.description || 'Receive exclusive recipes, event invitations, and special offers directly in your inbox. No spam, just Japanese inspiration.'
-  const placeholder = newsletter?.placeholder || 'Enter your email address'
-  const buttonLabel = newsletter?.buttonLabel || 'Subscribe'
-  return (
-    <section className="zz-nl-section zz-section-alt">
-      <div className="zz-container">
-        <div className="zz-section-subtitle zz-centered">Stay Connected</div>
-        <h2 className="zz-heading-section zz-text-center">{title}</h2>
-        <p className="zz-section-desc zz-text-center zz-newsletter-copy">{description}</p>
-        <form className="zz-nl-form"><label className="zz-visually-hidden" htmlFor="zz-newsletter">Email address</label><input id="zz-newsletter" placeholder={placeholder} type="email" /><button type="button">{buttonLabel}</button></form>
-      </div>
-    </section>
-  )
-}
 
 /** CMS Footer/Site Settings are optional: absent data keeps today's static footer content. */
 export function Footer({

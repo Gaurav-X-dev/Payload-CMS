@@ -24,6 +24,7 @@ import { BlogPosts } from './collections/BlogPosts'
 import { Locations } from './collections/Locations'
 import { FAQs } from './collections/FAQs'
 import { ContactSubmissions } from './collections/ContactSubmissions'
+import { NewsletterSubscribers } from './collections/NewsletterSubscribers'
 import { Gallery } from './collections/Gallery'
 import { Brands } from './collections/Brands'
 import { Portfolio } from './collections/Portfolio'
@@ -121,6 +122,7 @@ export default buildConfig({
     Locations,
     FAQs,
     ContactSubmissions,
+    NewsletterSubscribers,
     Gallery,
     Brands,
     Portfolio,

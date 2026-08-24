@@ -81,6 +81,7 @@ export interface Config {
     locations: Location;
     faqs: Faq;
     'contact-submissions': ContactSubmission;
+    'newsletter-subscribers': NewsletterSubscriber;
     gallery: Gallery;
     brands: Brand;
     portfolio: Portfolio;
@@ -114,6 +115,7 @@ export interface Config {
     locations: LocationsSelect<false> | LocationsSelect<true>;
     faqs: FaqsSelect<false> | FaqsSelect<true>;
     'contact-submissions': ContactSubmissionsSelect<false> | ContactSubmissionsSelect<true>;
+    'newsletter-subscribers': NewsletterSubscribersSelect<false> | NewsletterSubscribersSelect<true>;
     gallery: GallerySelect<false> | GallerySelect<true>;
     brands: BrandsSelect<false> | BrandsSelect<true>;
     portfolio: PortfolioSelect<false> | PortfolioSelect<true>;
@@ -3538,6 +3540,20 @@ export interface ContactSubmission {
   createdAt: string;
 }
 /**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "newsletter-subscribers".
+ */
+export interface NewsletterSubscriber {
+  id: number;
+  /**
+   * Super Admins may select a tenant. Other users are assigned from trusted tenant context.
+   */
+  tenantId: number | Tenant;
+  email: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * Manage core operational settings for this tenant. Limited to one document per tenant.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -4094,6 +4110,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'contact-submissions';
         value: number | ContactSubmission;
+      } | null)
+    | ({
+        relationTo: 'newsletter-subscribers';
+        value: number | NewsletterSubscriber;
       } | null)
     | ({
         relationTo: 'gallery';
@@ -6327,6 +6347,16 @@ export interface ContactSubmissionsSelect<T extends boolean = true> {
   status?: T;
   subject?: T;
   message?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "newsletter-subscribers_select".
+ */
+export interface NewsletterSubscribersSelect<T extends boolean = true> {
+  tenantId?: T;
+  email?: T;
   updatedAt?: T;
   createdAt?: T;
 }

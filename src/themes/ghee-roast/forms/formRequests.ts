@@ -11,6 +11,7 @@ import { DEFAULT_CONTACT_SUBJECT_OPTIONS } from '../../../validation/contactPage
 
 export const CONTACT_SUBMISSIONS_ENDPOINT = '/api/contact-submissions'
 export const RESERVATIONS_ENDPOINT = '/api/reservations'
+export const NEWSLETTER_SUBSCRIBERS_ENDPOINT = '/api/newsletter-subscribers'
 
 type FormValues = Readonly<Record<string, unknown>>
 
@@ -35,6 +36,10 @@ export type ReservationRequestBody = {
   time: string
 }
 
+export type NewsletterSubscriptionRequestBody = {
+  email: string
+}
+
 export type GheeRoastFormRequest =
   | {
       body: ContactSubmissionRequestBody
@@ -43,6 +48,10 @@ export type GheeRoastFormRequest =
   | {
       body: ReservationRequestBody
       endpoint: typeof RESERVATIONS_ENDPOINT
+    }
+  | {
+      body: NewsletterSubscriptionRequestBody
+      endpoint: typeof NEWSLETTER_SUBSCRIBERS_ENDPOINT
     }
 
 export type FormRequestResult<TRequest extends GheeRoastFormRequest = GheeRoastFormRequest> =
@@ -204,8 +213,8 @@ export function buildGheeRoastFormRequest(
 export function buildNewsletterRequest(
   values: FormValues,
 ): FormRequestResult<{
-  body: ContactSubmissionRequestBody
-  endpoint: typeof CONTACT_SUBMISSIONS_ENDPOINT
+  body: NewsletterSubscriptionRequestBody
+  endpoint: typeof NEWSLETTER_SUBSCRIBERS_ENDPOINT
 }> {
   const email = normalizeEmail(value(values, 'email'))
   const emailValidation = validateEmail(email)
@@ -214,14 +223,8 @@ export function buildNewsletterRequest(
   return {
     ok: true,
     request: {
-      body: {
-        email,
-        message: 'Newsletter signup request from the website.',
-        name: 'Newsletter Subscriber',
-        subject: 'Newsletter Signup',
-        type: 'general',
-      },
-      endpoint: CONTACT_SUBMISSIONS_ENDPOINT,
+      body: { email },
+      endpoint: NEWSLETTER_SUBSCRIBERS_ENDPOINT,
     },
   }
 }

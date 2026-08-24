@@ -52,6 +52,8 @@ export async function sendContactNotification(
 
     const html = buildTransactionalEmailHtml({
       bodyHtml,
+      buttonLabel: mailContext.siteUrl ? 'Visit Site' : undefined,
+      buttonUrl: mailContext.siteUrl ?? undefined,
       headingText: 'New Contact Form Submission',
       logoUrl: mailContext.logoUrl ?? undefined,
       senderDisplayName: mailContext.senderDisplayName || 'Your site',

@@ -7,6 +7,7 @@ export type TenantMailContext = {
   logoUrl: string | null
   senderDisplayName: string
   siteName: string
+  siteUrl: string | null
   supportEmail: string
   tenantName: string
 }
@@ -146,12 +147,15 @@ export const resolveTenantMailContext = async (
   const businessName = siteSettings?.businessName ?? ''
   const tenantContactEmail = tenant?.contact?.contactEmail ?? ''
   const footerSupportEmail = emailSettings?.footer?.supportEmail ?? ''
+  const primaryDomain = tenant?.domains?.find((entry) => entry.domain)?.domain
+  const siteUrl = primaryDomain ? `https://${primaryDomain}` : null
 
   return {
     emailSettings,
     logoUrl,
     senderDisplayName: businessName || tenantName,
     siteName: businessName || tenantName,
+    siteUrl,
     supportEmail: footerSupportEmail || tenantContactEmail,
     tenantName,
   }
