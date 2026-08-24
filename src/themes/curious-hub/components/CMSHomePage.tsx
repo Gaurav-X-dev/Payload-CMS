@@ -716,7 +716,7 @@ function BrandsGrid({ block }: { block: CuriousLadooBrandsShowcaseBlockData }) {
           <Link className={styles.aboutLink} href="/brands">View All Brands →</Link>
         </ScrollReveal>
       </div>
-      <div className={styles.brandsGrid}>
+      <div className={styles.brandsGrid} data-brand-count={block.brands.length}>
         {block.brands.map((brand, i) =>
           brand.comingSoon ? (
             <ScrollReveal delay={revealDelay(i, 4)} key={brand.id}>
