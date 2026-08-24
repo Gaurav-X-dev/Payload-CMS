@@ -15,30 +15,27 @@ type ContactSubmissionDoc = {
 }
 
 /**
- * Routes every contact-form submission to the tenant's own configured SMTP (EmailSettings),
- * the same shared mailer used for welcome/forgot-password emails — no separate third-party
- * provider. The recipient is Tenant.contact.contactEmail specifically (not EmailSettings'
- * footer support email, which is a different, customer-facing address).
+ * Routes every contact-form submission to the tenant's own configured SMTP (EmailSettings) — the
+ * same shared mailer used for welcome/forgot-password emails, no separate third-party provider.
+ * The recipient is EmailSettings.smtp.contactNotificationEmail specifically: a dedicated field
+ * that lives alongside the SMTP config itself (distinct from Tenant.contact.contactEmail, which is
+ * the public-facing address shown on the site).
  */
 export async function sendContactNotification(
   payload: Payload,
   tenantID: TenantID,
   submission: ContactSubmissionDoc,
 ): Promise<{ ok: boolean; reason?: string }> {
-  const tenant = await payload
-    .findByID({ id: tenantID, collection: 'tenants', depth: 0, overrideAccess: true })
-    .catch(() => null)
-
-  const notifyEmail = tenant?.contact?.contactEmail
-  if (!notifyEmail) {
-    payload.logger.info(
-      `Contact notification skipped for tenant ${tenantID}: no contact email configured on the Tenant.`,
-    )
-    return { ok: false, reason: 'no_recipient' }
-  }
-
   try {
     const mailContext = await resolveTenantMailContext(payload, tenantID)
+    const notifyEmail = mailContext.emailSettings?.smtp?.contactNotificationEmail
+
+    if (!notifyEmail) {
+      payload.logger.info(
+        `Contact notification skipped for tenant ${tenantID}: no Contact Form Notification Email configured in EmailSettings.`,
+      )
+      return { ok: false, reason: 'no_recipient' }
+    }
 
     const rows = [
       ['Name', submission.name],
@@ -57,7 +54,7 @@ export async function sendContactNotification(
       bodyHtml,
       headingText: 'New Contact Form Submission',
       logoUrl: mailContext.logoUrl ?? undefined,
-      senderDisplayName: mailContext.senderDisplayName || tenant?.name || 'Your site',
+      senderDisplayName: mailContext.senderDisplayName || 'Your site',
     })
 
     const text = [

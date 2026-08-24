@@ -3912,6 +3912,10 @@ export interface EmailSetting {
      * Optional — defaults to no reply-to header if left blank.
      */
     replyTo?: string | null;
+    /**
+     * Where new contact form submissions are sent, using this SMTP config. Independent of the public Contact Email shown on the site.
+     */
+    contactNotificationEmail?: string | null;
   };
   welcomeEmail: {
     enabled?: boolean | null;
@@ -6652,6 +6656,7 @@ export interface EmailSettingsSelect<T extends boolean = true> {
         fromAddress?: T;
         fromName?: T;
         replyTo?: T;
+        contactNotificationEmail?: T;
       };
   welcomeEmail?:
     | T

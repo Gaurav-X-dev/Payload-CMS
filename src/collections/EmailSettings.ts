@@ -226,6 +226,16 @@ export const EmailSettings: CollectionConfig = {
                   validate: ((value) => validateEmail(value, { required: false })) as EmailFieldValidation,
                   admin: { condition: smtpEnabledCondition, description: 'Optional — defaults to no reply-to header if left blank.' },
                 },
+                {
+                  name: 'contactNotificationEmail',
+                  type: 'email',
+                  label: 'Contact Form Notification Email',
+                  validate: ((value) => validateEmail(value, { required: false })) as EmailFieldValidation,
+                  admin: {
+                    condition: smtpEnabledCondition,
+                    description: 'Where new contact form submissions are sent, using this SMTP config. Independent of the public Contact Email shown on the site.',
+                  },
+                },
               ],
             },
           ],
