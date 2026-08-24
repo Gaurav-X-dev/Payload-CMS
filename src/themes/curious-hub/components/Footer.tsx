@@ -21,10 +21,10 @@ export function Footer({
       }))
   const copyright = footer?.copyright || curiousHubSiteData.copyright
   const tagline = site?.tagline || curiousHubSiteData.tagline
-  const description = site?.description || curiousHubSiteData.description
-  const social = site && site.social.length > 0 ? site.social : curiousHubSiteData.social
-  const email = site?.email || curiousHubSiteData.email
-  const address = site?.address || curiousHubSiteData.address
+  const description = site?.description
+  const social = site?.social ?? []
+  const email = site?.email
+  const address = site?.address
 
   return (
     <footer aria-label="Footer" className={styles.footer} id="footer">
@@ -34,7 +34,7 @@ export function Footer({
             Curious <span>Ladoo</span>
           </div>
           <div className={styles.footerTagline}>{tagline}</div>
-          <p className={styles.footerDesc}>{description}</p>
+          {description && <p className={styles.footerDesc}>{description}</p>}
           <div className={styles.footerSocial}>
             {social.map((s) => (
               <a
@@ -48,12 +48,16 @@ export function Footer({
             ))}
           </div>
           <div className={styles.footerContact}>
-            <div className={styles.footerContactItem}>
-              <span>✉</span> {email}
-            </div>
-            <div className={styles.footerContactItem}>
-              <span>📍</span> {address}
-            </div>
+            {email && (
+              <div className={styles.footerContactItem}>
+                <span>✉</span> {email}
+              </div>
+            )}
+            {address && (
+              <div className={styles.footerContactItem}>
+                <span>📍</span> {address}
+              </div>
+            )}
           </div>
         </div>
 

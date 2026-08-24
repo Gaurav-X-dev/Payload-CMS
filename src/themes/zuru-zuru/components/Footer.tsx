@@ -39,20 +39,13 @@ export function Footer({
         title: heading,
       }))
   const brandName = site?.name || 'Zuru Zuru'
-  const description = site?.description || 'A premium Japanese Izakaya experience bringing the authentic flavours of Tokyo to New Delhi. Every dish tells a story of tradition, passion, and culinary excellence.'
+  const description = site?.description
   const logoSrc = site?.logo?.src || image('zuruzuru_logo.png')
   const logoAlt = site?.logo?.alt || 'Zuru Zuru'
-  const social = site && site.social.length > 0
-    ? site.social
-    : [
-        { href: 'https://www.instagram.com/zuruzuru.in/?hl=en', icon: 'instagram', label: 'Instagram' },
-        { href: '#', icon: 'facebook', label: 'Facebook' },
-        { href: '#', icon: 'twitter', label: 'Twitter' },
-        { href: '#', icon: 'youtube', label: 'YouTube' },
-      ]
-  const address = site?.address || 'Zuru Zuru, Delhi, India 110049'
+  const social = site?.social ?? []
+  const address = site?.address
   const phone = site?.phone
-  const email = site?.email || 'hello@zuruzuru.in'
+  const email = site?.email
   const hoursSummary = site ? formatHoursSummary(site.hours) : ''
   const copyright = footer?.copyright || '© 2026 Zuru Zuru Izakaya. All Rights Reserved.'
   const bottomLinks = footer && footer.bottomLinks.length > 0
@@ -69,7 +62,7 @@ export function Footer({
         <div className="zz-footer-grid">
           <div className="zz-footer-about">
             <div className="zz-footer-brand-container"><Image alt={logoAlt} className="zz-footer-logo" height={62} src={logoSrc} width={62} /><span className="zz-brand-name">{brandName}</span></div>
-            <p>{description}</p>
+            {description && <p>{description}</p>}
             <div className="zz-footer-social">
               {social.map((entry) => (
                 <a aria-label={entry.label} href={entry.href} key={entry.label}><Icon name={entry.icon.toLowerCase()} /></a>
@@ -80,7 +73,7 @@ export function Footer({
           <div>
             <h4>Contact</h4>
             <ul className="zz-footer-contact">
-              <li><Icon name="map" /> {address}</li>
+              {address && <li><Icon name="map" /> {address}</li>}
               {phone && <li><Icon name="phone" /> {phone}</li>}
               {email && <li><Icon name="email" /> {email}</li>}
             </ul>

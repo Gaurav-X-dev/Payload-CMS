@@ -77,16 +77,16 @@ export function Header({
   // `nav.cta` is explicitly `null` when the CMS Cta block exists but its "Enabled" checkbox is
   // off — that must hide the button. Only fall back to the default when there is no CMS nav
   // document at all (nav itself is undefined), not merely when its cta is disabled.
-  const cta = nav ? nav.cta : { label: 'Reserve', url: '/reservation' }
+  const cta = nav ? nav.cta : null
 
-  const hoursSummary = site ? formatHoursSummary(site.hours) : 'Mon – Sun: 12:00 PM – 11:00 PM'
-  const announcementEnabled = site ? site.announcement.enabled : true
-  const announcementText = site?.announcement.text || 'Grand Summer Festival — 20% Off This Weekend'
+  const hoursSummary = site ? formatHoursSummary(site.hours) : ''
+  const announcementEnabled = site ? site.announcement.enabled : false
+  const announcementText = site?.announcement.text
   const phone = site?.phone
 
   return (
     <>
-      {pathname === '/' && announcementEnabled && (
+      {pathname === '/' && announcementEnabled && announcementText && (
         <div className="zz-announcement-bar">
           <div className="zz-container">
             <div className="zz-announcement-left"><span className="zz-inline-icon"><Icon name="flag" size={13} /> {announcementText}</span>{hoursSummary && <><i /><span>{hoursSummary}</span></>}</div>

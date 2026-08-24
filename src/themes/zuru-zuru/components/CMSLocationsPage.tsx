@@ -15,7 +15,7 @@ import type {
  * by the Contact page's Visit Us section) rather than a new formatter.
  */
 function LocationCard({ location }: { location: ZuruZuruLocationData }) {
-  const hoursSummary = groupBusinessHours(location.hours).join(' · ') || 'Opening Soon'
+  const hoursSummary = groupBusinessHours(location.hours).join(' · ')
   const description = [location.address, location.phone, hoursSummary].filter(Boolean).join(' · ')
   const { badge, name } = splitLocationBadge(location.title)
   return (
