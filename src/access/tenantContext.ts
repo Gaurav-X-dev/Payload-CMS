@@ -157,6 +157,24 @@ export const getAuthenticatedTenantID = (req: PayloadRequest): TenantID | null =
     const explicitTenantID = getExplicitTenantID(req)
     if (explicitTenantID && tenantIDs.includes(explicitTenantID)) {
       candidateTenantID = explicitTenantID
+    } else {
+      const host = req.headers?.get?.('host')
+      if (host) {
+        const localSite = resolveLocalSite(host)
+        if (localSite && Array.isArray(req.user?.tenants)) {
+          const matchedTenant = req.user.tenants.find((tenant) => {
+            if (tenant && typeof tenant === 'object') {
+              const id = toTenantID(tenant)
+              const slug = 'slug' in tenant ? tenant.slug : null
+              return slug === localSite.key && id !== null && tenantIDs.includes(id)
+            }
+            return false
+          })
+          if (matchedTenant && typeof matchedTenant === 'object') {
+            candidateTenantID = toTenantID(matchedTenant)
+          }
+        }
+      }
     }
   }
 

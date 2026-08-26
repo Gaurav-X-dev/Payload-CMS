@@ -47,17 +47,20 @@ export const assignTenant: CollectionBeforeValidateHook = async ({
 
   if (req.user) {
     const authenticatedTenantID = getAuthenticatedTenantID(req)
+    const userTenantIDs = getUserTenantIDs(req.user)
+
+    if (data.tenantId) {
+      const requestedTenantID = normalizeTenantID(data.tenantId)
+      if (requestedTenantID && userTenantIDs.includes(requestedTenantID)) {
+        data.tenantId = requestedTenantID
+        return data
+      }
+    }
+
     if (!authenticatedTenantID) {
       return tenantError(
         'Select one of your assigned tenants using the trusted tenant context.',
       )
-    }
-
-    if (data.tenantId) {
-      const requestedTenantID = normalizeTenantID(data.tenantId)
-      if (requestedTenantID && requestedTenantID !== authenticatedTenantID) {
-        return tenantError('You do not have permission to create content for the specified tenant.')
-      }
     }
 
     data.tenantId = authenticatedTenantID
