@@ -224,16 +224,29 @@ export const resolveActiveTenantContext = (
 }
 
 const activeTenantMutationWhere = (req: PayloadRequest): true | Where | false => {
-  const context = resolveActiveTenantContext(req)
-  if (!context) return false
-  if (context.isSuperAdmin) return true
-  if (!isTenantAdminUser(req.user) || !context.tenantID) return false
+  if (!req.user) return false
+  if (isSuperAdminUser(req.user)) return true
+  if (!isTenantAdminUser(req.user)) return false
 
-  return {
-    tenantId: {
-      equals: context.tenantID,
-    },
+  const context = resolveActiveTenantContext(req)
+  if (context?.tenantID) {
+    return {
+      tenantId: {
+        equals: context.tenantID,
+      },
+    }
   }
+
+  const tenantIDs = getUserTenantIDs(req.user)
+  if (tenantIDs.length > 0) {
+    return {
+      tenantId: {
+        in: tenantIDs,
+      },
+    }
+  }
+
+  return false
 }
 
 export const canCreateTenantContent: Access = ({ req }) => {
@@ -258,16 +271,29 @@ export const tenantContentMutations = {
 }
 
 export const canManageUserWithinActiveTenant: Access = ({ req }) => {
-  const context = resolveActiveTenantContext(req)
-  if (!context) return false
-  if (context.isSuperAdmin) return true
-  if (!context.tenantID || !isTenantAdminUser(req.user)) return false
+  if (!req.user) return false
+  if (isSuperAdminUser(req.user)) return true
+  if (!isTenantAdminUser(req.user)) return false
 
-  return {
-    tenants: {
-      in: [context.tenantID],
-    },
+  const context = resolveActiveTenantContext(req)
+  if (context?.tenantID) {
+    return {
+      tenants: {
+        in: [context.tenantID],
+      },
+    }
   }
+
+  const tenantIDs = getUserTenantIDs(req.user)
+  if (tenantIDs.length > 0) {
+    return {
+      tenants: {
+        in: tenantIDs,
+      },
+    }
+  }
+
+  return false
 }
 
 /**
