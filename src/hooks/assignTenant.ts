@@ -3,6 +3,7 @@ import { ValidationError } from 'payload'
 
 import {
   getAuthenticatedTenantID,
+  getUserTenantIDs,
   isSuperAdminUser,
   normalizeTenantID,
   resolvePublicTenantID,
