@@ -50,6 +50,10 @@ export const localSiteRegistry: Readonly<Record<string, LocalSiteMatch>> = {
   'www.zuruzuru.in': zuruZuruSite,
   'verygoodgheeroast.in': gheeRoastSite,
   'www.verygoodgheeroast.in': gheeRoastSite,
+  // Dev Staging Subdomains
+  'dev.curiousladdoo.com': curiousHubSite,
+  'dev.zuruzuru.in': zuruZuruSite,
+  'dev.verygoodgheeroast.in': gheeRoastSite,
 }
 
 export function resolveLocalSite(host: string | null | undefined): LocalSite | null {
