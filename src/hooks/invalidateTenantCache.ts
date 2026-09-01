@@ -18,8 +18,15 @@ const invalidateByTenantId = (
 
   try {
     revalidateTag(`tenant-${tenantId}`, 'max')
-  } catch {
-    payload.logger.warn(`Failed to revalidate cache tag for tenant-${tenantId}`)
+  } catch (error) {
+    // Swallowing the real error previously made every failure look identical (a standalone
+    // script with no Next.js request context vs. a genuine bug in a live admin request are
+    // otherwise indistinguishable from the logs alone) — logging it is what actually lets us
+    // tell those apart.
+    payload.logger.warn({
+      err: error instanceof Error ? error.message : String(error),
+      msg: `Failed to revalidate cache tag for tenant-${tenantId}`,
+    })
   }
 }
 
