@@ -48,6 +48,7 @@ const site: CuriousLadooHomeContent['site'] = {
   description: 'Fallback site description.',
   email: '',
   favicon: { alt: 'favicon', id: 9, src: '/media/favicon.png' },
+  logo: null,
   name: 'Curious Ladoo',
   newsletter: { buttonLabel: '', description: '', enabled: false, errorMessage: '', placeholder: '', successMessage: '', title: '' },
   social: [],
