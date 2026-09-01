@@ -72,8 +72,11 @@ export function Header({
     : mobileNavigation.map(([href, label]) => ({ label, url: href }))
 
   const brandName = nav?.brandName || 'Zuru Zuru'
-  const logoSrc = nav?.logo?.src || site?.logo?.src || image('zuruzuru_logo.png')
-  const logoAlt = nav?.logo?.alt || site?.logo?.alt || 'Zuru Zuru Izakaya'
+  // Tenant Branding > Logo is the single source of truth (matches Footer/PageLoader) — Nav's own
+  // `logo` field is intentionally NOT consulted here, so uploading one logo updates every spot
+  // instead of the header silently keeping whatever was set on the Nav document separately.
+  const logoSrc = site?.logo?.src || image('zuruzuru_logo.png')
+  const logoAlt = site?.logo?.alt || 'Zuru Zuru Izakaya'
   // `nav.cta` is explicitly `null` when the CMS Cta block exists but its "Enabled" checkbox is
   // off — that must hide the button. Only fall back to the default when there is no CMS nav
   // document at all (nav itself is undefined), not merely when its cta is disabled.

@@ -34,7 +34,10 @@ export function GheeRoastLayout({
   const headerNavigation = {
     ...navigation,
     brandName: navigation.brandName || site.siteName,
-    logo: navigation.logo || site.logo,
+    // Tenant Branding > Logo is the single source of truth (matches Zuru Zuru/Curious Hub) —
+    // Nav's own `logo` field is intentionally NOT consulted here, so uploading one logo updates
+    // both Header and Footer instead of them silently keeping whatever was set on Nav separately.
+    logo: site.logo,
     tagline: navigation.tagline || site.tagline,
   }
   const jsonLd = content.seo.jsonLd
