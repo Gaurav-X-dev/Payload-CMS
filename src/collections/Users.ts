@@ -18,7 +18,9 @@ import {
   getUserTenantIDs,
   isSuperAdminUser,
   isTenantAdminUser,
+  normalizeTenantID,
   resolvePublicTenantID,
+  type TenantID,
   USER_ROLES,
   USER_ROLE_OPTIONS,
 } from '../access/tenantContext'
@@ -336,6 +338,32 @@ const isResetPasswordHashWrite = (
   typeof data.hash === 'string' &&
   typeof data.salt === 'string'
 
+/**
+ * A Tenant Admin creating a new team member needs exactly one "active" tenant to assign them to.
+ * getAuthenticatedTenantID resolves that unambiguously for a single-tenant admin, or a
+ * multi-tenant admin browsing on one of their tenants' own hostnames — but is null for a
+ * multi-tenant admin on a shared admin origin with no host match. In that case, fall back to an
+ * explicitly-submitted single-tenant `tenants` selection, accepted only if it's genuinely one of
+ * this admin's own assigned tenants (mirrors the fallback already used for content creation in
+ * canCreateTenantContent / assignTenant.ts).
+ */
+const resolveActiveManagementTenantID = (
+  req: PayloadRequest,
+  protectedInput: ProtectedUserInput,
+): null | TenantID => {
+  const hostResolvedTenantID = getAuthenticatedTenantID(req)
+  if (hostResolvedTenantID) return hostResolvedTenantID
+
+  if (!protectedInput.tenantsPresent) return null
+  const submitted = Array.isArray(protectedInput.tenants) ? protectedInput.tenants : [protectedInput.tenants]
+  if (submitted.length !== 1) return null
+  const requestedTenantID = normalizeTenantID(submitted[0])
+  if (requestedTenantID === null) return null
+
+  const adminTenantIDs = getUserTenantIDs(req.user)
+  return adminTenantIDs.includes(requestedTenantID) ? requestedTenantID : null
+}
+
 export const enforceUserRBAC: CollectionBeforeValidateHook = async ({
   data,
   operation,
@@ -413,13 +441,14 @@ export const enforceUserRBAC: CollectionBeforeValidateHook = async ({
     if (protectedInput.apiKeyPresent) {
       return userSecurityError('Tenant Admins cannot set API keys.', 'apiKey')
     }
-    const tenantID = getAuthenticatedTenantID(req)
-    if (!tenantID) {
-      throw new ValidationError({
-        errors: [{ message: 'An assigned tenant context is required.', path: 'tenants' }],
-      })
-    }
+
     if (operation === 'create') {
+      const tenantID = resolveActiveManagementTenantID(req, protectedInput)
+      if (!tenantID) {
+        throw new ValidationError({
+          errors: [{ message: 'Select one of your assigned tenants using the trusted tenant context.', path: 'tenants' }],
+        })
+      }
       if (
         protectedInput.rolesPresent &&
         !canAssignRoles(req.user, protectedInput.roles)

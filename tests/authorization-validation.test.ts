@@ -65,6 +65,11 @@ const tenantMember = {
   roles: [USER_ROLES.tenantMember],
   tenants: [10],
 }
+const multiTenantAdmin = {
+  id: 4,
+  roles: [USER_ROLES.tenantAdmin],
+  tenants: [10, 20],
+}
 
 test('role helpers enforce the explicit hierarchy', () => {
   assert.equal(isSuperAdminUser(superAdmin), true)
@@ -180,7 +185,7 @@ const requestFor = (
 const runUserValidation = (
   data: Record<string, unknown>,
   originalDoc: Record<string, unknown> | undefined,
-  user: typeof superAdmin | typeof tenantAdmin | typeof tenantMember,
+  user: typeof superAdmin | typeof tenantAdmin | typeof tenantMember | typeof multiTenantAdmin,
   operation: 'create' | 'update',
 ) => {
   const req = requestFor(user)
@@ -201,6 +206,42 @@ const runUserValidation = (
     data: fieldAccessibleData,
     operation,
     originalDoc,
+    req,
+  } as never)
+}
+
+/**
+ * No x-tenant-id header at all — the ambiguous case a multi-tenant admin hits on a shared admin
+ * origin with no host-derived active tenant (see resolveActiveManagementTenantID in Users.ts).
+ * `tenants` is captured raw via captureProtectedUserInput (as Payload does, before field access
+ * runs) but then stripped from `data` itself, same as runUserValidation — the hook only ever
+ * sees the submitted tenant selection through protectedInput, never through `data.tenants`
+ * directly, matching how a real non-Super-Admin request actually reaches this hook.
+ */
+const runAmbiguousUserValidation = (
+  data: Record<string, unknown>,
+  user: typeof multiTenantAdmin,
+) => {
+  const req = {
+    context: {},
+    headers: new Headers(),
+    payload: {
+      count: async () => ({ totalDocs: 1 }),
+      find: async () => ({ docs: [{ id: 20, isActive: true }], totalDocs: 1 }),
+    },
+    user,
+  } as unknown as PayloadRequest
+  captureProtectedUserInput({ args: { data }, operation: 'create', req } as never)
+
+  const fieldAccessibleData = { ...data }
+  delete fieldAccessibleData.apiKey
+  delete fieldAccessibleData.roles
+  delete fieldAccessibleData.tenants
+
+  return enforceUserRBAC({
+    data: fieldAccessibleData,
+    operation: 'create',
+    originalDoc: undefined,
     req,
   } as never)
 }
@@ -281,6 +322,35 @@ test('allowed Tenant Admin creation is forced to the safe member role and active
   const result = await runUserValidation(data, undefined, tenantAdmin, 'create')
   assert.deepEqual(result?.roles, [USER_ROLES.tenantMember])
   assert.deepEqual(result?.tenants, [10])
+})
+
+test('multi-tenant Admin with no host-resolved active tenant can still create, via an explicit own-tenant selection', async () => {
+  const result = await runAmbiguousUserValidation(
+    { email: 'member@example.com', name: 'Tenant Member', tenants: [20] },
+    multiTenantAdmin,
+  )
+  assert.deepEqual(result?.roles, [USER_ROLES.tenantMember])
+  assert.deepEqual(result?.tenants, [20])
+})
+
+test('multi-tenant Admin cannot create for a tenant outside their own membership', async () => {
+  await assert.rejects(
+    () => runAmbiguousUserValidation(
+      { email: 'member@example.com', name: 'Tenant Member', tenants: [99] },
+      multiTenantAdmin,
+    ),
+    /invalid: tenants/i,
+  )
+})
+
+test('multi-tenant Admin with no active tenant and no explicit selection is rejected', async () => {
+  await assert.rejects(
+    () => runAmbiguousUserValidation(
+      { email: 'member@example.com', name: 'Tenant Member' },
+      multiTenantAdmin,
+    ),
+    /invalid: tenants/i,
+  )
 })
 
 test('audit fields ignore crafted values and preserve original creator', async () => {

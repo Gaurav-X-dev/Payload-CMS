@@ -249,11 +249,23 @@ const activeTenantMutationWhere = (req: PayloadRequest): true | Where | false =>
   return false
 }
 
+/**
+ * Mirrors activeTenantMutationWhere's "ambiguous multi-tenant" fallback: a Tenant Admin with no
+ * single host-resolved active tenant can still create content — for one of their own assigned
+ * tenants — rather than being blocked outright. Create has no existing document to scope a Where
+ * filter against, so this returns a boolean (letting the Admin UI show the "Create New" button);
+ * assignTenant.ts is the actual enforcement point that validates the submitted tenantId belongs
+ * to this user before the document is written.
+ */
 export const canCreateTenantContent: Access = ({ req }) => {
   const context = resolveActiveTenantContext(req)
-  if (!context) return false
-  if (context.isSuperAdmin) return true
-  return Boolean(context.tenantID && isTenantAdminUser(req.user))
+  if (context) {
+    if (context.isSuperAdmin) return true
+    return Boolean(context.tenantID && isTenantAdminUser(req.user))
+  }
+
+  if (!req.user || !isTenantAdminUser(req.user)) return false
+  return getUserTenantIDs(req.user).length > 0
 }
 
 export const canCreateTenantUser = canCreateTenantContent

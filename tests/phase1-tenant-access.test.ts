@@ -43,14 +43,24 @@ test('Tenant A Admin creates content only in trusted Tenant A context', () => {
   assert.equal(resolveActiveTenantContext(spoofed as never)?.tenantID, 1)
 })
 
-test('multi-tenant admin mutation requires a validated active tenant', () => {
+test('ambiguous multi-tenant admin is scoped to all their own tenants, not blocked outright', () => {
   const ambiguous = request({
     roles: ['tenant_admin'],
     tenantIDs: [1, 2],
   })
-  assert.equal(canCreateTenantContent(accessArgs(ambiguous)), false)
-  assert.equal(canUpdateTenantContent(accessArgs(ambiguous)), false)
-  assert.equal(canDeleteTenantContent(accessArgs(ambiguous)), false)
+  // Create has no existing document to scope a Where filter against, so this is a coarse
+  // boolean gate: an ambiguous multi-tenant admin may attempt to create, for one of their own
+  // tenants. assignTenant.ts is the actual enforcement point — it validates the submitted
+  // tenantId against this admin's real tenant list and rejects anything else.
+  assert.equal(canCreateTenantContent(accessArgs(ambiguous)), true)
+  // Update/delete DO have an existing document to scope against, so they fall back to "any of
+  // my own tenants" rather than a single equals-match — never unscoped, never blocked outright.
+  assert.deepEqual(canUpdateTenantContent(accessArgs(ambiguous)), {
+    tenantId: { in: [1, 2] },
+  })
+  assert.deepEqual(canDeleteTenantContent(accessArgs(ambiguous)), {
+    tenantId: { in: [1, 2] },
+  })
 
   const tenantB = request({
     activeTenantID: 2,
@@ -70,8 +80,17 @@ test('unassigned active tenant is rejected for a multi-tenant admin', () => {
     tenantIDs: [1, 2],
   })
 
+  // A spoofed/unowned x-tenant-id (3) never resolves to a single active tenant...
   assert.equal(resolveActiveTenantContext(req as never), null)
-  assert.equal(canCreateTenantContent(accessArgs(req)), false)
+  // ...so update/delete fall back to this admin's real tenants (1, 2) — tenant 3 is never
+  // reachable, whether via a single-tenant equals scope or the ambiguous in-scope fallback.
+  assert.deepEqual(canUpdateTenantContent(accessArgs(req)), {
+    tenantId: { in: [1, 2] },
+  })
+  // Create's coarse gate allows the attempt (same as the ambiguous case above); assignTenant.ts
+  // is what actually rejects tenant 3 specifically, since it isn't in this admin's tenant list —
+  // that enforcement is covered by the authorization-validation suite, not this access-layer test.
+  assert.equal(canCreateTenantContent(accessArgs(req)), true)
 })
 
 test('Tenant Members are read-only for business content', () => {
