@@ -35,6 +35,7 @@ export function buildGheeRoastMetadata({
   return {
     alternates: canonical ? { canonical } : undefined,
     description: description || undefined,
+    icons: content.site.favicon ? { icon: content.site.favicon.src } : undefined,
     keywords: content.seo.keywords?.length ? content.seo.keywords : undefined,
     openGraph: {
       description: content.seo.ogDescription || description || undefined,

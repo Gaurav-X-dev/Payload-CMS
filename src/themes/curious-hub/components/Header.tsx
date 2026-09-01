@@ -1,20 +1,23 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { navigationData as curiousHubNavigation } from '../data/navigation'
-import type { CuriousLadooNavigationData } from '../mappers/dynamicTypes'
+import type { CuriousLadooNavigationData, CuriousLadooSiteData } from '../mappers/dynamicTypes'
 import type { NavItemData } from '../types'
 import styles from './Theme.module.css'
 
-/** CMS Nav is optional: pages not yet converted to CMS omit it and keep today's static nav. */
+/** CMS Nav/Site are optional: pages not yet converted to CMS omit them and keep today's static nav. */
 export function Header({
   nav,
   pathname,
+  site,
   tagline,
 }: {
   nav?: CuriousLadooNavigationData
   pathname: string
+  site?: CuriousLadooSiteData
   tagline?: string
 }) {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -58,7 +61,11 @@ export function Header({
         role="navigation"
       >
         <Link aria-label={`${brandName} Home`} className={styles.navLogo} href="/">
-          <div className={styles.navLogoMark}>CL</div>
+          {site?.logo ? (
+            <Image alt={site.logo.alt} className={styles.navLogoMarkImg} height={42} src={site.logo.src} width={42} />
+          ) : (
+            <div className={styles.navLogoMark}>CL</div>
+          )}
           <div className={styles.navLogoText}>
             <span className={styles.brandName}>{brandName}</span>
             <span className={styles.brandTagline}>{brandTagline}</span>

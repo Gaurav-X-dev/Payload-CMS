@@ -32,6 +32,7 @@
 .zz-page-loader-loaded{opacity:0;visibility:hidden}
 .zz-loader-logo{animation:zzLoaderPulse 1.5s ease-in-out infinite;color:var(--zz-bg);font-family:var(--zz-heading);font-size:clamp(3rem,8vw,6rem);font-weight:700;letter-spacing:.05em}
 .zz-loader-logo span{color:var(--zz-accent);font-family:var(--zz-japanese);margin-left:.35em}
+.zz-loader-logo-img{animation:zzLoaderPulse 1.5s ease-in-out infinite;border-radius:4px;background:#fff;object-fit:contain}
 .zz-loader-subtitle{animation:zzLoaderFadeUp .8s ease .5s forwards;color:var(--zz-accent);font-family:var(--zz-body);font-size:.75rem;letter-spacing:.3em;margin-top:1rem;opacity:0;text-transform:uppercase}
 .zz-loader-bar{animation:zzLoaderBar 1.8s ease forwards;background:var(--zz-accent);bottom:0;height:2px;left:0;position:absolute}
 @keyframes zzLoaderPulse{0%,100%{opacity:1}50%{opacity:.5}}

@@ -10,6 +10,7 @@
 .pageLoader { position: fixed; inset: 0; background: var(--ch-dark); z-index: 99999; display: flex; align-items: center; justify-content: center; flex-direction: column; transition: opacity 0.8s ease, visibility 0.8s ease; }
 .pageLoaderLoaded { opacity: 0; visibility: hidden; }
 .loaderLogo { font-family: 'Playfair Display', serif; font-size: clamp(3rem, 8vw, 6rem); font-weight: 700; color: var(--ch-text-light); letter-spacing: 0.1em; animation: loaderPulse 1.5s ease-in-out infinite; }
+.loaderLogoImg { border-radius: 50%; object-fit: cover; animation: loaderPulse 1.5s ease-in-out infinite; }
 .loaderLogo span { color: var(--ch-accent); }
 .loaderSubtitle { font-family: 'Inter', sans-serif; font-size: 0.75rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--ch-accent); margin-top: 1rem; opacity: 0; animation: loaderFadeUp 0.8s ease 0.5s forwards; }
 .loaderBar { position: absolute; bottom: 0; left: 0; height: 2px; background: var(--ch-accent); animation: loaderBar 1.8s ease forwards; }
@@ -23,6 +24,8 @@
 .navLogo { display: flex; align-items: center; gap: 12px; z-index: 1001; }
 .navLogoMark { width: 42px; height: 42px; background: #111 !important; color: #f0ede6 !important; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; letter-spacing: 0.05em; transition: transform 0.3s ease, background 0.3s ease; flex-shrink: 0; }
 .navLogoMark:hover { transform: rotate(8deg); }
+.navLogoMarkImg { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; flex-shrink: 0; transition: transform 0.3s ease; }
+.navLogoMarkImg:hover { transform: rotate(8deg); }
 .navLogoText { display: flex; flex-direction: column; }
 .brandName { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 600; letter-spacing: 0.04em; color: #111 !important; line-height: 1.1; transition: color 0.3s; }
 .brandTagline { font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; color: #666 !important; line-height: 1; }
@@ -314,6 +317,7 @@
 .footer { background: var(--ch-dark-2); padding: clamp(60px, 8vw, 100px) 8% 2rem; }
 .footerTop { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr; gap: 3rem; padding-bottom: 4rem; border-bottom: 1px solid rgba(255,255,255,0.08); margin-bottom: 2.5rem; }
 .footerBrand .footerLogo { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; color: var(--ch-text-light); letter-spacing: 0.04em; margin-bottom: 0.3rem; }
+.footerLogoImg { height: 44px; width: auto; max-width: 200px; object-fit: contain; object-position: left; margin-bottom: 0.3rem; }
 .footerBrand .footerLogo span { color: var(--ch-accent); }
 .footerBrand .footerTagline { font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ch-text-muted); margin-bottom: 1.5rem; }
 .footerBrand .footerDesc { font-size: 0.82rem; line-height: 1.75; color: rgba(245,240,224,0.5); margin-bottom: 2rem; max-width: 280px; }

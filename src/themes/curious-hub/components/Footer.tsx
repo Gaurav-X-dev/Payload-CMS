@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import { footerData } from '../data/footer'
 import { curiousHubSiteData } from '../data/site'
@@ -30,9 +31,13 @@ export function Footer({
     <footer aria-label="Footer" className={styles.footer} id="footer">
       <div className={styles.footerTop}>
         <div className={styles.footerBrand}>
-          <div className={styles.footerLogo}>
-            Curious <span>Ladoo</span>
-          </div>
+          {site?.logo ? (
+            <Image alt={site.logo.alt} className={styles.footerLogoImg} height={44} src={site.logo.src} width={160} />
+          ) : (
+            <div className={styles.footerLogo}>
+              Curious <span>Ladoo</span>
+            </div>
+          )}
           <div className={styles.footerTagline}>{tagline}</div>
           {description && <p className={styles.footerDesc}>{description}</p>}
           <div className={styles.footerSocial}>

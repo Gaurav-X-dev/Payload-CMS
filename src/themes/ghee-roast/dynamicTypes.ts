@@ -59,6 +59,7 @@ export type GheeRoastSiteData = {
     phone?: string
   }
   description: string
+  favicon?: ImageData
   logo?: ImageData
   newsletter: {
     buttonLabel: string

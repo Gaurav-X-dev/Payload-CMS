@@ -40,8 +40,8 @@ export function CuriousHubLayout({
         {jsonLdScript && <script dangerouslySetInnerHTML={{ __html: jsonLdScript }} type="application/ld+json" />}
         <NoiseOverlay />
         <CustomCursor />
-        <PageLoader />
-        <Header nav={nav} pathname={pathname} tagline={tagline} />
+        <PageLoader site={site} />
+        <Header nav={nav} pathname={pathname} site={site} tagline={tagline} />
         <main>{children}</main>
         <Footer footer={footer} site={site} />
         <BackToTop />

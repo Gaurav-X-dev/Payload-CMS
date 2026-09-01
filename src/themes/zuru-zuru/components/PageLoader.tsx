@@ -1,8 +1,10 @@
 'use client'
 
+import Image from 'next/image'
 import { useEffect, useState } from 'react'
+import type { ZuruZuruSiteData } from '../mappers/dynamicTypes'
 
-export function PageLoader() {
+export function PageLoader({ site }: { site?: ZuruZuruSiteData }) {
   const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
@@ -16,9 +18,13 @@ export function PageLoader() {
       className={`zz-page-loader ${loaded ? 'zz-page-loader-loaded' : ''}`}
       role="status"
     >
-      <div className="zz-loader-logo">
-        Zuru<span>ズル</span>
-      </div>
+      {site?.logo ? (
+        <Image alt={site.logo.alt} className="zz-loader-logo-img" height={90} priority src={site.logo.src} width={90} />
+      ) : (
+        <div className="zz-loader-logo">
+          Zuru<span>ズル</span>
+        </div>
+      )}
       <div className="zz-loader-subtitle">A Ramen Diner</div>
       <div className="zz-loader-bar" />
     </div>

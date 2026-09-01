@@ -402,6 +402,7 @@ export function mapGheeRoastSite(
     announcement: '',
     contact: { address: '', hours: [], phone: '' },
     description: '',
+    favicon: undefined,
     logo: undefined,
     newsletter: { description: '', title: '' },
     siteName: text(tenant.name),
@@ -420,6 +421,7 @@ export function mapGheeRoastSite(
       phone: text(contact.contactPhone) || fallback.contact.phone || undefined,
     },
     description: text(settings.siteDescription) || fallback.description,
+    favicon: mapMedia(branding.favicon, tenantID, fallback.favicon, 'thumbnail'),
     logo: mapMedia(branding.logo, tenantID, fallback.logo, 'thumbnail'),
     newsletter: {
       buttonLabel: text(newsletter.buttonLabel) || 'Subscribe',

@@ -791,7 +791,7 @@ export function mapCuriousLadooSite(
   tenant: Tenant | null,
   siteSettings: SiteSetting | null,
 ): CuriousLadooSiteData {
-  const empty: CuriousLadooSiteData = { address: '', description: '', email: '', favicon: null, name: '', newsletter: emptyNewsletter, social: [], tagline: '' }
+  const empty: CuriousLadooSiteData = { address: '', description: '', email: '', favicon: null, logo: null, name: '', newsletter: emptyNewsletter, social: [], tagline: '' }
   if (!tenant) return empty
   const tenantID = tenant.id
   const settings = siteSettings && belongsToTenant(siteSettings.tenantId, tenantID) ? siteSettings : null
@@ -800,6 +800,7 @@ export function mapCuriousLadooSite(
     description: text(settings?.siteDescription),
     email: text(tenant.contact?.contactEmail),
     favicon: mapMedia(tenant.branding?.favicon, tenantID, 'thumbnail'),
+    logo: mapMedia(tenant.branding?.logo, tenantID, 'thumbnail'),
     name: text(settings?.businessName) || text(tenant.name),
     newsletter: settings?.newsletter
       ? {

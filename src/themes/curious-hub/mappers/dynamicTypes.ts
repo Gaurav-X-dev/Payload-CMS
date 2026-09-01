@@ -386,6 +386,7 @@ export type CuriousLadooSiteData = {
   description: string
   email: string
   favicon: CuriousLadooMediaData
+  logo: CuriousLadooMediaData
   name: string
   newsletter: CuriousLadooNewsletterData
   social: { href: string; icon: string; label: string }[]
