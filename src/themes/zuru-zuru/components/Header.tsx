@@ -2,10 +2,10 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { mobileNavigation, navigation, image } from '../data/site'
 import type { ZuruZuruNavigationData, ZuruZuruSiteData } from '../mappers/dynamicTypes'
-import { formatHoursSummary } from '../utils/formatHours'
+import { formatHoursSummary, formatMealServiceHours } from '../utils/formatHours'
 import { buildMobileNavOrder } from '../utils/foldedTitles'
 import { Icon } from './Icon'
 
@@ -82,6 +82,7 @@ export function Header({
   // document at all (nav itself is undefined), not merely when its cta is disabled.
   const cta = nav ? nav.cta : null
 
+  const mealServiceHours = site ? formatMealServiceHours(site.hours) : null
   const hoursSummary = site ? formatHoursSummary(site.hours) : ''
   const announcementEnabled = site ? site.announcement.enabled : false
   const announcementText = site?.announcement.text
@@ -92,7 +93,12 @@ export function Header({
       {pathname === '/' && announcementEnabled && announcementText && (
         <div className="zz-announcement-bar">
           <div className="zz-container">
-            <div className="zz-announcement-left"><span className="zz-inline-icon"><Icon name="flag" size={13} /> {announcementText}</span>{hoursSummary && <><i /><span>{hoursSummary}</span></>}</div>
+            <div className="zz-announcement-left">
+              <span className="zz-inline-icon"><Icon name="flag" size={13} /> {announcementText}</span>
+              {mealServiceHours
+                ? mealServiceHours.map((line) => <Fragment key={line}><i /><span>{line}</span></Fragment>)
+                : hoursSummary && <><i /><span>{hoursSummary}</span></>}
+            </div>
             <div className="zz-announcement-right">{phone && <span className="zz-inline-icon"><Icon name="phone" size={13} /> {phone}</span>}<i />{cta && <Link href={cta.url} rel="noopener noreferrer" target="_blank">{cta.label}</Link>}</div>
           </div>
         </div>

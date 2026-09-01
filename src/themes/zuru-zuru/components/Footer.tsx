@@ -2,7 +2,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { footerColumns, image } from '../data/site'
 import type { ZuruZuruFooterData, ZuruZuruSiteData } from '../mappers/dynamicTypes'
-import { formatHoursSummary } from '../utils/formatHours'
+import { formatHoursSummary, formatMealServiceHours } from '../utils/formatHours'
 import { Icon } from './Icon'
 
 /** CMS Footer/Site Settings are optional: absent data keeps today's static footer content. */
@@ -27,6 +27,7 @@ export function Footer({
   const address = site?.address
   const phone = site?.phone
   const email = site?.email
+  const mealServiceHours = site ? formatMealServiceHours(site.hours) : null
   const hoursSummary = site ? formatHoursSummary(site.hours) : ''
   const copyright = footer?.copyright || '© 2026 Zuru Zuru Izakaya. All Rights Reserved.'
   const bottomLinks = footer && footer.bottomLinks.length > 0
@@ -58,7 +59,14 @@ export function Footer({
               {phone && <li><Icon name="phone" /> {phone}</li>}
               {email && <li><Icon name="email" /> {email}</li>}
             </ul>
-            {hoursSummary && (
+            {mealServiceHours ? (
+              <>
+                <h4 className="zz-hours-heading">Hours</h4>
+                <ul className="zz-footer-hours">
+                  {mealServiceHours.map((line) => <li key={line}><strong>{line}</strong></li>)}
+                </ul>
+              </>
+            ) : hoursSummary && (
               <>
                 <h4 className="zz-hours-heading">Hours</h4>
                 <ul className="zz-footer-hours"><li><strong>{hoursSummary}</strong></li></ul>
