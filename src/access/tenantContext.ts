@@ -223,30 +223,47 @@ export const resolveActiveTenantContext = (
   }
 }
 
+/**
+ * Update/delete always target an EXISTING document whose tenantId is already fixed — unlike
+ * create, there is no "which tenant does this belong to" decision to make, so hostname-based
+ * guessing (as resolveActiveTenantContext/getAuthenticatedTenantID does, for CREATE's benefit)
+ * must NOT be used here: it would silently narrow a multi-tenant admin's scope down to whichever
+ * one tenant happens to match the admin origin they're browsing on, blocking them from editing
+ * every one of their OTHER tenants' content. Only a genuinely explicit x-tenant-id header narrows
+ * the scope; otherwise this scopes to every tenant the admin actually manages (mirroring
+ * getTenantReadScope), which Payload's own per-document access check then verifies against the
+ * specific document being edited.
+ */
 const activeTenantMutationWhere = (req: PayloadRequest): true | Where | false => {
   if (!req.user) return false
   if (isSuperAdminUser(req.user)) return true
   if (!isTenantAdminUser(req.user)) return false
 
-  const context = resolveActiveTenantContext(req)
-  if (context?.tenantID) {
-    return {
-      tenantId: {
-        equals: context.tenantID,
-      },
-    }
-  }
-
   const tenantIDs = getUserTenantIDs(req.user)
-  if (tenantIDs.length > 0) {
+  if (tenantIDs.length === 0) return false
+
+  const explicitTenantID = getExplicitTenantID(req)
+  if (explicitTenantID && tenantIDs.includes(explicitTenantID)) {
     return {
       tenantId: {
-        in: tenantIDs,
+        equals: explicitTenantID,
       },
     }
   }
 
-  return false
+  if (tenantIDs.length === 1) {
+    return {
+      tenantId: {
+        equals: tenantIDs[0],
+      },
+    }
+  }
+
+  return {
+    tenantId: {
+      in: tenantIDs,
+    },
+  }
 }
 
 /**
@@ -282,30 +299,29 @@ export const tenantContentMutations = {
   delete: canDeleteTenantContent,
 }
 
+/** Same hostname-narrowing hazard as activeTenantMutationWhere above — see its comment. */
 export const canManageUserWithinActiveTenant: Access = ({ req }) => {
   if (!req.user) return false
   if (isSuperAdminUser(req.user)) return true
   if (!isTenantAdminUser(req.user)) return false
 
-  const context = resolveActiveTenantContext(req)
-  if (context?.tenantID) {
-    return {
-      tenants: {
-        in: [context.tenantID],
-      },
-    }
-  }
-
   const tenantIDs = getUserTenantIDs(req.user)
-  if (tenantIDs.length > 0) {
+  if (tenantIDs.length === 0) return false
+
+  const explicitTenantID = getExplicitTenantID(req)
+  if (explicitTenantID && tenantIDs.includes(explicitTenantID)) {
     return {
       tenants: {
-        in: tenantIDs,
+        in: [explicitTenantID],
       },
     }
   }
 
-  return false
+  return {
+    tenants: {
+      in: tenantIDs,
+    },
+  }
 }
 
 /**
