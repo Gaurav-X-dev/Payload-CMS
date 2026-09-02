@@ -257,7 +257,8 @@ const collectionDependenciesForZuruZuruLayout = (layout: Page['layout']) => {
     events: blockTypes.has('eventsBlock'),
     faqs: blockTypes.has('faqBlock'),
     galleryItems: blockTypes.has('galleryBlock'),
-    locations: blockTypes.has('locationsBlock'),
+    // A Menu Showcase also needs the active locations pool for its per-outlet picker/pricing.
+    locations: blockTypes.has('locationsBlock') || blockTypes.has('menushowcaseBlock'),
     menuItems: blockTypes.has('menushowcaseBlock'),
     teamMembers: blockTypes.has('teamBlock'),
     testimonials: blockTypes.has('testimonialsBlock'),

@@ -18,7 +18,7 @@ export function MenuExplorer({
   categories: string[][]
   heading?: string
   items: FoodItemData[]
-  locations: Array<{ description: string; id: string; label: string }>
+  locations: Array<{ description: string; id: string; locationID?: string; label: string }>
   orderLinks: LinkData[]
 }) {
   const searchParams = useSearchParams()
@@ -37,7 +37,21 @@ export function MenuExplorer({
     ?? locations.find((item) => item.id === requestedLocation)?.id
     ?? firstLocation.id
   const activeLocation = locations.find((item) => item.id === location) ?? firstLocation
-  const visibleItems = category === 'all' ? items : items.filter((item) => item.category === category)
+  const activeLocationID = activeLocation.locationID
+  // Dishes with no `locationIDs` are served everywhere; otherwise the active location must be one
+  // of the outlets it's scoped to. Prices resolve the same way: an active location with a
+  // matching locationPricing row overrides the base price, otherwise the base price stands.
+  const visibleItems = items
+    .filter((item) => category === 'all' || item.category === category)
+    .filter((item) => {
+      if (!item.locationIDs?.length || !activeLocationID) return true
+      return item.locationIDs.some((id) => String(id) === activeLocationID)
+    })
+    .map((item) => {
+      if (!activeLocationID || !item.locationPricing?.length) return item
+      const override = item.locationPricing.find((row) => String(row.locationID) === activeLocationID)
+      return override ? { ...item, price: `₹${override.price.toLocaleString('en-IN')}` } : item
+    })
 
   return (
     <>

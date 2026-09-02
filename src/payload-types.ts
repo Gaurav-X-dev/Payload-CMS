@@ -2234,6 +2234,20 @@ export interface MenuItem {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Which outlets serve this dish. Leave empty to show it at every location.
+   */
+  locations?: (number | Location)[] | null;
+  /**
+   * Override this dish's price at specific locations. Leave empty to use the price above everywhere.
+   */
+  locationPricing?:
+    | {
+        location: number | Location;
+        price: number;
+        id?: string | null;
+      }[]
+    | null;
   dietary?: ('Veg' | 'Non-Veg' | 'Vegan' | 'Gluten-Free' | 'Keto' | 'Halal')[] | null;
   spiceLevel?: ('none' | 'mild' | 'medium' | 'hot' | 'extra_hot') | null;
   allergens?: ('Peanuts' | 'Tree Nuts' | 'Dairy' | 'Eggs' | 'Soy' | 'Wheat' | 'Fish' | 'Shellfish')[] | null;
@@ -6141,6 +6155,14 @@ export interface MenuItemsSelect<T extends boolean = true> {
     | T
     | {
         label?: T;
+        price?: T;
+        id?: T;
+      };
+  locations?: T;
+  locationPricing?:
+    | T
+    | {
+        location?: T;
         price?: T;
         id?: T;
       };

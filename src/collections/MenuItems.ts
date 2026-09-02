@@ -111,6 +111,42 @@ export const MenuItems: CollectionConfig = {
                     }),
                 },
               ]
+            },
+            {
+              name: 'locations',
+              type: 'relationship',
+              relationTo: 'locations',
+              hasMany: true,
+              filterOptions: tenantRelationshipFilter('locations'),
+              hooks: { beforeValidate: [sameTenantRelationship('locations')] },
+              admin: { description: 'Which outlets serve this dish. Leave empty to show it at every location.' },
+            },
+            {
+              name: 'locationPricing',
+              type: 'array',
+              admin: { description: "Override this dish's price at specific locations. Leave empty to use the price above everywhere." },
+              fields: [
+                {
+                  name: 'location',
+                  type: 'relationship',
+                  relationTo: 'locations',
+                  required: true,
+                  filterOptions: tenantRelationshipFilter('locations'),
+                  hooks: { beforeValidate: [sameTenantRelationship('locations')] },
+                },
+                {
+                  name: 'price',
+                  type: 'number',
+                  min: 0,
+                  required: true,
+                  validate: (value: unknown) =>
+                    validateFiniteNumber(value, {
+                      decimalPlaces: 2,
+                      min: 0,
+                      max: 1_000_000,
+                    }),
+                },
+              ]
             }
           ]
         },

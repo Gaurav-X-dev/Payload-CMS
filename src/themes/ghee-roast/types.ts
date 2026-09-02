@@ -39,6 +39,11 @@ export type FeatureData = {
   title: string
 }
 
+export type FoodItemLocationPriceData = {
+  locationID: number | string
+  price: number
+}
+
 export type FoodItemData = {
   badge?: string
   category: string
@@ -47,9 +52,15 @@ export type FoodItemData = {
   id?: number | string
   image?: ImageData
   isFeatured?: boolean
+  /** Outlets that serve this dish. Empty/undefined means every location. */
+  locationIDs?: (number | string)[]
+  /** Per-location price overrides. Falls back to `priceValue`/`price` when a location has no row here. */
+  locationPricing?: FoodItemLocationPriceData[]
   meta?: string[]
   name: string
   price: string
+  /** Raw numeric price (₹, 2dp) — `price` is this pre-formatted for display. */
+  priceValue?: number
   textDescription?: string
 }
 

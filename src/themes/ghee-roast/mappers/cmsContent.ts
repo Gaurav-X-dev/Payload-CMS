@@ -715,13 +715,23 @@ export function mapGheeRoastCollections(
       const categoryID = relationshipID(item.category as Relationship)
       const category = categoryID ? activeCategoriesByID.get(categoryID) : undefined
       if (!category) return null
-      const price = typeof item.price === 'number' ? `₹${item.price.toLocaleString('en-IN')}` : text(item.price)
+      const priceValue = typeof item.price === 'number' ? item.price : undefined
+      const price = priceValue !== undefined ? `₹${priceValue.toLocaleString('en-IN')}` : text(item.price)
       const mappedImage = mapMedia(
         item.image,
         tenantID,
         undefined,
         'card',
       )
+      const locationIDs = Array.from(gheeRoastRelationshipIDs(item.locations))
+      const locationPricing = (Array.isArray(item.locationPricing) ? item.locationPricing : [])
+        .map((row) => {
+          const rec = asRecord(row)
+          const locationID = rec ? relationshipID(rec.location as Relationship) : null
+          const rowPrice = rec?.price
+          return locationID && typeof rowPrice === 'number' ? { locationID, price: rowPrice } : null
+        })
+        .filter((row): row is { locationID: string; price: number } => row !== null)
       return {
         badge: boolean(item.isFeatured) ? "Chef's Pick" : undefined,
         category: text(category.slug) || String(category.id),
@@ -730,9 +740,12 @@ export function mapGheeRoastCollections(
         id: idOf(item) ?? undefined,
         image: mappedImage,
         isFeatured: boolean(item.isFeatured),
+        locationIDs: locationIDs.length ? locationIDs : undefined,
+        locationPricing: locationPricing.length ? locationPricing : undefined,
         meta: Array.isArray(item.dietary) ? item.dietary.map(text).filter(Boolean) : undefined,
         name: text(item.title),
         price,
+        priceValue,
       }
     })
     .filter((item): item is NonNullable<typeof item> => Boolean(item?.name))

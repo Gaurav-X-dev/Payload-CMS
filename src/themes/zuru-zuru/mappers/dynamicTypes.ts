@@ -227,6 +227,11 @@ export type ZuruZuruDishCategoryData = {
   title: string
 } | null
 
+export type ZuruZuruDishLocationPriceData = {
+  locationID: string
+  price: number
+}
+
 export type ZuruZuruDishData = {
   badge: ZuruZuruDishBadge | null
   calories: number | null
@@ -235,6 +240,10 @@ export type ZuruZuruDishData = {
   heat: number
   id: number
   image: ZuruZuruMediaData
+  /** Outlets that serve this dish. Empty means every location. */
+  locationIDs: string[]
+  /** Per-location price overrides. Falls back to `price` when a location has no row here. */
+  locationPricing: ZuruZuruDishLocationPriceData[]
   name: string
   price: number
 }

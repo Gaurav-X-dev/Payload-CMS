@@ -507,6 +507,11 @@ export function mapZuruZuruMenuShowcase(
       heat: heatFromSpiceLevel(item.spiceLevel),
       id: item.id,
       image: mapMedia(item.image, tenantID, 'card'),
+      locationIDs: (item.locations ?? []).map((location) => String(typeof location === 'number' ? location : location.id)),
+      locationPricing: (item.locationPricing ?? []).map((row) => ({
+        locationID: String(typeof row.location === 'number' ? row.location : row.location.id),
+        price: row.price,
+      })),
       name: text(item.title),
       price: item.price,
     }))
