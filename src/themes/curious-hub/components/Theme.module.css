@@ -1007,10 +1007,20 @@
   margin-top: 2rem;
 }
 
-/* Fix visibility for footer social links when used in light sections like Brand Spotlight */
+/* Brand Spotlight's links are short text labels ("ig", "web"), not icons — the base
+   footerSocialLink is a tight 36px icon circle, which crams text badly. Restyle as an uppercase,
+   letter-spaced pill (matching brandBadge's design language) sized to fit a word comfortably. */
 .brandSpotlightContent .footerSocialLink {
+  width: auto;
+  height: auto;
+  padding: 0.6rem 1.35rem;
+  border-radius: 999px;
   border-color: var(--ch-border);
   color: var(--ch-dark);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 .brandSpotlightContent .footerSocialLink:hover {
   border-color: var(--ch-accent);
