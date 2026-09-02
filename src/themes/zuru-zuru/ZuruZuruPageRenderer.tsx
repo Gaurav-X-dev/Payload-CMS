@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation'
+import type { Location } from '@/payload-types'
 import type { ThemePageRendererProps } from '../types'
 import { getZuruZuruPageContent } from '@/lib/site/getZuruZuruPageContent'
 import { getZuruZuruShell } from '@/lib/site/getZuruZuruShell'
@@ -29,9 +30,9 @@ import { normalizePathname } from './utils/normalizePathname'
 // Careers, Franchise, FAQ, Privacy Policy, Terms), Group B (Chefs, Events, Locations, Blog),
 // Group C (Reservation, Private Dining), and Gallery (converted last, after the approved
 // Gallery.category migration) join the already-converted Home/Menu/About/Contact.
-const CMS_PAGE_RENDERERS: Record<string, (blocks: ZuruZuruPageBlockData[], site: ZuruZuruSiteData) => React.ReactNode> = {
+const CMS_PAGE_RENDERERS: Record<string, (blocks: ZuruZuruPageBlockData[], site: ZuruZuruSiteData, locations: Location[]) => React.ReactNode> = {
   '/': (blocks, site) => <CMSHomePage blocks={blocks} site={site} />,
-  '/menu': (blocks) => <CMSMenuPage blocks={blocks} />,
+  '/menu': (blocks, _site, locations) => <CMSMenuPage blocks={blocks} locations={locations} />,
   '/about': (blocks) => <CMSAboutPage blocks={blocks} />,
   '/contact': (blocks, site) => <CMSContactPage blocks={blocks} site={site} />,
   '/catering': (blocks) => <CMSCateringPage blocks={blocks} />,
@@ -89,7 +90,7 @@ export async function ZuruZuruPageRenderer({ hostname, pathname, site }: ThemePa
 
     return (
       <ZuruZuruLayout footer={content.footer} jsonLd={jsonLd} nav={content.navigation} pathname={pathname} site={content.site}>
-        {cmsRenderer(blocks, content.site)}
+        {cmsRenderer(blocks, content.site, page.locations)}
       </ZuruZuruLayout>
     )
   }
