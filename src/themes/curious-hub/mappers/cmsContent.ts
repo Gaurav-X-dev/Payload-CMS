@@ -800,7 +800,9 @@ export function mapCuriousLadooSite(
     description: text(settings?.siteDescription),
     email: text(tenant.contact?.contactEmail),
     favicon: mapMedia(tenant.branding?.favicon, tenantID, 'thumbnail'),
-    logo: mapMedia(tenant.branding?.logo, tenantID, 'thumbnail'),
+    // Brand marks must use the uncropped original. The 400x300 thumbnail is
+    // intentionally landscape and clips the top/bottom of square logos.
+    logo: mapMedia(tenant.branding?.logo, tenantID),
     name: text(settings?.businessName) || text(tenant.name),
     newsletter: settings?.newsletter
       ? {
