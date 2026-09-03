@@ -32,7 +32,16 @@ export function Footer({
       <div className={styles.footerTop}>
         <div className={styles.footerBrand}>
           <div className={styles.footerBrandRow}>
-            {site?.logo && <Image alt={site.logo.alt} className={styles.footerLogoImg} height={44} src={site.logo.src} width={44} />}
+            {site?.logo && (
+              <Image
+                alt={site.logo.alt}
+                className={styles.footerLogoImg}
+                height={96}
+                sizes="(max-width: 600px) 180px, 220px"
+                src={site.logo.src}
+                width={220}
+              />
+            )}
             <div className={styles.footerLogo}>
               Curious <span>Ladoo</span>
             </div>
