@@ -6,6 +6,7 @@ import type {
   ZuruZuruMenuShowcaseBlockData,
   ZuruZuruPageBlockData,
 } from '../mappers/dynamicTypes'
+import { locationSlug } from '../utils/locationSlug'
 
 /**
  * Wraps the existing `MenuBrowser` client component (search + category filter + grid — unchanged
@@ -51,7 +52,15 @@ function CMSMenuPageSection({ block, locations }: { block: ZuruZuruPageBlockData
 export function CMSMenuPage({ blocks, locations = [] }: { blocks: ZuruZuruPageBlockData[]; locations?: Location[] }) {
   const browserLocations: MenuBrowserLocation[] = locations
     .filter((location) => location.isActive !== false)
-    .map((location) => ({ id: String(location.id), label: location.city || location.title }))
+    .map((location) => {
+      const citySlug = locationSlug(location.city)
+      return {
+        aliases: [citySlug, ...citySlug.split('-')].filter(Boolean),
+        id: String(location.id),
+        label: location.city || location.title,
+        slug: citySlug || String(location.id),
+      }
+    })
 
   return (
     <>

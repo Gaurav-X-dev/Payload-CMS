@@ -2,12 +2,14 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
+import type { Location } from '@/payload-types'
 import { Fragment, useEffect, useState } from 'react'
 import { mobileNavigation, navigation, image } from '../data/site'
 import type { ZuruZuruNavigationData, ZuruZuruSiteData } from '../mappers/dynamicTypes'
 import { formatHoursSummary, formatMealServiceHours } from '../utils/formatHours'
 import { buildMobileNavOrder } from '../utils/foldedTitles'
 import { Icon } from './Icon'
+import { locationSlug } from '../utils/locationSlug'
 
 type NavItem = { children: { label: string; url: string }[]; label: string; url: string }
 
@@ -19,10 +21,12 @@ const DESKTOP_LINK_COUNT = 7
 
 /** CMS Nav/SiteSettings are optional: not-yet-populated or unreachable data keeps today's static chrome. */
 export function Header({
+  locations = [],
   nav,
   pathname,
   site,
 }: {
+  locations?: Location[]
   nav?: ZuruZuruNavigationData
   pathname: string
   site?: ZuruZuruSiteData
@@ -63,9 +67,23 @@ export function Header({
     }
   }, [open])
 
-  const allLinks: NavItem[] = nav && nav.links.length > 0
+  const configuredLinks: NavItem[] = nav && nav.links.length > 0
     ? nav.links
     : navigation.map(([href, label]) => ({ children: [], label, url: href }))
+  const locationMenuChildren = Array.from(
+    new Map(locations
+      .filter((location) => location.isActive !== false && Boolean(location.city))
+      .map((location) => {
+        const city = location.city.trim()
+        return [locationSlug(city), { label: city, url: `/menu?location=${locationSlug(city)}` }] as const
+      }))
+      .values(),
+  )
+  const allLinks = configuredLinks.map((link) =>
+    link.url === '/menu' && locationMenuChildren.length > 0
+      ? { ...link, children: locationMenuChildren }
+      : link,
+  )
   const desktopLinks = allLinks.slice(0, DESKTOP_LINK_COUNT)
   const mobileLinks: { label: string; url: string }[] = nav && nav.links.length > 0
     ? buildMobileNavOrder(allLinks, DESKTOP_LINK_COUNT)
@@ -111,8 +129,18 @@ export function Header({
               <li key={item.url}>
                 <Link className={pathname === item.url ? 'zz-active' : ''} href={item.url}>{item.label}{item.children.length > 0 && <Icon name="caretDown" size={11} weight="bold" />}</Link>
                 {item.children.length > 0 && (
-                  <ul className="zz-nav-dropdown">
-                    {item.children.map((child) => <li key={child.url}><Link href={child.url}>{child.label}</Link></li>)}
+                  <ul className={`zz-nav-dropdown ${item.url === '/menu' ? 'zz-location-dropdown' : ''}`}>
+                    {item.url === '/menu' && (
+                      <li className="zz-location-dropdown-heading">
+                        <span>Our locations</span>
+                        <strong>Choose your city</strong>
+                      </li>
+                    )}
+                    {item.children.map((child) => <li key={child.url}><Link className={item.url === '/menu' ? 'zz-location-dropdown-link' : ''} href={child.url}>
+                      {item.url === '/menu' && <span className="zz-location-dropdown-icon"><Icon name="map" size={18} weight="fill" /></span>}
+                      <span className="zz-location-dropdown-copy"><strong>{child.label}</strong>{item.url === '/menu' && <small>Explore the menu</small>}</span>
+                      {item.url === '/menu' && <Icon className="zz-location-dropdown-arrow" name="arrow" size={16} />}
+                    </Link></li>)}
                   </ul>
                 )}
               </li>

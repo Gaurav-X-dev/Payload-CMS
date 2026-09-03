@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import type { Location } from '@/payload-types'
 import { Footer } from '../components/Footer'
 import { Header } from '../components/Header'
 import { BackToTop } from '../components/Interactive'
@@ -14,6 +15,7 @@ export function ZuruZuruLayout({
   children,
   footer,
   jsonLd,
+  locations,
   nav,
   pathname,
   site,
@@ -21,6 +23,7 @@ export function ZuruZuruLayout({
   children: ReactNode
   footer?: ZuruZuruFooterData
   jsonLd?: ZuruZuruJsonLdEntry[]
+  locations?: Location[]
   nav?: ZuruZuruNavigationData
   pathname: string
   site?: ZuruZuruSiteData
@@ -34,7 +37,7 @@ export function ZuruZuruLayout({
       <div className="zuru-zuru-theme">
         {jsonLdScript && <script dangerouslySetInnerHTML={{ __html: jsonLdScript }} type="application/ld+json" />}
         <PageLoader site={site} />
-        <Header nav={nav} pathname={pathname} site={site} />
+        <Header locations={locations} nav={nav} pathname={pathname} site={site} />
         <main>{children}</main>
         <Newsletter newsletter={site?.newsletter} />
         <Footer footer={footer} site={site} />
