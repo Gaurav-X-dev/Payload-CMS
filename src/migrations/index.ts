@@ -23,6 +23,7 @@ import * as migration_20260810_092638_add_email_settings from './20260810_092638
 import * as migration_20260810_110739_add_email_settings_smtp from './20260810_110739_add_email_settings_smtp';
 import * as migration_20260824_120614_add_email_settings_contact_notification from './20260824_120614_add_email_settings_contact_notification';
 import * as migration_20260824_125110_add_newsletter_subscribers from './20260824_125110_add_newsletter_subscribers';
+import * as migration_20260902_122308_add_menu_item_locations from './20260902_122308_add_menu_item_locations';
 
 export const migrations = [
   {
@@ -138,16 +139,21 @@ export const migrations = [
   {
     up: migration_20260810_110739_add_email_settings_smtp.up,
     down: migration_20260810_110739_add_email_settings_smtp.down,
-    name: '20260810_110739_add_email_settings_smtp'
+    name: '20260810_110739_add_email_settings_smtp',
   },
   {
     up: migration_20260824_120614_add_email_settings_contact_notification.up,
     down: migration_20260824_120614_add_email_settings_contact_notification.down,
-    name: '20260824_120614_add_email_settings_contact_notification'
+    name: '20260824_120614_add_email_settings_contact_notification',
   },
   {
     up: migration_20260824_125110_add_newsletter_subscribers.up,
     down: migration_20260824_125110_add_newsletter_subscribers.down,
-    name: '20260824_125110_add_newsletter_subscribers'
+    name: '20260824_125110_add_newsletter_subscribers',
+  },
+  {
+    up: migration_20260902_122308_add_menu_item_locations.up,
+    down: migration_20260902_122308_add_menu_item_locations.down,
+    name: '20260902_122308_add_menu_item_locations'
   },
 ];
