@@ -10,6 +10,7 @@ export function MenuPage({ content }: GheeRoastPageProps) {
     ? content.collections.locations.map((location) => ({
         description: location.description || location.address,
         id: location.city.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || String(location.id),
+        locationID: String(location.id),
         label: location.city || location.title,
       }))
     : menuData.locations

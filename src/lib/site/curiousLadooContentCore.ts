@@ -205,7 +205,10 @@ export async function loadCuriousLadooContentWithPayload({
   } else {
     const tenantResult = await find<Tenant>({
       collection: 'tenants',
-      depth: 0,
+      // depth: 1 (not 0) so branding.logo/branding.favicon resolve to full Media objects —
+      // mapMedia() treats an unpopulated (raw ID) relationship as absent and silently omits the
+      // image, which is exactly what depth: 0 was doing here.
+      depth: 1,
       draft: false,
       limit: 2,
       overrideAccess: true,
@@ -442,7 +445,10 @@ export async function loadCuriousLadooBlogPostWithPayload({
   } else {
     const tenantResult = await find<Tenant>({
       collection: 'tenants',
-      depth: 0,
+      // depth: 1 (not 0) so branding.logo/branding.favicon resolve to full Media objects —
+      // mapMedia() treats an unpopulated (raw ID) relationship as absent and silently omits the
+      // image, which is exactly what depth: 0 was doing here.
+      depth: 1,
       draft: false,
       limit: 2,
       overrideAccess: true,
