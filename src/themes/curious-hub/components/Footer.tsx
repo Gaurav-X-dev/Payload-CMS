@@ -36,10 +36,10 @@ export function Footer({
               <Image
                 alt={site.logo.alt}
                 className={styles.footerLogoImg}
-                height={170}
-                sizes="(max-width: 600px) 150px, 170px"
+                height={130}
+                sizes="130px"
                 src={site.logo.src}
-                width={170}
+                width={130}
               />
             )}
             <div className={styles.footerLogo}>
