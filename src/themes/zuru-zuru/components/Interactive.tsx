@@ -57,7 +57,12 @@ export type MenuItem = {
 
 export type MenuBrowserCategory = { label: string; value: string }
 
-export type MenuBrowserLocation = { id: string; label: string }
+export type MenuBrowserLocation = {
+  aliases?: string[]
+  id: string
+  label: string
+  slug: string
+}
 
 const DEFAULT_MENU_CATEGORIES: MenuBrowserCategory[] = [
   { label: 'All', value: 'all' },
@@ -92,22 +97,57 @@ export function MenuBrowser({
   const [filter, setFilter] = useState('all')
   const [query, setQuery] = useState('')
   const [location, setLocation] = useState<null | string>(null)
-  const visible = useMemo(() => items
+
+  useEffect(() => {
+    const requestedLocation = new URLSearchParams(window.location.search).get('location')?.toLowerCase()
+    if (!requestedLocation) return
+
+    const match = locations.find((item) =>
+      item.id === requestedLocation
+      || item.slug === requestedLocation
+      || item.aliases?.includes(requestedLocation),
+    )
+    if (match) setLocation(match.id)
+  }, [locations])
+
+  const locationItems = useMemo(() => items.filter((item) =>
+    !location || !item.locationIDs?.length || item.locationIDs.includes(location),
+  ), [items, location])
+
+  const availableCategories = useMemo(() => {
+    const available = new Set(locationItems.map((item) => item.category))
+    return categories.filter((category) => category.value === 'all' || available.has(category.value))
+  }, [categories, locationItems])
+
+  useEffect(() => {
+    if (filter !== 'all' && !availableCategories.some((category) => category.value === filter)) {
+      setFilter('all')
+    }
+  }, [availableCategories, filter])
+
+  const selectLocation = (nextLocation: null | MenuBrowserLocation) => {
+    setLocation(nextLocation?.id ?? null)
+    const url = new URL(window.location.href)
+    if (nextLocation) url.searchParams.set('location', nextLocation.slug)
+    else url.searchParams.delete('location')
+    window.history.replaceState(window.history.state, '', `${url.pathname}${url.search}${url.hash}`)
+  }
+
+  const visible = useMemo(() => locationItems
     .filter((item) => (filter === 'all' || item.category === filter) && `${item.name} ${item.description}`.toLowerCase().includes(query.toLowerCase()))
-    .filter((item) => !location || !item.locationIDs?.length || item.locationIDs.includes(location))
     .map((item) => {
       if (!location || !item.locationPricing?.length) return item
       const override = item.locationPricing.find((row) => row.locationID === location)
       return override ? { ...item, price: `₹${override.price}` } : item
-    }), [filter, items, location, query])
+    }), [filter, location, locationItems, query])
   return <>
     {locations.length > 1 && <div className="zz-menu-controls" role="group" aria-label="Choose location">
       <div className="zz-filter-buttons">
-        <button className={!location ? 'zz-active' : ''} onClick={() => setLocation(null)} type="button">All Locations</button>
-        {locations.map((item) => <button className={location === item.id ? 'zz-active' : ''} key={item.id} onClick={() => setLocation(item.id)} type="button">{item.label}</button>)}
+        <button className={!location ? 'zz-active' : ''} onClick={() => selectLocation(null)} type="button">All Locations</button>
+        {locations.map((item) => <button className={location === item.id ? 'zz-active' : ''} key={item.id} onClick={() => selectLocation(item)} type="button">{item.label}</button>)}
       </div>
     </div>}
-    <div className="zz-menu-controls"><label className="zz-menu-search"><Icon name="search" /><input aria-label="Search menu" onChange={(event) => setQuery(event.target.value)} placeholder="Search dishes..." value={query} /></label><div className="zz-filter-buttons">{categories.map(({ value, label }) => <button className={filter === value ? 'zz-active' : ''} key={value} onClick={() => setFilter(value)} type="button">{label}</button>)}</div></div>
+    <div className="zz-menu-controls"><label className="zz-menu-search"><Icon name="search" /><input aria-label="Search menu" onChange={(event) => setQuery(event.target.value)} placeholder="Search dishes..." value={query} /></label><div className="zz-filter-buttons">{availableCategories.map(({ value, label }) => <button className={filter === value ? 'zz-active' : ''} key={value} onClick={() => setFilter(value)} type="button">{label}</button>)}</div></div>
     <section className="zz-menu-section"><div className="zz-menu-grid">{visible.map((item) => <article className="zz-menu-item" key={`${item.name}-${item.price}`}><div className="zz-menu-item-img"><Image alt={item.name} fill sizes="(max-width: 700px) 100vw, 33vw" src={item.image} /></div><div className="zz-menu-item-content"><div className="zz-menu-item-header"><h3>{item.name}</h3><strong>{item.price}</strong></div><span className="zz-japanese-name">{item.japanese}</span><p>{item.description}</p></div></article>)}</div>{visible.length === 0 && <p className="zz-no-results">No menu items match your search.</p>}</section>
   </>
 }
