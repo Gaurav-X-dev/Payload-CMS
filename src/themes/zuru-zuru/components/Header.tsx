@@ -129,8 +129,18 @@ export function Header({
               <li key={item.url}>
                 <Link className={pathname === item.url ? 'zz-active' : ''} href={item.url}>{item.label}{item.children.length > 0 && <Icon name="caretDown" size={11} weight="bold" />}</Link>
                 {item.children.length > 0 && (
-                  <ul className="zz-nav-dropdown">
-                    {item.children.map((child) => <li key={child.url}><Link href={child.url}>{child.label}</Link></li>)}
+                  <ul className={`zz-nav-dropdown ${item.url === '/menu' ? 'zz-location-dropdown' : ''}`}>
+                    {item.url === '/menu' && (
+                      <li className="zz-location-dropdown-heading">
+                        <span>Our locations</span>
+                        <strong>Choose your city</strong>
+                      </li>
+                    )}
+                    {item.children.map((child) => <li key={child.url}><Link className={item.url === '/menu' ? 'zz-location-dropdown-link' : ''} href={child.url}>
+                      {item.url === '/menu' && <span className="zz-location-dropdown-icon"><Icon name="map" size={18} weight="fill" /></span>}
+                      <span className="zz-location-dropdown-copy"><strong>{child.label}</strong>{item.url === '/menu' && <small>Explore the menu</small>}</span>
+                      {item.url === '/menu' && <Icon className="zz-location-dropdown-arrow" name="arrow" size={16} />}
+                    </Link></li>)}
                   </ul>
                 )}
               </li>
