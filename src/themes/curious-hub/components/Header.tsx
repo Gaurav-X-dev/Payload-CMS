@@ -62,7 +62,7 @@ export function Header({
       >
         <Link aria-label={`${brandName} Home`} className={styles.navLogo} href="/">
           {site?.logo ? (
-            <Image alt={site.logo.alt} className={styles.navLogoMarkImg} height={42} src={site.logo.src} width={42} />
+            <Image alt={site.logo.alt} className={styles.navLogoMarkImg} height={52} priority src={site.logo.src} width={52} />
           ) : (
             <div className={styles.navLogoMark}>CL</div>
           )}

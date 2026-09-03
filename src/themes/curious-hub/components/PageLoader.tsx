@@ -23,7 +23,7 @@ export function PageLoader({ site }: { site?: CuriousLadooSiteData }) {
       role="status"
     >
       {site?.logo ? (
-        <Image alt={site.logo.alt} className={styles.loaderLogoImg} height={90} priority src={site.logo.src} width={90} />
+        <Image alt={site.logo.alt} className={styles.loaderLogoImg} height={150} priority src={site.logo.src} width={150} />
       ) : (
         <div className={styles.loaderLogo}>
           C<span>L</span>
