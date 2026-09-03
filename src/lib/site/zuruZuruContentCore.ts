@@ -258,7 +258,8 @@ const collectionDependenciesForZuruZuruLayout = (layout: Page['layout']) => {
     faqs: blockTypes.has('faqBlock'),
     galleryItems: blockTypes.has('galleryBlock'),
     // A Menu Showcase also needs the active locations pool for its per-outlet picker/pricing.
-    locations: blockTypes.has('locationsBlock') || blockTypes.has('menushowcaseBlock'),
+    // Active locations also drive the global header's Menu dropdown on every CMS page.
+    locations: true,
     menuItems: blockTypes.has('menushowcaseBlock'),
     teamMembers: blockTypes.has('teamBlock'),
     testimonials: blockTypes.has('testimonialsBlock'),

@@ -89,7 +89,7 @@ export async function ZuruZuruPageRenderer({ hostname, pathname, site }: ThemePa
     )
 
     return (
-      <ZuruZuruLayout footer={content.footer} jsonLd={jsonLd} nav={content.navigation} pathname={pathname} site={content.site}>
+      <ZuruZuruLayout footer={content.footer} jsonLd={jsonLd} locations={page.locations} nav={content.navigation} pathname={pathname} site={content.site}>
         {cmsRenderer(blocks, content.site, page.locations)}
       </ZuruZuruLayout>
     )
