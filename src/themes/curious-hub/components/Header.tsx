@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react'
 import { navigationData as curiousHubNavigation } from '../data/navigation'
 import type { CuriousLadooNavigationData, CuriousLadooSiteData } from '../mappers/dynamicTypes'
 import type { NavItemData } from '../types'
+import { BrandMark } from './BrandMark'
 import styles from './Theme.module.css'
 
 /** CMS Nav/Site are optional: pages not yet converted to CMS omit them and keep today's static nav. */
@@ -61,10 +62,18 @@ export function Header({
         role="navigation"
       >
         <Link aria-label={`${brandName} Home`} className={styles.navLogo} href="/">
-          {site?.logo ? (
-            <Image alt={site.logo.alt} className={styles.navLogoMarkImg} height={52} priority src={site.logo.src} width={52} />
+          {site?.logo?.src ? (
+            <Image
+              alt={site.logo.alt || `${brandName} logo`}
+              className={styles.navLogoMarkImg}
+              height={52}
+              priority
+              sizes="52px"
+              src={site.logo.src}
+              width={52}
+            />
           ) : (
-            <div className={styles.navLogoMark}>CL</div>
+            <BrandMark className={styles.navLogoMark} />
           )}
           <div className={styles.navLogoText}>
             <span className={styles.brandName}>{brandName}</span>
@@ -134,6 +143,16 @@ export function Header({
             {item.label}
           </Link>
         ))}
+        <Link
+          className={styles.mobileNavCta}
+          href={ctaHref}
+          onClick={() => setMenuOpen(false)}
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          {ctaLabel}
+          <span aria-hidden="true">&rarr;</span>
+        </Link>
       </nav>
     </>
   )

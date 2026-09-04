@@ -4,6 +4,7 @@ import { footerData } from '../data/footer'
 import { curiousHubSiteData } from '../data/site'
 import { CuriousHubSocialIcon } from '../iconRegistry'
 import type { CuriousLadooFooterData, CuriousLadooSiteData } from '../mappers/dynamicTypes'
+import { BrandMark } from './BrandMark'
 import styles from './Theme.module.css'
 
 /** CMS Footer/Site are optional: pages not yet converted to CMS omit them and keep today's static footer. */
@@ -32,15 +33,17 @@ export function Footer({
       <div className={styles.footerTop}>
         <div className={styles.footerBrand}>
           <div className={styles.footerBrandRow}>
-            {site?.logo && (
+            {site?.logo?.src ? (
               <Image
-                alt={site.logo.alt}
+                alt={site.logo.alt || 'Curious Ladoo logo'}
                 className={styles.footerLogoImg}
                 height={130}
-                sizes="130px"
+                sizes="(max-width: 600px) 96px, 110px"
                 src={site.logo.src}
                 width={130}
               />
+            ) : (
+              <BrandMark className={styles.footerBrandMark} />
             )}
             <div className={styles.footerLogo}>
               Curious <span>Ladoo</span>
