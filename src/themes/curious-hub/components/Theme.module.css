@@ -8,7 +8,7 @@
 .cursorRingHovered { width: 56px; height: 56px; border-color: var(--ch-accent); opacity: 0.5; }
 .cursorDotHovered { width: 6px; height: 6px; background: var(--ch-accent); }
 
-.pageLoader { position: fixed; inset: 0; background: var(--ch-dark); z-index: 99999; display: flex; align-items: center; justify-content: center; flex-direction: column; transition: opacity 0.8s ease, visibility 0.8s ease; }
+.pageLoader { position: fixed; inset: 0; background: var(--ch-surface); z-index: 99999; display: flex; align-items: center; justify-content: center; flex-direction: column; transition: opacity 0.8s ease, visibility 0.8s ease; }
 .pageLoaderLoaded { opacity: 0; visibility: hidden; }
 .loaderLogo { font-family: 'Shrikhand', cursive !important; font-size: clamp(3rem, 8vw, 6rem); font-weight: 400; color: var(--ch-text-light); letter-spacing: 0.1em; animation: loaderPulse 1.5s ease-in-out infinite; }
 .loaderLogoImg { display: block; width: 150px; height: 150px; object-fit: contain; animation: loaderPulse 1.5s ease-in-out infinite; }
@@ -55,9 +55,9 @@
 .hamburger span { display: block; height: 1.5px; background: var(--ch-text); transition: transform 0.3s, opacity 0.3s, width 0.3s; transform-origin: left; }
 .hamburger span:nth-child(2) { width: 70%; }
 
-.mobileNav { position: fixed; inset: 0; background: var(--ch-dark); z-index: 999; display: flex; flex-direction: column; padding: 100px 8% 60px; transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.77, 0, 0.175, 1); }
+.mobileNav { position: fixed; inset: 0; background: var(--ch-surface); z-index: 999; display: flex; flex-direction: column; padding: 100px 8% 60px; transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.77, 0, 0.175, 1); }
 .mobileNavOpen { transform: translateX(0); }
-.mobileNavLink { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 6vw, 3.5rem); font-weight: 700; color: var(--ch-text-light); padding: 1rem 0; border-bottom: 1px solid var(--ch-border-dark); transition: color 0.2s, padding-left 0.2s; display: block; }
+.mobileNavLink { font-family: 'Shrikhand', cursive !important; font-size: clamp(2rem, 6vw, 3.5rem); font-weight: 400; color: #111; padding: 1rem 0; border-bottom: 1px solid var(--ch-border-dark); transition: color 0.2s, padding-left 0.2s; display: block; }
 .mobileNavLink:hover { color: var(--ch-accent); padding-left: 12px; }
 .mobileNavCta { align-items: center; align-self: flex-start; background: var(--ch-primary); border: 2px solid #111; box-shadow: 6px 6px 0 #111; color: #fff1b8; display: inline-flex; font-family: 'Shrikhand', cursive !important; font-size: 1.05rem; gap: 1rem; letter-spacing: .06em; margin-top: 2rem; padding: .9rem 1.4rem; text-transform: uppercase; transition: box-shadow .2s ease,transform .2s ease; }
 .mobileNavCta:hover { box-shadow: 3px 3px 0 #111; transform: translate(3px,3px); }
@@ -119,32 +119,32 @@
 .philosophySection { background: var(--ch-surface); padding: clamp(80px, 10vw, 140px) 8%; position: relative; overflow: hidden; }
 .philosophyBgText { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: 'Shrikhand', cursive; font-size: clamp(8rem, 20vw, 22rem); font-weight: 400; color: rgba(17,17,17,0.035); white-space: nowrap; pointer-events: none; letter-spacing: 0.05em; }
 .philosophyHeader { display: grid; grid-template-columns: 1fr 2fr; gap: 4rem; margin-bottom: clamp(60px, 8vw, 100px); align-items: start; }
-.philosophyHeader .sectionTitle { color: var(--ch-text-light); }
-.philosophySection .sectionTitle, .philosophySection h4 { color: var(--ch-text-light) !important; }
+.philosophyHeader .sectionTitle { color: #111; }
+.philosophySection .sectionTitle, .philosophySection h4 { color: #111 !important; }
 .philosophySection .sectionBody { color: rgba(17,17,17,0.72) !important; }
 .philosophyHeaderRight .sectionBody { color: rgba(17,17,17,0.72); margin-bottom: 1.5rem; }
-.philosophyPillars { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0; }
-.pillar { padding: 2.5rem 2rem; border-left: 1px solid rgba(17,17,17,0.16); transition: background 0.3s; position: relative; }
-.pillar:first-child { border-left: none; }
-.pillar:hover { background: rgba(255,222,89,0.28); }
+.philosophyPillars { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px; }
+.pillar { height: 100%; min-height: 320px; padding: 2rem 1.6rem; border: 1px solid rgba(17,17,17,0.18); border-radius: 12px; transition: background 0.3s, border-color 0.3s, box-shadow 0.3s, transform 0.3s; position: relative; }
+.pillar:first-child { border-left: 1px solid rgba(17,17,17,0.18); }
+.pillar:hover { background: var(--ch-surface-2); border-color: #111; box-shadow: 8px 8px 0 rgba(17,17,17,0.16); transform: translateY(-5px); }
 .pillarIcon { width: 48px; height: 48px; margin-bottom: 1.5rem; color: var(--ch-accent); }
 .pillarNum { font-size: 0.65rem; letter-spacing: 0.2em; color: var(--ch-text-muted); margin-bottom: 0.8rem; }
-.pillarTitle { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 600; color: var(--ch-text-light); margin-bottom: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; }
+.pillarTitle { font-family: 'Shrikhand', cursive !important; font-size: 1.3rem; font-weight: 400; color: #111; margin-bottom: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; }
 .pillarDesc { font-size: 0.82rem; line-height: 1.7; color: rgba(17,17,17,0.68); }
 
 .servicesSection { padding: clamp(80px, 10vw, 140px) 8%; background: var(--ch-surface); }
 .servicesHeader { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; margin-bottom: clamp(60px, 8vw, 100px); align-items: end; }
 .servicesHeaderRight { display: flex; flex-direction: column; align-items: flex-end; gap: 1.5rem; }
-.servicesGrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--ch-border); }
+.servicesGrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; background: transparent; }
 .servicesGrid > * { display: flex; flex-direction: column; height: 100%; }
-.serviceCard { background: var(--ch-surface); padding: 2.5rem 2rem; transition: background 0.3s, transform 0.3s; cursor: none; position: relative; overflow: hidden; display: flex; flex-direction: column; flex-grow: 1; width: 100%; }
+.serviceCard { background: rgba(255,241,184,0.12); border: 1px solid rgba(17,17,17,0.18); border-radius: 12px; min-height: 330px; padding: 2.2rem 1.8rem; transition: background 0.3s, border-color 0.3s, box-shadow 0.3s, transform 0.3s; cursor: none; position: relative; overflow: hidden; display: flex; flex-direction: column; flex-grow: 1; width: 100%; }
 .serviceCard::before { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: var(--ch-accent); transform: scaleX(0); transform-origin: left; transition: transform 0.4s ease; }
 .serviceCard:hover::before { transform: scaleX(1); }
-.serviceCard:hover { background: var(--ch-surface-2); transform: translateY(-4px); }
+.serviceCard:hover { background: var(--ch-surface-2); border-color: #111; box-shadow: 8px 8px 0 rgba(17,17,17,0.16); transform: translateY(-5px); }
 .serviceCardNum { font-size: 0.65rem; letter-spacing: 0.2em; color: var(--ch-text-muted); margin-bottom: 1.2rem; }
 .serviceCardIcon { width: 40px; height: 40px; margin-bottom: 1.2rem; color: var(--ch-primary); }
-.serviceCardTitle { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 600; color: var(--ch-dark); margin-bottom: 0.8rem; line-height: 1.3; }
-.serviceCardDesc { font-size: 0.8rem; line-height: 1.7; color: var(--ch-text-muted); margin-bottom: 1.5rem; flex-grow: 1; }
+.serviceCardTitle { font-family: 'Shrikhand', cursive !important; font-size: 1.15rem; font-weight: 400; color: #111; margin-bottom: 0.8rem; line-height: 1.35; }
+.serviceCardDesc { font-size: 0.86rem; line-height: 1.7; color: #111; margin-bottom: 1.5rem; flex-grow: 1; }
 .serviceCardLink { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--ch-primary); display: inline-flex; align-items: center; gap: 8px; transition: gap 0.2s; }
 .serviceCard:hover .serviceCardLink { gap: 14px; }
 
@@ -163,28 +163,28 @@
 .brandCardContent { position: absolute; bottom: 0; left: 0; right: 0; padding: 2rem 1.8rem; z-index: 2; transform: translateY(8px); transition: transform 0.4s; }
 .brandCard:hover .brandCardContent { transform: translateY(0); }
 .brandCardMark { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; color: var(--ch-accent); display: block; margin-bottom: 0.3rem; }
-.brandCardName { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; color: var(--ch-text-light); margin-bottom: 0.4rem; }
+.brandCardName { font-family: 'Shrikhand', cursive !important; font-size: 1.5rem; font-weight: 400; color: #fff1b8; margin-bottom: 0.4rem; text-shadow: 0 2px 14px rgba(0,0,0,0.75); }
 .brandCardType { font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ch-accent); margin-bottom: 0.8rem; }
-.brandCardDesc { font-size: 0.82rem; line-height: 1.6; color: rgba(245,240,224,0.75); margin-bottom: 1.2rem; max-height: 0; overflow: hidden; transition: max-height 0.4s ease, opacity 0.4s ease; opacity: 0; }
+.brandCardDesc { font-size: 0.82rem; line-height: 1.6; color: #fff1b8; margin-bottom: 1.2rem; max-height: 0; overflow: hidden; transition: max-height 0.4s ease, opacity 0.4s ease; opacity: 0; }
 .brandCard:hover .brandCardDesc { max-height: 80px; opacity: 1; }
-.brandCardExplore { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--ch-text-light); display: inline-flex; align-items: center; gap: 8px; opacity: 0; transition: opacity 0.4s ease; }
+.brandCardExplore { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: #fff1b8; display: inline-flex; align-items: center; gap: 8px; opacity: 0; transition: opacity 0.4s ease; }
 .brandCard:hover .brandCardExplore { opacity: 1; }
 .brandFuture { background: var(--ch-surface-2); display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 1rem; }
 .brandFuture .brandCardName { color: var(--ch-text-muted); }
 .brandFutureIcon { width: 64px; height: 64px; border: 1.5px dashed var(--ch-text-muted); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--ch-text-muted); font-size: 2rem; }
 
-.b2bSection { background: var(--ch-dark); padding: clamp(80px, 10vw, 140px) 8%; position: relative; overflow: hidden; }
+.b2bSection { background: var(--ch-surface); padding: clamp(80px, 10vw, 140px) 8%; position: relative; overflow: hidden; }
 .b2bBgAccent { position: absolute; width: 500px; height: 500px; border-radius: 50%; background: radial-gradient(circle, rgba(74,82,64,0.2) 0%, transparent 70%); top: -100px; right: -100px; pointer-events: none; }
 .b2bLayout { display: grid; grid-template-columns: 1fr 2fr; gap: clamp(60px, 8vw, 120px); align-items: start; }
-.b2bLeft .sectionTitle { color: var(--ch-text-light); margin-bottom: 1.5rem; }
+.b2bLeft .sectionTitle { color: #111; margin-bottom: 1.5rem; }
 .b2bLeft .sectionBodyLight { margin-bottom: 2rem; }
-.b2bCards { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: rgba(17,17,17,0.16); }
-.b2bCard { background: rgba(255,255,255,0.12); padding: 2.5rem 2rem; transition: background 0.3s; cursor: none; position: relative; overflow: hidden; }
+.b2bCards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; background: transparent; }
+.b2bCard { background: rgba(255,241,184,0.12); border: 1px solid rgba(17,17,17,0.18); border-radius: 12px; min-height: 310px; padding: 2.3rem 2rem; transition: background 0.3s, border-color 0.3s, box-shadow 0.3s, transform 0.3s; cursor: none; position: relative; overflow: hidden; }
 .b2bCard::after { content: ''; position: absolute; top: 0; right: 0; width: 3px; height: 0; background: var(--ch-accent); transition: height 0.4s ease; }
-.b2bCard:hover { background: rgba(255,222,89,0.3); }
+.b2bCard:hover { background: var(--ch-surface-2); border-color: #111; box-shadow: 8px 8px 0 rgba(17,17,17,0.16); transform: translateY(-5px); }
 .b2bCard:hover::after { height: 100%; }
 .b2bCardIcon { width: 44px; height: 44px; color: var(--ch-accent); margin-bottom: 1.5rem; }
-.b2bCardTitle { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 600; color: var(--ch-text-light); margin-bottom: 0.8rem; }
+.b2bCardTitle { font-family: 'Shrikhand', cursive !important; font-size: 1.2rem; font-weight: 400; color: #111; margin-bottom: 0.8rem; }
 .b2bCardDesc { font-size: 0.82rem; line-height: 1.7; color: rgba(17,17,17,0.68); margin-bottom: 1.5rem; }
 .b2bCardLink { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--ch-accent); display: inline-flex; align-items: center; gap: 8px; transition: gap 0.2s; }
 .b2bCard:hover .b2bCardLink { gap: 14px; }
@@ -235,33 +235,34 @@
 .industryName { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 600; color: var(--ch-dark); margin-bottom: 0.4rem; }
 .industryDesc { font-size: 0.78rem; color: var(--ch-text-muted); line-height: 1.6; }
 
-.testimonialsSection { background: var(--ch-dark); padding: clamp(80px, 10vw, 140px) 8%; }
+.testimonialsSection { background: var(--ch-surface); padding: clamp(80px, 10vw, 140px) 8%; }
 .testimonialsHeader { margin-bottom: clamp(60px, 8vw, 100px); }
-.testimonialsHeader .sectionTitle { color: var(--ch-text-light); }
-.testimonialsGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: rgba(17,17,17,0.16); }
-.testimonialCard { background: var(--ch-dark); padding: 3rem 2.5rem; transition: background 0.3s; height: 100%; display: flex; flex-direction: column; }
-.testimonialCard:hover { background: rgba(255,222,89,0.26); }
+.testimonialsHeader .sectionTitle { color: #111; }
+.testimonialsGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; background: transparent; }
+.testimonialCard { background: rgba(255,241,184,0.12); border: 1px solid rgba(17,17,17,0.18); border-radius: 12px; padding: 2.5rem 2.2rem; transition: background 0.3s, border-color 0.3s, box-shadow 0.3s, transform 0.3s; height: 100%; display: flex; flex-direction: column; }
+.testimonialCard:hover { background: var(--ch-surface-2); border-color: #111; box-shadow: 8px 8px 0 rgba(17,17,17,0.16); transform: translateY(-5px); }
 .testimonialQuoteMark { font-family: 'Cormorant Garamond', serif; font-size: 5rem; line-height: 0.5; color: var(--ch-accent); opacity: 0.4; margin-bottom: 1.5rem; display: block; }
-.testimonialText { font-family: 'Cormorant Garamond', serif; font-size: 1.25rem; font-style: italic; color: var(--ch-text-light); line-height: 1.6; margin-bottom: 2rem; flex-grow: 1; }
+.testimonialText { font-family: 'Open Sauce One', 'Open Sauce Sans', Arial, sans-serif !important; font-size: 1.12rem; font-style: normal; color: #111; line-height: 1.75; margin-bottom: 2rem; flex-grow: 1; }
 .testimonialAuthor { display: flex; align-items: center; gap: 1rem; border-top: 1px solid rgba(17,17,17,0.16); padding-top: 1.5rem; }
 .testimonialAvatar { width: 44px; height: 44px; border-radius: 50%; background: var(--ch-primary); display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--ch-text-light); flex-shrink: 0; }
-.testimonialName { font-size: 0.85rem; font-weight: 600; color: var(--ch-text-light); margin-bottom: 0.15rem; }
+.testimonialName { font-size: 0.85rem; font-weight: 700; color: #111; margin-bottom: 0.15rem; }
 .testimonialRole { font-size: 0.72rem; color: var(--ch-accent); letter-spacing: 0.1em; }
 
 .journalSection { padding: clamp(80px, 10vw, 140px) 8%; background: var(--ch-surface); }
 .journalHeader { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: clamp(40px, 6vw, 80px); }
-.journalGrid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 2px; background: var(--ch-border); }
-.journalCard { background: var(--ch-surface); cursor: none; overflow: hidden; transition: transform 0.4s ease; }
-.journalCard:hover { transform: translateY(-4px); }
+.journalGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; background: transparent; align-items: stretch; }
+.journalGrid > * { height: 100%; }
+.journalCard { background: rgba(255,241,184,0.12); border: 1px solid rgba(17,17,17,0.18); border-radius: 12px; cursor: none; overflow: hidden; transition: background 0.3s, border-color 0.3s, box-shadow 0.3s, transform 0.3s; height: 100%; display: flex; flex-direction: column; }
+.journalCard:hover { background: var(--ch-surface-2); border-color: #111; box-shadow: 8px 8px 0 rgba(17,17,17,0.16); transform: translateY(-5px); }
 .journalCardImage { height: 240px; overflow: hidden; background: var(--ch-surface-2); position: relative; }
 .journalCardImage img { transition: transform 0.6s ease; }
 .journalCard:hover .journalCardImage img { transform: scale(1.06); }
-.journalCard:first-child .journalCardImage { height: 320px; }
-.journalCardBody { padding: 1.8rem; }
+.journalCard:first-child .journalCardImage { height: 240px; }
+.journalCardBody { padding: 1.8rem; display: flex; flex: 1; flex-direction: column; }
 .journalCardTag { font-size: 0.65rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--ch-accent); margin-bottom: 0.8rem; }
-.journalCardTitle { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 600; color: var(--ch-dark); line-height: 1.3; margin-bottom: 0.8rem; }
-.journalCard:first-child .journalCardTitle { font-size: 1.6rem; }
-.journalCardExcerpt { font-size: 0.82rem; line-height: 1.7; color: var(--ch-text-muted); margin-bottom: 1.2rem; }
+.journalCardTitle { font-family: 'Shrikhand', cursive !important; font-size: 1.2rem; font-weight: 400; color: #111; line-height: 1.35; margin-bottom: 0.8rem; }
+.journalCard:first-child .journalCardTitle { font-size: 1.2rem; }
+.journalCardExcerpt { font-size: 0.84rem; line-height: 1.7; color: #111; margin-bottom: 1.2rem; flex-grow: 1; }
 .journalCardMeta { font-size: 0.7rem; color: var(--ch-text-muted); display: flex; align-items: center; gap: 12px; }
 .journalCardMeta::before { content: ''; display: block; width: 20px; height: 1px; background: var(--ch-text-muted); }
 
@@ -274,15 +275,15 @@
 .leaderRole { font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--ch-accent); margin-bottom: 0.8rem; }
 .leaderBio { font-size: 0.82rem; line-height: 1.7; color: var(--ch-text-muted); }
 
-.journeySection { background: var(--ch-dark); padding: clamp(80px, 10vw, 140px) 8%; overflow: hidden; }
+.journeySection { background: var(--ch-surface); padding: clamp(80px, 10vw, 140px) 8%; overflow: hidden; }
 .journeyHeader { margin-bottom: clamp(60px, 8vw, 100px); text-align: center; }
-.journeyHeader .sectionTitle { color: var(--ch-text-light); }
+.journeyHeader .sectionTitle { color: #111; }
 .journeyTimeline { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0; position: relative; }
 .journeyTimeline::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: rgba(17,17,17,0.18); }
 .journeyMilestone { padding: 2.5rem 2rem 0; border-left: 1px solid rgba(17,17,17,0.16); position: relative; }
 .journeyMilestone::before { content: ''; position: absolute; top: -5px; left: -5px; width: 10px; height: 10px; border-radius: 50%; background: var(--ch-accent); }
 .journeyYear { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; color: var(--ch-accent); margin-bottom: 0.8rem; }
-.journeyEvent { font-size: 0.9rem; font-weight: 600; color: var(--ch-text-light); margin-bottom: 0.5rem; }
+.journeyEvent { font-size: 0.9rem; font-weight: 600; color: #111; margin-bottom: 0.5rem; }
 .journeyDesc { font-size: 0.78rem; line-height: 1.7; color: rgba(17,17,17,0.68); }
 
 .innerSection[data-bg="surface"] { background: var(--ch-surface); }
@@ -318,9 +319,9 @@
 .btnOutlineWhite { padding: 16px 40px; border: 2px solid rgba(245,240,224,0.5); color: var(--ch-text-light); font-size: 0.78rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; border-radius: var(--ch-radius); transition: border-color 0.2s, background 0.2s; cursor: none; }
 .btnOutlineWhite:hover { border-color: var(--ch-text-light); background: rgba(245,240,224,0.1); }
 
-.footer { background: var(--ch-dark-2); padding: clamp(60px, 8vw, 100px) 8% 2rem; }
+.footer { background: var(--ch-surface); padding: clamp(60px, 8vw, 100px) 8% 2rem; }
 .footerTop { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr; gap: 3rem; padding-bottom: 4rem; border-bottom: 1px solid rgba(17,17,17,0.16); margin-bottom: 2.5rem; }
-.footerBrand .footerLogo { font-family: 'Shrikhand', cursive !important; font-size: 1.8rem; font-weight: 400; color: var(--ch-text-light); letter-spacing: 0.04em; }
+.footerBrand .footerLogo { font-family: 'Shrikhand', cursive !important; font-size: 1.8rem; font-weight: 400; color: #111; letter-spacing: 0.04em; }
 .footerBrandRow { display: flex; flex-direction: column; align-items: flex-start; gap: 0.75rem; margin-bottom: 0.5rem; }
 .footerBrandMark { font-size: 2.5rem; width: 90px; }
 .footerLogoImg { display: block; width: min(130px, 100%); height: auto; aspect-ratio: 1; object-fit: contain; object-position: left center; flex-shrink: 0; }
@@ -334,7 +335,7 @@
 .footerColTitle { font-size: 0.7rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--ch-accent); margin-bottom: 1.5rem; font-weight: 600; }
 .footerCol ul { display: flex; flex-direction: column; gap: 0.8rem; list-style: none; padding: 0; margin: 0; }
 .footerCol ul a { font-size: 0.82rem; color: rgba(17,17,17,0.68); transition: color 0.2s, padding-left 0.2s; }
-.footerCol ul a:hover { color: var(--ch-text-light); padding-left: 4px; }
+.footerCol ul a:hover { color: var(--ch-primary); padding-left: 4px; }
 .footerBottom { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
 .footerCopy { font-size: 0.75rem; color: rgba(17,17,17,0.58); }
 .footerLinks { display: flex; gap: 2rem; }
@@ -350,11 +351,27 @@
 @media (max-width: 1200px) {
   .servicesGrid { grid-template-columns: repeat(3, 1fr); }
   .philosophyPillars { grid-template-columns: repeat(3, 1fr); }
-  .pillar:nth-child(4) { border-left: none; }
+  .pillar:nth-child(4) { border-left: 1px solid rgba(17,17,17,0.18); }
   .footerTop { grid-template-columns: 1.5fr 1fr 1fr; }
 }
 
 @media (max-width: 900px) {
+  .themeRoot { cursor: auto; }
+  .cursorDot, .cursorRing { display: none; }
+  .navbar { height: 64px; padding: 0 1rem; }
+  .navbarScrolled { height: 60px; }
+  .navLogo { gap: 9px; min-width: 0; }
+  .navLogoMarkImg { width: 44px; height: 44px; }
+  .navLogoMark { width: 42px; height: 42px; }
+  .brandName { font-size: 0.9rem; }
+  .brandTagline { font-size: 0.5rem; letter-spacing: 0.12em; }
+  .mobileNav { inset: 60px 0 0; overflow-y: auto; padding: 2rem 1.25rem 2.5rem; }
+  .mobileNavLink { font-size: clamp(1.65rem, 8vw, 2.5rem); padding: 0.8rem 0; }
+  .mobileNavCta { margin-top: 1.5rem; width: 100%; justify-content: space-between; }
+  .aboutSection, .philosophySection, .servicesSection, .brandsSection,
+  .b2bSection, .howWeWorkSection, .ourEdgeSection, .industriesSection,
+  .testimonialsSection, .journalSection, .leadershipSection, .journeySection,
+  .partnersSection, .ctaSection { padding-left: 1.25rem; padding-right: 1.25rem; }
   .aboutSection { grid-template-columns: 1fr; }
   .ourEdgeSection { grid-template-columns: 1fr; }
   .aboutImageStack { height: 400px; }
@@ -369,17 +386,17 @@
   .metricsGrid { grid-template-columns: 1fr 1fr; }
   .industriesGrid { grid-template-columns: 1fr 1fr; }
   .philosophyPillars { grid-template-columns: 1fr 1fr; }
-  .pillar { border-left: 1px solid rgba(17,17,17,0.16) !important; }
+  .pillar { border-left: 1px solid rgba(17,17,17,0.18) !important; min-height: 280px; }
   .philosophyHeader { grid-template-columns: 1fr; gap: 2rem; }
   .servicesHeader { grid-template-columns: 1fr; }
   .navLinks { display: none; }
   .navCta { display: none; }
   .hamburger { display: flex; }
-  .footerTop { grid-template-columns: 1fr 1fr; }
+  .footerTop { grid-template-columns: 1fr 1fr; gap: 2rem; }
   
   .heroSection { flex-direction: column; min-height: auto; overflow: visible; }
-  .t3Visuals { position: relative; right: auto; top: auto; bottom: auto; width: 100%; height: 55vh; min-height: 260px; max-height: 480px; order: -1; flex-shrink: 0; }
-  .t3Content { width: 100% !important; padding: 1.4rem 1.2rem 1.5rem !important; order: 2; }
+  .t3Visuals { position: relative; right: auto; top: auto; bottom: auto; width: 100%; height: 48vh; min-height: 280px; max-height: 430px; order: -1; flex-shrink: 0; }
+  .t3Content { width: 100% !important; padding: 2rem 1.25rem 2.25rem !important; order: 2; }
   .t3Headline { font-size: clamp(1.6rem, 6vw, 2.4rem); margin-bottom: 0.8rem; }
   .t3Body { max-width: 100%; font-size: 0.85rem; margin-bottom: 1rem; }
   .t3Actions { flex-direction: row !important; align-items: center !important; flex-wrap: nowrap !important; gap: 10px !important; }
@@ -389,19 +406,33 @@
 }
 
 @media (max-width: 600px) {
+  .servicesGrid, .philosophyPillars, .industriesGrid,
+  .processTimeline, .journeyTimeline { grid-template-columns: 1fr; }
   .brandsGrid { grid-template-columns: 1fr; }
   .b2bCards { grid-template-columns: 1fr; }
   .metricsGrid { grid-template-columns: 1fr 1fr; }
-  .industriesGrid { grid-template-columns: 1fr 1fr; }
   .journalGrid { grid-template-columns: 1fr; }
   .leadershipGrid { grid-template-columns: 1fr; }
-  .processTimeline { grid-template-columns: 1fr 1fr; }
-  .journeyTimeline { grid-template-columns: 1fr 1fr; }
   .footerTop { grid-template-columns: 1fr; }
   .footerBottom { flex-direction: column; text-align: center; }
   .brandsHeader { flex-direction: column; align-items: flex-start; gap: 1rem; }
   .journalHeader { flex-direction: column; align-items: flex-start; gap: 1rem; }
   .ctaButtons { flex-direction: column; }
+  .serviceCard, .b2bCard, .testimonialCard, .pillar { min-height: 0; padding: 1.6rem; }
+  .servicesHeader, .philosophyHeader { margin-bottom: 2.5rem; }
+  .sectionTitle { font-size: clamp(2rem, 11vw, 3rem); }
+  .t3Actions { align-items: stretch !important; flex-direction: column !important; }
+  .t3BtnDark, .t3BtnGhost { justify-content: center; text-align: center; width: 100%; }
+  .footerLinks { gap: 1rem; justify-content: center; flex-wrap: wrap; }
+}
+
+@media (hover: none) {
+  .pillar:hover, .serviceCard:hover, .b2bCard:hover, .testimonialCard:hover, .journalCard:hover {
+    box-shadow: none;
+    transform: none;
+  }
+  .brandCardDesc { max-height: 100px; opacity: 1; }
+  .brandCardExplore { opacity: 1; }
 }
 
 .innerHero { padding: clamp(120px, 15vw, 160px) 8% clamp(50px, 6vw, 70px); background: var(--ch-surface); border-bottom: 1px solid var(--ch-border); display: grid; grid-template-columns: 1.2fr 1fr; gap: 4rem; align-items: center; position: relative; overflow: hidden; }

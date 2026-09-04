@@ -2,8 +2,8 @@
   --ch-bg: #ffde59;
   --ch-surface: #00c2cb;
   --ch-surface-2: #fff1b8;
-  --ch-dark: #00c2cb;
-  --ch-dark-2: #00c2cb;
+  --ch-dark: #111111;
+  --ch-dark-2: #111111;
   --ch-primary: #dd0000;
   --ch-primary-lt: #f40051;
   --ch-accent: #f40051;
@@ -11,7 +11,7 @@
   --ch-gold: #dd0000;
   --ch-text: #111111;
   --ch-text-muted: #111111;
-  --ch-text-light: #111111;
+  --ch-text-light: #fff1b8;
   --ch-border: rgba(17,17,17,0.18);
   --ch-border-dark: rgba(17,17,17,0.2);
   --ch-overlay: rgba(17,17,17,0.76);
