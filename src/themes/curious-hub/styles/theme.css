@@ -1,34 +1,41 @@
-@import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400&family=Inter:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap');
-
 [data-theme-site='curious-hub'] {
-  --ch-bg: #F8F5F0;
-  --ch-surface: #FFFFFF;
-  --ch-surface-2: #F0EDE8;
-  --ch-dark: #1A1A1A;
-  --ch-dark-2: #0D0D0D;
-  --ch-primary: #C46A3A;
-  --ch-primary-lt: #D47A4A;
-  --ch-accent: #D4845A;
-  --ch-accent-lt: #E49470;
-  --ch-gold: #8A6840;
-  --ch-text: #2A2A2A;
-  --ch-text-muted: #8A8680;
-  --ch-text-light: #F8F5F0;
-  --ch-border: rgba(42,42,42,0.12);
-  --ch-border-dark: rgba(255,255,255,0.1);
-  --ch-overlay: rgba(26,26,26,0.78);
-  --ch-shadow: 0 4px 24px rgba(42,42,42,0.1);
-  --ch-shadow-lg: 0 16px 48px rgba(42,42,42,0.15);
+  --ch-bg: #ffde59;
+  --ch-surface: #00c2cb;
+  --ch-surface-2: #fff1b8;
+  --ch-dark: #00c2cb;
+  --ch-dark-2: #00c2cb;
+  --ch-primary: #dd0000;
+  --ch-primary-lt: #f40051;
+  --ch-accent: #f40051;
+  --ch-accent-lt: #ffde59;
+  --ch-gold: #dd0000;
+  --ch-text: #111111;
+  --ch-text-muted: #111111;
+  --ch-text-light: #111111;
+  --ch-border: rgba(17,17,17,0.18);
+  --ch-border-dark: rgba(17,17,17,0.2);
+  --ch-overlay: rgba(17,17,17,0.76);
+  --ch-shadow: 0 4px 24px rgba(17,17,17,0.12);
+  --ch-shadow-lg: 0 16px 48px rgba(17,17,17,0.18);
   --ch-radius: 4px;
   --ch-radius-lg: 8px;
   --ch-transition: 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   --ch-transition-fast: 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   --ch-noise: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
 
-  font-family: 'Inter', sans-serif;
+  font-family: 'Open Sauce One', 'Open Sauce Sans', Arial, sans-serif;
   background-color: var(--ch-bg);
   color: var(--ch-text);
   line-height: 1.6;
+}
+
+[data-theme-site='curious-hub'] * {
+  font-family: 'Open Sauce One', 'Open Sauce Sans', Arial, sans-serif !important;
+}
+
+[data-theme-site='curious-hub'] :where(h1, h2, h3, h4, h5, h6) {
+  font-family: 'Shrikhand', cursive !important;
+  font-weight: 400 !important;
 }
 
 [data-theme-site='curious-hub'] *, [data-theme-site='curious-hub'] *::before, [data-theme-site='curious-hub'] *::after {

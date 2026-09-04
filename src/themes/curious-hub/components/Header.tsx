@@ -1,23 +1,21 @@
 'use client'
 
-import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { navigationData as curiousHubNavigation } from '../data/navigation'
-import type { CuriousLadooNavigationData, CuriousLadooSiteData } from '../mappers/dynamicTypes'
+import type { CuriousLadooNavigationData } from '../mappers/dynamicTypes'
 import type { NavItemData } from '../types'
+import { BrandMark } from './BrandMark'
 import styles from './Theme.module.css'
 
 /** CMS Nav/Site are optional: pages not yet converted to CMS omit them and keep today's static nav. */
 export function Header({
   nav,
   pathname,
-  site,
   tagline,
 }: {
   nav?: CuriousLadooNavigationData
   pathname: string
-  site?: CuriousLadooSiteData
   tagline?: string
 }) {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -61,11 +59,7 @@ export function Header({
         role="navigation"
       >
         <Link aria-label={`${brandName} Home`} className={styles.navLogo} href="/">
-          {site?.logo ? (
-            <Image alt={site.logo.alt} className={styles.navLogoMarkImg} height={52} priority src={site.logo.src} width={52} />
-          ) : (
-            <div className={styles.navLogoMark}>CL</div>
-          )}
+          <BrandMark className={styles.navLogoMark} />
           <div className={styles.navLogoText}>
             <span className={styles.brandName}>{brandName}</span>
             <span className={styles.brandTagline}>{brandTagline}</span>
@@ -134,6 +128,16 @@ export function Header({
             {item.label}
           </Link>
         ))}
+        <Link
+          className={styles.mobileNavCta}
+          href={ctaHref}
+          onClick={() => setMenuOpen(false)}
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          {ctaLabel}
+          <span aria-hidden="true">&rarr;</span>
+        </Link>
       </nav>
     </>
   )

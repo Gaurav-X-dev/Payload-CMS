@@ -1,11 +1,10 @@
 'use client'
 
-import Image from 'next/image'
 import { useEffect, useState } from 'react'
-import type { CuriousLadooSiteData } from '../mappers/dynamicTypes'
 import styles from './Theme.module.css'
+import { BrandMark } from './BrandMark'
 
-export function PageLoader({ site }: { site?: CuriousLadooSiteData }) {
+export function PageLoader() {
   const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
@@ -22,13 +21,7 @@ export function PageLoader({ site }: { site?: CuriousLadooSiteData }) {
       className={`${styles.pageLoader} ${loaded ? styles.pageLoaderLoaded : ''}`}
       role="status"
     >
-      {site?.logo ? (
-        <Image alt={site.logo.alt} className={styles.loaderLogoImg} height={150} priority src={site.logo.src} width={150} />
-      ) : (
-        <div className={styles.loaderLogo}>
-          C<span>L</span>
-        </div>
-      )}
+      <BrandMark className={styles.loaderBrandMark} />
       <div className={styles.loaderSubtitle}>Curious Ladoo</div>
       <div className={styles.loaderBar} />
     </div>
