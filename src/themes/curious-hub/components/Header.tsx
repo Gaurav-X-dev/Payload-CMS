@@ -1,9 +1,10 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { navigationData as curiousHubNavigation } from '../data/navigation'
-import type { CuriousLadooNavigationData } from '../mappers/dynamicTypes'
+import type { CuriousLadooNavigationData, CuriousLadooSiteData } from '../mappers/dynamicTypes'
 import type { NavItemData } from '../types'
 import { BrandMark } from './BrandMark'
 import styles from './Theme.module.css'
@@ -12,10 +13,12 @@ import styles from './Theme.module.css'
 export function Header({
   nav,
   pathname,
+  site,
   tagline,
 }: {
   nav?: CuriousLadooNavigationData
   pathname: string
+  site?: CuriousLadooSiteData
   tagline?: string
 }) {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -59,7 +62,19 @@ export function Header({
         role="navigation"
       >
         <Link aria-label={`${brandName} Home`} className={styles.navLogo} href="/">
-          <BrandMark className={styles.navLogoMark} />
+          {site?.logo?.src ? (
+            <Image
+              alt={site.logo.alt || `${brandName} logo`}
+              className={styles.navLogoMarkImg}
+              height={52}
+              priority
+              sizes="52px"
+              src={site.logo.src}
+              width={52}
+            />
+          ) : (
+            <BrandMark className={styles.navLogoMark} />
+          )}
           <div className={styles.navLogoText}>
             <span className={styles.brandName}>{brandName}</span>
             <span className={styles.brandTagline}>{brandTagline}</span>

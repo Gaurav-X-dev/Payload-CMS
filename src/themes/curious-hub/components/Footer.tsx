@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import { footerData } from '../data/footer'
 import { curiousHubSiteData } from '../data/site'
@@ -32,7 +33,18 @@ export function Footer({
       <div className={styles.footerTop}>
         <div className={styles.footerBrand}>
           <div className={styles.footerBrandRow}>
-            <BrandMark className={styles.footerBrandMark} />
+            {site?.logo?.src ? (
+              <Image
+                alt={site.logo.alt || 'Curious Ladoo logo'}
+                className={styles.footerLogoImg}
+                height={130}
+                sizes="(max-width: 600px) 96px, 110px"
+                src={site.logo.src}
+                width={130}
+              />
+            ) : (
+              <BrandMark className={styles.footerBrandMark} />
+            )}
             <div className={styles.footerLogo}>
               Curious <span>Ladoo</span>
             </div>
